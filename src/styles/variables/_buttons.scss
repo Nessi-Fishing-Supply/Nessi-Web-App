@@ -1,0 +1,122 @@
+////////////////////////
+/// Button Defaults
+////////////////////////
+$button-shadow: 0 4px 4px 0 rgba(17, 17, 18, 0.3);
+
+.btn {
+  display: inline-block;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--shelterColorPrimary, --ion-color-primary);
+  cursor: pointer;
+  font-family: var(--OpenSans);
+  font-size: var(--text-base);
+  line-height: 20px;
+  text-align: center;
+  text-decoration: none;
+  transition: var(--transition-basic);
+
+  &:not(:disabled) {
+    &:hover,
+    &:focus {
+      box-shadow: $button-shadow;
+    }
+  }
+
+  &__primary {
+    border: 1px solid var(--shelterColorPrimary, --ion-color-primary);
+    border-radius: 4px;
+    color: var(--white);
+
+    &:not(:disabled) {
+      &:active {
+        background: var(--ion-color-primary-contrast);
+        color: var(--ion-color-primary);
+      }
+    }
+
+    &:disabled {
+      background: var(--light-grey);
+      color: var(--dark-grey);
+      border-color: transparent;
+      cursor: not-allowed;
+    }
+
+    &--attention {
+      background: var(--ion-color-secondary);
+      border-color: var(--ion-color-secondary);
+      border-radius: 4px;
+      color: var(--white);
+
+      &:not(:disabled) {
+        &:active {
+          background: transparent;
+          color: var(--black);
+        }
+      }
+    }
+
+    &--outline {
+      background-color: transparent;
+      border: 1px solid var(--shelterColorPrimary, --ion-color-primary);
+      color: var(--shelterColorPrimary, --ion-color-primary);
+      border-radius: 4px;
+    }
+  }
+
+  &__secondary {
+    padding: 10px 24px;
+    border: 1px solid var(--ion-color-primary);
+    background: var(--ion-color-primary);
+    color: var(--ion-color-primary-contrast);
+    border-radius: 20px;
+
+    &:not(:disabled) {
+      &:active {
+        background: transparent;
+      }
+    }
+
+    &:disabled {
+      background: var(--light-grey);
+      color: var(--dark-grey);
+      border-color: transparent;
+      cursor: not-allowed;
+    }
+
+    &--attention {
+      border-color: var(--ion-color-warning);
+      background: var(--ion-color-warning);
+      color: var(--ion-color-warning-contrast);
+
+      &:not(:disabled) {
+        &:active {
+          background: transparent;
+        }
+      }
+
+      &--dark {
+        &:not(:disabled) {
+          &:active {
+            background: transparent;
+            border-color: var(--ion-color-warning);
+            color: var(--white);
+          }
+        }
+      }
+    }
+  }
+
+  &__link {
+    background: none;
+    color: inherit;
+    text-align: left;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &:disabled {
+      text-decoration: none;
+    }
+  }
+}
