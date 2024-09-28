@@ -1,4 +1,4 @@
-name: Build and Trigger Deployment
+name: Build and Upload to S3
 
 on:
   push:
@@ -26,16 +26,9 @@ jobs:
       - name: Build web app
         run: npm run build
 
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: web-app-build
-          path: out/
-
-      - name: Trigger infrastructure deployment
+      - name: Upload build artifact to S3
         run: |
-          curl -X POST \
-            -H "Accept: application/vnd.github.v3+json" \
-            -H "Authorization: token ${{ secrets.PAT_TOKEN }}" \
-            https://api.github.com/repos/Nessi-Fishing-Supply/Nessi-Infra/dispatches \
-            -d '{"event_type": "deploy", "client_payload": {"environment": "${{ github.ref_name }}", "build_id": "${{ github.sha }}"}}'
+          aws s3 cp ./out/ s3://NessiWebAppBuild/web-app-build/${{ github.sha }} --recursive
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
