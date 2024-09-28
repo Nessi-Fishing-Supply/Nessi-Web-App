@@ -13,21 +13,18 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3  # Latest version using Node.js 20
+        uses: actions/checkout@v3
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3  # Latest version of setup-node
+        uses: actions/setup-node@v3
         with:
-          node-version: '20'  # Explicitly using Node.js 20
+          node-version: '20'
 
       - name: Install dependencies
         run: npm install
 
       - name: Build web app
         run: npm run build
-
-      - name: Package the app
-        run: npm run export  # Assumes the build output is placed in a folder like `out/`
 
       - name: Trigger infrastructure deployment
         run: |
