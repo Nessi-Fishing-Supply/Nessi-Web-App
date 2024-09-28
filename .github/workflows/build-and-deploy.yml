@@ -26,6 +26,12 @@ jobs:
       - name: Build web app
         run: npm run build
 
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: web-app-build
+          path: out/
+
       - name: Trigger infrastructure deployment
         run: |
           curl -X POST \
