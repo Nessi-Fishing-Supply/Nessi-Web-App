@@ -26,9 +26,11 @@ jobs:
       - name: Build web app
         run: npm run build
 
-      - name: Get absolute artifact path
-        id: artifact_path
-        run: echo "ARTIFACT_PATH=$(pwd)/out" >> $GITHUB_ENV
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-app-build
+          path: out/
 
       - name: Trigger infrastructure deployment
         run: |
@@ -36,4 +38,4 @@ jobs:
             -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: token ${{ secrets.PAT_TOKEN }}" \
             https://api.github.com/repos/Nessi-Fishing-Supply/Nessi-Infra/dispatches \
-            -d '{"event_type": "deploy", "client_payload": {"environment": "${{ github.ref_name }}", "build_id": "${{ github.sha }}", "artifact_location": "${{ env.ARTIFACT_PATH }}"}}'
+            -d '{"event_type": "deploy", "client_payload": {"environment": "${{ github.ref_name }}", "build_id": "${{ github.sha }}"}}'
