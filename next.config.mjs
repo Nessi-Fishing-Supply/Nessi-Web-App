@@ -7,4 +7,5 @@ export default {
     sassOptions: {
         sourceMap: true,
     },
+    output: 'export',  // This enables static export mode
 };
