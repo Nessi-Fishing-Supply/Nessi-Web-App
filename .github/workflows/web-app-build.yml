@@ -33,11 +33,11 @@ jobs:
           AWS_REGION: 'us-east-2'
         run: |
           if [ "${{ github.ref_name }}" == "dev" ]; then
-            aws s3 sync ./out s3://nessi-webapp-dev-203918872163-us-east-2-artifacts --delete;
+            aws s3 sync ./out s3://nessi-webapp-dev --delete;
           elif [ "${{ github.ref_name }}" == "staging" ]; then
-            aws s3 sync ./out s3://nessi-webapp-staging-203918872163-us-east-2-artifacts --delete;
+            aws s3 sync ./out s3://nessi-webapp-staging --delete;
           elif [ "${{ github.ref_name }}" == "main" ]; then
-            aws s3 sync ./out s3://nessi-webapp-prod-203918872163-us-east-2-artifacts --delete;
+            aws s3 sync ./out s3://nessi-webapp-prod --delete;
           fi
 
       - name: Trigger Nessi Infra Workflow
