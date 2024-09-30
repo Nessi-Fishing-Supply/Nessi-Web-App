@@ -32,9 +32,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: 'us-east-2'
         run: |
-          aws s3 sync ./out s3://your-s3-bucket-name/${{ github.ref_name }} --delete
-
-          # Add this to the end of .github/workflows/web-app-build.yml
+          aws s3 sync ./out s3://nessi-webapp-${{ github.ref_name }}-203918872163-us-east-2-artifacts --delete
 
       - name: Trigger Nessi Infra Workflow
         uses: peter-evans/repository-dispatch@v2
