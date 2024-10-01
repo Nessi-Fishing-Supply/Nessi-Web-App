@@ -1,4 +1,4 @@
-import styles from './page.module.scss';
+// import styles from './page.module.scss';
 import Navbar from '@components/Navbar';
 import Link from 'next/link';
 
