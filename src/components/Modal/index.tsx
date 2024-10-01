@@ -45,22 +45,21 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
   }, [isOpen]);
 
   // Render the modal content inside the portal
-  return isOpen
-    ? ReactDOM.createPortal(
-        <div
-          className={styles.modalOverlay}
-          role="dialog"
-          aria-modal="true"
-        >
-          <div className={styles.modalContent} ref={modalRef} tabIndex={-1}>
-            <button className={styles.closeButton} onClick={onClose} aria-label="Close modal">
-              &times;
-            </button>
-            {children}
-          </div>
-        </div>,
-        document.getElementById('modal-root') as HTMLElement // Make sure the modal-root exists in your _app.tsx or _document.tsx
-      )
+  return isOpen ? ReactDOM.createPortal(
+    <div
+      className={styles.modalOverlay}
+      role="dialog"
+      aria-modal="true"
+    >
+      <div className={styles.modalContent} ref={modalRef} tabIndex={-1}>
+        <button className={styles.closeButton} onClick={onClose} aria-label="Close modal">
+          &times;
+        </button>
+        {children}
+      </div>
+    </div>,
+    document.getElementById('modal-root') as HTMLElement
+  )
     : null;
 };
 
