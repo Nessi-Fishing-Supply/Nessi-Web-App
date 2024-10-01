@@ -19,8 +19,13 @@
 .link {
     display: flex;
     align-items: center;
-    gap: var(--space-sm);
-    color: var(--color-quaternary-base);
+    gap: var(--space-xxs);
+    color: var(--color-secondary-base);
     font-weight: 600;
     font-weight: 14px;
+}
+
+.icon {
+    width: var(--space-md);
+    height: var(--space-md);
 }
