@@ -4,7 +4,7 @@ const nextConfig = {
     sassOptions: {
         sourceMap: true,
     },
-    output: 'export',  // This enables static export mode
+    output: 'export',
     
     webpack(config) {
         config.module.rules.push({
@@ -13,7 +13,7 @@ const nextConfig = {
                 {
                     loader: '@svgr/webpack',
                     options: {
-                        svgo: false,  // Optionally disable SVGO optimization if you don't need it
+                        svgo: false,
                     },
                 },
             ],
