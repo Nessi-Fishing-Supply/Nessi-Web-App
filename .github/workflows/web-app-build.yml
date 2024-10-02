@@ -30,15 +30,14 @@ jobs:
         run: npm run build
 
       - name: Set AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v3
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: 'us-east-2'
 
-      - name: Debug Account ID and Bucket Name
+      - name: Set Bucket Name
         run: |
-          echo "Account ID: ${{ secrets.AWS_ACCOUNT_ID }}"
           if [[ "${{ github.ref_name }}" == "dev" ]]; then
             echo "BUCKET_NAME=nessi-webapp-dev-${{ secrets.AWS_ACCOUNT_ID }}" >> $GITHUB_ENV
           elif [[ "${{ github.ref_name }}" == "staging" ]]; then
@@ -49,11 +48,9 @@ jobs:
             echo "Branch not recognized. Exiting."
             exit 1
           fi
-          echo "Bucket Name: $BUCKET_NAME"
 
       - name: Upload to S3
         run: |
-          echo "Uploading to bucket: $BUCKET_NAME"
           aws s3 sync ./out s3://$BUCKET_NAME --delete
         env:
           BUCKET_NAME: ${{ env.BUCKET_NAME }}
@@ -71,7 +68,6 @@ jobs:
             exit 1
           fi
 
-          echo "Invalidating CloudFront distribution: $DISTRIBUTION_ID"
           aws cloudfront create-invalidation \
             --distribution-id $DISTRIBUTION_ID \
             --paths "/*"
