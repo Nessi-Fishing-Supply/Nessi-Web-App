@@ -36,9 +36,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: 'us-east-2'
 
-      - name: Determine Bucket Name Based on Branch
-        id: determine_bucket
+      - name: Debug Account ID and Bucket Name
         run: |
+          echo "Account ID: ${{ secrets.AWS_ACCOUNT_ID }}"
           if [[ "${{ github.ref_name }}" == "dev" ]]; then
             echo "BUCKET_NAME=nessi-webapp-dev-${{ secrets.AWS_ACCOUNT_ID }}" >> $GITHUB_ENV
           elif [[ "${{ github.ref_name }}" == "staging" ]]; then
@@ -49,6 +49,7 @@ jobs:
             echo "Branch not recognized. Exiting."
             exit 1
           fi
+          echo "Bucket Name: $BUCKET_NAME"
 
       - name: Upload to S3
         run: |
