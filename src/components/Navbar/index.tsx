@@ -44,7 +44,7 @@ export default function Navbar() {
         <Link href="#">Storage</Link>
         <Link href="#">Apparel</Link>
         <Link href="#">Bargain Bin</Link>
-      </div>
+      </div> 
     </nav>
   );
 }
