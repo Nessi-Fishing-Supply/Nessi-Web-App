@@ -1,5 +1,5 @@
 .container {
-    background-color: var(--color-primary-base);
+    background-color: var(--color-primary);
     width: 100%;
     display: flex;
     align-items: center;
@@ -20,7 +20,7 @@
     display: flex;
     align-items: center;
     gap: var(--space-xxs);
-    color: var(--color-secondary-base);
+    color: var(--color-secondary);
     font-weight: 600;
     font-weight: 14px;
 }

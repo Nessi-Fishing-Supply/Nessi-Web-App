@@ -1,4 +1,4 @@
-"use client"; // Add this at the top of your component
+"use client";
 
 import React from 'react';
 import styles from './Navbar.module.scss';

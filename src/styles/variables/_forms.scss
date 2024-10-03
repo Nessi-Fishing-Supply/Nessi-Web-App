@@ -1,4 +1,3 @@
-@import "buttons";
 @import "typography";
 
 input,
@@ -305,13 +304,6 @@ ion-select-popover {
     align-items: center;
     gap: var(--space-lg);
 
-    button {
-      @extend .btn, .btn__primary;
-    }
-
-    .outline {
-      @extend .btn, .btn__primary--outline;
-    }
   }
 
   &__error {
