@@ -34,7 +34,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
-  }, [isOpen]);
+  }, [isOpen, handleClickOutside],);
 
   useEffect(() => {
     if (isOpen) {
