@@ -1,7 +1,6 @@
 // src/components/controls/Textarea.tsx
 import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import styles from './Textarea.module.scss';
 
 interface TextareaProps {
   name: string;

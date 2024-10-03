@@ -1,7 +1,6 @@
 // src/components/controls/RadioButton.tsx
 import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import styles from './RadioButton.module.scss'
 
 interface RadioButtonProps {
   name: string;

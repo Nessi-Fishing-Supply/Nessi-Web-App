@@ -172,7 +172,7 @@ export default function Components() {
             </div>
 
             {/* FORMS */}
-            <p style={{ fontWeight: 'bold', paddingTop: '100px' }}>Input Component</p>
+            <p style={{ fontWeight: 'bold', paddingTop: '100px' }}>Auth Forms</p>
             <section>
                 <h2>Register Form</h2>
                 <RegisterForm onSubmit={handleRegisterSubmit} />

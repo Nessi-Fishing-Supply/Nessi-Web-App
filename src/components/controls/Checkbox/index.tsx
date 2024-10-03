@@ -1,7 +1,6 @@
 // src/components/controls/Checkbox.tsx
 import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import styles from './Checkbox.module.scss';
 
 interface CheckboxProps {
   name: string;

@@ -1,7 +1,6 @@
 // src/components/controls/Select.tsx
 import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import styles from './Select.module.scss';
 
 interface SelectProps {
   name: string;
