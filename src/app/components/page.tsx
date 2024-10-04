@@ -17,20 +17,42 @@ export default function Components() {
         setTimeout(() => setLoading(false), 3000);
     };
 
-    // Handlers to simulate form submission
-    const handleRegisterSubmit = (data: any) => {
+    // Define types for each form's data
+    interface RegisterFormData {
+        email: string;
+        password: string;
+        confirmPassword: string;
+        terms: boolean;
+    }
+
+    interface LoginFormData {
+        email: string;
+        password: string;
+    }
+
+    interface ForgotPasswordFormData {
+        email: string;
+    }
+
+    interface ResetPasswordFormData {
+        password: string;
+        confirmPassword: string;
+    }
+
+    // Handlers to simulate form submission with specific types
+    const handleRegisterSubmit = (data: RegisterFormData) => {
         console.log('Register Form Data:', data);
     };
 
-    const handleLoginSubmit = (data: any) => {
+    const handleLoginSubmit = (data: LoginFormData) => {
         console.log('Login Form Data:', data);
     };
 
-    const handleForgotPasswordSubmit = (data: any) => {
+    const handleForgotPasswordSubmit = (data: ForgotPasswordFormData) => {
         console.log('Forgot Password Form Data:', data);
     };
 
-    const handleResetPasswordSubmit = (data: any) => {
+    const handleResetPasswordSubmit = (data: ResetPasswordFormData) => {
         console.log('Reset Password Form Data:', data);
     };
 
