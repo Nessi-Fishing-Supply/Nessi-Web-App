@@ -4,7 +4,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import Input from '@components/controls/Input';
 import Checkbox from '@components/controls/Checkbox';
-import './AuthForm.scss';
 
 // Define the structure of the form data
 interface RegisterFormData {

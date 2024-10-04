@@ -3,7 +3,6 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import Input from '@components/controls/Input';
-import './AuthForm.scss';
 
 // Define the structure of the form data
 interface ForgotPasswordFormData {
