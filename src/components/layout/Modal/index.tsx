@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import ReactDOM from 'react-dom';
 import styles from './Modal.module.scss';
 import { HiOutlineX } from 'react-icons/hi';
@@ -23,19 +23,19 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  // Close the modal when clicking outside of it
-  const handleClickOutside = (event: MouseEvent) => {
+  // Memoize handleClickOutside with useCallback to avoid unnecessary re-renders
+  const handleClickOutside = useCallback((event: MouseEvent) => {
     if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
       onClose();
     }
-  };
+  }, [onClose]);
 
   useEffect(() => {
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
-  }, [isOpen, handleClickOutside],);
+  }, [isOpen, handleClickOutside]);
 
   useEffect(() => {
     if (isOpen) {
