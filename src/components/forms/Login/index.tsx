@@ -8,7 +8,7 @@ import Checkbox from '@components/controls/Checkbox';
 import AppleIcon from '@icons/apple.svg';
 import GoogleIcon from '@icons/google.svg';
 import FacebookIcon from '@icons/facebook.svg';
-import Divider from '@components/Divider';
+import Divider from '@components/layout/Divider';
 import AppLink from '@components/controls/AppLink';
 
 interface LoginFormData {

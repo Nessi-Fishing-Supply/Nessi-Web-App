@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './marketplace.module.css';
-import Navbar from '@components/Navbar';
+import Navbar from '@components/navigation/Navbar';
 
 export default function Marketplace() {
   return (

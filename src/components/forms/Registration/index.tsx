@@ -8,8 +8,8 @@ import AppleIcon from '@icons/apple.svg';
 import GoogleIcon from '@icons/google.svg';
 import FacebookIcon from '@icons/facebook.svg';
 import Button from '@components/controls/Button';
-import Grid from '@components/Grid';
-import Divider from '@components/Divider';
+import Grid from '@components/layout/Grid';
+import Divider from '@components/layout/Divider';
 
 interface RegisterFormData {
   firstName: string;
