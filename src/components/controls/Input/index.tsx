@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import styles from './Input.module.scss';
-import { HiEye, HiEyeOff } from 'react-icons/hi'; // Icons for visibility toggle
+import { HiEye, HiEyeOff } from 'react-icons/hi';
 
 interface InputProps {
   name: string;
@@ -11,7 +11,7 @@ interface InputProps {
   type?: string;
   placeholder?: string;
   isRequired?: boolean;
-  showPasswordStrength?: boolean; // New prop to conditionally show the strength bar
+  showPasswordStrength?: boolean;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -22,33 +22,31 @@ const Input: React.FC<InputProps> = ({
   type = 'text',
   placeholder,
   isRequired = false,
-  showPasswordStrength = false, // Default to false
+  showPasswordStrength = false,
 }) => {
   const { control } = useFormContext();
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [passwordStrength, setPasswordStrength] = useState(0); // State to track password strength
-  const [showProgressBar, setShowProgressBar] = useState(false); // State to control the display of progress bar
+  const [passwordStrength, setPasswordStrength] = useState(0);
+  const [showProgressBar, setShowProgressBar] = useState(false);
 
-  // Toggle password visibility
   const togglePasswordVisibility = () => {
     setIsPasswordVisible((prevState) => !prevState);
   };
 
-  // Check password strength based on validation rules
   const checkPasswordStrength = (password: string) => {
     let strength = 0;
 
-    if (password.length >= 8) strength += 1; // Minimum length
-    if (/[A-Z]/.test(password)) strength += 1; // Uppercase letter
-    if (/[a-z]/.test(password)) strength += 1; // Lowercase letter
-    if (/\d/.test(password)) strength += 1; // Numeric digit
-    if (/[\W_]/.test(password)) strength += 1; // Special character
+    if (password.length >= 8) strength += 1;
+    if (/[A-Z]/.test(password)) strength += 1;
+    if (/[a-z]/.test(password)) strength += 1;
+    if (/\d/.test(password)) strength += 1;
+    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength += 1;
 
-    setPasswordStrength(strength); // Set strength score (0-4)
+    if (strength > 4) strength = 4;
+    setPasswordStrength(strength);
   };
 
-  // Get class based on password strength
   const getStrengthClass = () => {
     switch (passwordStrength) {
       case 0:
@@ -74,7 +72,7 @@ const Input: React.FC<InputProps> = ({
           {label && (
             <label className={styles.label} htmlFor={name}>
               {label}
-              {isRequired && <span>*</span>} {/* Required indicator */}
+              {isRequired && <span>*</span>}
             </label>
           )}
           <div className={`${styles.container} 
@@ -92,20 +90,19 @@ const Input: React.FC<InputProps> = ({
               onBlur={(e) => {
                 setIsFocused(false);
                 if (!e.target.value) {
-                  setShowProgressBar(false); // Hide progress bar if the input is empty
+                  setShowProgressBar(false);
                 }
               }}
               onChange={(e) => {
-                field.onChange(e); // React Hook Form's event handler
+                field.onChange(e);
                 if (type === 'password' && showPasswordStrength) {
-                  checkPasswordStrength(e.target.value); // Check strength if password
-                  setShowProgressBar(!!e.target.value); // Show progress bar if there's a value
+                  checkPasswordStrength(e.target.value);
+                  setShowProgressBar(!!e.target.value);
                 }
               }}
             />
             {icon && <span className={styles.icon}>{icon}</span>}
 
-            {/* Password visibility toggle */}
             {type === 'password' && (
               <button
                 type="button"
@@ -118,12 +115,11 @@ const Input: React.FC<InputProps> = ({
             )}
           </div>
 
-          {/* Password strength progress bar, shown only after typing */}
           {showPasswordStrength && showProgressBar && (
             <div className={styles.passwordStrengthBar}>
               <div
-                className={`${styles.passwordStrengthProgress} ${getStrengthClass()}`} // Add strength class dynamically
-                style={{ width: `${(passwordStrength / 4) * 100}%` }} // Divided by 4 since we removed "Very Weak"
+                className={`${styles.passwordStrengthProgress} ${getStrengthClass()}`}
+                style={{ width: `${(passwordStrength / 4) * 100}%` }}
               />
               <small className={styles.passwordStrengthText}>
                 {passwordStrength === 0 || passwordStrength === 1 && 'Weak'}

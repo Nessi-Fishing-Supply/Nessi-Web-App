@@ -3,6 +3,7 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import Input from '@components/controls/Input';
+import Button from '@components/controls/Button';
 
 // Define the structure of the form data
 interface ForgotPasswordFormData {
@@ -23,8 +24,13 @@ const ForgotPasswordForm: React.FC<{ onSubmit: (data: ForgotPasswordFormData) =>
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onSubmit)} className="authForm">
-        <Input name="email" label="Email" type="email" placeholder="Enter your email" />
-        <button type="submit" className="submitButton">Send Reset Link</button>
+        <Input name="email" label="Email" type="email" placeholder="Enter your email" isRequired />
+        <Button
+          type="submit"
+          fullWidth={true}
+          onClick={() => console.log('Submit Form')}>
+          Send Reset Link
+        </Button>
       </form>
     </FormProvider>
   );

@@ -5,8 +5,10 @@ export default function Home() {
   return (
     <div>
       <main>
-        <h1>Home page</h1>
+        <h1>Home</h1>
         <Link href="/components">View Components</Link>
+        <Link href="/forgot-password">Forgot Password</Link>
+        <Link href="/reset-password">Reset Password</Link>
       </main>
     </div>
   );

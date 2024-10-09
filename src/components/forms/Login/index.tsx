@@ -43,7 +43,7 @@ const LoginForm: React.FC<{ onSubmit: (data: LoginFormData) => void }> = ({ onSu
           Submit
         </Button>
         <div className="passwordLink">
-          <Link href="#">
+          <Link href="/fogot-password">
             Forgot your password?
           </Link>
         </div>

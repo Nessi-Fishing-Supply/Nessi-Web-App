@@ -51,7 +51,9 @@ export default function Navbar() {
     <nav>
       <NotificationBar />
       <div className={styles.container}>
-        <LogoFull className={styles.logo} />
+        <Link href="/">
+          <LogoFull className={styles.logo} />
+        </Link>
         <form className={styles.form}>
           <input type="search" placeholder="Search Fishing Gear"></input>
           <button className={styles.form__button} type="submit">
