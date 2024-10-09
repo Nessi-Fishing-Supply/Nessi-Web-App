@@ -4,23 +4,25 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import Input from '@components/controls/Input';
 import Checkbox from '@components/controls/Checkbox';
+import AppleIcon from '@icons/apple.svg';
+import GoogleIcon from '@icons/google.svg';
+import FacebookIcon from '@icons/facebook.svg';
+import Button from '@components/controls/Button';
 
-// Define the structure of the form data
 interface RegisterFormData {
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
-  confirmPassword: string;
   terms: boolean;
 }
 
 const RegisterForm: React.FC<{ onSubmit: (data: RegisterFormData) => void }> = ({ onSubmit }) => {
-  // Scoped validation schema
   const registrationSchema = Yup.object().shape({
+    firstName: Yup.string().required('First Name is required'),
+    lastName: Yup.string().required('Last Name is required'),
     email: Yup.string().email('Invalid email address').required('Email is required'),
     password: Yup.string().min(8, 'Password must be at least 8 characters').required('Password is required'),
-    confirmPassword: Yup.string()
-      .oneOf([Yup.ref('password')], 'Passwords must match')
-      .required('Confirm Password is required'),
     terms: Yup.bool().oneOf([true], 'You must accept the terms and conditions').required(),
   });
 
@@ -32,11 +34,56 @@ const RegisterForm: React.FC<{ onSubmit: (data: RegisterFormData) => void }> = (
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onSubmit)} className="authForm">
-        <Input name="email" label="Email" type="email" placeholder="Enter your email" />
-        <Input name="password" label="Password" type="password" placeholder="Enter your password" />
-        <Input name="confirmPassword" label="Confirm Password" type="password" placeholder="Confirm your password" />
-        <Checkbox name="terms" label="I accept the terms and conditions" />
-        <button type="submit" className="submitButton">Register</button>
+        <div className="simpleGrid">
+          <Input name="firstName" label="First Name" type="text" isRequired />
+          <Input name="lastName" label="Last Name" type="text" isRequired />
+        </div>
+        <Input name="email" label="Email" type="email" isRequired />
+        <Input name="password" label="Password" type="password" showPasswordStrength isRequired />
+        <Checkbox name="terms" label="I accept the terms and conditions" isRequired />
+        <Button
+          type="submit"
+          fullWidth
+          onClick={() => console.log('Submit Form')}>
+          Sign Up
+        </Button>
+        <div className="divider">
+          <hr />
+          <p>OR</p>
+          <hr />
+        </div>
+        <Button
+          style="dark"
+          outline
+          fullWidth
+          round
+          marginBottom
+          icon={<GoogleIcon />}
+          iconPosition='left'
+          onClick={() => console.log('Google SSO')}>
+          Continue with Google
+        </Button>
+        <Button
+          style="dark"
+          outline
+          fullWidth
+          round
+          marginBottom
+          icon={<FacebookIcon />}
+          iconPosition='left'
+          onClick={() => console.log('Facebook SSO')}>
+          Continue with Facebook
+        </Button>
+        <Button
+          style="dark"
+          outline
+          fullWidth
+          round
+          icon={<AppleIcon />}
+          iconPosition='left'
+          onClick={() => console.log('Apple SSO')}>
+          Continue with Apple
+        </Button>
       </form>
     </FormProvider>
   );

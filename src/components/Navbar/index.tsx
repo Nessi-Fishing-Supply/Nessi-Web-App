@@ -11,17 +11,39 @@ import { useState } from 'react';
 import Modal from '@components/Modal';
 import LoginForm from '@components/forms/Login';
 import Button from '@components/controls/Button';
+import RegisterForm from '@components/forms/Registration';
 
 export default function Navbar() {
-  const [isModalOpen, setModalOpen] = useState<boolean>(false);
-  const toggleModal = () => setModalOpen((prev) => !prev);
+  const [isLoginModalOpen, setLoginModalOpen] = useState<boolean>(false);
+  const [isRegisterModalOpen, setRegisterModalOpen] = useState<boolean>(false);
+
+  const toggleLoginModal = () => {
+    setLoginModalOpen(prev => !prev);
+    if (isRegisterModalOpen) setRegisterModalOpen(false); // Close Register modal if open
+  };
+
+  const toggleRegisterModal = () => {
+    setRegisterModalOpen(prev => !prev);
+    if (isLoginModalOpen) setLoginModalOpen(false); // Close Login modal if open
+  };
 
   interface LoginFormData {
     email: string;
     password: string;
   }
 
+  interface RegisterFormData {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+  }
+
   const handleLoginSubmit = (data: LoginFormData) => {
+    console.log('Login Form Data:', data);
+  };
+
+  const handleRegisterSubmit = (data: RegisterFormData) => {
     console.log('Login Form Data:', data);
   };
 
@@ -37,7 +59,7 @@ export default function Navbar() {
           </button>
         </form>
         <button className={styles.button}>Sell Your Gear</button>
-        <button onClick={toggleModal} className={styles.link}>Sign Up / Log In</button>
+        <button onClick={toggleLoginModal} className={styles.link}>Sign Up / Log In</button>
         <HiOutlineShoppingBag className={styles.icon} />
       </div>
       <div className={styles.categories}>
@@ -54,20 +76,24 @@ export default function Navbar() {
       </div>
 
       {/* Login Modal */}
-      <Modal isOpen={isModalOpen} onClose={toggleModal} >
+      <Modal isOpen={isLoginModalOpen} onClose={toggleLoginModal} >
         <div className={styles.modalHeader}>
           <h6>Log In</h6>
           <Button
             style="dark"
-            round={true}
-            outline={true}
-            onClick={function (): void {
-              throw new Error('Function not implemented.');
-            }}>
+            round
+            outline
+            onClick={toggleRegisterModal}>
             Register
           </Button>
         </div>
         <LoginForm onSubmit={handleLoginSubmit} />
+      </Modal>
+
+      {/* Register Modal */}
+      <Modal isOpen={isRegisterModalOpen} onClose={toggleRegisterModal}>
+        <h6>Create Your Account</h6>
+        <RegisterForm onSubmit={handleRegisterSubmit}></RegisterForm>
       </Modal>
     </nav>
   );

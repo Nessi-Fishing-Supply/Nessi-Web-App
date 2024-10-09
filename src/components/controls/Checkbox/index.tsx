@@ -6,16 +6,17 @@ import { HiOutlineCheck } from 'react-icons/hi';
 interface CheckboxProps {
   name: string;
   label: string;
+  isRequired?: boolean;
 }
 
-const Checkbox: React.FC<CheckboxProps> = ({ name, label }) => {
+const Checkbox: React.FC<CheckboxProps> = ({ name, label, isRequired = false }) => {
   const { control } = useFormContext();
 
   return (
     <Controller
       name={name}
       control={control}
-      render={({ field }) => (
+      render={({ field, fieldState: { error } }) => (
         <div className={styles.checkboxWrapper}>
           {/* Hidden checkbox input */}
           <input
@@ -24,14 +25,17 @@ const Checkbox: React.FC<CheckboxProps> = ({ name, label }) => {
             {...field}
             className={styles.checkboxInput}
           />
-          
+
           {/* Custom label with icon */}
           <label htmlFor={name} className={styles.checkboxLabel}>
             <span className={`${styles.customCheckbox} ${field.value ? styles.checked : ''}`}>
               {field.value && <HiOutlineCheck className={styles.checkIcon} />}
             </span>
             {label}
+            {isRequired && <span className={styles.requiredIndicator}>*</span>}
           </label>
+          
+          {error && <small className={styles.errorText}>{error.message}</small>}
         </div>
       )}
     />

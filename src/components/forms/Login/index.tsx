@@ -32,8 +32,8 @@ const LoginForm: React.FC<{ onSubmit: (data: LoginFormData) => void }> = ({ onSu
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onSubmit)} className="authForm">
-        <Input name="email" label="Email" type="email" placeholder="Enter your email" />
-        <Input name="password" label="Password" type="password" placeholder="Enter your password" />
+        <Input name="email" label="Email" type="email" isRequired />
+        <Input name="password" label="Password" type="password" isRequired />
         <Checkbox label="Stay logged in" {...methods.register('stayLoggedIn')} />
         <Button
           type="submit"

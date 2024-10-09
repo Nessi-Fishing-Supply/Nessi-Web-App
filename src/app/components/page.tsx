@@ -21,7 +21,6 @@ export default function Components() {
     interface RegisterFormData {
         email: string;
         password: string;
-        confirmPassword: string;
         terms: boolean;
     }
 

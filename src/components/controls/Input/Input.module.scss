@@ -8,6 +8,10 @@
   margin-bottom: var(--space-xs);
   font-size: var(--font-size-base);
   color: var(--color-dark);
+
+  > span {
+    color: var(--color-error);
+  }
 }
 
 .container {
@@ -85,4 +89,70 @@
   margin-top: var(--space-xs);
   font-size: var(--font-size-sm);
   color: var(--color-error);
+}
+
+// Password Specific Styles
+.toggleButton {
+  background: none;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  margin-left: var(--space-xs);
+  cursor: pointer;
+
+  > svg {
+    width: var(--space-base);
+    height: var(--space-base);
+    color: var(--color-primary);
+  }
+}
+
+.passwordStrengthBar {
+  width: 100%;
+  margin-top: var(--space-xs);
+  border-radius: var(--radius-sm);
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--space-sm);
+    background-color: var(--color-gray-200);
+    border-radius: var(--radius-sm);
+    z-index: 1;
+  }
+}
+
+.passwordStrengthProgress {
+  height: var(--space-sm);
+  border-radius: var(--radius-sm);
+  position: relative;
+  z-index: 2;
+  transition: all 0.25s ease-in-out;
+
+  &.weak {
+    background-color: var(--color-error);
+  }
+
+  &.fair {
+    background-color: var(--color-warning);
+  }
+
+  &.good {
+    background-color: var(--color-success);
+  }
+
+  &.strong {
+    background-color: var(--color-success);
+  }
+}
+
+.passwordStrengthText {
+  margin-top: var(--space-xs);
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-500);
 }
