@@ -13,11 +13,14 @@ import LoginForm from '@components/forms/Login';
 import Button from '@components/controls/Button';
 import RegisterForm from '@components/forms/Registration';
 import { useAuth } from '@context/auth';
+import Dropdown from '@components/controls/Dropdown';
+import { logout } from "@services/auth";
+import AppLink from '@components/controls/AppLink';
 
 export default function Navbar() {
   const [isLoginModalOpen, setLoginModalOpen] = useState<boolean>(false);
   const [isRegisterModalOpen, setRegisterModalOpen] = useState<boolean>(false);
-  const { isAuthenticated, userProfile } = useAuth();
+  const { isAuthenticated, userProfile, token, setAuthenticated, setToken, setUserProfile } = useAuth();
 
   const toggleLoginModal = () => {
     setLoginModalOpen(prev => !prev);
@@ -51,6 +54,17 @@ export default function Navbar() {
     setRegisterModalOpen(false);
   };
 
+  const handleLogout = async () => {
+    try {
+      if (token) {
+        await logout(token, setAuthenticated, setToken);
+        setUserProfile(null);
+      }
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
   return (
     <nav>
       <NotificationBar />
@@ -66,7 +80,11 @@ export default function Navbar() {
         </form>
         <button className={styles.button}>Sell Your Gear</button>
         {isAuthenticated && userProfile ? (
-          <p className={styles.greeting}>Hi, {userProfile.firstName}</p>
+          <Dropdown label={`Hi, ${userProfile.firstName}`}>
+            <AppLink href="/dashboard">Dashboard</AppLink>
+            <AppLink href="/dashboard/account">Account</AppLink>
+            <Button onClick={handleLogout}>Log Out</Button>
+          </Dropdown>
         ) : (
           <button onClick={toggleLoginModal} className={styles.link}>Sign Up / Log In</button>
         )}
