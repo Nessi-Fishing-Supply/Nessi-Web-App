@@ -20,6 +20,7 @@ type AppLinkProps = (InternalLinkProps | ExternalLinkProps) & {
   fullWidth?: boolean;
   center?: boolean;
   icon?: ReactNode;
+  iconPosition?: 'left' | 'right';
   children: ReactNode; 
 };
 
@@ -32,6 +33,7 @@ const AppLink: React.FC<AppLinkProps> = ({
   underline = false,
   center = false,
   icon = null,
+  iconPosition = 'left',
   ...props
 }) => {
   // Check if it's an external link
@@ -47,12 +49,15 @@ const AppLink: React.FC<AppLinkProps> = ({
     ${fullWidth ? styles.fullWidth : ''}
   `;
 
+  const iconElement = icon && <span className={styles.icon}>{icon}</span>;
+
   if (isExternal) {
     // Handle external links
     return (
       <a href={href} className={linkClassName} target="_blank" rel="noopener noreferrer" {...props}>
+        {iconPosition === 'left' && iconElement}
         {children}
-        {icon && <span className={styles.icon}>{icon}</span>}
+        {iconPosition === 'right' && iconElement}
       </a>
     );
   }
@@ -60,8 +65,9 @@ const AppLink: React.FC<AppLinkProps> = ({
   // Handle internal Next.js links
   return (
     <NextLink href={href} passHref className={linkClassName} {...props}>
+      {iconPosition === 'left' && iconElement}
       {children}
-      {icon && <span className={styles.icon}>{icon}</span>}
+      {iconPosition === 'right' && iconElement}
     </NextLink>
   );
 };

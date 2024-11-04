@@ -4,8 +4,9 @@ import React from 'react';
 import styles from './Navbar.module.scss';
 import NotificationBar from '@components/navigation/NotificationBar';
 import LogoFull from '@logos/logo_full.svg';
-import { HiOutlineShoppingBag } from 'react-icons/hi';
+import { HiBell, HiOutlineShoppingBag, HiUser, HiOutlineHome } from 'react-icons/hi';
 import { HiSearch } from 'react-icons/hi';
+import { HiOutlineCog, HiOutlineUserCircle } from 'react-icons/hi'; // Import the icons
 import Link from 'next/link';
 import { useState } from 'react';
 import Modal from '@components/layout/Modal';
@@ -13,7 +14,7 @@ import LoginForm from '@components/forms/Login';
 import Button from '@components/controls/Button';
 import RegisterForm from '@components/forms/Registration';
 import { useAuth } from '@context/auth';
-import Dropdown from '@components/controls/Dropdown';
+import { Dropdown, DropdownItem, DropdownTitle } from '@components/controls/Dropdown';
 import { logout } from "@services/auth";
 import AppLink from '@components/controls/AppLink';
 
@@ -79,11 +80,28 @@ export default function Navbar() {
           </button>
         </form>
         <button className={styles.button}>Sell Your Gear</button>
+
+        {/* If Auth */}
+        {isAuthenticated && (
+        <HiBell className={styles.icon} />
+        )}
         {isAuthenticated && userProfile ? (
-          <Dropdown label={`Hi, ${userProfile.firstName}`}>
-            <AppLink href="/dashboard">Dashboard</AppLink>
-            <AppLink href="/dashboard/account">Account</AppLink>
-            <Button onClick={handleLogout}>Log Out</Button>
+          <Dropdown icon={<HiUser />}>
+            <DropdownItem isClickable={false}>
+              <p>{userProfile.firstName + ' ' + userProfile.lastName}</p>
+            </DropdownItem>
+            <DropdownTitle>
+              <p>My Account</p>
+            </DropdownTitle>
+            <DropdownItem>
+              <AppLink href="/dashboard" icon={<HiOutlineHome />}>Dashboard</AppLink>
+            </DropdownItem>
+            <DropdownItem>
+              <AppLink href="/dashboard/account" icon={<HiOutlineUserCircle />}>Account</AppLink>
+            </DropdownItem>
+            <DropdownItem>
+              <Button onClick={handleLogout} fullWidth>Log Out</Button>
+            </DropdownItem>
           </Dropdown>
         ) : (
           <button onClick={toggleLoginModal} className={styles.link}>Sign Up / Log In</button>

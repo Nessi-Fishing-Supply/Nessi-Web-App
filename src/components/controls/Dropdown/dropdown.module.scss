@@ -3,28 +3,60 @@
   display: inline-block;
 }
 
-.dropdownToggle {
-  background-color: #f9f9f9;
-  border: 1px solid #ccc;
-  padding: 10px;
+.trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  padding: 0;
   cursor: pointer;
+
+  svg {
+    width: var(--space-lg);
+    height: var(--space-lg);
+  }
 }
 
-.dropdownMenu {
+.menu {
   display: block;
   position: absolute;
-  background-color: #f9f9f9;
-  min-width: 160px;
+  top: var(--space-2xl);
+  background-color: var(--color-white);
+  border-radius: var(--radius-md);
+  min-width: 200px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 1;
+
+  p {
+    margin: 0;
+  }
 }
 
-.dropdownMenu > * {
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
+.dropdownItem {
+  cursor: pointer;
+  padding: var(--space-sm) var(--space-base) 0 var(--space-base);
+
+  &:last-child {
+    margin-bottom: var(--space-sm)
+  };
 }
 
-.dropdownMenu > *:hover {
-  background-color: #f1f1f1;
+.dropdownTitle {
+  border-top: solid 1px var(--color-gray-100);
+
+  > p {
+    padding: var(--space-sm) var(--space-base) 0 var(--space-base);
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-600);
+  }
+}
+
+.dropdownItemNoClick {
+  cursor: default;
+  color: var(--color-dark);
+  margin: 0;
+  padding: var(--space-sm) var(--space-base);
 }
