@@ -23,9 +23,14 @@ export const login = async (data: { email: string; password: string; }) => {
   return response.data;
 };
 
-export const forgotPassword = async (data: { email: string }) => {
-  const response = await axiosInstance.post('/auth/forgot-password', data);
-  return response.data;
+export const forgotPassword = async (data: { email: string }): Promise<{ success: boolean; message: string }> => {
+  try {
+    const response = await axiosInstance.post('/auth/forgot-password', data);
+    return { success: true, message: response.data.message };
+  } catch (error) {
+    console.error('Error sending forgot password email:', error);
+    return { success: false, message: 'Failed to send reset link' };
+  }
 };
 
 export const resetPassword = async (data: { token: string; newPassword: string; confirmNewPassword: string }) => {

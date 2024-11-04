@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
+import { useSearchParams } from 'next/navigation';
+import { resetPassword } from '@services/auth';
 import Input from '@components/controls/Input';
 import Button from '@components/controls/Button';
 
@@ -11,7 +13,11 @@ interface ResetPasswordFormData {
   confirmPassword: string;
 }
 
-const ResetPasswordForm: React.FC<{ onSubmit: (data: ResetPasswordFormData) => void }> = ({ onSubmit }) => {
+const ResetPasswordForm: React.FC = () => {
+  const searchParams = useSearchParams();
+  const token = searchParams.get('token');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   // Scoped validation schema
   const resetPasswordSchema = Yup.object().shape({
     password: Yup.string().min(8, 'Password must be at least 8 characters').required('Password is required'),
@@ -25,6 +31,25 @@ const ResetPasswordForm: React.FC<{ onSubmit: (data: ResetPasswordFormData) => v
     mode: 'onBlur',
   });
 
+  const onSubmit = async (data: ResetPasswordFormData) => {
+    if (token) {
+      setIsLoading(true);
+      try {
+        const response = await resetPassword({
+          token,
+          newPassword: data.password,
+          confirmNewPassword: data.confirmPassword,
+        });
+        console.log('Password reset successful:', response);
+      } catch (error) {
+        console.error('Error resetting password:', error);
+      }
+      setIsLoading(false);
+    } else {
+      console.error('No token found in URL');
+    }
+  };
+
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onSubmit)} className="authForm">
@@ -33,6 +58,7 @@ const ResetPasswordForm: React.FC<{ onSubmit: (data: ResetPasswordFormData) => v
         <Button
           type="submit"
           fullWidth={true}
+          loading={isLoading}
           onClick={() => console.log('Submit Form')}>
           Update Password
         </Button>
