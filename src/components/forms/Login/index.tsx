@@ -18,10 +18,14 @@ interface LoginFormData {
   stayLoggedIn?: boolean;
 }
 
-const LoginForm: React.FC = () => {
+interface LoginFormProps {
+  onSubmit: (data: LoginFormData) => void;
+}
+
+const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
   const { setAuthenticated, setToken } = useAuth();
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // Validation schema for the form
   const loginSchema = Yup.object().shape({
@@ -35,7 +39,8 @@ const LoginForm: React.FC = () => {
     mode: 'onBlur',
   });
 
-  const onSubmit = async (data: LoginFormData) => {
+  const handleSubmit = async (data: LoginFormData) => {
+    setIsLoading(true);
     try {
       const response = await login(data);
       console.log('Login response:', response); // Log the response
@@ -48,19 +53,18 @@ const LoginForm: React.FC = () => {
       if (data.stayLoggedIn) {
         localStorage.setItem('authToken', AccessToken);
       }
-      setSuccessMessage('Login successful!');
       setErrorMessage(null);
     } catch (error) {
       console.error('Login failed:', error);
       setErrorMessage('Login failed. Please try again.');
-      setSuccessMessage(null);
     }
+    setIsLoading(false);
+    await onSubmit(data);
   };
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(onSubmit)} className="authForm">
-        {successMessage && <div className="successMessage">{successMessage}</div>}
+      <form onSubmit={methods.handleSubmit(handleSubmit)} className="authForm">
         {errorMessage && <div className="errorMessage">{errorMessage}</div>}
         <Input name="email" label="Email" type="email" isRequired />
         <Input name="password" label="Password" type="password" isRequired />
@@ -70,6 +74,7 @@ const LoginForm: React.FC = () => {
           type="submit"
           fullWidth
           marginBottom
+          loading={isLoading}
           onClick={() => console.log('Submit Form')}>
           Submit
         </Button>

@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import '@styles/main.scss';
 import Navbar from "@components/navigation/Navbar";
 import { AuthProvider } from '@context/auth';
+import VerifyEmailBanner from "@components/banners/VerifyEmail";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -26,6 +27,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <AuthProvider>
           <Navbar />
+          <VerifyEmailBanner />
           {children}
           <div id="modal-root"></div>
         </AuthProvider>

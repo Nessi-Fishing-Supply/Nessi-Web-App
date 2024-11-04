@@ -21,9 +21,9 @@ interface RegisterFormData {
 }
 
 const RegisterForm: React.FC<{ onSubmit: (data: RegisterFormData) => void }> = ({ onSubmit }) => {
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { setAuthenticated, setToken } = useAuth();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const registrationSchema = Yup.object().shape({
     firstName: Yup.string().required('First Name is required'),
@@ -39,10 +39,10 @@ const RegisterForm: React.FC<{ onSubmit: (data: RegisterFormData) => void }> = (
   });
 
   const handleSubmit = async (data: RegisterFormData) => {
+    setIsLoading(true);
     try {
       const response = await registerUser(data);
       console.log('Registration successful:', response);
-      setSuccessMessage('Registration successful!');
       setErrorMessage(null);
       setAuthenticated(true);
       setToken(response.loginResponse.AccessToken);
@@ -50,14 +50,14 @@ const RegisterForm: React.FC<{ onSubmit: (data: RegisterFormData) => void }> = (
     } catch (error) {
       console.error('Registration failed:', error);
       setErrorMessage('Registration failed. Please try again.');
-      setSuccessMessage(null);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(handleSubmit)} className="authForm">
-        {successMessage && <div className="successMessage">{successMessage}</div>}
         {errorMessage && <div className="errorMessage">{errorMessage}</div>}
         <Grid columns={2}>
         <Input name="firstName" label="First Name" type="text" isRequired />
@@ -70,7 +70,8 @@ const RegisterForm: React.FC<{ onSubmit: (data: RegisterFormData) => void }> = (
         <Button
           type="submit"
           fullWidth
-          onClick={() => console.log('Submit Form')}>
+          onClick={() => console.log('Submit Form')}
+          loading={isLoading}>
           Sign Up
         </Button>
         <Divider text="OR" />

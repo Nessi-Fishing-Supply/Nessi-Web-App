@@ -12,19 +12,21 @@ import Modal from '@components/layout/Modal';
 import LoginForm from '@components/forms/Login';
 import Button from '@components/controls/Button';
 import RegisterForm from '@components/forms/Registration';
+import { useAuth } from '@context/auth';
 
 export default function Navbar() {
   const [isLoginModalOpen, setLoginModalOpen] = useState<boolean>(false);
   const [isRegisterModalOpen, setRegisterModalOpen] = useState<boolean>(false);
+  const { isAuthenticated, userProfile } = useAuth();
 
   const toggleLoginModal = () => {
     setLoginModalOpen(prev => !prev);
-    if (isRegisterModalOpen) setRegisterModalOpen(false); // Close Register modal if open
+    if (isRegisterModalOpen) setRegisterModalOpen(false);
   };
 
   const toggleRegisterModal = () => {
     setRegisterModalOpen(prev => !prev);
-    if (isLoginModalOpen) setLoginModalOpen(false); // Close Login modal if open
+    if (isLoginModalOpen) setLoginModalOpen(false);
   };
 
   interface LoginFormData {
@@ -41,10 +43,12 @@ export default function Navbar() {
 
   const handleLoginSubmit = (data: LoginFormData) => {
     console.log('Login Form Data:', data);
+    setLoginModalOpen(false);
   };
 
   const handleRegisterSubmit = (data: RegisterFormData) => {
-    console.log('Login Form Data:', data);
+    console.log('Register Form Data:', data);
+    setRegisterModalOpen(false);
   };
 
   return (
@@ -61,7 +65,11 @@ export default function Navbar() {
           </button>
         </form>
         <button className={styles.button}>Sell Your Gear</button>
-        <button onClick={toggleLoginModal} className={styles.link}>Sign Up / Log In</button>
+        {isAuthenticated && userProfile ? (
+          <p className={styles.greeting}>Hi, {userProfile.firstName}</p>
+        ) : (
+          <button onClick={toggleLoginModal} className={styles.link}>Sign Up / Log In</button>
+        )}
         <HiOutlineShoppingBag className={styles.icon} />
       </div>
       <div className={styles.categories}>
