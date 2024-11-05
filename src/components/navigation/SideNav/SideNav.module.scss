@@ -1,0 +1,15 @@
+.sideNav {
+  width: 200px;
+  background-color: var(--color-light);
+  border-top: 1px solid var(--color-off-white);
+  padding: var(--space-base);
+}
+
+.sideNav ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sideNav li {
+  margin-bottom: var(--space-sm);
+}
