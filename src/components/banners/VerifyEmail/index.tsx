@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams, useRouter } from 'next/navigation';
-import { verifyEmail } from "@services/auth";
+import { verifyEmail, resendVerificationEmail } from "@services/auth";
 import { getUserProfile } from "@services/user";
 import { useAuth } from '@context/auth';
 import styles from './VerifyEmail.module.scss'
@@ -99,6 +99,18 @@ export default function VerifyEmailBanner() {
     }
   };
 
+  const handleResendVerificationEmail = async () => {
+    if (userProfile?.email) {
+      try {
+        const result = await resendVerificationEmail(userProfile.email);
+        setVerificationMessage(result.message);
+      } catch (error) {
+        console.error('Error resending verification email:', error);
+        setVerificationMessage('Failed to resend verification email. Please try again later.');
+      }
+    }
+  };
+
   return (
     <>
     <div className={styles.container}>
@@ -107,6 +119,7 @@ export default function VerifyEmailBanner() {
         <div>
           <p>{userProfile.firstName}, please complete the following:</p>
           <p>Check your email ({userProfile.email}) and click "Confirm my Email" to get full access to Nessi.</p>
+          <button onClick={handleResendVerificationEmail}>Resend Verification Email</button>
         </div>
       )}
     </div>

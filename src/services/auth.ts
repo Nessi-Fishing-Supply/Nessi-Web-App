@@ -50,6 +50,16 @@ export const verifyEmail = async (token: string): Promise<{ success: boolean; me
   }
 };
 
+export const resendVerificationEmail = async (email: string): Promise<{ success: boolean; message: string }> => {
+  try {
+    const response = await axiosInstance.post('/auth/resend-verification-email', { email });
+    return { success: true, message: response.data.message };
+  } catch (error) {
+    console.error('Error resending verification email:', error);
+    return { success: false, message: 'Failed to resend verification email' };
+  }
+};
+
 export const refreshToken = async (refreshToken: string) => {
   try {
     const response = await axiosInstance.post('/auth/refresh-token', { refreshToken });
