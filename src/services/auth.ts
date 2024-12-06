@@ -18,9 +18,11 @@ export const register = async (data: { firstName: string; lastName: string; emai
   return response.data;
 };
 
-export const login = async (data: { email: string; password: string; }) => {
+export const login = async (data: { email: string; password: string; rememberMe: boolean }) => {
   const response = await axiosInstance.post('/auth/login', data);
-  return response.data;
+  const { AccessToken, RefreshToken, ExpiresIn } = response.data;
+  const expiryTime = new Date().getTime() + ExpiresIn * 1000; // Use the actual expiration time returned by the server
+  return { AccessToken, RefreshToken, expiryTime };
 };
 
 export const forgotPassword = async (data: { email: string }): Promise<{ success: boolean; message: string }> => {
@@ -45,6 +47,19 @@ export const verifyEmail = async (token: string): Promise<{ success: boolean; me
   } catch (error) {
     console.error('Error verifying email:', error);
     return { success: false, message: 'Verification failed' };
+  }
+};
+
+export const refreshToken = async (refreshToken: string) => {
+  try {
+    const response = await axiosInstance.post('/auth/refresh-token', { refreshToken });
+    return response.data;
+  } catch (error) {
+    const err = error as any;
+    if (err.response) {
+      console.error('Error refreshing token:', err.response.data);
+    }
+    throw err;
   }
 };
 

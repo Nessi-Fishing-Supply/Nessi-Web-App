@@ -9,7 +9,7 @@ import GoogleIcon from '@icons/google.svg';
 import FacebookIcon from '@icons/facebook.svg';
 import Divider from '@components/layout/Divider';
 import AppLink from '@components/controls/AppLink';
-import { login } from '@services/auth';
+import { login, refreshToken } from '@services/auth';
 import { useAuth } from '@context/auth';
 import { useRouter } from 'next/navigation';
 
@@ -45,19 +45,54 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, onForgotPasswordClick }
   const handleSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
     try {
-      const response = await login(data);
-      console.log('Login response:', response);
-      const { AccessToken, error } = response;
-      if (error) {
-        throw new Error(error);
-      }
-      if (!AccessToken) {
-        throw new Error('AccessToken is missing in the response');
+      const response = await login({ ...data, rememberMe: data.stayLoggedIn || false });
+      const { AccessToken, RefreshToken, expiryTime } = response;
+      if (!AccessToken || !RefreshToken) {
+        throw new Error('Tokens are missing in the response');
       }
       setAuthenticated(true);
       setToken(AccessToken);
       if (data.stayLoggedIn) {
         localStorage.setItem('authToken', AccessToken);
+        localStorage.setItem('refreshToken', RefreshToken);
+        localStorage.setItem('tokenExpiry', expiryTime.toString());
+
+        // Set up token refresh logic
+        const refreshTokenBeforeExpiry = async () => {
+          const currentTime = new Date().getTime();
+          const storedExpiryTime = parseInt(localStorage.getItem('tokenExpiry') || '0', 10);
+          const timeUntilExpiry = storedExpiryTime - currentTime - 60000; // Refresh 1 minute before expiry
+
+          if (timeUntilExpiry > 0) {
+            setTimeout(async () => {
+              try {
+                const storedRefreshToken = localStorage.getItem('refreshToken');
+                if (storedRefreshToken) {
+                  const refreshResponse = await refreshToken(storedRefreshToken);
+                  const { AccessToken: newAccessToken, ExpiresIn: newExpiresIn } = refreshResponse;
+                  const newExpiryTime = new Date().getTime() + newExpiresIn * 1000;
+                  setToken(newAccessToken);
+                  localStorage.setItem('authToken', newAccessToken);
+                  localStorage.setItem('tokenExpiry', newExpiryTime.toString());
+                  refreshTokenBeforeExpiry(); // Set up the next refresh
+                }
+              } catch (refreshError) {
+                const error = refreshError as any;
+                if (error.response) {
+                  console.error('Token refresh failed:', error.response.data);
+                }
+                setAuthenticated(false);
+                setToken(null);
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('refreshToken');
+                localStorage.removeItem('tokenExpiry');
+                router.push('/login');
+              }
+            }, timeUntilExpiry);
+          }
+        };
+
+        refreshTokenBeforeExpiry();
       }
       setErrorMessage(null);
       router.push('/dashboard');
@@ -75,14 +110,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, onForgotPasswordClick }
         {errorMessage && <div className="errorMessage">{errorMessage}</div>}
         <Input name="email" label="Email" type="email" isRequired />
         <Input name="password" label="Password" type="password" isRequired />
-        {/* TODO: Add Stay Logged In Logic */}
-        {/* <Checkbox label="Stay logged in" {...methods.register('stayLoggedIn')} /> */}
+        <Checkbox label="Stay logged in" {...methods.register('stayLoggedIn')} />
         <Button
           type="submit"
           fullWidth
           marginBottom
-          loading={isLoading}
-          onClick={() => console.log('Submit Form')}>
+          loading={isLoading}>
           Submit
         </Button>
         <AppLink fullWidth center underline size="sm" href="/forgot-password" onClick={onForgotPasswordClick}>
@@ -96,8 +129,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, onForgotPasswordClick }
           round
           marginBottom
           icon={<GoogleIcon />}
-          iconPosition='left'
-          onClick={() => console.log('Google SSO')}>
+          iconPosition='left'>
           Continue with Google
         </Button>
         <Button
@@ -106,8 +138,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, onForgotPasswordClick }
           fullWidth
           round
           icon={<FacebookIcon />}
-          iconPosition='left'
-          onClick={() => console.log('Facebook SSO')}>
+          iconPosition='left'>
           Continue with Facebook
         </Button>
       </form>
