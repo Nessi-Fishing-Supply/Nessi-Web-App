@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import styles from './Input.module.scss';
 import { HiEye, HiEyeOff } from 'react-icons/hi';
+import { FaCheckCircle } from 'react-icons/fa';
 
 interface InputProps {
   name: string;
@@ -29,6 +30,13 @@ const Input: React.FC<InputProps> = ({
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [showProgressBar, setShowProgressBar] = useState(false);
+  const [passwordRequirements, setPasswordRequirements] = useState({
+    length: false,
+    uppercase: false,
+    lowercase: false,
+    number: false,
+    specialChar: false,
+  });
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible((prevState) => !prevState);
@@ -36,12 +44,21 @@ const Input: React.FC<InputProps> = ({
 
   const checkPasswordStrength = (password: string) => {
     let strength = 0;
+    const requirements = {
+      length: password.length >= 8,
+      uppercase: /[A-Z]/.test(password),
+      lowercase: /[a-z]/.test(password),
+      number: /\d/.test(password),
+      specialChar: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+    };
 
-    if (password.length >= 8) strength += 1;
-    if (/[A-Z]/.test(password)) strength += 1;
-    if (/[a-z]/.test(password)) strength += 1;
-    if (/\d/.test(password)) strength += 1;
-    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength += 1;
+    setPasswordRequirements(requirements);
+
+    if (requirements.length) strength += 1;
+    if (requirements.uppercase) strength += 1;
+    if (requirements.lowercase) strength += 1;
+    if (requirements.number) strength += 1;
+    if (requirements.specialChar) strength += 1;
 
     if (strength > 4) strength = 4;
     setPasswordStrength(strength);
@@ -117,18 +134,37 @@ const Input: React.FC<InputProps> = ({
           </div>
 
           {showPasswordStrength && showProgressBar && (
-            <div className={styles.passwordStrengthBar}>
-              <div
-                className={`${styles.passwordStrengthProgress} ${getStrengthClass()}`}
-                style={{ width: `${(passwordStrength / 4) * 100}%` }}
-              />
-              <small className={styles.passwordStrengthText}>
-                {passwordStrength === 0 || passwordStrength === 1 && 'Weak'}
-                {passwordStrength === 2 && 'Fair'}
-                {passwordStrength === 3 && 'Good'}
-                {passwordStrength === 4 && 'Strong'}
-              </small>
-            </div>
+            <>
+              <div className={styles.passwordStrengthBar}>
+                <div
+                  className={`${styles.passwordStrengthProgress} ${getStrengthClass()}`}
+                  style={{ width: `${(passwordStrength / 4) * 100}%` }}
+                />
+                <small className={styles.passwordStrengthText}>
+                  {passwordStrength === 0 || passwordStrength === 1 && 'Weak'}
+                  {passwordStrength === 2 && 'Fair'}
+                  {passwordStrength === 3 && 'Good'}
+                  {passwordStrength === 4 && 'Strong'}
+                </small>
+              </div>
+              <ul className={styles.passwordRequirements}>
+                <li>
+                  At least 8 characters {passwordRequirements.length && <FaCheckCircle className={styles.checkIcon} />}
+                </li>
+                <li>
+                  At least one uppercase letter {passwordRequirements.uppercase && <FaCheckCircle className={styles.checkIcon} />}
+                </li>
+                <li>
+                  At least one lowercase letter {passwordRequirements.lowercase && <FaCheckCircle className={styles.checkIcon} />}
+                </li>
+                <li>
+                  At least one number {passwordRequirements.number && <FaCheckCircle className={styles.checkIcon} />}
+                </li>
+                <li>
+                  At least one special character {passwordRequirements.specialChar && <FaCheckCircle className={styles.checkIcon} />}
+                </li>
+              </ul>
+            </>
           )}
 
           {helperText && !error && <small className={styles.helperText}>{helperText}</small>}
