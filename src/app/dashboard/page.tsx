@@ -1,4 +1,8 @@
+"use client"
+
 import React from 'react';
+import { withAuth } from '@context/auth';
+
 
 const Dashboard: React.FC = () => {
   return (
@@ -9,4 +13,4 @@ const Dashboard: React.FC = () => {
   );
 };
 
-export default Dashboard;
+export default withAuth(Dashboard);

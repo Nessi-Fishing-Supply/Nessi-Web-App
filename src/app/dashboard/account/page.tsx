@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect } from 'react';
-import { useAuth } from '@context/auth';
+import { useAuth, withAuth } from '@context/auth';
 import { getUserProfile } from '@services/user';
 import { logout } from '@services/auth';
 
@@ -59,4 +59,4 @@ const Account: React.FC = () => {
   );
 };
 
-export default Account;
+export default withAuth(Account);

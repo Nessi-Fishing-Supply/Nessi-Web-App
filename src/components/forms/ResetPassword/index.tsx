@@ -42,7 +42,7 @@ const ResetPasswordForm: React.FC = () => {
           confirmNewPassword: data.confirmPassword,
         });
         console.log('Password reset successful:', response);
-        router.push('/?login=true'); // Updated to use router.push
+        router.push('/?login=true');
       } catch (error) {
         console.error('Error resetting password:', error);
       }
