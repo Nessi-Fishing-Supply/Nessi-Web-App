@@ -24,7 +24,7 @@ export default function Navbar() {
   const [isRegisterModalOpen, setRegisterModalOpen] = useState<boolean>(false);
   const { isAuthenticated, userProfile, token, setAuthenticated, setToken, setUserProfile } = useAuth();
   const searchParams = useSearchParams();
-  const loginQuery = searchParams.get('login');
+  const loginQuery = searchParams ? searchParams.get('login') : null;
 
   React.useEffect(() => {
     if (loginQuery === 'true') {

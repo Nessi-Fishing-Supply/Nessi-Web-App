@@ -17,7 +17,7 @@ const ResetPasswordForm: React.FC = () => {
   const searchParams = useSearchParams();
   const router = useRouter(); // Added useRouter hook
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const token = searchParams.get('token');
+  const token = searchParams ? searchParams.get('token') : null;
 
   // Scoped validation schema
   const resetPasswordSchema = Yup.object().shape({

@@ -46,8 +46,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, onForgotPasswordClick }
     setIsLoading(true);
     try {
       const response = await login(data);
-      console.log('Login response:', response); // Log the response
-      const { AccessToken } = response;
+      console.log('Login response:', response);
+      const { AccessToken, error } = response;
+      if (error) {
+        throw new Error(error);
+      }
       if (!AccessToken) {
         throw new Error('AccessToken is missing in the response');
       }
@@ -58,12 +61,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, onForgotPasswordClick }
       }
       setErrorMessage(null);
       router.push('/dashboard');
-    } catch (error) {
+      await onSubmit(data);
+    } catch (error: any) {
       console.error('Login failed:', error);
-      setErrorMessage('Login failed. Please try again.');
+      setErrorMessage(error.response?.data?.message || 'Login failed. Please try again.');
     }
     setIsLoading(false);
-    await onSubmit(data);
   };
 
   return (
