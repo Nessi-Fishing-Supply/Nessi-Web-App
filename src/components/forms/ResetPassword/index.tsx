@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation'; // Updated import
 import { resetPassword } from '@services/auth';
 import Input from '@components/controls/Input';
 import Button from '@components/controls/Button';
@@ -15,8 +15,9 @@ interface ResetPasswordFormData {
 
 const ResetPasswordForm: React.FC = () => {
   const searchParams = useSearchParams();
-  const token = searchParams.get('token');
+  const router = useRouter(); // Added useRouter hook
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const token = searchParams.get('token');
 
   // Scoped validation schema
   const resetPasswordSchema = Yup.object().shape({
@@ -41,6 +42,7 @@ const ResetPasswordForm: React.FC = () => {
           confirmNewPassword: data.confirmPassword,
         });
         console.log('Password reset successful:', response);
+        router.push('/?login=true'); // Updated to use router.push
       } catch (error) {
         console.error('Error resetting password:', error);
       }
@@ -58,8 +60,7 @@ const ResetPasswordForm: React.FC = () => {
         <Button
           type="submit"
           fullWidth={true}
-          loading={isLoading}
-          onClick={() => console.log('Submit Form')}>
+          loading={isLoading}>
           Update Password
         </Button>
       </form>

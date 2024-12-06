@@ -11,6 +11,7 @@ import Divider from '@components/layout/Divider';
 import AppLink from '@components/controls/AppLink';
 import { login } from '@services/auth';
 import { useAuth } from '@context/auth';
+import { useRouter } from 'next/navigation';
 
 interface LoginFormData {
   email: string;
@@ -20,12 +21,14 @@ interface LoginFormData {
 
 interface LoginFormProps {
   onSubmit: (data: LoginFormData) => void;
+  onForgotPasswordClick: () => void;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
+const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, onForgotPasswordClick }) => {
   const { setAuthenticated, setToken } = useAuth();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const router = useRouter();
 
   // Validation schema for the form
   const loginSchema = Yup.object().shape({
@@ -54,6 +57,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
         localStorage.setItem('authToken', AccessToken);
       }
       setErrorMessage(null);
+      router.push('/dashboard');
     } catch (error) {
       console.error('Login failed:', error);
       setErrorMessage('Login failed. Please try again.');
@@ -78,7 +82,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
           onClick={() => console.log('Submit Form')}>
           Submit
         </Button>
-        <AppLink fullWidth center underline size="sm" href="/forgot-password">
+        <AppLink fullWidth center underline size="sm" href="/forgot-password" onClick={onForgotPasswordClick}>
           Forgot your password?
         </AppLink>
         <Divider text="OR" />

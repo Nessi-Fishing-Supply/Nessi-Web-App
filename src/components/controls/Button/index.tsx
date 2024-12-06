@@ -4,7 +4,7 @@ import styles from './Button.module.scss';
 
 type ButtonProps = {
   children: React.ReactNode;
-  onClick: () => void;
+  onClick?: () => void;
   type?: 'button' | 'submit';
   style?: 'primary' | 'secondary' | 'dark' | 'light';
   fullWidth?: boolean;

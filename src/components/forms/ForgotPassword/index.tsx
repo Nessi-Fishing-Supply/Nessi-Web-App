@@ -39,9 +39,7 @@ const ForgotPasswordForm: React.FC = () => {
         <Button
           type="submit"
           fullWidth={true}
-          onClick={() => {}}
-          loading={isLoading}
-        >
+          loading={isLoading}>
           Send Reset Link
         </Button>
         {message && <p>{message}</p>}

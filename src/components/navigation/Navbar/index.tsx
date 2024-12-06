@@ -6,7 +6,7 @@ import NotificationBar from '@components/navigation/NotificationBar';
 import LogoFull from '@logos/logo_full.svg';
 import { HiBell, HiOutlineShoppingBag, HiUser, HiOutlineHome } from 'react-icons/hi';
 import { HiSearch } from 'react-icons/hi';
-import { HiOutlineCog, HiOutlineUserCircle } from 'react-icons/hi'; // Import the icons
+import { HiOutlineUserCircle } from 'react-icons/hi'; // Import the icons
 import Link from 'next/link';
 import { useState } from 'react';
 import Modal from '@components/layout/Modal';
@@ -17,11 +17,20 @@ import { useAuth } from '@context/auth';
 import { Dropdown, DropdownItem, DropdownTitle } from '@components/controls/Dropdown';
 import { logout } from "@services/auth";
 import AppLink from '@components/controls/AppLink';
+import { useSearchParams } from 'next/navigation';
 
 export default function Navbar() {
   const [isLoginModalOpen, setLoginModalOpen] = useState<boolean>(false);
   const [isRegisterModalOpen, setRegisterModalOpen] = useState<boolean>(false);
   const { isAuthenticated, userProfile, token, setAuthenticated, setToken, setUserProfile } = useAuth();
+  const searchParams = useSearchParams();
+  const loginQuery = searchParams.get('login');
+
+  React.useEffect(() => {
+    if (loginQuery === 'true') {
+      setLoginModalOpen(true);
+    }
+  }, [loginQuery]);
 
   const toggleLoginModal = () => {
     setLoginModalOpen(prev => !prev);
@@ -133,7 +142,7 @@ export default function Navbar() {
             Register
           </Button>
         </div>
-        <LoginForm onSubmit={handleLoginSubmit} />
+        <LoginForm onSubmit={handleLoginSubmit} onForgotPasswordClick={toggleLoginModal} />
       </Modal>
 
       {/* Register Modal */}

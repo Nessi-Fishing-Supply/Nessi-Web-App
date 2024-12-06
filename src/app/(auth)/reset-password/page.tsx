@@ -10,17 +10,13 @@ export default function ResetPassword() {
     password: string;
     confirmPassword: string;
 }
-
-  const handleForgotPasswordSubmit = (data: ResetPasswordFormData) => {
-    console.log('Forgot Password Form Data:', data);
-  };
   
   return (
     <div className={styles.container}>
       <section className={styles.form}>
         <h5>Reset Password</h5>
         <p>Enter a new password for your account.</p>
-        <ResetPasswordForm onSubmit={handleForgotPasswordSubmit} />
+        <ResetPasswordForm />
       </section>
     </div>
   );

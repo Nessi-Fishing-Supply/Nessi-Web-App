@@ -47,9 +47,9 @@ const RegisterForm: React.FC<{ onSubmit: (data: RegisterFormData) => void }> = (
       setAuthenticated(true);
       setToken(response.loginResponse.AccessToken);
       onSubmit(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Registration failed:', error);
-      setErrorMessage('Registration failed. Please try again.');
+      setErrorMessage(error.response?.data?.message || 'Registration failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
