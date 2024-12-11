@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import styles from './marketplace.module.scss';
 import Navbar from '@components/navigation/Navbar';
 import { getAllProducts } from '@services/product';
+import ProductCard from '@components/cards/ProductCard';
 
 interface Product {
   id: string;
@@ -12,6 +13,7 @@ interface Product {
   price: number;
   images: string[];
   userId: string;
+  status: string; // Add status property
 }
 
 export default function Marketplace() {
@@ -36,11 +38,11 @@ export default function Marketplace() {
       {products.length === 0 ? (
         <p>No products available.</p>
       ) : (
-        <ul>
+        <div>
           {products.map((product) => (
-            <li key={product.id}>{product.title}</li>
+            <ProductCard key={product.id} product={product} />
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );

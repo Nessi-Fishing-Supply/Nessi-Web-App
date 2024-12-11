@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '@context/auth';
 import { getProductsByUserId } from '@services/product';
 import ProductForm from '@components/forms/Product';
+import ProductCard from '@components/cards/ProductCard';
 import axios from 'axios';
 
 interface Product {
@@ -13,6 +14,7 @@ interface Product {
   price: number;
   images: string[];
   userId: string;
+  status: string;
 }
 
 const Products: React.FC = () => {
@@ -22,10 +24,8 @@ const Products: React.FC = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       if (token) {
-        console.log('Token:', token); // Log token value
         try {
           const data = await getProductsByUserId(token);
-          console.log('Fetched products:', data); // Log fetched products
           setProducts(data);
         } catch (error) {
           if (axios.isAxiosError(error) && error.response?.status === 401) {
@@ -41,7 +41,6 @@ const Products: React.FC = () => {
   }, [token]);
 
   const handleProductCreated = (products: Product[]) => {
-    console.log('Products after creation:', products); // Log products after creation
     setProducts(products);
   };
 
@@ -53,11 +52,11 @@ const Products: React.FC = () => {
       {products.length === 0 ? (
         <p>You don't have any products currently.</p>
       ) : (
-        <ul>
+        <div>
           {products.map((product) => (
-            <li key={product.id}>{product.title}</li>
+            <ProductCard key={product.id} product={product} />
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );

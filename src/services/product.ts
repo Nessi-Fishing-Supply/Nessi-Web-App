@@ -10,7 +10,7 @@ export const createProduct = async (product: {
   userId: string;
 }, token: string) => {
   const headers = {
-    Authorization: `Bearer ${token}`
+    Authorization: `${token}`
   };
   try {
     const response = await axios.post(API_URL, product, {
@@ -19,11 +19,10 @@ export const createProduct = async (product: {
     return response.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
-      console.error('Error in createProduct:', error.response ? error.response.data : error.message);
+      throw new Error(error.response ? error.response.data : error.message);
     } else {
-      console.error('Unexpected error in createProduct:', error);
+      throw new Error('Unexpected error in createProduct');
     }
-    throw error;
   }
 };
 
@@ -57,10 +56,9 @@ export const getProductsByUserId = async (token: string) => {
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error('Error in getProductsByUserId:', error.response ? error.response.data : error.message);
+      throw new Error(error.response ? error.response.data : error.message);
     } else {
-      console.error('Unexpected error in getProductsByUserId:', error as Error);
+      throw new Error('Unexpected error in getProductsByUserId');
     }
-    throw error;
   }
 };

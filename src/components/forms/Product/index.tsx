@@ -40,7 +40,6 @@ const ProductForm: React.FC<{ onProductCreated: (products: any[]) => void }> = (
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (token && userProfile) {
-      console.log('Token:', token); // Log token value
       const product = { ...newProduct, userId: userProfile.id };
       try {
         await createProduct(product, token);

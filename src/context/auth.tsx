@@ -29,7 +29,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     if (token) {
-      console.log('Setting token:', token); // Log token value
       localStorage.setItem('authToken', token);
     } else {
       localStorage.removeItem('authToken');
