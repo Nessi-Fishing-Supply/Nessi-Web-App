@@ -6,7 +6,7 @@ export const createProduct = async (product: {
   title: string;
   description: string;
   price: number;
-  images: string[];
+  images: { url: string, name: string }[];
   userId: string;
 }, token: string) => {
   const headers = {
@@ -16,7 +16,11 @@ export const createProduct = async (product: {
     const response = await axios.post(API_URL, product, {
       headers
     });
-    return response.data;
+    if (response.status === 201) {
+      return response.data;
+    } else {
+      throw new Error('Failed to create product');
+    }
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       throw new Error(error.response ? error.response.data : error.message);
@@ -28,7 +32,10 @@ export const createProduct = async (product: {
 
 export const getAllProducts = async () => {
   const response = await axios.get(API_URL);
-  return response.data;
+  return response.data.map((product: any) => ({
+    ...product,
+    images: product.images.map((url: string) => ({ image_url: url }))
+  }));
 };
 
 export const getProductById = async (id: string) => {
@@ -37,12 +44,24 @@ export const getProductById = async (id: string) => {
 };
 
 export const deleteProduct = async (id: string, token: string) => {
-  const response = await axios.delete(`${API_URL}/${id}`, {
-    headers: {
-      Authorization: `${token}`
+  const headers = {
+    Authorization: `${token}`
+  };
+  try {
+    const response = await axios.delete(`${API_URL}/${id}`, {
+      headers
+    });
+    return response.data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      if (error.response && error.response.status === 404) {
+        throw new Error('Product not found');
+      }
+      throw new Error(error.response ? error.response.data : error.message);
+    } else {
+      throw new Error('Unexpected error in deleteProduct');
     }
-  });
-  return response.data;
+  }
 };
 
 export const getProductsByUserId = async (token: string) => {
@@ -53,12 +72,38 @@ export const getProductsByUserId = async (token: string) => {
     const response = await axios.get(`${API_URL}/user`, {
       headers
     });
-    return response.data;
+    return response.data.map((product: any) => ({
+      ...product,
+      images: product.images.map((url: string) => ({ image_url: url }))
+    }));
   } catch (error) {
     if (axios.isAxiosError(error)) {
       throw new Error(error.response ? error.response.data : error.message);
     } else {
       throw new Error('Unexpected error in getProductsByUserId');
+    }
+  }
+};
+
+export const updateProduct = async (id: string, product: {
+  title?: string;
+  description?: string;
+  price?: number;
+  images?: { url: string }[];
+}, token: string) => {
+  const headers = {
+    Authorization: `${token}`
+  };
+  try {
+    const response = await axios.put(`${API_URL}/${id}`, product, {
+      headers
+    });
+    return response.data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response ? error.response.data : error.message);
+    } else {
+      throw new Error('Unexpected error in updateProduct');
     }
   }
 };

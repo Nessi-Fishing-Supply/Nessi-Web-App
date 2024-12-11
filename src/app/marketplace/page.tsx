@@ -10,10 +10,10 @@ interface Product {
   id: string;
   title: string;
   description: string;
-  price: number;
-  images: string[];
+  price: number | string;
+  images: { image_url: string }[];
   userId: string;
-  status: string; // Add status property
+  status: string;
 }
 
 export default function Marketplace() {
@@ -32,6 +32,10 @@ export default function Marketplace() {
     fetchProducts();
   }, []);
 
+  const handleProductDeleted = (id: string) => {
+    setProducts(products.filter(product => product.id !== id));
+  };
+
   return (
     <div>
       <h1 className={styles.title}>This is a marketplace page</h1>
@@ -40,7 +44,7 @@ export default function Marketplace() {
       ) : (
         <div>
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product.id} product={product} onProductDeleted={handleProductDeleted} />
           ))}
         </div>
       )}

@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { useAuth } from '@context/auth';
 import { createProduct, getProductsByUserId } from '@services/product';
 import axios from 'axios';
+import styles from './ProductForm.module.scss';
 
 const ProductForm: React.FC<{ onProductCreated: (products: any[]) => void }> = ({ onProductCreated }) => {
   const [newProduct, setNewProduct] = useState({
     title: '',
     description: '',
     price: 0,
-    images: [''],
+    images: [{ url: '', name: '' }],
     userId: ''
   });
   const { token, userProfile } = useAuth();
@@ -22,18 +23,24 @@ const ProductForm: React.FC<{ onProductCreated: (products: any[]) => void }> = (
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    const { value } = e.target;
-    setNewProduct(prevState => {
-      const images = [...prevState.images];
-      images[index] = value;
-      return { ...prevState, images };
-    });
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewProduct(prevState => {
+          const images = [...prevState.images];
+          images[index] = { url: reader.result as string, name: file.name };
+          return { ...prevState, images };
+        });
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const addImageField = () => {
     setNewProduct(prevState => ({
       ...prevState,
-      images: [...prevState.images, '']
+      images: [...prevState.images, { url: '', name: '' }]
     }));
   };
 
@@ -49,7 +56,7 @@ const ProductForm: React.FC<{ onProductCreated: (products: any[]) => void }> = (
           title: '',
           description: '',
           price: 0,
-          images: [''],
+          images: [{ url: '', name: '' }],
           userId: ''
         });
       } catch (error) {
@@ -90,11 +97,9 @@ const ProductForm: React.FC<{ onProductCreated: (products: any[]) => void }> = (
       {newProduct.images.map((image, index) => (
         <input
           key={index}
-          type="text"
-          name={`image-${index}`}
-          value={image}
+          type="file"
+          className={styles['file-input']}
           onChange={(e) => handleImageChange(e, index)}
-          placeholder="Image URL"
           required
         />
       ))}

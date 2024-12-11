@@ -11,8 +11,8 @@ interface Product {
   id: string;
   title: string;
   description: string;
-  price: number;
-  images: string[];
+  price: number | string;
+  images: { image_url: string }[];
   userId: string;
   status: string;
 }
@@ -44,6 +44,10 @@ const Products: React.FC = () => {
     setProducts(products);
   };
 
+  const handleProductDeleted = (id: string) => {
+    setProducts(products.filter(product => product.id !== id));
+  };
+
   return (
     <div>
       <h1>Products</h1>
@@ -54,7 +58,7 @@ const Products: React.FC = () => {
       ) : (
         <div>
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product.id} product={product} onProductDeleted={handleProductDeleted} />
           ))}
         </div>
       )}

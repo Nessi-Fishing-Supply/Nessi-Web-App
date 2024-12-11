@@ -1,5 +1,8 @@
 import React from 'react';
 import styles from './ProductCard.module.scss';
+import { deleteProduct } from '@services/product';
+import { useAuth } from '@context/auth';
+import axios from 'axios';
 
 interface ProductCardProps {
   product: {
@@ -7,22 +10,44 @@ interface ProductCardProps {
     title: string;
     description: string;
     price: number | string;
-    images: string[];
+    images: { image_url: string }[];
     userId: string;
     status: string;
   };
+  onProductDeleted: (id: string) => void;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, onProductDeleted = () => {} }) => {
+  const { token } = useAuth();
   const price = typeof product.price === 'number' ? product.price.toFixed(2) : parseFloat(product.price).toFixed(2);
+
+  const handleDelete = async () => {
+    if (token) {
+      try {
+        await deleteProduct(product.id, token);
+        onProductDeleted(product.id);
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          console.error('Error deleting product:', error.response ? error.response.data : error.message);
+        } else if (error instanceof Error) {
+          console.error('Unexpected error deleting product:', error.message);
+        } else {
+          console.error('Unexpected error deleting product');
+        }
+      }
+    }
+  };
 
   return (
     <div className={styles.card}>
-      {product.images.length > 0 && <img src={product.images[0]} alt={product.title} />}
+      {product.images.length > 0 && product.images.map((image, index) => (
+        <img key={index} src={image.image_url} alt={`${product.title} image ${index + 1}`} />
+      ))}
       <h2>{product.title}</h2>
       <p>{product.description}</p>
       <p>Price: ${price}</p>
       <p>Status: {product.status}</p>
+      <button onClick={handleDelete}>Delete Product</button>
     </div>
   );
 };
