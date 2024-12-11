@@ -14,6 +14,7 @@ const axiosInstance = axios.create({
 });
 
 export interface UserProfileDto {
+  userId: string;
   emailVerified: boolean;
   firstName: string;
   lastName: string;
@@ -29,7 +30,13 @@ export async function getUserProfile(token: string | null): Promise<UserProfileD
     });
 
     if (response.status === 200) {
-      return response.data;
+      return {
+        userId: response.data.userId, // Extract userId from response
+        emailVerified: response.data.emailVerified,
+        firstName: response.data.firstName,
+        lastName: response.data.lastName,
+        email: response.data.email,
+      };
     } else if (response.status === 401) {
       console.error('Unauthorized: Logging out user.');
       throw new Error('Unauthorized');

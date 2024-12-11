@@ -55,6 +55,7 @@ const Account: React.FC = () => {
         userProfile ? (
           <div>
             <h2>User Profile</h2>
+            <p>User ID: {userProfile.userId}</p>
             <p>First Name: {userProfile.firstName}</p>
             <p>Last Name: {userProfile.lastName}</p>
             <p>Email: {userProfile.email}</p>
