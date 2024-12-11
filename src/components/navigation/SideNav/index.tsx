@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './SideNav.module.scss';
-import { HiOutlineHome, HiOutlineUserCircle } from 'react-icons/hi';
+import { HiOutlineHome, HiOutlineUserCircle, HiOutlineShoppingBag } from 'react-icons/hi'; // Import the product icon
 import AppLink from '@components/controls/AppLink';
 
 const SideNav = () => {
@@ -12,6 +12,9 @@ const SideNav = () => {
         </li>
         <li>
           <AppLink href="/dashboard/account" icon={<HiOutlineUserCircle />}>Account</AppLink>
+        </li>
+        <li>
+          <AppLink href="/dashboard/products" icon={<HiOutlineShoppingBag />}>Products</AppLink> {/* Update icon here */}
         </li>
       </ul>
     </nav>

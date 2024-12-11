@@ -4,9 +4,8 @@ import React from 'react';
 import styles from './Navbar.module.scss';
 import NotificationBar from '@components/navigation/NotificationBar';
 import LogoFull from '@logos/logo_full.svg';
-import { HiBell, HiOutlineShoppingBag, HiUser, HiOutlineHome } from 'react-icons/hi';
+import { HiBell, HiOutlineShoppingBag, HiUser, HiOutlineHome, HiOutlineUserCircle } from 'react-icons/hi';
 import { HiSearch } from 'react-icons/hi';
-import { HiOutlineUserCircle } from 'react-icons/hi'; // Import the icons
 import Link from 'next/link';
 import { useState } from 'react';
 import Modal from '@components/layout/Modal';
@@ -107,6 +106,9 @@ export default function Navbar() {
             </DropdownItem>
             <DropdownItem>
               <AppLink href="/dashboard/account" icon={<HiOutlineUserCircle />}>Account</AppLink>
+            </DropdownItem>
+            <DropdownItem>
+              <AppLink href="/dashboard/products" icon={<HiOutlineShoppingBag />}>Products</AppLink> {/* Update icon here */}
             </DropdownItem>
             <DropdownItem>
               <Button onClick={handleLogout} fullWidth>Log Out</Button>

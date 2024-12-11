@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useEffect } from 'react';
-import { useAuth, withAuth } from '@context/auth';
+import { useAuth } from '@context/auth';
 import { getUserProfile } from '@services/user';
 import { logout, resendVerificationEmail } from '@services/auth';
+import axios from 'axios';
 
 const Account: React.FC = () => {
   const { isAuthenticated, token, setAuthenticated, setToken, userProfile, setUserProfile } = useAuth();
@@ -15,8 +16,10 @@ const Account: React.FC = () => {
           const profile = await getUserProfile(token);
           setUserProfile(profile);
         } catch (error) {
-          if (error instanceof Error && error.message === 'Unauthorized') {
+          if (axios.isAxiosError(error) && error.message === 'Unauthorized') {
             await handleLogout();
+          } else {
+            console.error('Unexpected error fetching user profile:', error);
           }
         }
       }
@@ -60,6 +63,7 @@ const Account: React.FC = () => {
             <p>Last Name: {userProfile.lastName}</p>
             <p>Email: {userProfile.email}</p>
             <p>Email Verified: {userProfile.emailVerified ? "Yes" : "No"}</p>
+            <p>Token: {token}</p> {/* Add this line to display the token */}
             {!userProfile.emailVerified && (
               <button onClick={handleResendVerificationEmail}>Resend Verification Email</button>
             )}
@@ -75,4 +79,4 @@ const Account: React.FC = () => {
   );
 };
 
-export default withAuth(Account);
+export default Account;

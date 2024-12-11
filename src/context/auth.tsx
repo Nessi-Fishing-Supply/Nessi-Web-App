@@ -2,7 +2,6 @@
 
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { UserProfileDto } from '@services/user';
-import { useRouter } from 'next/navigation';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -21,7 +20,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [userProfile, setUserProfile] = useState<UserProfileDto | null>(null);
 
   useEffect(() => {
-    // Initialize authentication state from local storage
     const storedToken = localStorage.getItem('authToken');
     if (storedToken) {
       setToken(storedToken);
@@ -30,8 +28,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   useEffect(() => {
-    // Persist token to local storage
     if (token) {
+      console.log('Setting token:', token); // Log token value
       localStorage.setItem('authToken', token);
     } else {
       localStorage.removeItem('authToken');
@@ -51,23 +49,4 @@ export const useAuth = (): AuthContextType => {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-};
-
-export const withAuth = (Component: React.FC) => {
-  return (props: any) => {
-    const { isAuthenticated } = useAuth();
-    const router = useRouter();
-
-    useEffect(() => {
-      if (!isAuthenticated) {
-        router.push('/?login=true');
-      }
-    }, [isAuthenticated, router]);
-
-    if (!isAuthenticated) {
-      return null;
-    }
-
-    return <Component {...props} />;
-  };
 };

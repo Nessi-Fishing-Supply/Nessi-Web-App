@@ -14,6 +14,7 @@ const axiosInstance = axios.create({
 });
 
 export interface UserProfileDto {
+  id: string;
   userId: string;
   emailVerified: boolean;
   firstName: string;
@@ -31,7 +32,8 @@ export async function getUserProfile(token: string | null): Promise<UserProfileD
 
     if (response.status === 200) {
       return {
-        userId: response.data.userId, // Extract userId from response
+        id: response.data.id,
+        userId: response.data.userId,
         emailVerified: response.data.emailVerified,
         firstName: response.data.firstName,
         lastName: response.data.lastName,
