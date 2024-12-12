@@ -14,8 +14,11 @@ export const createProduct = async (product: {
   userId: string;
 }, token: string) => {
   const formattedProduct = {
-    ...product,
-    images: product.images.map(image => ({ image_url: image.url }))
+    title: product.title,
+    description: product.description,
+    price: product.price,
+    images: product.images.map(image => ({ url: image.url, name: image.name })),
+    userId: product.userId
   };
   try {
     const response = await axios.post(API_URL, formattedProduct, {
@@ -39,7 +42,10 @@ export const getAllProducts = async () => {
   const response = await axios.get(API_URL);
   return response.data.map((product: any) => ({
     ...product,
-    images: product.images.map((image: { image_url: string }) => ({ image_url: image.image_url }))
+    images: product.images.map((image: { image_url: string, image_name: string }) => ({
+      image_url: image.image_url,
+      image_name: image.image_name
+    }))
   }));
 };
 
@@ -73,7 +79,10 @@ export const getProductsByUserId = async (token: string) => {
     });
     return response.data.map((product: any) => ({
       ...product,
-      images: product.images.map((image: { image_url: string }) => ({ image_url: image.image_url }))
+      images: product.images.map((image: { image_url: string, image_name: string }) => ({
+        image_url: image.image_url,
+        image_name: image.image_name
+      }))
     }));
   } catch (error) {
     if (axios.isAxiosError(error)) {
