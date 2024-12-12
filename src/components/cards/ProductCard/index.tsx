@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './ProductCard.module.scss';
 import { deleteProduct } from '@services/product';
 import { useAuth } from '@context/auth';
+import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
 interface ProductCardProps {
@@ -19,6 +20,7 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onProductDeleted }) => {
   const { token } = useAuth();
+  const router = useRouter();
   const price = typeof product.price === 'number' ? product.price.toFixed(2) : parseFloat(product.price).toFixed(2);
 
   const handleDelete = async () => {
@@ -38,6 +40,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onProductDeleted }) 
     }
   };
 
+  const handleViewDetails = () => {
+    router.push(`/item/${product.id}`);
+  };
+
   return (
     <div className={styles.card}>
       {product.images.length > 0 && product.images.map((image, index) => (
@@ -47,7 +53,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onProductDeleted }) 
       <p>{product.description}</p>
       <p>Price: ${price}</p>
       <p>Status: {product.status}</p>
+      <p>Id: {product.id}</p>
       <button onClick={handleDelete}>Delete Product</button>
+      <button onClick={handleViewDetails}>View Details</button>
     </div>
   );
 };

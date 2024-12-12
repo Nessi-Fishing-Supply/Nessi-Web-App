@@ -51,7 +51,15 @@ export const getAllProducts = async () => {
 
 export const getProductById = async (id: string) => {
   const response = await axios.get(`${API_URL}/${id}`);
-  return response.data;
+  const product = response.data;
+  return {
+    ...product,
+    price: parseFloat(product.price),
+    images: product.images.map((image: { image_url: string; image_name?: string }) => ({
+      image_url: image.image_url,
+      image_name: image.image_name || 'Image'
+    }))
+  };
 };
 
 export const deleteProduct = async (id: string, token: string) => {
