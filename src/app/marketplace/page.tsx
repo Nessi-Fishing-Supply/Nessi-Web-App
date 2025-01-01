@@ -2,9 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import styles from './marketplace.module.scss';
-import Navbar from '@components/navigation/Navbar';
+import Navbar from '@components/navigation/navbar';
 import { getAllProducts } from '@services/product';
-import ProductCard from '@components/cards/ProductCard';
+import ProductCard from '@components/cards/product-card';
 
 interface Product {
   id: string;

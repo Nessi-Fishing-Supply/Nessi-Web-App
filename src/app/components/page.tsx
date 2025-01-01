@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useState } from 'react';
-import Button from '@components/controls/Button';
+import Button from '@components/controls/button';
 import styles from './components.module.css';
 import { HiShoppingBag, HiArrowRight } from 'react-icons/hi';
-import ResetPasswordForm from '@components/forms/ResetPassword';
-import ForgotPasswordForm from '@components/forms/ForgotPassword';
-import LoginForm from '@components/forms/Login';
-import RegisterForm from '@components/forms/Registration';
+import ResetPasswordForm from '@components/forms/reset-password';
+import ForgotPasswordForm from '@components/forms/forgot-password';
+import LoginForm from '@components/forms/login';
+import RegisterForm from '@components/forms/registration';
 
 export default function Components() {
     const [loading, setLoading] = useState(false);

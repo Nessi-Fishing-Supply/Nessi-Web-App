@@ -1,5 +1,5 @@
 import React from 'react';
-import SideNav from '@components/navigation/SideNav';
+import SideNav from '@components/navigation/side-nav';
 import styles from './dashboard.module.scss';
 
 export default function DashboardLayout({

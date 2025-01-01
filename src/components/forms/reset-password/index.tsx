@@ -4,8 +4,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useSearchParams, useRouter } from 'next/navigation'; // Updated import
 import { resetPassword } from '@services/auth';
-import Input from '@components/controls/Input';
-import Button from '@components/controls/Button';
+import Input from '@components/controls/input';
+import Button from '@components/controls/button';
 
 // Define the structure of the form data
 interface ResetPasswordFormData {

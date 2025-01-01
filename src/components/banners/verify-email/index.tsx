@@ -7,7 +7,7 @@ import { getUserProfile } from "@services/user";
 import { useAuth } from '@context/auth';
 import styles from './VerifyEmail.module.scss'
 import { HiOutlineExclamationCircle, HiOutlineXCircle, HiOutlineCheckCircle } from 'react-icons/hi';
-import Button from '@components/controls/Button';
+import Button from '@components/controls/button';
 
 export default function VerifyEmailBanner() {
   const [verificationMessage, setVerificationMessage] = useState<string | null>(null);

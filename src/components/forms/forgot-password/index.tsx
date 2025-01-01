@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import Input from '@components/controls/Input';
-import Button from '@components/controls/Button';
+import Input from '@components/controls/input';
+import Button from '@components/controls/button';
 import { forgotPassword } from '@services/auth';
 
 // Define the structure of the form data

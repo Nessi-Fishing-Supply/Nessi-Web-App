@@ -1,6 +1,6 @@
 "use client";
 
-import AppLink from "@components/controls/AppLink";
+import AppLink from "@components/controls/app-link";
 
 export default function Home() {
 

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import styles from './ResetPassword.module.scss'
-import ResetPasswordForm from '@components/forms/ResetPassword';
+import ResetPasswordForm from '@components/forms/reset-password';
 
 export default function ResetPassword() {
 

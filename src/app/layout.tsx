@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from 'next/font/google';
 import '@styles/main.scss';
-import Navbar from "@components/navigation/Navbar";
+import Navbar from "@components/navigation/navbar";
 import { AuthProvider } from '@context/auth';
-import VerifyEmailBanner from "@components/banners/VerifyEmail";
+import VerifyEmailBanner from "@components/banners/verify-email";
 
 export const metadata: Metadata = {
   title: "Create Next App",

@@ -3,8 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@context/auth';
 import { getProductsByUserId } from '@services/product';
-import ProductForm from '@components/forms/Product';
-import ProductCard from '@components/cards/ProductCard';
+import ProductForm from '@components/forms/product';
+import ProductCard from '@components/cards/product-card';
 import axios from 'axios';
 
 interface Product {
