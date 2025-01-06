@@ -1,7 +1,8 @@
 "use client";
 
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
-import { UserProfileDto } from '@services/user';
+import { UserProfileDto, getUserProfile } from '@services/user'; // Import getUserProfile
+import axios from 'axios'; // Import axios
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -20,10 +21,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [userProfile, setUserProfile] = useState<UserProfileDto | null>(null);
 
   useEffect(() => {
+    const fetchUserProfile = async (token: string) => {
+      try {
+        const profile = await getUserProfile(token);
+        setUserProfile(profile);
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.message === 'Unauthorized') {
+          setAuthenticated(false);
+          setToken(null);
+        } else {
+          console.error('Unexpected error fetching user profile:', error);
+        }
+      }
+    };
+
     const storedToken = localStorage.getItem('authToken');
     if (storedToken) {
       setToken(storedToken);
       setAuthenticated(true);
+      fetchUserProfile(storedToken); // Fetch user profile if token exists
     }
   }, []);
 

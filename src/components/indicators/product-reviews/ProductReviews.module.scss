@@ -1,0 +1,21 @@
+.reviews {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+
+  .stars {
+    display: flex;
+    gap: var(--space-3xs);
+
+    > svg {
+      width: var(--space-sm);
+      height: var(--space-sm);
+      color: var(--color-secondary);
+    }
+  }
+
+  .text {
+    font-size: var(--font-size-xs);
+    color: var(--color-dark);
+  }
+}

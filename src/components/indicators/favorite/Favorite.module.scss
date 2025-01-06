@@ -1,0 +1,31 @@
+.favorite {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background-color: var(--color-white);
+  border-radius: var(--radius-sm);
+  width: var(--space-md);
+  height: var(--space-md);
+  transition: var(--transition-basic);
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: var(--shadow-modal);
+    transform: scale(1.1);
+
+    > svg {
+      color: var(--color-primary);
+    }
+  }
+
+  > svg {
+    color: var(--color-dark);
+    width: var(--space-base);
+    height: var(--space-base);
+
+    &.filled {
+      color: var(--color-primary);
+    }
+  }
+}
