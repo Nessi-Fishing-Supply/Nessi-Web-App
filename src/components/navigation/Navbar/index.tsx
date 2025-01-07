@@ -13,7 +13,7 @@ import LoginForm from '@components/forms/login';
 import Button from '@components/controls/button';
 import RegisterForm from '@components/forms/registration';
 import { useAuth } from '@context/auth';
-import { Dropdown, DropdownItem, DropdownTitle } from '@components/controls/dropbox';
+import { Dropdown, DropdownItem, DropdownTitle } from '@components/controls/dropdown';
 import { logout } from "@services/auth";
 import AppLink from '@components/controls/app-link';
 import { useSearchParams } from 'next/navigation';

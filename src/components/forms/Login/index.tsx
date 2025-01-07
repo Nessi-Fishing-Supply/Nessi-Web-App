@@ -77,7 +77,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, onForgotPasswordClick }
                   refreshTokenBeforeExpiry(); // Set up the next refresh
                 }
               } catch (refreshError) {
-                const error = refreshError as any;
+                const error = refreshError as { response?: { data?: { message?: string } } };
                 if (error.response) {
                   console.error('Token refresh failed:', error.response.data);
                 }
@@ -97,9 +97,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, onForgotPasswordClick }
       setErrorMessage(null);
       router.push('/dashboard');
       await onSubmit(data);
-    } catch (error: any) {
-      console.error('Login failed:', error);
-      setErrorMessage(error.response?.data?.message || 'Login failed. Please try again.');
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      console.error('Login failed:', err);
+      setErrorMessage(err.response?.data?.message || 'Login failed. Please try again.');
     }
     setIsLoading(false);
   };

@@ -1,7 +1,7 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 interface Product {
   id: string;
@@ -17,7 +17,6 @@ interface Product {
 
 const ProductClientComponent = ({ product }: { product: Product }) => {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!product) {
@@ -28,7 +27,6 @@ const ProductClientComponent = ({ product }: { product: Product }) => {
   }, [product]);
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
   if (!product) return <p>No product found</p>;
 
   return (
@@ -38,7 +36,7 @@ const ProductClientComponent = ({ product }: { product: Product }) => {
       <p>Price: ${product.price}</p>
       <div>
         {product.images.map((image, index) => (
-          <img key={index} src={image.image_url} alt={image.image_name} />
+          <Image key={index} src={image.image_url} alt={image.image_name} width={500} height={500} />
         ))}
       </div>
     </div>

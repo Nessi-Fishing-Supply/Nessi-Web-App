@@ -9,6 +9,17 @@ import axios from 'axios';
 const Account: React.FC = () => {
   const { isAuthenticated, token, setAuthenticated, setToken, userProfile, setUserProfile } = useAuth();
 
+  const handleLogout = async () => {
+    try {
+      if (token) {
+        await logout(token, setAuthenticated, setToken);
+        setUserProfile(null);
+      }
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
   useEffect(() => {
     async function fetchUserProfile() {
       if (isAuthenticated && token) {
@@ -26,18 +37,7 @@ const Account: React.FC = () => {
     }
 
     fetchUserProfile();
-  }, [isAuthenticated, token]);
-
-  const handleLogout = async () => {
-    try {
-      if (token) {
-        await logout(token, setAuthenticated, setToken);
-        setUserProfile(null);
-      }
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
-  };
+  }, [isAuthenticated, token, handleLogout, setUserProfile]);
 
   const handleResendVerificationEmail = async () => {
     if (userProfile?.email) {

@@ -6,13 +6,17 @@ const getHeaders = (token: string) => ({
   Authorization: `${token}`
 });
 
-export const createProduct = async (product: {
+export interface Product {
+  id?: string;
+  status?: string;
   title: string;
   description: string;
   price: number;
   images: { url: string, name: string }[];
   userId: string;
-}, token: string) => {
+}
+
+export const createProduct = async (product: Product, token: string) => {
   const formattedProduct = {
     title: product.title,
     description: product.description,
@@ -38,7 +42,7 @@ export const createProduct = async (product: {
   }
 };
 
-export const getAllProducts = async () => {
+export const getAllProducts = async (): Promise<Product[]> => {
   const response = await axios.get(API_URL);
   return response.data.map((product: any) => ({
     ...product,
@@ -80,7 +84,7 @@ export const deleteProduct = async (id: string, token: string) => {
   }
 };
 
-export const getProductsByUserId = async (token: string) => {
+export const getProductsByUserId = async (token: string): Promise<Product[]> => {
   try {
     const response = await axios.get(`${API_URL}/user`, {
       headers: getHeaders(token)

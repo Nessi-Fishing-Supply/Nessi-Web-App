@@ -1,9 +1,7 @@
 import React, { useEffect } from 'react';
 import styles from './ProductCard.module.scss';
-import { deleteProduct } from '@services/product';
 import { useAuth } from '@context/auth';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
 import Pill from '@components/indicators/pill';
 import { FaTruck, FaTag } from 'react-icons/fa';
 import Favorite from '@components/indicators/favorite';
@@ -13,41 +11,17 @@ import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import Image from 'next/image';
+import { Product as ProductType } from '@services/product';
 
 interface ProductCardProps {
-  product: {
-    id: string;
-    title: string;
-    description: string;
-    price: number | string;
-    images: { image_url: string }[];
-    userId: string;
-    status: string;
-  };
+  product: ProductType;
   onProductDeleted: (id: string) => void;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onProductDeleted }) => {
-  const { token, userProfile } = useAuth();
   const router = useRouter();
   const price = typeof product.price === 'number' ? `$${product.price.toFixed(2)}` : `$${parseFloat(product.price).toFixed(2)}`;
-
-  const handleDelete = async () => {
-    if (token) {
-      try {
-        await deleteProduct(product.id, token);
-        onProductDeleted(product.id);
-      } catch (error: unknown) {
-        if (axios.isAxiosError(error)) {
-          console.error('Error deleting product:', error.response ? error.response.data : error.message);
-        } else if (error instanceof Error) {
-          console.error('Unexpected error deleting product:', error.message);
-        } else {
-          console.error('Unexpected error deleting product');
-        }
-      }
-    }
-  };
 
   const handleViewDetails = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -101,7 +75,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onProductDeleted }) 
         >
           {product.images.map((image, index) => (
             <SwiperSlide key={index}>
-              <img src={image.image_url} alt={`${product.title} image ${index + 1}`} />
+              <Image src={image.image_url} alt={`${product.title} image ${index + 1}`} layout="fill" objectFit="cover" />
             </SwiperSlide>
           ))}
         </Swiper>
@@ -123,9 +97,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onProductDeleted }) 
             <p>Free Shipping</p>
           </div>
         </div>
-          {/* {userProfile?.userId === product.userId && (
-            <button onClick={handleDelete}>Delete Product</button>
-          )} */}
       </div>
     </a>
   );

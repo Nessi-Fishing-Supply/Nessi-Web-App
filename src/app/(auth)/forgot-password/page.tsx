@@ -5,10 +5,6 @@ import styles from './ForgotPassword.module.scss';
 import ForgotPasswordForm from '@components/forms/forgot-password';
 
 export default function ForgotPassword() {
-
-  interface ForgotPasswordFormData {
-    email: string;
-  }
   
   return (
     <div className={styles.container}>

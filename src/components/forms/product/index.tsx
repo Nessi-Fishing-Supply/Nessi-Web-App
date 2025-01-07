@@ -6,8 +6,9 @@ import { useForm, FormProvider } from 'react-hook-form';
 import Input from '@components/controls/input';
 import Textarea from '@components/controls/text-area';
 import Button from '@components/controls/button';
+import { Product as ProductType } from '@services/product';
 
-const ProductForm: React.FC<{ onProductCreated: (products: any[]) => void }> = ({ onProductCreated }) => {
+const ProductForm: React.FC<{ onProductCreated: (products: ProductType[]) => void }> = ({ onProductCreated }) => {
   const methods = useForm();
   const [newProduct, setNewProduct] = useState({
     title: '',
@@ -54,7 +55,7 @@ const ProductForm: React.FC<{ onProductCreated: (products: any[]) => void }> = (
       const product = { ...newProduct, userId: userProfile.id };
       try {
         await createProduct(product, token);
-        const data = await getProductsByUserId(token);
+        const data: ProductType[] = await getProductsByUserId(token);
         onProductCreated(data);
         setNewProduct({
           title: '',

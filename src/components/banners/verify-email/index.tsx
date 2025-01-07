@@ -18,56 +18,7 @@ export default function VerifyEmailBanner() {
   const [showBanner, setShowBanner] = useState<boolean>(true);
 
   // Global authentication check
-  if (!isAuthenticated) {
-    return null;
-  }
-
-  // Fetch user profile on component mount or when authentication state changes
-  useEffect(() => {
-    async function fetchUserProfile() {
-      if (isAuthenticated && token) {
-        try {
-          const profile = await getUserProfile(token);
-          if (profile) {
-            setUserProfile(profile);
-            if (profile.emailVerified) {
-              localStorage.setItem('emailVerified', 'true');
-              setShowBanner(false);
-            } else {
-              setShowBanner(true);
-            }
-          }
-        } catch (error) {
-          console.error('Error fetching user profile:', error);
-        }
-      }
-    }
-
-    if (isAuthenticated) {
-      fetchUserProfile();
-    }
-  }, [isAuthenticated, token, setUserProfile]);
-
-  // Verify email if a verification token is present in the URL
-  useEffect(() => {
-    async function verifyEmail() {
-      if (isAuthenticated && !hasRunEffect.current && !verificationInProgress) {
-        hasRunEffect.current = true;
-        const alreadyVerified = await checkIfEmailAlreadyVerified();
-        if (!alreadyVerified) {
-          const verificationToken = searchParams.get('token');
-          if (verificationToken) {
-            setVerificationInProgress(true);
-            handleEmailVerification(verificationToken);
-          }
-        }
-      }
-    }
-
-    if (isAuthenticated) {
-      verifyEmail();
-    }
-  }, [searchParams, isAuthenticated, userProfile?.emailVerified, verificationInProgress]);
+  const shouldRender = isAuthenticated;
 
   // Check if email is already verified
   const checkIfEmailAlreadyVerified = async (): Promise<boolean> => {
@@ -121,6 +72,53 @@ export default function VerifyEmailBanner() {
     }
   };
 
+  // Fetch user profile on component mount or when authentication state changes
+  useEffect(() => {
+    async function fetchUserProfile() {
+      if (isAuthenticated && token) {
+        try {
+          const profile = await getUserProfile(token);
+          if (profile) {
+            setUserProfile(profile);
+            if (profile.emailVerified) {
+              localStorage.setItem('emailVerified', 'true');
+              setShowBanner(false);
+            } else {
+              setShowBanner(true);
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching user profile:', error);
+        }
+      }
+    }
+
+    if (isAuthenticated) {
+      fetchUserProfile();
+    }
+  }, [isAuthenticated, token, setUserProfile]);
+
+  // Verify email if a verification token is present in the URL
+  useEffect(() => {
+    async function verifyEmail() {
+      if (isAuthenticated && !hasRunEffect.current && !verificationInProgress) {
+        hasRunEffect.current = true;
+        const alreadyVerified = await checkIfEmailAlreadyVerified();
+        if (!alreadyVerified) {
+          const verificationToken = searchParams.get('token');
+          if (verificationToken) {
+            setVerificationInProgress(true);
+            handleEmailVerification(verificationToken);
+          }
+        }
+      }
+    }
+
+    if (isAuthenticated) {
+      verifyEmail();
+    }
+  }, [searchParams, isAuthenticated, userProfile?.emailVerified, verificationInProgress, checkIfEmailAlreadyVerified, handleEmailVerification]);
+
   // Handle resending of verification email
   const handleResendVerificationEmail = async () => {
     if (userProfile?.email) {
@@ -144,7 +142,7 @@ export default function VerifyEmailBanner() {
     }
   }, [verificationMessage]);
 
-  if (!isAuthenticated || !showBanner) {
+  if (!shouldRender || !showBanner) {
     return null;
   }
 

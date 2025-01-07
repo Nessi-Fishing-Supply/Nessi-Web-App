@@ -25,7 +25,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       try {
         const profile = await getUserProfile(token);
         setUserProfile(profile);
-      } catch (error) {
+      } catch (error: unknown) { 
         if (axios.isAxiosError(error) && error.message === 'Unauthorized') {
           setAuthenticated(false);
           setToken(null);

@@ -13,6 +13,9 @@ const nextConfig = {
         includePaths: [path.join(__dirname, 'src/styles')],
     },
     output: 'export',
+    images: {
+        unoptimized: true,
+    },
 
     webpack(config) {
         config.module.rules.push({

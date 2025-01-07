@@ -2,25 +2,16 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@context/auth';
-import { getProductsByUserId } from '@services/product';
+import { getProductsByUserId, Product as ProductType } from '@services/product';
 import ProductForm from '@components/forms/product';
 import ProductCard from '@components/cards/product-card';
-import Button from '@components/controls/button'; // Import Button component
-import Modal from '@components/layout/modal'; // Import Modal component
+import Button from '@components/controls/button';
+import Modal from '@components/layout/modal';
 import axios from 'axios';
-
-interface Product {
-  id: string;
-  title: string;
-  description: string;
-  price: number | string;
-  images: { image_url: string }[];
-  userId: string;
-  status: string;
-}
+import Grid from '@components/layout/grid';
 
 const Products: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<ProductType[]>([]);
   const { token } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -43,7 +34,7 @@ const Products: React.FC = () => {
     fetchProducts();
   }, [token]);
 
-  const handleProductCreated = (products: Product[]) => {
+  const handleProductCreated = (products: ProductType[]) => {
     setProducts(products);
     setIsModalOpen(false);
   };
@@ -61,13 +52,13 @@ const Products: React.FC = () => {
         <ProductForm onProductCreated={handleProductCreated} />
       </Modal>
       {products.length === 0 ? (
-        <p>You don't have any products currently.</p>
+        <p>You don&#39;t have any products currently.</p>
       ) : (
-        <div>
+        <Grid columns={4}>
           {products.map((product) => (
             <ProductCard key={product.id} product={product} onProductDeleted={handleProductDeleted} />
           ))}
-        </div>
+        </Grid>
       )}
     </div>
   );

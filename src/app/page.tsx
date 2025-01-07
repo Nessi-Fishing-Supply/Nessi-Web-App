@@ -1,11 +1,9 @@
 "use client";
 
-import AppLink from "@components/controls/app-link";
 import React, { useEffect, useState } from 'react';
 import { getAllProducts } from '@services/product';
 import ProductCard from '@components/cards/product-card';
 import Grid from '@components/layout/grid';
-import styles from './Home.module.scss';
 
 interface Product {
   id: string;

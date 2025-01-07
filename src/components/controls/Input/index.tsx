@@ -30,9 +30,6 @@ const Input: React.FC<InputProps> = ({
   onChange,
 }) => {
   const formContext = useFormContext();
-  if (!formContext) {
-    return null;
-  }
   const { control } = formContext;
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -45,6 +42,10 @@ const Input: React.FC<InputProps> = ({
     number: false,
     specialChar: false,
   });
+
+  if (!formContext) {
+    return null;
+  }
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible((prevState) => !prevState);
