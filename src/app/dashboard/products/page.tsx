@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@context/auth';
 import { getProductsByUserId, Product as ProductType } from '@services/product';
-import ProductForm from '@components/forms/product';
+import ProductForm from '@components/forms/add-product';
 import ProductCard from '@components/cards/product-card';
 import Button from '@components/controls/button';
 import Modal from '@components/layout/modal';

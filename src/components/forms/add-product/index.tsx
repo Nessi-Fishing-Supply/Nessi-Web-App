@@ -8,7 +8,7 @@ import Textarea from '@components/controls/text-area';
 import Button from '@components/controls/button';
 import { Product as ProductType } from '@services/product';
 
-const ProductForm: React.FC<{ onProductCreated: (products: ProductType[]) => void }> = ({ onProductCreated }) => {
+const AddProductForm: React.FC<{ onProductCreated: (products: ProductType[]) => void }> = ({ onProductCreated }) => {
   const methods = useForm();
   const [newProduct, setNewProduct] = useState({
     title: '',
@@ -116,4 +116,4 @@ const ProductForm: React.FC<{ onProductCreated: (products: ProductType[]) => voi
   );
 };
 
-export default ProductForm;
+export default AddProductForm;
