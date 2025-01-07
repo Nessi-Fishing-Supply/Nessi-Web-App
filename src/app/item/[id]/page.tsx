@@ -1,5 +1,6 @@
 import { getProductById, getAllProducts, Product } from '@services/product';
 import ProductClientComponent from './ItemIdPage';
+import { GetStaticPropsContext } from 'next';
 
 export async function generateStaticParams() {
   const products = await getAllProducts();
@@ -8,8 +9,8 @@ export async function generateStaticParams() {
   }));
 }
 
-const ProductPage = async ({ params }: { params: { id: string } }) => {
-  const product = await getProductById(params.id);
+const ProductPage = async ({ params }: GetStaticPropsContext<{ id: string }>) => {
+  const product = await getProductById(params!.id);
 
   return <ProductClientComponent product={product} />;
 };
