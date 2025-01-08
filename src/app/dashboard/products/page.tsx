@@ -6,9 +6,9 @@ import { getProductsByUserId, Product as ProductType } from '@services/product';
 import ProductForm from '@components/forms/add-product';
 import ProductCard from '@components/cards/product-card';
 import Button from '@components/controls/button';
-import Modal from '@components/layout/modal';
+import Modal from '@components/layout/modal-temp';
 import axios from 'axios';
-import Grid from '@components/layout/grid-temp';
+import Grid from '@components/layout/grid';
 
 const Products: React.FC = () => {
   const [products, setProducts] = useState<ProductType[]>([]);

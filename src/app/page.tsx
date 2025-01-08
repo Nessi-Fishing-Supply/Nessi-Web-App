@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { getAllProducts, Product } from '@services/product';
 import ProductCard from '@components/cards/product-card';
-import Grid from '@components/layout/grid-temp';
+import Grid from '@components/layout/grid';
 
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
