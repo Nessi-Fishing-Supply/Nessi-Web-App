@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import Input from '@components/controls/input-temp';
+import Input from '@components/controls/input';
 import Button from '@components/controls/button';
 import { forgotPassword } from '@services/auth';
 
