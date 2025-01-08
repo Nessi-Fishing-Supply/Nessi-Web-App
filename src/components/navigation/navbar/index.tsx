@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import Modal from '@components/layout/modal';
 import LoginForm from '@components/forms/login';
-import Button from '@components/controls/button';
+import Button from '@components/controls/button-temp';
 import RegisterForm from '@components/forms/registration';
 import { useAuth } from '@context/auth';
 import { Dropdown, DropdownItem, DropdownTitle } from '@components/controls/dropdown';

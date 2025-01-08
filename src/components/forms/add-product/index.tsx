@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useForm, FormProvider } from 'react-hook-form';
 import Input from '@components/controls/input';
 import Textarea from '@components/controls/text-area';
-import Button from '@components/controls/button';
+import Button from '@components/controls/button-temp';
 import { Product as ProductType } from '@services/product';
 
 const AddProductForm: React.FC<{ onProductCreated: (products: ProductType[]) => void }> = ({ onProductCreated }) => {
