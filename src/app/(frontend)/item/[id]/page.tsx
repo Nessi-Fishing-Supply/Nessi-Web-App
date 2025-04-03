@@ -3,12 +3,17 @@ import ProductClientComponent from './ItemIdPage';
 import type { ProductWithImages } from '@/types/product';
 
 export async function generateStaticParams() {
-  const products = await getAllProducts();
-  return products.map((product) => ({ id: product.id }));
+  try {
+    const products = await getAllProducts();
+    return products.map((product) => ({ id: product.id }));
+  } catch (error) {
+    console.error('Failed to fetch products during build:', error);
+    return [];
+  }
 }
 
-export default async function Page({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
