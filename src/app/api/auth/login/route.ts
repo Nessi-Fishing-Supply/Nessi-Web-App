@@ -1,30 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { createSupabaseServer } from '@/libs/supabase';
+import { LoginData } from '@/types/auth';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
+// Handle user authentication and session creation
 export async function POST(req: NextRequest) {
-  const { email, password } = await req.json();
+  try {
+    const data = await req.json() as LoginData;
+    
+    if (!data.email?.trim() || !data.password?.trim()) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
 
-  if (!email || !password) {
-    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    const supabase = createSupabaseServer();
+    const { data: authData, error } = await supabase.auth.signInWithPassword({
+      email: data.email.toLowerCase(),
+      password: data.password,
+    });
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
+
+    return NextResponse.json({
+      message: 'Login successful',
+      session: authData.session,
+      user: authData.user,
+    }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 401 });
-  }
-
-  return NextResponse.json({
-    message: 'Login successful',
-    session: data.session,
-    user: data.user,
-  }, { status: 200 });
 }

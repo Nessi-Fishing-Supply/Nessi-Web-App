@@ -5,16 +5,25 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useRouter } from 'next/navigation';
-import Input from '@components/controls/input';
-import Button from '@components/controls/button';
-import { resetPassword } from '@services/auth';
+import { Input, Button } from '@/components/controls';
+import { resetPassword } from '@/services/auth';
+import { AuthFormProps } from '@/types/forms';
 
 interface ResetPasswordFormData {
   password: string;
   confirmPassword: string;
 }
 
-const ResetPasswordForm: React.FC = () => {
+/**
+ * Reset password form component
+ * Handles password update after reset request
+ * Validates password requirements and confirmation
+ * Redirects to login on success
+ */
+const ResetPasswordForm: React.FC<AuthFormProps<ResetPasswordFormData>> = ({ 
+  onSuccess, 
+  onError 
+}) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -40,8 +49,10 @@ const ResetPasswordForm: React.FC = () => {
         confirmNewPassword: data.confirmPassword,
       });
       router.push('/?login=true');
+      if (onSuccess) onSuccess(data);
     } catch (err: any) {
       setErrorMsg(err.message || 'Reset failed');
+      if (onError) onError(err);
     } finally {
       setIsLoading(false);
     }

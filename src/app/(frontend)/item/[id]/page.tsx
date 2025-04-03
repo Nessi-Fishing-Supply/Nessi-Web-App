@@ -1,4 +1,4 @@
-import { getAllProducts } from '@services/product';
+import { getAllProducts } from '@/services/product';
 import ProductClientComponent from './ItemIdPage';
 import type { ProductWithImages } from '@/types/product';
 

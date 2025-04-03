@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { useAuth } from '@context/auth';
-import { getUserProfile, logout } from '@services/auth';
+import { useAuth } from '@/context/auth';
+import { getUserProfile, logout } from '@/services/auth';
 
 const Account: React.FC = () => {
   const { isAuthenticated, setAuthenticated, setToken } = useAuth();

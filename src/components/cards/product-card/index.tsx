@@ -3,10 +3,10 @@
 import React, { useEffect } from "react";
 import styles from "./ProductCard.module.scss";
 import { useRouter } from "next/navigation";
-import Pill from "@components/indicators/pill";
+import Pill from "@/components/indicators/pill";
 import { FaTruck, FaTag } from "react-icons/fa";
-import Favorite from "@components/indicators/favorite";
-import ProductReviews from "@components/indicators/product-reviews";
+import Favorite from "@/components/indicators/favorite";
+import ProductReviews from "@/components/indicators/product-reviews";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";

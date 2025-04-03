@@ -1,19 +1,23 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import Input from '@components/controls/input';
-import Button from '@components/controls/button';
-import { forgotPassword } from '@services/auth';
+import { useFormState } from '@/hooks/useFormState';
+import { Input, Button } from '@/components/controls';
+import { forgotPassword } from '@/services/auth';
+import { AuthFormProps, ForgotPasswordFormData, AuthFormResponse } from '@/types/forms';
 
-interface ForgotPasswordFormData {
-  email: string;
-}
-
-const ForgotPasswordForm: React.FC = () => {
-  const [message, setMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+/**
+ * Forgot password form component
+ * Handles password reset request via email
+ * Validates email and provides feedback
+ * Manages loading and error states
+ */
+const ForgotPasswordForm: React.FC<AuthFormProps<ForgotPasswordFormData, AuthFormResponse>> = ({ 
+  onSuccess, 
+  onError 
+}) => {
+  const { isLoading, error, success, setLoading, setError, setSuccess } = useFormState();
 
   const schema = Yup.object().shape({
     email: Yup.string().email('Invalid email').required('Email is required'),
@@ -25,18 +29,20 @@ const ForgotPasswordForm: React.FC = () => {
   });
 
   const onSubmit = async (data: ForgotPasswordFormData) => {
-    setIsLoading(true);
-    setMessage(null);
+    setLoading(true);
+    setSuccess(null);
     setError(null);
 
     try {
       const response = await forgotPassword(data);
-      setMessage(response.message);
+      setSuccess(response.message);
+      if (onSuccess) onSuccess(response);
     } catch (err: any) {
       console.error('Forgot password error:', err);
       setError(err.message || 'Something went wrong');
+      if (onError) onError(err);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
@@ -47,7 +53,7 @@ const ForgotPasswordForm: React.FC = () => {
         <Button type="submit" fullWidth loading={isLoading}>
           Send Reset Link
         </Button>
-        {message && <p className="successMessage">{message}</p>}
+        {success && <p className="successMessage">{success}</p>}
         {error && <p className="errorMessage">{error}</p>}
       </form>
     </FormProvider>

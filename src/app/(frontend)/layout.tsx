@@ -2,9 +2,9 @@
 
 import React, { Suspense } from 'react';
 import { Inter } from 'next/font/google';
-import '@styles/globals.scss';
-import Navbar from "@components/navigation/navbar";
-import { AuthProvider } from '@context/auth';
+import '@/styles/globals.scss';
+import Navbar from "@/components/navigation/navbar";
+import { AuthProvider } from '@/context/auth';
 
 const inter = Inter({
   subsets: ['latin'],

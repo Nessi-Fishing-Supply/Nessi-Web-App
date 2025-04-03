@@ -1,51 +1,46 @@
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { RegisterData, LoginData, ResetPasswordData, AuthResponse } from '@/types/auth';
 
-// Register
-export const register = async (data: {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  terms: boolean;
-}) => {
-  const res = await fetch('/api/auth/register', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
+// Register new user
+export const register = async (data: RegisterData): Promise<AuthResponse> => {
+  try {
+    const res = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
 
-  const json = await res.json();
-  if (!res.ok) throw new Error(json.error || 'Registration failed');
-  return json;
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error || 'Registration failed');
+    return json;
+  } catch (error) {
+    throw error instanceof Error ? error : new Error('An unexpected error occurred');
+  }
 };
 
-// Login
-export const login = async (data: {
-  email: string;
-  password: string;
-  rememberMe?: boolean;
-}) => {
-  const res = await fetch('/api/auth/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  });
+// Authenticate user and create session
+export const login = async (data: LoginData) => {
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
 
-  const json = await res.json();
-  if (!res.ok) throw new Error(json.error || 'Login failed');
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error || 'Login failed');
 
-  const { session, user } = json;
-  return {
-    accessToken: session.access_token,
-    refreshToken: session.refresh_token,
-    expiresIn: session.expires_in,
-    user,
-  };
+    const { session, user } = json;
+    return {
+      accessToken: session.access_token,
+      user,
+    };
+  } catch (error) {
+    throw error instanceof Error ? error : new Error('An unexpected error occurred');
+  }
 };
 
-// Logout
+// End user session
 export const logout = async (): Promise<void> => {
   const res = await fetch('/api/auth/logout', {
     method: 'POST',
@@ -58,16 +53,20 @@ export const logout = async (): Promise<void> => {
   }
 };
 
-// Profile
+// Get current user profile
 export const getUserProfile = async () => {
-  const supabase = createClientComponentClient();
-  const { data, error } = await supabase.auth.getUser();
+  try {
+    const supabase = createClientComponentClient();
+    const { data, error } = await supabase.auth.getUser();
 
-  if (error) throw new Error(error.message);
-  return data.user;
+    if (error) throw new Error(error.message);
+    return data.user;
+  } catch (error) {
+    throw error instanceof Error ? error : new Error('Failed to fetch user profile');
+  }
 };
 
-// Forgot Password
+// Send password reset email
 export const forgotPassword = async (data: { email: string }): Promise<{ message: string }> => {
   const res = await fetch('/api/auth/forgot-password', {
     method: 'POST',
@@ -80,18 +79,19 @@ export const forgotPassword = async (data: { email: string }): Promise<{ message
   return json;
 };
 
-// Reset Password
-export const resetPassword = async (data: {
-  newPassword: string;
-  confirmNewPassword: string;
-}) => {
-  if (data.newPassword !== data.confirmNewPassword) {
-    throw new Error('Passwords do not match');
+// Update user password
+export const resetPassword = async (data: ResetPasswordData): Promise<AuthResponse> => {
+  try {
+    if (data.newPassword !== data.confirmNewPassword) {
+      throw new Error('Passwords do not match');
+    }
+
+    const supabase = createClientComponentClient();
+    const { error } = await supabase.auth.updateUser({ password: data.newPassword });
+
+    if (error) throw new Error(error.message);
+    return { message: 'Password updated successfully' };
+  } catch (error) {
+    throw error instanceof Error ? error : new Error('Failed to reset password');
   }
-
-  const supabase = createClientComponentClient();
-  const { error } = await supabase.auth.updateUser({ password: data.newPassword });
-
-  if (error) throw new Error(error.message);
-  return { message: 'Password updated successfully' };
 };

@@ -1,69 +1,54 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as Yup from 'yup';
-import Input from '@components/controls/input';
-import Checkbox from '@components/controls/checkbox';
-// import GoogleIcon from '@icons/google.svg';
-// import FacebookIcon from '@icons/facebook.svg';
-import Button from '@components/controls/button';
-import Grid from '@components/layout/grid';
-// import Divider from '@components/layout/divider';
-import { register as registerUser } from '@services/auth';
+import { registerSchema } from '@/validations/auth';
+import { RegisterData } from '@/types/auth';
+import { useFormState } from '@/hooks/useFormState';
+import { Input, Button, Checkbox } from '@/components/controls';
+import { register as registerUser } from '@/services/auth';
+import Grid from '@/components/layout/grid';
+import { AuthFormProps, RegisterFormData, AuthFormResponse } from '@/types/forms';
 
-interface RegisterFormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  terms: boolean;
-}
-
-const RegisterForm: React.FC<{ onSubmit: (data: RegisterFormData) => void }> = ({ onSubmit }) => {
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const registrationSchema = Yup.object().shape({
-    firstName: Yup.string().required('First Name is required'),
-    lastName: Yup.string().required('Last Name is required'),
-    email: Yup.string().email('Invalid email address').required('Email is required'),
-    password: Yup.string().min(8, 'Password must be at least 8 characters').required('Password is required'),
-    terms: Yup.bool().oneOf([true], 'You must accept the terms and conditions').required(),
-  });
-
-  const methods = useForm<RegisterFormData>({
-    resolver: yupResolver(registrationSchema),
+/**
+ * Registration form component
+ * Handles new user registration with email verification
+ * Collects user details and validates terms acceptance
+ * Provides success/error feedback and loading states
+ */
+const RegisterForm: React.FC<AuthFormProps<RegisterFormData, AuthFormResponse>> = ({ onSuccess, onError }) => {
+  const { isLoading, error, success, setLoading, setError, setSuccess } = useFormState();
+  
+  const methods = useForm<RegisterData>({
+    resolver: yupResolver(registerSchema),
     mode: 'onBlur',
   });
 
   const handleSubmit = async (data: RegisterFormData) => {
-    setIsLoading(true);
+    setLoading(true);
     try {
       const response = await registerUser(data);
-      console.log('Registration successful:', response);
-      setErrorMessage(null);
-      setSuccessMessage('Registration successful! Please check your inbox to verify your email before logging in.');
-      onSubmit(data);
+      setSuccess(response.message);
+      if (onSuccess) onSuccess(response);
     } catch (error: unknown) {
       console.error('Registration failed:', error);
       if (error instanceof Error) {
-        setErrorMessage(error.message);
+        setError(error.message);
       } else {
-        setErrorMessage('Registration failed. Please try again.');
+        setError('Registration failed. Please try again.');
       }
+      if (onError) onError(error);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(handleSubmit)} className="authForm">
-        {errorMessage && <div className="errorMessage">{errorMessage}</div>}
-        {successMessage && <div className="successMessage">{successMessage}</div>}
+        {error && <div className="errorMessage">{error}</div>}
+        {success && <div className="successMessage">{success}</div>}
 
         <Grid columns={2}>
           <Input name="firstName" label="First Name" type="text" isRequired />
@@ -75,30 +60,6 @@ const RegisterForm: React.FC<{ onSubmit: (data: RegisterFormData) => void }> = (
         <Button type="submit" fullWidth loading={isLoading}>
           Sign Up
         </Button>
-        {/* <Divider text="OR" />
-        <Button
-          style="dark"
-          outline
-          fullWidth
-          round
-          marginBottom
-          icon={<GoogleIcon />}
-          iconPosition="left"
-          onClick={() => console.log('Google SSO')}
-        >
-          Continue with Google
-        </Button>
-        <Button
-          style="dark"
-          outline
-          fullWidth
-          round
-          icon={<FacebookIcon />}
-          iconPosition="left"
-          onClick={() => console.log('Facebook SSO')}
-        >
-          Continue with Facebook
-        </Button> */}
       </form>
     </FormProvider>
   );

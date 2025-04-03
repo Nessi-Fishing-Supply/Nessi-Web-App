@@ -21,40 +21,10 @@
         "name": "next"
       }
     ],
-    "baseUrl": "./src",
+    "baseUrl": ".",
     "paths": {
       "@/*": [
-        "*"
-      ],
-      "@styles/*": [
-        "styles/*"
-      ],
-      "@components/*": [
-        "components/*"
-      ],
-      "@images/*": [
-        "assets/images/*"
-      ],
-      "@icons/*": [
-        "assets/icons/*"
-      ],
-      "@logos/*": [
-        "assets/logos/*"
-      ],
-      "@services/*": [
-        "services/*"
-      ],
-      "@context/*": [
-        "context/*"
-      ],
-      "@libs/*": [
-        "libs/*"
-      ],
-      "@types/*": [
-        "types/*"
-      ],
-      "@/db/schema": [
-        "db/schema"
+        "./src/*"
       ]
     },
     "target": "ES2017"

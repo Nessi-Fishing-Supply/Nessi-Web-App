@@ -1,12 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { NextResponse } from 'next/server';
+import { createSupabaseServer } from '@/libs/supabase';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
+// Handle user session termination
 export async function POST() {
+  const supabase = createSupabaseServer();
   const { error } = await supabase.auth.signOut();
 
   if (error) {

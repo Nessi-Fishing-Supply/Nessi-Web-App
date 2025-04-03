@@ -1,16 +1,16 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '@context/auth';
-import { getUserProducts } from '@services/product';
+import { useAuth } from '@/context/auth';
+import { getUserProducts } from '@/services/product';
 import type { ProductWithImages } from '@/types/product';
-import ProductForm from '@components/forms/add-product';
-import ProductCard from '@components/cards/product-card';
-import Button from '@components/controls/button';
-import Modal from '@components/layout/modal';
+import ProductForm from '@/components/forms/add-product';
+import ProductCard from '@/components/cards/product-card';
+import Button from '@/components/controls/button';
+import Modal from '@/components/layout/modal';
 import axios from 'axios';
-import Grid from '@components/layout/grid';
-import { getUserProfile } from '@services/auth';
+import Grid from '@/components/layout/grid';
+import { getUserProfile } from '@/services/auth';
 
 const Products: React.FC = () => {
   const [products, setProducts] = useState<ProductWithImages[]>([]);

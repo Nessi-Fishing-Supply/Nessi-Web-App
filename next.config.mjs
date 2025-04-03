@@ -18,31 +18,16 @@ const nextConfig = {
   },
 
   webpack(config) {
+    // SVG handling
     config.module.rules.push({
       test: /\.svg$/,
-      use: [
-        {
-          loader: '@svgr/webpack',
-          options: {
-            svgo: false,
-          },
-        },
-      ],
+      use: ['@svgr/webpack'],
     });
 
+    // Simplified aliases
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@': path.resolve(__dirname, 'src'),
-      '@styles': path.resolve(__dirname, 'src/styles'),
-      '@components': path.resolve(__dirname, 'src/components'),
-      '@images': path.resolve(__dirname, 'src/assets/images'),
-      '@icons': path.resolve(__dirname, 'src/assets/icons'),
-      '@logos': path.resolve(__dirname, 'src/assets/logos'),
-      '@services': path.resolve(__dirname, 'src/services'),
-      '@context': path.resolve(__dirname, 'src/context'),
-      '@libs': path.resolve(__dirname, 'src/libs'),
-      '@types': path.resolve(__dirname, 'src/types'),
-      '@/db/schema': path.resolve(__dirname, 'src/db/schema'),
+      '@': path.resolve(__dirname, './src'),
     };
 
     return config;

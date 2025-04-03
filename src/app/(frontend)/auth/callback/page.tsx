@@ -4,7 +4,7 @@ import React, { Suspense, useEffect, useState } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useRouter } from 'next/navigation';
 import styles from './Callback.module.scss';
-import ResetPasswordForm from '@components/forms/reset-password';
+import ResetPasswordForm from '@/components/forms/reset-password';
 
 export default function Callback() {
   const supabase = createClientComponentClient();

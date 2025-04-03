@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import styles from './Navbar.module.scss';
-import NotificationBar from '@components/navigation/notification-bar';
-import LogoFull from '@logos/logo_full.svg';
+import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import {
   HiBell,
   HiOutlineShoppingBag,
@@ -12,27 +12,34 @@ import {
   HiOutlineUserCircle,
   HiSearch,
 } from 'react-icons/hi';
-import Link from 'next/link';
-import Modal from '@components/layout/modal';
-import LoginForm from '@components/forms/login';
-import Button from '@components/controls/button';
-import RegisterForm from '@components/forms/registration';
-import { useAuth } from '@context/auth';
-import {
-  Dropdown,
-  DropdownItem,
-  DropdownTitle,
-} from '@components/controls/dropdown';
-import { logout, getUserProfile } from '@services/auth';
-import AppLink from '@components/controls/app-link';
-import { useSearchParams } from 'next/navigation';
 
+// Components
+import NotificationBar from '@/components/navigation/notification-bar';
+import Modal from '@/components/layout/modal';
+import LoginForm from '@/components/forms/login';
+import RegisterForm from '@/components/forms/registration';
+import { Input, Button, AppLink, Dropdown, DropdownItem, DropdownTitle } from '@/components/controls';
+
+// Assets
+import LogoFull from '@/assets/logos/logo_full.svg';
+
+// Auth
+import { useAuth } from '@/context/auth';
+import { logout, getUserProfile } from '@/services/auth';
+import { User } from '@supabase/supabase-js';
+
+/**
+ * Main navigation component
+ * Handles user authentication state
+ * Manages login/registration modals
+ * Provides user menu and navigation
+ */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
   const [isLoginModalOpen, setLoginModalOpen] = useState(false);
   const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
   const [registerSuccess, setRegisterSuccess] = useState(false);
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   const { isAuthenticated, setAuthenticated, setToken } = useAuth();
   const searchParams = useSearchParams();
@@ -82,6 +89,15 @@ export default function Navbar() {
     setRegisterModalOpen(prev => !prev);
     setRegisterSuccess(false);
     if (isLoginModalOpen) setLoginModalOpen(false);
+  };
+
+  const handleLoginSuccess = () => {
+    setLoginModalOpen(false);
+  };
+
+  const handleRegisterSuccess = (response: { message: string }) => {
+    setRegisterSuccess(true);
+    console.log(response.message);
   };
 
   const firstName = user?.user_metadata?.firstName ?? '';
@@ -151,8 +167,8 @@ export default function Navbar() {
           </Button>
         </div>
         <LoginForm
-          onSubmit={() => setLoginModalOpen(false)}
-          onForgotPasswordClick={toggleLoginModal}
+          onSuccess={handleLoginSuccess}
+          redirectUrl="/dashboard"
         />
       </Modal>
 
@@ -163,7 +179,7 @@ export default function Navbar() {
             Registration successful! Please check your inbox to verify your email before logging in.
           </p>
         )}
-        <RegisterForm onSubmit={() => setRegisterSuccess(true)} />
+        <RegisterForm onSuccess={handleRegisterSuccess} />
       </Modal>
     </nav>
   );

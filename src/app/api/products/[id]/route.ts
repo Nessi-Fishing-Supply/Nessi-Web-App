@@ -1,4 +1,4 @@
-import { db } from '@libs/db';
+import { db } from '@/libs/db';
 import { products, productImages } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
