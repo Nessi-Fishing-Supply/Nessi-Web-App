@@ -71,7 +71,7 @@ export default function Navbar() {
       }
     };
     fetchUser();
-  }, [isAuthenticated]);
+  }, [isAuthenticated, setAuthenticated]);
 
   const handleLogout = async () => {
     try {

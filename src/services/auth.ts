@@ -30,7 +30,7 @@ export const login = async (data: LoginData) => {
     const json = await res.json();
     if (!res.ok) throw new Error(json.error || 'Login failed');
 
-    const { session, user, accessToken } = json;
+    const { user, accessToken } = json;
 
     // Store the access token securely (e.g., in cookies or localStorage)
     localStorage.setItem('accessToken', accessToken);
