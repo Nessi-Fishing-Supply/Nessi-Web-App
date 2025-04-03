@@ -4,19 +4,31 @@ import React, { useEffect, useState } from 'react';
 import styles from './Navbar.module.scss';
 import NotificationBar from '@components/navigation/notification-bar';
 import LogoFull from '@logos/logo_full.svg';
-import { HiBell, HiOutlineShoppingBag, HiUser, HiOutlineHome, HiOutlineUserCircle, HiSearch } from 'react-icons/hi';
+import {
+  HiBell,
+  HiOutlineShoppingBag,
+  HiUser,
+  HiOutlineHome,
+  HiOutlineUserCircle,
+  HiSearch,
+} from 'react-icons/hi';
 import Link from 'next/link';
 import Modal from '@components/layout/modal';
 import LoginForm from '@components/forms/login';
 import Button from '@components/controls/button';
 import RegisterForm from '@components/forms/registration';
 import { useAuth } from '@context/auth';
-import { Dropdown, DropdownItem, DropdownTitle } from '@components/controls/dropdown';
+import {
+  Dropdown,
+  DropdownItem,
+  DropdownTitle,
+} from '@components/controls/dropdown';
 import { logout, getUserProfile } from '@services/auth';
 import AppLink from '@components/controls/app-link';
 import { useSearchParams } from 'next/navigation';
 
 export default function Navbar() {
+  const [mounted, setMounted] = useState(false);
   const [isLoginModalOpen, setLoginModalOpen] = useState(false);
   const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
   const [registerSuccess, setRegisterSuccess] = useState(false);
@@ -25,6 +37,10 @@ export default function Navbar() {
   const { isAuthenticated, setAuthenticated, setToken } = useAuth();
   const searchParams = useSearchParams();
   const loginQuery = searchParams?.get('login');
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (loginQuery === 'true') {
@@ -86,9 +102,9 @@ export default function Navbar() {
         </form>
         <button className={styles.button}>Sell Your Gear</button>
 
-        {isAuthenticated && <HiBell className={styles.icon} />}
+        {mounted && isAuthenticated && <HiBell className={styles.icon} />}
 
-        {isAuthenticated && user ? (
+        {mounted && isAuthenticated && user ? (
           <Dropdown icon={<HiUser />}>
             <DropdownItem isClickable={false}>
               <p>{firstName} {lastName}</p>
@@ -108,32 +124,44 @@ export default function Navbar() {
             </DropdownItem>
           </Dropdown>
         ) : (
-          <button onClick={toggleLoginModal} className={styles.link}>Sign Up / Log In</button>
+          mounted && (
+            <button onClick={toggleLoginModal} className={styles.link}>
+              Sign Up / Log In
+            </button>
+          )
         )}
 
         <HiOutlineShoppingBag className={styles.icon} />
       </div>
 
       <div className={styles.categories}>
-        {['Rods', 'Reels', 'Combos', 'Baits', 'Lures', 'Tackle', 'Line', 'Storage', 'Apparel', 'Bargain Bin'].map(category => (
+        {[
+          'Rods', 'Reels', 'Combos', 'Baits', 'Lures',
+          'Tackle', 'Line', 'Storage', 'Apparel', 'Bargain Bin',
+        ].map(category => (
           <Link key={category} href="#">{category}</Link>
         ))}
       </div>
 
-      {/* Login Modal */}
       <Modal isOpen={isLoginModalOpen} onClose={toggleLoginModal}>
         <div className={styles.modalHeader}>
           <h6>Log In</h6>
-          <Button style="dark" round outline onClick={toggleRegisterModal}>Register</Button>
+          <Button style="dark" round outline onClick={toggleRegisterModal}>
+            Register
+          </Button>
         </div>
-        <LoginForm onSubmit={() => setLoginModalOpen(false)} onForgotPasswordClick={toggleLoginModal} />
+        <LoginForm
+          onSubmit={() => setLoginModalOpen(false)}
+          onForgotPasswordClick={toggleLoginModal}
+        />
       </Modal>
 
-      {/* Register Modal */}
       <Modal isOpen={isRegisterModalOpen} onClose={toggleRegisterModal}>
         <h6>Create Your Account</h6>
         {registerSuccess && (
-          <p className="successMessage">Registration successful! Please check your inbox to verify your email before logging in.</p>
+          <p className="successMessage">
+            Registration successful! Please check your inbox to verify your email before logging in.
+          </p>
         )}
         <RegisterForm onSubmit={() => setRegisterSuccess(true)} />
       </Modal>

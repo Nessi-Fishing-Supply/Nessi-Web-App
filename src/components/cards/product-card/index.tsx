@@ -1,25 +1,30 @@
-import React, { useEffect } from 'react';
-import styles from './ProductCard.module.scss';
-import { useRouter } from 'next/navigation';
-import Pill from '@components/indicators/pill';
-import { FaTruck, FaTag } from 'react-icons/fa';
-import Favorite from '@components/indicators/favorite';
-import ProductReviews from '@components/indicators/product-reviews';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
-import Image from 'next/image';
-import { Product as ProductType } from '@services/product';
+"use client";
+
+import React, { useEffect } from "react";
+import styles from "./ProductCard.module.scss";
+import { useRouter } from "next/navigation";
+import Pill from "@components/indicators/pill";
+import { FaTruck, FaTag } from "react-icons/fa";
+import Favorite from "@components/indicators/favorite";
+import ProductReviews from "@components/indicators/product-reviews";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import Image from "next/image";
+import type { ProductWithImages } from "@/types/product";
 
 interface ProductCardProps {
-  product: ProductType;
+  product: ProductWithImages;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const router = useRouter();
-  const price = typeof product.price === 'number' ? `$${product.price.toFixed(2)}` : `$${parseFloat(product.price).toFixed(2)}`;
+  const price =
+    typeof product.price === "number"
+      ? `$${product.price.toFixed(2)}`
+      : `$${parseFloat(product.price).toFixed(2)}`;
 
   const handleViewDetails = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -27,31 +32,28 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   };
 
   const handleMouseEnter = (e: React.MouseEvent) => {
-    const swiperElement = e.currentTarget.querySelector('.swiper__product-card');
-    if (swiperElement) {
-      swiperElement.classList.add('swiper-hovered');
-    }
+    const swiper = e.currentTarget.querySelector(".swiper__product-card");
+    swiper?.classList.add("swiper-hovered");
   };
 
   const handleMouseLeave = (e: React.MouseEvent) => {
-    const swiperElement = e.currentTarget.querySelector('.swiper__product-card');
-    if (swiperElement) {
-      swiperElement.classList.remove('swiper-hovered');
-    }
+    const swiper = e.currentTarget.querySelector(".swiper__product-card");
+    swiper?.classList.remove("swiper-hovered");
   };
 
   useEffect(() => {
-    const stopPropagation = (e: Event) => e.stopPropagation();
+    const stop = (e: Event) => e.stopPropagation();
+    const buttons = document.querySelectorAll(
+      ".swiper-button-prev, .swiper-button-next"
+    );
+    const bullets = document.querySelectorAll(".swiper-pagination-bullet");
 
-    const navigationButtons = document.querySelectorAll('.swiper-button-prev, .swiper-button-next');
-    const paginationBullets = document.querySelectorAll('.swiper-pagination-bullet');
-
-    navigationButtons.forEach(button => button.addEventListener('click', stopPropagation));
-    paginationBullets.forEach(bullet => bullet.addEventListener('click', stopPropagation));
+    buttons.forEach((btn) => btn.addEventListener("click", stop));
+    bullets.forEach((bullet) => bullet.addEventListener("click", stop));
 
     return () => {
-      navigationButtons.forEach(button => button.removeEventListener('click', stopPropagation));
-      paginationBullets.forEach(bullet => bullet.removeEventListener('click', stopPropagation));
+      buttons.forEach((btn) => btn.removeEventListener("click", stop));
+      bullets.forEach((bullet) => bullet.removeEventListener("click", stop));
     };
   }, []);
 
@@ -63,7 +65,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       onMouseLeave={handleMouseLeave}
     >
       <div className={styles.carousel}>
-        <Pill className={styles.pill} color="secondary">{product.status}</Pill>
+        <Pill className={styles.pill} color="secondary">
+          In Stock
+        </Pill>
         <Favorite className={styles.favorite} />
         <Swiper
           className="swiper__product-card"
@@ -71,11 +75,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           navigation
           pagination={{ clickable: true }}
         >
-          {product.images.map((image, index) => (
-            <SwiperSlide key={index}>
-              <Image src={image.url} alt={`${product.title} image ${index + 1}`} layout="fill" objectFit="cover" />
-            </SwiperSlide>
-          ))}
+          {product.images.map((image, index) =>
+            image.imageUrl ? (
+              <SwiperSlide key={index}>
+                <Image
+                  src={image.imageUrl}
+                  alt={`${product.title} image ${index + 1}`}
+                  layout="fill"
+                  objectFit="cover"
+                />
+              </SwiperSlide>
+            ) : null
+          )}
         </Swiper>
       </div>
       <div className={styles.contentWrapper}>
@@ -84,7 +95,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <p className={styles.price}>{price}</p>
           <ProductReviews count={0} average={4.2} />
         </div>
-        {/* Move badges to its own component */}
         <div className={styles.badgeWrapper}>
           <div className={styles.badge}>
             <FaTag className={styles.tagIcon} />

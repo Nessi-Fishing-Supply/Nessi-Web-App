@@ -1,132 +1,72 @@
-import axios from 'axios';
+import { Product, ProductWithImages } from '@/types/product';
 
-const API_URL = 'http://localhost:5003/products';
+const isServer = typeof window === 'undefined';
+const BASE_URL = isServer
+  ? `${process.env.NEXT_PUBLIC_BASE_URL}/api/products`
+  : '/api/products';
 
-const getHeaders = (token: string) => ({
-  Authorization: `${token}`
-});
+// Create a new product
+export async function createProduct(data: Partial<Product>) {
+  const res = await fetch(BASE_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-user-id': data.userId!,
+    },
+    body: JSON.stringify(data),
+  });
 
-export interface Product {
-  id?: string;
-  status?: string;
-  title: string;
-  description: string;
-  price: number;
-  images: { url: string, name: string }[];
-  userId: string;
-  created_at?: string;
-  updated_at?: string;
+  if (!res.ok) throw new Error('Failed to create product');
+  return res.json() as Promise<Product>;
 }
 
-export const createProduct = async (product: Product, token: string) => {
-  const formattedProduct = {
-    title: product.title,
-    description: product.description,
-    price: product.price,
-    images: product.images.map(image => ({ url: image.url, name: image.name })),
-    userId: product.userId
-  };
-  try {
-    const response = await axios.post(API_URL, formattedProduct, {
-      headers: getHeaders(token)
-    });
-    if (response.status === 201) {
-      return response.data;
-    } else {
-      throw new Error('Failed to create product');
-    }
-  } catch (error: unknown) {
-    if (axios.isAxiosError(error)) {
-      throw new Error(error.response ? error.response.data : error.message);
-    } else {
-      throw new Error('Unexpected error in createProduct');
-    }
-  }
-};
+// Get all products
+export async function getAllProducts() {
+  const res = await fetch(BASE_URL);
+  if (!res.ok) throw new Error('Failed to fetch products');
+  return res.json() as Promise<ProductWithImages[]>;
+}
 
-export const getAllProducts = async (): Promise<Product[]> => {
-  const response = await axios.get(API_URL);
-  return response.data.map((product: any) => ({
-    ...product,
-    images: product.images.map((image: { image_url: string, name: string }) => ({
-      url: image.image_url,
-      name: image.name
-    }))
-  }));
-};
+// Get all products created by a specific user
+export async function getUserProducts(userId: string) {
+  const res = await fetch(`${BASE_URL}/user`, {
+    headers: {
+      'x-user-id': userId,
+    },
+  });
 
-export const getProductById = async (id: string) => {
-  const response = await axios.get(`${API_URL}/${id}`);
-  const product = response.data;
-  return {
-    ...product,
-    price: parseFloat(product.price),
-    images: product.images.map((image: { image_url: string; name: string }) => ({
-      url: image.image_url,
-      name: image.name
-    }))
-  };
-};
+  if (!res.ok) throw new Error('Failed to fetch user products');
+  return res.json() as Promise<ProductWithImages[]>;
+}
 
-export const deleteProduct = async (id: string, token: string) => {
-  try {
-    const response = await axios.delete(`${API_URL}/${id}`, {
-      headers: getHeaders(token)
-    });
-    return response.data;
-  } catch (error: unknown) {
-    if (axios.isAxiosError(error)) {
-      if (error.response && error.response.status === 404) {
-        throw new Error('Product not found');
-      }
-      throw new Error(error.response ? error.response.data : error.message);
-    } else {
-      throw new Error('Unexpected error in deleteProduct');
-    }
-  }
-};
+// Get a single product by its ID
+export async function getProductById(id: string) {
+  const res = await fetch(`${BASE_URL}/${id}`);
+  if (!res.ok) throw new Error('Failed to fetch product');
+  return res.json() as Promise<ProductWithImages>;
+}
 
-export const getProductsByUserId = async (token: string): Promise<Product[]> => {
-  try {
-    const response = await axios.get(`${API_URL}/user`, {
-      headers: getHeaders(token)
-    });
-    return response.data.map((product: any) => ({
-      ...product,
-      images: product.images.map((image: { image_url: string, name: string }) => ({
-        url: image.image_url,
-        name: image.name
-      }))
-    }));
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw new Error(error.response ? error.response.data : error.message);
-    } else {
-      throw new Error('Unexpected error in getProductsByUserId');
-    }
-  }
-};
+// Update a product by ID
+export async function updateProduct(id: string, data: Partial<Product>) {
+  const res = await fetch(`${BASE_URL}/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-user-id': data.userId!,
+    },
+    body: JSON.stringify(data),
+  });
 
-export const updateProduct = async (id: string, product: {
-  title?: string;
-  description?: string;
-  price?: number;
-  images?: { url: string, name: string }[];
-}, token: string) => {
-  const formattedProduct = {
-    ...product,
-    images: product.images ? product.images.map(image => ({ url: image.url, name: image.name })) : undefined
-  };
-  try {
-    const response = await axios.put(`${API_URL}/${id}`, formattedProduct, {
-      headers: getHeaders(token)
-    });
-    return response.data;
-  } catch (error: unknown) {
-    if (axios.isAxiosError(error)) {
-      throw new Error(error.response ? error.response.data : error.message);
-    } else {
-      throw new Error('Unexpected error in updateProduct');
-    }
-  }
-};
+  if (!res.ok) throw new Error('Failed to update product');
+  return res.json() as Promise<ProductWithImages>;
+}
+
+// Delete a product by ID
+export async function deleteProduct(id: string) {
+  const res = await fetch(`${BASE_URL}/${id}`, {
+    method: 'DELETE',
+  });
+
+  if (!res.ok) throw new Error('Failed to delete product');
+  return res.json() as Promise<{ success: boolean }>;
+}

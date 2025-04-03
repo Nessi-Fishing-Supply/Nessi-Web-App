@@ -1,20 +1,20 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { getAllProducts, Product } from '@services/product';
-import ProductCard from '@components/cards/product-card';
-import Grid from '@components/layout/grid';
+import { getAllProducts } from '@/services/product';
+import { ProductWithImages } from '@/types/product';
+import ProductCard from '@/components/cards/product-card';
+import Grid from '@/components/layout/grid';
 
 export default function Home() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<ProductWithImages[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const data = await getAllProducts();
-        setProducts(data.map(product => ({
+        setProducts(data.map((product) => ({
           ...product,
-          id: product.id || '',
           price: typeof product.price === 'number' ? product.price : parseFloat(product.price)
         })));
       } catch (error) {

@@ -1,32 +1,35 @@
-"use client"
+'use client';
 
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@context/auth';
-import { getProductsByUserId, Product as ProductType } from '@services/product';
+import { getUserProducts } from '@services/product';
+import type { ProductWithImages } from '@/types/product';
 import ProductForm from '@components/forms/add-product';
 import ProductCard from '@components/cards/product-card';
 import Button from '@components/controls/button';
 import Modal from '@components/layout/modal';
 import axios from 'axios';
 import Grid from '@components/layout/grid';
+import { getUserProfile } from '@services/auth';
 
 const Products: React.FC = () => {
-  const [products, setProducts] = useState<ProductType[]>([]);
-  const { token } = useAuth();
+  const [products, setProducts] = useState<ProductWithImages[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { token } = useAuth();
 
   useEffect(() => {
     const fetchProducts = async () => {
-      if (token) {
-        try {
-          const data = await getProductsByUserId(token);
-          setProducts(data);
-        } catch (error) {
-          if (axios.isAxiosError(error) && error.response?.status === 401) {
-            console.error('Unauthorized access - please check your token.');
-          } else {
-            console.error('Error fetching products:', error as Error);
-          }
+      if (!token) return;
+
+      try {
+        const user = await getUserProfile();
+        const data = await getUserProducts(user.id); // ✅ Pass userId, not token
+        setProducts(data);
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 401) {
+          console.error('Unauthorized access - please check your token.');
+        } else {
+          console.error('Error fetching products:', error as Error);
         }
       }
     };
@@ -34,8 +37,8 @@ const Products: React.FC = () => {
     fetchProducts();
   }, [token]);
 
-  const handleProductCreated = (products: ProductType[]) => {
-    setProducts(products);
+  const handleProductCreated = (newProduct: ProductWithImages) => {
+    setProducts(prev => [...prev, newProduct]);
     setIsModalOpen(false);
   };
 
@@ -51,7 +54,7 @@ const Products: React.FC = () => {
         <p>You don&#39;t have any products currently.</p>
       ) : (
         <Grid columns={4}>
-          {products.map((product) => (
+          {products.map((product: ProductWithImages) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </Grid>

@@ -4,7 +4,7 @@ import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
 export async function GET(req: Request) {
-  const userId = req.headers.get('user-id');
+  const userId = req.headers.get('x-user-id');
 
   if (!userId) {
     return NextResponse.json({ error: 'Missing userId header' }, { status: 401 });
