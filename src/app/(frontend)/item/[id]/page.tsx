@@ -10,7 +10,7 @@ export async function generateStaticParams() {
 export default async function Page({ params }: { params: { id: string } }) {
   const { id } = params;
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
   const res = await fetch(`${baseUrl}/api/products/${id}`);
   if (!res.ok) {

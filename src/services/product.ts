@@ -2,7 +2,7 @@ import { Product, ProductWithImages } from '@/types/product';
 
 const isServer = typeof window === 'undefined';
 const BASE_URL = isServer
-  ? `${process.env.NEXT_PUBLIC_BASE_URL}/api/products`
+  ? `${process.env.NEXT_PUBLIC_APP_URL}/api/products`
   : '/api/products';
 
 // Create a new product
