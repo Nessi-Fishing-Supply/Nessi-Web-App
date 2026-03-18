@@ -1,88 +1,125 @@
-import { db } from '@/libs/db';
-import { products, productImages } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { createClient } from '@/libs/supabase/server';
 import { NextResponse } from 'next/server';
 import { del } from '@vercel/blob';
 
-// GET /api/products/[id]
 export async function GET(_: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
 
-  const product = await db.query.products.findFirst({
-    where: eq(products.id, id),
-    with: { images: true },
-  });
+  try {
+    const supabase = await createClient();
 
-  if (!product) {
-    return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+    const { data: product, error } = await supabase
+      .from('products')
+      .select('*, product_images(*)')
+      .eq('id', id)
+      .single();
+
+    if (error || !product) {
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+    }
+
+    return NextResponse.json(product);
+  } catch (error) {
+    console.error('Error fetching product:', error);
+    return NextResponse.json({ error: 'Failed to fetch product' }, { status: 500 });
   }
-
-  return NextResponse.json(product);
 }
 
-// PUT /api/products/[id]
 export async function PUT(req: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
 
   try {
-    const { title, description, price, images } = await req.json();
-    const userId = req.headers.get('x-user-id');
-    if (!userId) return NextResponse.json({ error: 'Missing userId' }, { status: 401 });
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
-    await db.update(products)
-      .set({ title, description, price })
-      .where(eq(products.id, id));
-
-    if (images?.length) {
-      await db.delete(productImages).where(eq(productImages.productId, id));
-      await db.insert(productImages).values(
-        images.map((img: { url: string }) => ({
-          productId: id,
-          imageUrl: img.url,
-        }))
-      );
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const updated = await db.query.products.findFirst({
-      where: eq(products.id, id),
-      with: { images: true },
-    });
+    const { title, description, price, images } = await req.json();
 
-    return NextResponse.json(updated);
+    const { error: updateError } = await supabase
+      .from('products')
+      .update({ title, description, price: parseFloat(price) })
+      .eq('id', id);
+
+    if (updateError) {
+      return NextResponse.json({ error: updateError.message }, { status: 500 });
+    }
+
+    if (images && images.length > 0) {
+      await supabase
+        .from('product_images')
+        .delete()
+        .eq('product_id', id);
+
+      const imageRows = images
+        .filter((img: { url: string }) => img.url)
+        .map((img: { url: string }) => ({
+          image_url: img.url,
+          product_id: id,
+        }));
+
+      if (imageRows.length > 0) {
+        await supabase.from('product_images').insert(imageRows);
+      }
+    }
+
+    const { data: product, error } = await supabase
+      .from('products')
+      .select('*, product_images(*)')
+      .eq('id', id)
+      .single();
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json(product);
   } catch (error) {
-    console.error(`PUT /products/${id} error`, error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('Error updating product:', error);
+    return NextResponse.json({ error: 'Failed to update product' }, { status: 500 });
   }
 }
 
-// DELETE /api/products/[id]
 export async function DELETE(_: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
 
   try {
-    const images = await db.query.productImages.findMany({
-      where: eq(productImages.productId, id),
-    });
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
-    for (const image of images) {
-      if (!image.imageUrl) continue;
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
-      try {
-        // ✅ Use SDK method — pass full URL
-        await del(image.imageUrl);
-        console.log(`✅ Deleted blob: ${image.imageUrl}`);
-      } catch (err) {
-        console.warn(`❌ Failed to delete blob at ${image.imageUrl}`, err);
+    const { data: images } = await supabase
+      .from('product_images')
+      .select('image_url')
+      .eq('product_id', id);
+
+    if (images) {
+      for (const img of images) {
+        try {
+          await del(img.image_url);
+        } catch (e) {
+          console.error('Failed to delete blob:', img.image_url, e);
+        }
       }
     }
 
-    await db.delete(productImages).where(eq(productImages.productId, id));
-    await db.delete(products).where(eq(products.id, id));
+    const { error } = await supabase
+      .from('products')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error(`DELETE /products/${id} error`, error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('Error deleting product:', error);
+    return NextResponse.json({ error: 'Failed to delete product' }, { status: 500 });
   }
 }
-

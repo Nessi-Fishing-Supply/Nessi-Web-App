@@ -1,21 +1,27 @@
-import { db } from '@/libs/db';
-import { products } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { createClient } from '@/libs/supabase/server';
 import { NextResponse } from 'next/server';
 
-export async function GET(req: Request) {
-  const userId = req.headers.get('x-user-id');
+export async function GET() {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
-  if (!userId) {
-    return NextResponse.json({ error: 'Missing userId header' }, { status: 401 });
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { data: products, error } = await supabase
+      .from('products')
+      .select('*, product_images(*)')
+      .eq('user_id', user.id);
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json(products);
+  } catch (error) {
+    console.error('Error fetching user products:', error);
+    return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 });
   }
-
-  const userProducts = await db.query.products.findMany({
-    where: eq(products.userId, userId),
-    with: {
-      images: true,
-    },
-  });
-
-  return NextResponse.json(userProducts);
 }

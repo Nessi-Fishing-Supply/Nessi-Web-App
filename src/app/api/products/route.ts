@@ -1,48 +1,75 @@
-import { db } from '@/libs/db';
-import { products, productImages } from '@/db/schema';
+import { createClient } from '@/libs/supabase/server';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { title, description, price, images } = body;
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
-    const userId = req.headers.get('x-user-id');
-    if (!userId) return NextResponse.json({ error: 'Missing userId' }, { status: 401 });
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
-    const [product] = await db.insert(products).values({
-      title,
-      description,
-      price,
-      userId,
-    }).returning();
+    const { title, description, price, images } = await req.json();
 
-    if (!product) return NextResponse.json({ error: 'Failed to insert product' }, { status: 500 });
-
-    if (images?.length) {
-      await db.insert(productImages).values(
-        images.map((img: { url: string }) => ({
-          productId: product.id,
-          imageUrl: img.url,
-        }))
+    if (!title || !price) {
+      return NextResponse.json(
+        { error: 'Title and price are required' },
+        { status: 400 }
       );
     }
 
-    return NextResponse.json(product, { status: 201 });
+    const { data: product, error: productError } = await supabase
+      .from('products')
+      .insert({ title, description, price: parseFloat(price), user_id: user.id })
+      .select('id')
+      .single<{ id: string }>();
+
+    if (productError) {
+      return NextResponse.json({ error: productError.message }, { status: 500 });
+    }
+
+    if (images && images.length > 0) {
+      const imageRows = images
+        .filter((img: { url: string }) => img.url)
+        .map((img: { url: string }) => ({
+          image_url: img.url,
+          product_id: product.id,
+        }));
+
+      if (imageRows.length > 0) {
+        await supabase.from('product_images').insert(imageRows);
+      }
+    }
+
+    const { data: fullProduct } = await supabase
+      .from('products')
+      .select('*, product_images(*)')
+      .eq('id', product.id)
+      .single();
+
+    return NextResponse.json(fullProduct, { status: 201 });
   } catch (error) {
-    console.error('POST /products error', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('Error creating product:', error);
+    return NextResponse.json({ error: 'Failed to create product' }, { status: 500 });
   }
 }
 
 export async function GET() {
   try {
-    const allProducts = await db.query.products.findMany({
-      with: { images: true },
-    });
-    return NextResponse.json(allProducts);
+    const supabase = await createClient();
+
+    const { data: products, error } = await supabase
+      .from('products')
+      .select('*, product_images(*)');
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json(products);
   } catch (error) {
-    console.error('GET /products error', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('Error fetching products:', error);
+    return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 });
   }
 }
