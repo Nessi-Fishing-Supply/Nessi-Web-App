@@ -28,7 +28,7 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onProductCreated }) => 
     title: "",
     description: "",
     price: "",
-    images: [{ id: Date.now(), file: null, url: "", name: "" }],
+    images: [{ id: 0, file: null, url: "", name: "" }],
   });
 
   const handleInputChange = (
@@ -109,7 +109,7 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onProductCreated }) => 
         title: "",
         description: "",
         price: "",
-        images: [{ id: Date.now(), file: null, url: "", name: "" }],
+        images: [{ id: 0, file: null, url: "", name: "" }],
       });
     } catch (error) {
       if (axios.isAxiosError(error)) {

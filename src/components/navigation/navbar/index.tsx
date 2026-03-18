@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useSyncExternalStore } from 'react';
 import styles from './Navbar.module.scss';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -35,7 +35,7 @@ import { User } from '@supabase/supabase-js';
  * Provides user menu and navigation
  */
 export default function Navbar() {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(() => () => {}, () => true, () => false);
   const [isLoginModalOpen, setLoginModalOpen] = useState(false);
   const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
   const [registerSuccess, setRegisterSuccess] = useState(false);
@@ -46,12 +46,8 @@ export default function Navbar() {
   const loginQuery = searchParams?.get('login');
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
     if (loginQuery === 'true') {
-      setLoginModalOpen(true);
+      requestAnimationFrame(() => setLoginModalOpen(true));
     }
   }, [loginQuery]);
 

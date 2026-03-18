@@ -14,21 +14,19 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [isAuthenticated, setAuthenticated] = useState<boolean>(false);
-  const [token, setToken] = useState<string | null>(null);
-  const [user, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    const storedToken = localStorage.getItem('authToken');
+  const [isAuthenticated, setAuthenticated] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return !!localStorage.getItem('authToken');
+  });
+  const [token, setToken] = useState<string | null>(() => {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem('authToken');
+  });
+  const [user, setUser] = useState<any>(() => {
+    if (typeof window === 'undefined') return null;
     const storedUser = localStorage.getItem('user');
-    if (storedToken) {
-      setToken(storedToken);
-      setAuthenticated(true);
-    }
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
 
   useEffect(() => {
     if (token) {

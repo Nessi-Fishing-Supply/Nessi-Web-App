@@ -1,4 +1,4 @@
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createSupabaseBrowser } from '@/libs/supabase';
 import { RegisterData, LoginData, ResetPasswordData, AuthResponse } from '@/types/auth';
 
 // Register new user
@@ -60,7 +60,7 @@ export const logout = async (): Promise<void> => {
 // Get current user profile
 export const getUserProfile = async () => {
   try {
-    const supabase = createClientComponentClient();
+    const supabase = createSupabaseBrowser();
     const token = localStorage.getItem('accessToken'); // Retrieve token
 
     if (!token) throw new Error('Auth session missing!');
@@ -94,7 +94,7 @@ export const resetPassword = async (data: ResetPasswordData): Promise<AuthRespon
       throw new Error('Passwords do not match');
     }
 
-    const supabase = createClientComponentClient();
+    const supabase = createSupabaseBrowser();
     const { error } = await supabase.auth.updateUser({ password: data.newPassword });
 
     if (error) throw new Error(error.message);

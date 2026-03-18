@@ -1,13 +1,13 @@
 'use client';
 
 import React, { Suspense, useEffect, useState } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createSupabaseBrowser } from '@/libs/supabase';
 import { useRouter } from 'next/navigation';
 import styles from './Callback.module.scss';
 import ResetPasswordForm from '@/components/forms/reset-password';
 
 export default function Callback() {
-  const supabase = createClientComponentClient();
+  const supabase = createSupabaseBrowser();
   const router = useRouter();
 
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
@@ -19,22 +19,22 @@ export default function Callback() {
     const refresh_token = hashParams.get('refresh_token');
     const type = hashParams.get('type') as 'signup' | 'recovery' | null;
 
-    setCallbackType(type);
-
-    if (access_token && refresh_token) {
-      supabase.auth
-        .setSession({ access_token, refresh_token })
-        .then(({ error }: { error: Error | null }) => {
-          if (error) {
-            console.error('Session error:', error.message);
-            setStatus('error');
-          } else {
-            setStatus('success');
-          }
-        });
-    } else {
-      setStatus('error');
+    if (!access_token || !refresh_token) {
+      requestAnimationFrame(() => setStatus('error'));
+      return;
     }
+
+    supabase.auth
+      .setSession({ access_token, refresh_token })
+      .then(({ error }: { error: Error | null }) => {
+        if (error) {
+          console.error('Session error:', error.message);
+          setStatus('error');
+        } else {
+          setCallbackType(type);
+          setStatus('success');
+        }
+      });
   }, [supabase]);
 
   const handleLoginClick = () => {
