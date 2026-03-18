@@ -56,6 +56,13 @@ If the dev server is running on localhost:3000 or can be started:
 - Report page render status and console errors
 - This check is optional — preflight still passes without it, but reports "skipped"
 
+### 8. Accessibility (optional, requires dev server)
+If the dev server is running on localhost:3000 or can be started:
+- Launch **a11y-auditor** agent for WCAG 2.1 AA compliance check
+- Report critical and serious findings
+- This check is optional — preflight still passes without it, but reports "skipped"
+- Critical a11y findings (keyboard traps, missing form labels) are [B] Blocking
+
 ## Output
 
 Display results as a structured report:
@@ -73,6 +80,7 @@ Display results as a structured report:
   ✅ Tests          {pass|fail}  {duration}  {test_count} tests
   ✅ Build          {pass|fail}  {duration}
   ✅ UI Tests       {pass|fail|skipped}  {duration}  {page_count} pages
+  ✅ Accessibility  {pass|fail|skipped}  {duration}  {finding_count} findings
 
 {if any failed:}
 ━━━━ Failures ━━━━

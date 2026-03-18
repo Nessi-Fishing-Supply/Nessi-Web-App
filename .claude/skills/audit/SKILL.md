@@ -12,7 +12,8 @@ Runs both the preflight quality gate and the marketplace UX audit in a single co
 
 1. Run `/preflight all` and capture results
 2. Run `/marketplace-audit all` and capture results
-3. Combine into a single dashboard:
+3. Run `/a11y-audit all` and capture results
+4. Combine into a single dashboard:
 
 ```
 📊 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -21,6 +22,7 @@ Runs both the preflight quality gate and the marketplace UX audit in a single co
 
    Code Quality:        {score}/6 checks passing
    Marketplace UX:      {score}/100
+   Accessibility:       {score}/100 (WCAG 2.1 AA)
 
    Action Items:        {count} ({critical} critical)
 
