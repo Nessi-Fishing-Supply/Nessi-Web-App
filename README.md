@@ -78,6 +78,7 @@ Open [http://localhost:3000](http://localhost:3000).
 - **Hook exports**: camelCase with `use` prefix (`export function useAllProducts`)
 - **Data fetching**: Tanstack Query hooks, not `useEffect` + `useState`
 - **Client state**: Zustand stores in `features/{domain}/stores/`
+- **Icons**: `react-icons` for UI icons; `src/assets/` for brand logos only
 
 ## Project Structure
 
@@ -94,7 +95,7 @@ src/
 ├── libs/                  # Infrastructure (Supabase clients, providers, query client)
 ├── types/                 # Generated types (database.ts)
 ├── styles/                # Global SCSS variables, mixins, utilities
-└── assets/                # Static assets (icons, logos)
+└── assets/                # Brand assets (logos only — UI icons use react-icons)
 ```
 
 ## License

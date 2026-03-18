@@ -67,6 +67,12 @@ Domain-specific code lives in `src/features/{domain}/` with its own services, ty
 - **Client state (UI/app state):** Zustand for cross-component client state (cart, filters, multi-step flows). Stores live in `features/{domain}/stores/`. Use the `createSelectors` utility from `src/libs/create-selectors.ts` for auto-generated typed selectors.
 - **Auth state:** Supabase `onAuthStateChange` via `AuthProvider` in `src/features/auth/context.tsx`. Access with `useAuth()`.
 
+### Icons & Brand Assets
+
+- **UI icons:** Use `react-icons` — it's tree-shakeable and already used throughout the codebase. Import from icon sets like `react-icons/hi` (Heroicons) or `react-icons/fa` (Font Awesome). Do not add custom SVGs for standard UI icons.
+- **Brand assets:** `src/assets/logos/` — Nessi logos and brand marks only. These are imported as React components via `@svgr/webpack` (e.g., `import LogoFull from '@/assets/logos/logo_full.svg'`).
+- **Static files:** `public/` — for files served at a URL (favicons, robots.txt, OG images). Not for icons or logos used in components.
+
 ### Styling
 
 SCSS with CSS Modules for component-scoped styles. Global variables in `src/styles/variables/`, responsive breakpoints in `src/styles/mixins/breakpoints.scss`.
