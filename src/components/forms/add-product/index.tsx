@@ -9,7 +9,6 @@ import Input from "@/components/controls/input";
 import Textarea from "@/components/controls/text-area";
 import Button from "@/components/controls/button";
 import type { ProductWithImages } from "@/types/product";
-import { getUserProfile } from "@/services/auth";
 
 interface AddProductFormProps {
   onProductCreated: (product: ProductWithImages) => void;
@@ -65,9 +64,6 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onProductCreated }) => 
     if (!token) return;
 
     try {
-      const user = await getUserProfile();
-      if (!user) return;
-
       // Upload images during form submission
       const uploadedImages = await Promise.all(
         newProduct.images.map(async (image) => {
@@ -83,9 +79,7 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onProductCreated }) => 
 
       const payload = {
         ...newProduct,
-        price: parseFloat(newProduct.price),
         images: uploadedImages.map(({ url, name }) => ({ url, name })),
-        userId: user.id,
       };
 
       console.log("Submitting product payload:", payload);

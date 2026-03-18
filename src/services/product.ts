@@ -1,87 +1,54 @@
-import { Product, ProductWithImages } from '@/types/product';
+import axios from 'axios';
+import type { ProductWithImages } from '@/types/product';
 
-const isServer = typeof window === 'undefined';
-const BASE_URL = isServer
-  ? `${process.env.NEXT_PUBLIC_APP_URL}/api/products`
-  : '/api/products';
+const BASE_URL = '/api/products';
 
-// Create a new product
-export async function createProduct(data: Partial<Product & { images: { url: string }[] }>) {
-  const res = await fetch(BASE_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-user-id': data.userId!,
-    },
-    body: JSON.stringify(data),
-  });
+export const createProduct = async (data: {
+  title: string;
+  description: string;
+  price: string;
+  images?: { url: string }[];
+}): Promise<ProductWithImages> => {
+  const res = await axios.post(BASE_URL, data);
+  return res.data;
+};
 
-  if (!res.ok) throw new Error('Failed to create product');
-  return res.json() as Promise<ProductWithImages>;
-}
+export const getAllProducts = async (): Promise<ProductWithImages[]> => {
+  const res = await axios.get(BASE_URL);
+  return res.data;
+};
 
-// Get all products
-export async function getAllProducts() {
-  const res = await fetch(BASE_URL);
-  if (!res.ok) throw new Error('Failed to fetch products');
-  return res.json() as Promise<ProductWithImages[]>;
-}
+export const getUserProducts = async (): Promise<ProductWithImages[]> => {
+  const res = await axios.get(`${BASE_URL}/user`);
+  return res.data;
+};
 
-// Get all products created by a specific user
-export async function getUserProducts(userId: string) {
-  const res = await fetch(`${BASE_URL}/user`, {
-    headers: {
-      'x-user-id': userId,
-    },
-  });
+export const getProductById = async (id: string): Promise<ProductWithImages> => {
+  const res = await axios.get(`${BASE_URL}/${id}`);
+  return res.data;
+};
 
-  if (!res.ok) throw new Error('Failed to fetch user products');
-  return res.json() as Promise<ProductWithImages[]>;
-}
+export const updateProduct = async (
+  id: string,
+  data: {
+    title: string;
+    description: string;
+    price: string;
+    images?: { url: string }[];
+  }
+): Promise<ProductWithImages> => {
+  const res = await axios.put(`${BASE_URL}/${id}`, data);
+  return res.data;
+};
 
-// Get a single product by its ID
-export async function getProductById(id: string) {
-  const res = await fetch(`${BASE_URL}/${id}`);
-  if (!res.ok) throw new Error('Failed to fetch product');
-  return res.json() as Promise<ProductWithImages>;
-}
+export const deleteProduct = async (id: string): Promise<{ success: boolean }> => {
+  const res = await axios.delete(`${BASE_URL}/${id}`);
+  return res.data;
+};
 
-// Update a product by ID
-export async function updateProduct(id: string, data: Partial<Product>) {
-  const res = await fetch(`${BASE_URL}/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-user-id': data.userId!,
-    },
-    body: JSON.stringify(data),
-  });
-
-  if (!res.ok) throw new Error('Failed to update product');
-  return res.json() as Promise<ProductWithImages>;
-}
-
-// Delete a product by ID
-export async function deleteProduct(id: string) {
-  const res = await fetch(`${BASE_URL}/${id}`, {
-    method: 'DELETE',
-  });
-
-  if (!res.ok) throw new Error('Failed to delete product');
-  return res.json() as Promise<{ success: boolean }>;
-}
-
-// Upload product image
-export async function uploadProductImage(file: File): Promise<string> {
+export const uploadProductImage = async (file: File): Promise<string> => {
   const formData = new FormData();
-  formData.append("file", file);
-
-  const res = await fetch("/api/products/upload", {
-    method: "POST",
-    body: formData,
-  });
-
-  const { url } = await res.json();
-  return url;
-}
-
+  formData.append('file', file);
+  const res = await axios.post(`${BASE_URL}/upload`, formData);
+  return res.data.url;
+};

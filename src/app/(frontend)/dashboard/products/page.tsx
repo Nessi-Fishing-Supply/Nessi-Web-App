@@ -10,7 +10,6 @@ import Button from '@/components/controls/button';
 import Modal from '@/components/layout/modal';
 import axios from 'axios';
 import Grid from '@/components/layout/grid';
-import { getUserProfile } from '@/services/auth';
 
 const Products: React.FC = () => {
   const [products, setProducts] = useState<ProductWithImages[]>([]);
@@ -22,9 +21,7 @@ const Products: React.FC = () => {
       if (!token) return;
 
       try {
-        const user = await getUserProfile();
-        if (!user) return;
-        const data = await getUserProducts(user.id); // ✅ Pass userId, not token
+        const data = await getUserProducts();
         setProducts(data);
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.status === 401) {

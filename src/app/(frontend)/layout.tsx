@@ -1,5 +1,3 @@
-"use client";
-
 import React, { Suspense } from 'react';
 import { Inter } from 'next/font/google';
 import '@/styles/globals.scss';
