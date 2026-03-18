@@ -1,28 +1,58 @@
-import { getAllProducts } from '@/features/products/services/product';
+import { createClient } from '@/libs/supabase/server';
+import { notFound } from 'next/navigation';
 import ProductClientComponent from './ItemIdPage';
 import type { ProductWithImages } from '@/features/products/types/product';
+import type { Metadata } from 'next';
 
-export async function generateStaticParams() {
-  try {
-    const products = await getAllProducts();
-    return products.map((product) => ({ id: product.id }));
-  } catch (error) {
-    console.error('Failed to fetch products during build:', error);
-    return [];
+async function getProduct(id: string): Promise<ProductWithImages | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('products')
+    .select('*, product_images(*)')
+    .eq('id', id)
+    .single();
+
+  if (error || !data) return null;
+  return data as ProductWithImages;
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const product = await getProduct(id);
+
+  if (!product) {
+    return { title: 'Product Not Found' };
   }
+
+  const price =
+    typeof product.price === 'number'
+      ? product.price.toFixed(2)
+      : parseFloat(product.price).toFixed(2);
+
+  const image = product.product_images?.[0]?.image_url;
+
+  return {
+    title: product.title,
+    description: product.description || `${product.title} — $${price} on Nessi`,
+    openGraph: {
+      title: product.title,
+      description: product.description || `${product.title} — $${price} on Nessi`,
+      ...(image && { images: [{ url: image }] }),
+    },
+  };
 }
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const product = await getProduct(id);
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-
-  const res = await fetch(`${baseUrl}/api/products/${id}`);
-  if (!res.ok) {
-    console.error(`Failed to fetch product ${id}:`, res.statusText);
-    return <p>Product not found</p>;
+  if (!product) {
+    notFound();
   }
 
-  const product: ProductWithImages = await res.json();
   return <ProductClientComponent product={product} />;
 }

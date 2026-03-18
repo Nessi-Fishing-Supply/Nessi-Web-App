@@ -77,7 +77,13 @@ SCSS with CSS Modules for component-scoped styles. Global variables in `src/styl
 
 ## Environment Variables
 
-Required in `.env.local`: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`, `NEXT_PUBLIC_APP_URL`.
+Required in `.env.local` (see `.env.local.example`): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`, `NEXT_PUBLIC_APP_URL`.
+
+## Observability
+
+- **Vercel Analytics** (`@vercel/analytics`) — page views, visitors, referrers. Auto-enabled on Vercel.
+- **Vercel Speed Insights** (`@vercel/speed-insights`) — real user Core Web Vitals. Auto-enabled on Vercel.
+- Both are included in the root layout and require no configuration.
 
 ## Code Quality
 
