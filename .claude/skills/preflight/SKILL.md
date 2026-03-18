@@ -50,6 +50,12 @@ pnpm test:run
 pnpm build
 ```
 
+### 7. UI Tests (optional, requires dev server)
+If the dev server is running on localhost:3000 or can be started:
+- Launch **ui-tester** agent for smoke testing
+- Report page render status and console errors
+- This check is optional — preflight still passes without it, but reports "skipped"
+
 ## Output
 
 Display results as a structured report:
@@ -66,6 +72,7 @@ Display results as a structured report:
   ✅ Prettier       {pass|fail}  {duration}
   ✅ Tests          {pass|fail}  {duration}  {test_count} tests
   ✅ Build          {pass|fail}  {duration}
+  ✅ UI Tests       {pass|fail|skipped}  {duration}  {page_count} pages
 
 {if any failed:}
 ━━━━ Failures ━━━━
