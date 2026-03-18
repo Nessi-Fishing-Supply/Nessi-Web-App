@@ -8,7 +8,6 @@ import ProductForm from '@/features/products/components/add-product-form';
 import ProductCard from '@/features/products/components/product-card';
 import Button from '@/components/controls/button';
 import Modal from '@/components/layout/modal';
-import axios from 'axios';
 import Grid from '@/components/layout/grid';
 
 const Products: React.FC = () => {
@@ -23,12 +22,8 @@ const Products: React.FC = () => {
       try {
         const data = await getUserProducts();
         setProducts(data);
-      } catch (error) {
-        if (axios.isAxiosError(error) && error.response?.status === 401) {
-          console.error('Unauthorized access.');
-        } else {
-          console.error('Error fetching products:', error as Error);
-        }
+      } catch {
+        // Failed to load products — empty state shown
       }
     };
 

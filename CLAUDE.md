@@ -43,7 +43,7 @@ Next.js App Router with a `(frontend)` route group for all UI pages. No Pages Ro
 
 ### File Storage
 
-Image uploads use Vercel Blob via `src/app/api/products/upload/route.ts`.
+Image uploads use Supabase Storage (`product-images` bucket) via `src/app/api/products/upload/route.ts`. Images are stored under `{user_id}/{timestamp}.{ext}` paths with RLS policies enforcing per-user access.
 
 ### Key Directories
 
@@ -71,7 +71,7 @@ SCSS with CSS Modules for component-scoped styles. Global variables in `src/styl
 
 ## Environment Variables
 
-Required in `.env.local`: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`, `BLOB_READ_WRITE_TOKEN`, `NEXT_PUBLIC_APP_URL`.
+Required in `.env.local`: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`, `NEXT_PUBLIC_APP_URL`.
 
 ## Code Quality
 

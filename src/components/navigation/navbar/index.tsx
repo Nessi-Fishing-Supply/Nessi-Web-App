@@ -57,8 +57,8 @@ export default function Navbar() {
     try {
       await logout();
       window.location.href = '/';
-    } catch (err) {
-      console.error('Logout failed:', err);
+    } catch {
+      // Logout failed silently — user stays on page
     }
   };
 
@@ -77,9 +77,8 @@ export default function Navbar() {
     setLoginModalOpen(false);
   };
 
-  const handleRegisterSuccess = (response: { message: string }) => {
+  const handleRegisterSuccess = () => {
     setRegisterSuccess(true);
-    console.log(response.message);
   };
 
   const firstName = user?.user_metadata?.firstName ?? '';

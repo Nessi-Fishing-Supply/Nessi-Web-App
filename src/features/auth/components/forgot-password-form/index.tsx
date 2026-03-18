@@ -42,7 +42,6 @@ const ForgotPasswordForm: React.FC<AuthFormProps<ForgotPasswordFormData, AuthFor
       setSuccess(response.message);
       if (onSuccess) onSuccess(response);
     } catch (err: any) {
-      console.error('Forgot password error:', err);
       setError(err.message || 'Something went wrong');
       if (onError) onError(err);
     } finally {

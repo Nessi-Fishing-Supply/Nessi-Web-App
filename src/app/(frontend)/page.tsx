@@ -19,8 +19,8 @@ export default function Home() {
             price: typeof product.price === 'number' ? product.price : parseFloat(product.price),
           })),
         );
-      } catch (error) {
-        console.error('Error fetching products:', error);
+      } catch {
+        // Failed to load products — empty state shown
       }
     };
 

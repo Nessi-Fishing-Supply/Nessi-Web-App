@@ -35,7 +35,6 @@ const RegisterForm: React.FC<AuthFormProps<RegisterFormData, AuthFormResponse>> 
       setSuccess(response.message);
       if (onSuccess) onSuccess(response);
     } catch (error: unknown) {
-      console.error('Registration failed:', error);
       if (error instanceof Error) {
         setError(error.message);
       } else {

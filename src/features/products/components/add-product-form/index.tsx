@@ -82,8 +82,6 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onProductCreated }) => 
         images: uploadedImages.map(({ url, name }) => ({ url, name })),
       };
 
-      console.log('Submitting product payload:', payload);
-
       const createdProduct = await createProduct(payload);
 
       const fullProduct: ProductWithImages = {
@@ -95,8 +93,6 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onProductCreated }) => 
           created_at: new Date().toISOString(),
         })),
       };
-
-      console.log('Product successfully created:', fullProduct);
 
       onProductCreated(fullProduct);
 

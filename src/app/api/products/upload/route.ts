@@ -1,4 +1,3 @@
-import { put } from '@vercel/blob';
 import { createClient } from '@/libs/supabase/server';
 import { NextResponse } from 'next/server';
 
@@ -20,12 +19,25 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
-    const blob = await put(file.name, file.stream(), {
-      access: 'public',
-      contentType: file.type,
-    });
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${user.id}/${Date.now()}.${fileExt}`;
 
-    return NextResponse.json({ url: blob.url });
+    const { error: uploadError } = await supabase.storage
+      .from('product-images')
+      .upload(fileName, file, {
+        contentType: file.type,
+        upsert: false,
+      });
+
+    if (uploadError) {
+      return NextResponse.json({ error: uploadError.message }, { status: 500 });
+    }
+
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from('product-images').getPublicUrl(fileName);
+
+    return NextResponse.json({ url: publicUrl });
   } catch (error) {
     console.error('Upload error:', error);
     return NextResponse.json({ error: 'Upload failed' }, { status: 500 });

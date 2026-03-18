@@ -27,6 +27,6 @@ Product API routes live in `src/app/api/products/`:
 
 ## Key Patterns
 
-- Images uploaded to Vercel Blob, URLs stored in `product_images` table
+- Images uploaded to Supabase Storage (`product-images` bucket), URLs stored in `product_images` table
 - Product types derived from Supabase database schema via `@/types/database`
 - Product card uses Swiper for image carousel with navigation/pagination

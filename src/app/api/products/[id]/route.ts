@@ -1,6 +1,5 @@
 import { createClient } from '@/libs/supabase/server';
 import { NextResponse } from 'next/server';
-import { del } from '@vercel/blob';
 
 export async function GET(_: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
@@ -99,13 +98,17 @@ export async function DELETE(_: Request, context: { params: Promise<{ id: string
       .select('image_url')
       .eq('product_id', id);
 
-    if (images) {
-      for (const img of images) {
-        try {
-          await del(img.image_url);
-        } catch (e) {
-          console.error('Failed to delete blob:', img.image_url, e);
-        }
+    if (images && images.length > 0) {
+      const storagePaths = images
+        .map((img) => {
+          const url = new URL(img.image_url);
+          const match = url.pathname.match(/\/storage\/v1\/object\/public\/product-images\/(.+)/);
+          return match ? match[1] : null;
+        })
+        .filter(Boolean) as string[];
+
+      if (storagePaths.length > 0) {
+        await supabase.storage.from('product-images').remove(storagePaths);
       }
     }
 

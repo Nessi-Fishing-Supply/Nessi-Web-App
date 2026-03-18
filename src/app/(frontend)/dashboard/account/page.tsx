@@ -11,8 +11,8 @@ const Account: React.FC = () => {
     try {
       await logout();
       window.location.href = '/';
-    } catch (error) {
-      console.error('Logout failed:', error);
+    } catch {
+      // Logout failed silently — user stays on page
     }
   };
 
