@@ -1,54 +1,53 @@
 .link {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2xs);
-    text-decoration: none;
-    transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  text-decoration: none;
+  transition: all 0.25s ease;
 
-    // Underline Optional
-    &.underline {
-        text-decoration: underline;
-    }
+  // Underline Optional
+  &.underline {
+    text-decoration: underline;
+  }
 
-    // Sizes
-    &.sm {
-        font-size: var(--font-size-sm);
-    }
+  // Sizes
+  &.sm {
+    font-size: var(--font-size-sm);
+  }
 
-    &.md {
-        font-size: var(--font-size-base);
-    }
+  &.md {
+    font-size: var(--font-size-base);
+  }
 
-    // Width
-    &.fullWidth {
-        width: 100%;
-    }
+  // Width
+  &.fullWidth {
+    width: 100%;
+  }
 
-    // Center
-    &.center {
-        justify-content: center;
-    }
+  // Center
+  &.center {
+    justify-content: center;
+  }
 
-    // Styles
-    &.primary {
-        color: var(--color-primary);
+  // Styles
+  &.primary {
+    color: var(--color-primary);
 
-        &:hover {
-            color: var(--color-primary--dark);
-        }
-    }
-
-    &.secondary {
-        color: var(--color-secondary);
-
-        &:hover {
-            color: var(--color-secondary--dark);
-        }
+    &:hover {
+      color: var(--color-primary--dark);
     }
   }
 
-  .icon {
-    width: var(--space-base);
-    height: var(--space-base);
+  &.secondary {
+    color: var(--color-secondary);
+
+    &:hover {
+      color: var(--color-secondary--dark);
+    }
   }
-  
+}
+
+.icon {
+  width: var(--space-base);
+  height: var(--space-base);
+}

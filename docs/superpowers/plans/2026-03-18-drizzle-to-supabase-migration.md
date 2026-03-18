@@ -15,55 +15,58 @@
 ## File Structure
 
 ### Files to Create
-| File | Responsibility |
-|---|---|
-| `src/libs/supabase/client.ts` | Browser Supabase client for Client Components |
-| `src/libs/supabase/server.ts` | Server Supabase client for Server Components / Route Handlers |
-| `src/libs/supabase/admin.ts` | Admin Supabase client (service role, bypasses RLS) |
-| `src/proxy.ts` | Next.js 16 proxy — refreshes Supabase session on every request |
-| `src/app/(frontend)/auth/callback/route.ts` | Server-side PKCE auth callback handler |
-| `src/types/database.ts` | Supabase-generated TypeScript types (placeholder until `supabase gen types` is run) |
+
+| File                                        | Responsibility                                                                      |
+| ------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `src/libs/supabase/client.ts`               | Browser Supabase client for Client Components                                       |
+| `src/libs/supabase/server.ts`               | Server Supabase client for Server Components / Route Handlers                       |
+| `src/libs/supabase/admin.ts`                | Admin Supabase client (service role, bypasses RLS)                                  |
+| `src/proxy.ts`                              | Next.js 16 proxy — refreshes Supabase session on every request                      |
+| `src/app/(frontend)/auth/callback/route.ts` | Server-side PKCE auth callback handler                                              |
+| `src/types/database.ts`                     | Supabase-generated TypeScript types (placeholder until `supabase gen types` is run) |
 
 ### Files to Delete
-| File | Reason |
-|---|---|
-| `src/libs/supabase.ts` | Replaced by `src/libs/supabase/` directory |
-| `src/libs/db.ts` | Drizzle client — no longer needed |
-| `src/db/schema/products.ts` | Drizzle schema — replaced by generated types |
-| `src/db/schema/productImages.ts` | Drizzle schema — replaced by generated types |
-| `src/db/schema/index.ts` | Drizzle schema barrel export |
-| `drizzle.config.ts` | Drizzle configuration |
-| `src/app/api/auth/login/route.ts` | Login moves client-side |
-| `src/app/api/auth/logout/route.ts` | Logout moves client-side |
-| `src/app/api/auth/forgot-password/route.ts` | Forgot-password moves client-side |
+
+| File                                        | Reason                                       |
+| ------------------------------------------- | -------------------------------------------- |
+| `src/libs/supabase.ts`                      | Replaced by `src/libs/supabase/` directory   |
+| `src/libs/db.ts`                            | Drizzle client — no longer needed            |
+| `src/db/schema/products.ts`                 | Drizzle schema — replaced by generated types |
+| `src/db/schema/productImages.ts`            | Drizzle schema — replaced by generated types |
+| `src/db/schema/index.ts`                    | Drizzle schema barrel export                 |
+| `drizzle.config.ts`                         | Drizzle configuration                        |
+| `src/app/api/auth/login/route.ts`           | Login moves client-side                      |
+| `src/app/api/auth/logout/route.ts`          | Logout moves client-side                     |
+| `src/app/api/auth/forgot-password/route.ts` | Forgot-password moves client-side            |
 
 ### Files to Modify
-| File | Changes |
-|---|---|
-| `package.json` | Remove 5 packages, add `@supabase/ssr`, update db scripts |
-| `src/context/auth.tsx` | Rewrite: cookie-based via Supabase, remove localStorage |
-| `src/services/auth.ts` | Rewrite: direct browser Supabase client calls |
-| `src/services/product.ts` | Remove `x-user-id` headers, remove `userId` from bodies, snake_case |
-| `src/types/product.ts` | Derive from generated Database types (snake_case) |
-| `src/app/api/auth/register/route.ts` | Use admin client |
-| `src/app/api/products/route.ts` | Supabase client queries, server auth |
-| `src/app/api/products/[id]/route.ts` | Supabase client queries, server auth |
-| `src/app/api/products/user/route.ts` | Supabase client queries, server auth |
-| `src/app/api/products/upload/route.ts` | Add auth check |
-| `src/app/(frontend)/layout.tsx` | Remove `"use client"`, remove AuthProvider |
-| `src/app/(frontend)/auth/callback/page.tsx` | Simplify to loading/redirect UI |
-| `src/app/(frontend)/page.tsx` | Update to snake_case fields |
-| `src/app/(frontend)/item/[id]/page.tsx` | Update server-side fetch |
-| `src/app/(frontend)/item/[id]/ItemIdPage.tsx` | Update to snake_case fields |
-| `src/app/(frontend)/dashboard/products/page.tsx` | Use new auth pattern, snake_case |
-| `src/app/(frontend)/dashboard/account/page.tsx` | Use new auth pattern |
-| `src/components/navigation/navbar/index.tsx` | Use new auth, remove old useAuth patterns |
-| `src/components/forms/login/index.tsx` | Direct Supabase signIn, no API route |
-| `src/components/forms/registration/index.tsx` | Keep API route call (register stays server-side) |
-| `src/components/forms/reset-password/index.tsx` | Use browser Supabase client |
-| `src/components/forms/add-product/index.tsx` | Remove userId from create flow, snake_case |
-| `src/components/cards/product-card/index.tsx` | Update to snake_case image fields |
-| `CLAUDE.md` | Update architecture docs |
+
+| File                                             | Changes                                                             |
+| ------------------------------------------------ | ------------------------------------------------------------------- |
+| `package.json`                                   | Remove 5 packages, add `@supabase/ssr`, update db scripts           |
+| `src/context/auth.tsx`                           | Rewrite: cookie-based via Supabase, remove localStorage             |
+| `src/services/auth.ts`                           | Rewrite: direct browser Supabase client calls                       |
+| `src/services/product.ts`                        | Remove `x-user-id` headers, remove `userId` from bodies, snake_case |
+| `src/types/product.ts`                           | Derive from generated Database types (snake_case)                   |
+| `src/app/api/auth/register/route.ts`             | Use admin client                                                    |
+| `src/app/api/products/route.ts`                  | Supabase client queries, server auth                                |
+| `src/app/api/products/[id]/route.ts`             | Supabase client queries, server auth                                |
+| `src/app/api/products/user/route.ts`             | Supabase client queries, server auth                                |
+| `src/app/api/products/upload/route.ts`           | Add auth check                                                      |
+| `src/app/(frontend)/layout.tsx`                  | Remove `"use client"`, remove AuthProvider                          |
+| `src/app/(frontend)/auth/callback/page.tsx`      | Simplify to loading/redirect UI                                     |
+| `src/app/(frontend)/page.tsx`                    | Update to snake_case fields                                         |
+| `src/app/(frontend)/item/[id]/page.tsx`          | Update server-side fetch                                            |
+| `src/app/(frontend)/item/[id]/ItemIdPage.tsx`    | Update to snake_case fields                                         |
+| `src/app/(frontend)/dashboard/products/page.tsx` | Use new auth pattern, snake_case                                    |
+| `src/app/(frontend)/dashboard/account/page.tsx`  | Use new auth pattern                                                |
+| `src/components/navigation/navbar/index.tsx`     | Use new auth, remove old useAuth patterns                           |
+| `src/components/forms/login/index.tsx`           | Direct Supabase signIn, no API route                                |
+| `src/components/forms/registration/index.tsx`    | Keep API route call (register stays server-side)                    |
+| `src/components/forms/reset-password/index.tsx`  | Use browser Supabase client                                         |
+| `src/components/forms/add-product/index.tsx`     | Remove userId from create flow, snake_case                          |
+| `src/components/cards/product-card/index.tsx`    | Update to snake_case image fields                                   |
+| `CLAUDE.md`                                      | Update architecture docs                                            |
 
 ---
 
@@ -72,6 +75,7 @@
 > **Build safety**: This task ONLY adds the new package. Drizzle/Neon packages are removed later in Task 9 after all consuming files are migrated. This keeps the build passing.
 
 **Files:**
+
 - Modify: `package.json`
 
 - [ ] **Step 1: Install @supabase/ssr**
@@ -103,6 +107,7 @@ git commit -m "chore: add @supabase/ssr package"
 ## Task 2: Create Supabase Client Architecture
 
 **Files:**
+
 - Create: `src/libs/supabase/client.ts`
 - Create: `src/libs/supabase/server.ts`
 - Create: `src/libs/supabase/admin.ts`
@@ -112,6 +117,7 @@ git commit -m "chore: add @supabase/ssr package"
 - [ ] **Step 1: Create browser client**
 
 Create `src/libs/supabase/client.ts`:
+
 ```typescript
 import { createBrowserClient } from '@supabase/ssr';
 import type { Database } from '@/types/database';
@@ -119,7 +125,7 @@ import type { Database } from '@/types/database';
 export function createClient() {
   return createBrowserClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   );
 }
 ```
@@ -127,6 +133,7 @@ export function createClient() {
 - [ ] **Step 2: Create server client**
 
 Create `src/libs/supabase/server.ts`:
+
 ```typescript
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
@@ -146,7 +153,7 @@ export async function createClient() {
         setAll(cookiesToSet) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
+              cookieStore.set(name, value, options),
             );
           } catch {
             // setAll called from Server Component — ignored if proxy
@@ -154,7 +161,7 @@ export async function createClient() {
           }
         },
       },
-    }
+    },
   );
 }
 ```
@@ -162,6 +169,7 @@ export async function createClient() {
 - [ ] **Step 3: Create admin client**
 
 Create `src/libs/supabase/admin.ts`:
+
 ```typescript
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database';
@@ -175,7 +183,7 @@ export function createAdminClient() {
         autoRefreshToken: false,
         persistSession: false,
       },
-    }
+    },
   );
 }
 ```
@@ -194,6 +202,7 @@ git commit -m "feat: add Supabase SSR client architecture (browser, server, admi
 ## Task 3: Create Proxy and Database Types
 
 **Files:**
+
 - Create: `src/proxy.ts`
 - Create: `src/types/database.ts`
 - Modify: `src/types/product.ts`
@@ -201,6 +210,7 @@ git commit -m "feat: add Supabase SSR client architecture (browser, server, admi
 - [ ] **Step 1: Create proxy.ts for session refresh**
 
 Create `src/proxy.ts`:
+
 ```typescript
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
@@ -215,19 +225,19 @@ export async function proxy(request: NextRequest) {
       cookies: {
         getAll: () => request.cookies.getAll(),
         setAll: (cookiesToSet) => {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
           response = NextResponse.next({ request });
           cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
+            response.cookies.set(name, value, options),
           );
         },
       },
-    }
+    },
   );
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
     return NextResponse.redirect(new URL('/', request.url));
@@ -237,9 +247,7 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-  ],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
 };
 ```
 
@@ -250,13 +258,7 @@ export const config = {
 Create `src/types/database.ts`. This is a placeholder matching the current schema. Replace with `pnpm db:types` once the Supabase CLI is linked.
 
 ```typescript
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[];
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
   public: {
@@ -348,6 +350,7 @@ git commit -m "feat: add proxy.ts session refresh and database types"
 ## Task 4: Migrate Auth System
 
 **Files:**
+
 - Modify: `src/context/auth.tsx`
 - Modify: `src/services/auth.ts`
 - Modify: `src/app/api/auth/register/route.ts`
@@ -435,6 +438,7 @@ export const useAuth = (): AuthContextType => {
 - [ ] **Step 2: Rewrite auth service**
 
 Replace `src/services/auth.ts` entirely:
+
 ```typescript
 import { createClient } from '@/libs/supabase/client';
 
@@ -479,7 +483,10 @@ export const logout = async () => {
 // Get current user profile
 export const getUserProfile = async () => {
   const supabase = createClient();
-  const { data: { user }, error } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
   if (error) throw new Error(error.message);
   return user;
 };
@@ -496,10 +503,7 @@ export const forgotPassword = async (data: { email: string }) => {
 };
 
 // Update password (user must have active session from recovery flow)
-export const resetPassword = async (data: {
-  newPassword: string;
-  confirmNewPassword: string;
-}) => {
+export const resetPassword = async (data: { newPassword: string; confirmNewPassword: string }) => {
   if (data.newPassword !== data.confirmNewPassword) {
     throw new Error('Passwords do not match');
   }
@@ -517,6 +521,7 @@ export const resetPassword = async (data: {
 - [ ] **Step 3: Rewrite register route to use admin client**
 
 Replace `src/app/api/auth/register/route.ts`:
+
 ```typescript
 import { createAdminClient } from '@/libs/supabase/admin';
 import { NextResponse } from 'next/server';
@@ -528,7 +533,7 @@ export async function POST(req: Request) {
     if (!firstName || !lastName || !email || !password || !terms) {
       return NextResponse.json(
         { error: 'All fields are required and terms must be accepted' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -560,19 +565,16 @@ export async function POST(req: Request) {
 
     return NextResponse.json(
       { message: 'Registration successful. Please check your email to verify your account.' },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error('Registration error:', error);
-    return NextResponse.json(
-      { error: 'An unexpected error occurred' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'An unexpected error occurred' }, { status: 500 });
   }
 }
 ```
 
-> **Note on register route**: The `admin.createUser` creates the user but `admin.generateLink` only *generates* a link — it does NOT send an email automatically. If Supabase's built-in email sending is configured, use `supabase.auth.signUp()` from the admin client instead, which triggers the confirmation email. The simplest working approach:
+> **Note on register route**: The `admin.createUser` creates the user but `admin.generateLink` only _generates_ a link — it does NOT send an email automatically. If Supabase's built-in email sending is configured, use `supabase.auth.signUp()` from the admin client instead, which triggers the confirmation email. The simplest working approach:
 >
 > ```typescript
 > const { data, error } = await supabase.auth.signUp({
@@ -598,6 +600,7 @@ rm src/app/api/auth/forgot-password/route.ts
 - [ ] **Step 5: Create PKCE callback route handler**
 
 Create `src/app/(frontend)/auth/callback/route.ts`:
+
 ```typescript
 import { createClient } from '@/libs/supabase/server';
 import { NextResponse } from 'next/server';
@@ -629,6 +632,7 @@ export async function GET(request: Request) {
 - [ ] **Step 6: Simplify callback page.tsx**
 
 Replace `src/app/(frontend)/auth/callback/page.tsx`:
+
 ```typescript
 'use client';
 
@@ -682,6 +686,7 @@ git commit -m "feat: migrate auth to Supabase SSR cookie-based sessions"
 ## Task 5: Migrate Product API Routes
 
 **Files:**
+
 - Modify: `src/app/api/products/route.ts`
 - Modify: `src/app/api/products/[id]/route.ts`
 - Modify: `src/app/api/products/user/route.ts`
@@ -690,6 +695,7 @@ git commit -m "feat: migrate auth to Supabase SSR cookie-based sessions"
 - [ ] **Step 1: Rewrite GET/POST /api/products**
 
 Replace `src/app/api/products/route.ts`:
+
 ```typescript
 import { createClient } from '@/libs/supabase/server';
 import { NextResponse } from 'next/server';
@@ -697,7 +703,9 @@ import { NextResponse } from 'next/server';
 export async function POST(req: Request) {
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -706,10 +714,7 @@ export async function POST(req: Request) {
     const { title, description, price, images } = await req.json();
 
     if (!title || !price) {
-      return NextResponse.json(
-        { error: 'Title and price are required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Title and price are required' }, { status: 400 });
     }
 
     const { data: product, error: productError } = await supabase
@@ -745,10 +750,7 @@ export async function POST(req: Request) {
     return NextResponse.json(fullProduct, { status: 201 });
   } catch (error) {
     console.error('Error creating product:', error);
-    return NextResponse.json(
-      { error: 'Failed to create product' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to create product' }, { status: 500 });
   }
 }
 
@@ -767,10 +769,7 @@ export async function GET() {
     return NextResponse.json(products);
   } catch (error) {
     console.error('Error fetching products:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch products' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 });
   }
 }
 ```
@@ -778,6 +777,7 @@ export async function GET() {
 - [ ] **Step 2: Rewrite GET/PUT/DELETE /api/products/[id]**
 
 Replace `src/app/api/products/[id]/route.ts`:
+
 ```typescript
 import { createClient } from '@/libs/supabase/server';
 import { NextResponse } from 'next/server';
@@ -811,7 +811,9 @@ export async function PUT(req: Request, context: { params: Promise<{ id: string 
 
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -831,10 +833,7 @@ export async function PUT(req: Request, context: { params: Promise<{ id: string 
 
     // Replace images if provided
     if (images && images.length > 0) {
-      await supabase
-        .from('product_images')
-        .delete()
-        .eq('product_id', id);
+      await supabase.from('product_images').delete().eq('product_id', id);
 
       const imageRows = images
         .filter((img: { url: string }) => img.url)
@@ -871,7 +870,9 @@ export async function DELETE(_: Request, context: { params: Promise<{ id: string
 
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -896,10 +897,7 @@ export async function DELETE(_: Request, context: { params: Promise<{ id: string
 
     // RLS ensures only the owner can delete
     // FK cascade handles product_images deletion
-    const { error } = await supabase
-      .from('products')
-      .delete()
-      .eq('id', id);
+    const { error } = await supabase.from('products').delete().eq('id', id);
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
@@ -916,6 +914,7 @@ export async function DELETE(_: Request, context: { params: Promise<{ id: string
 - [ ] **Step 3: Rewrite GET /api/products/user**
 
 Replace `src/app/api/products/user/route.ts`:
+
 ```typescript
 import { createClient } from '@/libs/supabase/server';
 import { NextResponse } from 'next/server';
@@ -923,7 +922,9 @@ import { NextResponse } from 'next/server';
 export async function GET() {
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -949,6 +950,7 @@ export async function GET() {
 - [ ] **Step 4: Add auth to upload route**
 
 Replace `src/app/api/products/upload/route.ts`:
+
 ```typescript
 import { put } from '@vercel/blob';
 import { createClient } from '@/libs/supabase/server';
@@ -957,7 +959,9 @@ import { NextResponse } from 'next/server';
 export async function POST(req: Request) {
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -995,12 +999,14 @@ git commit -m "feat: migrate product API routes from Drizzle to Supabase client"
 ## Task 6: Update Product Service and Layout
 
 **Files:**
+
 - Modify: `src/services/product.ts`
 - Modify: `src/app/(frontend)/layout.tsx`
 
 - [ ] **Step 1: Rewrite product service (remove x-user-id, snake_case)**
 
 Replace `src/services/product.ts`:
+
 ```typescript
 import axios from 'axios';
 import type { ProductWithImages } from '@/types/product';
@@ -1039,7 +1045,7 @@ export const updateProduct = async (
     description: string;
     price: string;
     images?: { url: string }[];
-  }
+  },
 ): Promise<ProductWithImages> => {
   const res = await axios.put(`${BASE_URL}/${id}`, data);
   return res.data;
@@ -1118,6 +1124,7 @@ git commit -m "feat: update product service and layout for Supabase auth"
 ## Task 7: Update Auth-Dependent Components
 
 **Files:**
+
 - Modify: `src/components/navigation/navbar/index.tsx`
 - Modify: `src/components/forms/login/index.tsx`
 - Modify: `src/components/forms/reset-password/index.tsx`
@@ -1139,6 +1146,7 @@ In `src/components/navigation/navbar/index.tsx`, update the auth imports and usa
 8. Remove `setAuthenticated` and `setToken` usage — just call `logout()` and reload
 
 Key changes to the component:
+
 - Remove: `const [user, setUser] = useState<User | null>(null);`
 - Remove: The `fetchUser` useEffect
 - Change: `const { isAuthenticated, setAuthenticated, setToken } = useAuth()` → `const { user, isAuthenticated, isLoading } = useAuth()`
@@ -1147,12 +1155,14 @@ Key changes to the component:
 - [ ] **Step 2: Update Login Form**
 
 In `src/components/forms/login/index.tsx`:
+
 - The `login()` function in services now returns `{ user, session }` and sets cookies automatically
 - Remove any `localStorage.setItem` calls
 - Remove `setToken`, `setAuthenticated`, `setUser` calls from `useAuth`
 - After successful login, just reload the page or redirect — the proxy will pick up the session
 
 Update the submit handler:
+
 ```typescript
 const onSubmit = async (data: LoginFormData) => {
   try {
@@ -1174,12 +1184,14 @@ const onSubmit = async (data: LoginFormData) => {
 - [ ] **Step 3: Update Reset Password Form**
 
 In `src/components/forms/reset-password/index.tsx`:
+
 - The `resetPassword()` function from services now uses the browser Supabase client directly
 - No changes needed to the form itself — just ensure it calls `resetPassword` from services which is already updated
 
 - [ ] **Step 4: Update Dashboard Products Page**
 
 In `src/app/(frontend)/dashboard/products/page.tsx`:
+
 - Remove `getUserProfile` import — user comes from `useAuth()`
 - Change `getUserProducts(user.id)` to `getUserProducts()` (no userId param needed)
 - Use `useAuth()` to get `user` and `isAuthenticated`
@@ -1188,12 +1200,14 @@ In `src/app/(frontend)/dashboard/products/page.tsx`:
 - [ ] **Step 5: Update Dashboard Account Page**
 
 In `src/app/(frontend)/dashboard/account/page.tsx`:
+
 - Update to use `useAuth()` for user info instead of fetching separately
 - The user object from Supabase includes `email` and `user_metadata` (firstName, lastName)
 
 - [ ] **Step 6: Update Forgot Password Page**
 
 In `src/app/(frontend)/auth/forgot-password/page.tsx` (if it calls the API route directly):
+
 - Ensure it uses the `forgotPassword()` function from services (which now uses browser client directly)
 
 - [ ] **Step 7: Commit**
@@ -1215,6 +1229,7 @@ git commit -m "feat: update auth-dependent components for Supabase SSR"
 > **Build safety**: This task updates `src/types/product.ts` AND all consuming components in a single atomic commit. The type change and component updates must happen together.
 
 **Files:**
+
 - Modify: `src/types/product.ts`
 - Modify: `src/app/(frontend)/page.tsx`
 - Modify: `src/app/(frontend)/item/[id]/page.tsx`
@@ -1225,6 +1240,7 @@ git commit -m "feat: update auth-dependent components for Supabase SSR"
 - [ ] **Step 1: Update product types to snake_case**
 
 Rewrite `src/types/product.ts`:
+
 ```typescript
 import type { Database } from './database';
 
@@ -1243,6 +1259,7 @@ export type ProductWithImages = Product & {
 - [ ] **Step 2: Update ProductCard**
 
 In `src/components/cards/product-card/index.tsx`:
+
 - Change `product.images` → `product.product_images`
 - Change `img.imageUrl` → `img.image_url`
 - Update the `ProductWithImages` import (already updated in types)
@@ -1251,6 +1268,7 @@ In `src/components/cards/product-card/index.tsx`:
 - [ ] **Step 2: Update Home Page**
 
 In `src/app/(frontend)/page.tsx`:
+
 - The `getAllProducts()` call stays the same
 - Update field access: `product.price` stays (same name), but check for any camelCase field usage
 - `product.images` → `product.product_images` (if used here)
@@ -1258,10 +1276,12 @@ In `src/app/(frontend)/page.tsx`:
 - [ ] **Step 3: Update Item Detail Pages**
 
 In `src/app/(frontend)/item/[id]/page.tsx`:
+
 - Server-side fetch to `/api/products/${id}` — the response now has snake_case fields
 - Update `product.images` → `product.product_images` in the template
 
 In `src/app/(frontend)/item/[id]/ItemIdPage.tsx`:
+
 - Change all `product.images` → `product.product_images`
 - Change `img.imageUrl` → `img.image_url`
 - Update the `ProductWithImages` import type
@@ -1269,6 +1289,7 @@ In `src/app/(frontend)/item/[id]/ItemIdPage.tsx`:
 - [ ] **Step 4: Update Add Product Form**
 
 In `src/components/forms/add-product/index.tsx`:
+
 - Remove `getUserProfile()` call and `userId` from the create flow
 - The `createProduct()` function no longer takes `userId` — server gets it from session
 - Remove `headers: { 'x-user-id': ... }` if present in direct fetch calls
@@ -1289,6 +1310,7 @@ git commit -m "feat: update product components for snake_case Supabase fields"
 > All consumers of Drizzle, Neon, and the old `src/libs/supabase.ts` have been migrated in Tasks 2-8. Now we can safely remove everything.
 
 **Files:**
+
 - Delete: `src/db/schema/products.ts`
 - Delete: `src/db/schema/productImages.ts`
 - Delete: `src/db/schema/index.ts`
@@ -1307,6 +1329,7 @@ pnpm remove drizzle-orm drizzle-kit @neondatabase/serverless pg dotenv
 - [ ] **Step 2: Update package.json scripts**
 
 Replace the Drizzle db scripts. Change:
+
 ```json
 "db:generate": "drizzle-kit generate",
 "db:migrate": "drizzle-kit push",
@@ -1314,7 +1337,9 @@ Replace the Drizzle db scripts. Change:
 "db:pull": "drizzle-kit pull",
 "db:check": "drizzle-kit check"
 ```
+
 To:
+
 ```json
 "db:types": "supabase gen types typescript --linked > src/types/database.ts"
 ```
@@ -1332,12 +1357,15 @@ rm src/libs/supabase.ts src/libs/db.ts
 Update the following sections in `CLAUDE.md`:
 
 **Commands section** — replace Drizzle commands:
+
 ```markdown
 - **DB generate types:** `pnpm db:types`
 ```
+
 Remove: `db:generate`, `db:migrate`, `db:studio`, `db:pull`, `db:check`
 
 **Architecture > Database section** — replace with:
+
 ```markdown
 ### Database
 
@@ -1348,6 +1376,7 @@ Remove: `db:generate`, `db:migrate`, `db:studio`, `db:pull`, `db:check`
 ```
 
 **Architecture > Authentication section** — replace with:
+
 ```markdown
 ### Authentication
 
@@ -1380,6 +1409,7 @@ pnpm lint
 ```
 
 Fix any errors. Common issues:
+
 - Unused imports from removed modules
 - Missing imports for new Supabase utilities
 - Type errors from snake_case migration
@@ -1395,6 +1425,7 @@ The build must succeed. Fix any TypeScript or import errors.
 - [ ] **Step 3: Verify no references to removed modules**
 
 Search for any remaining references:
+
 ```bash
 grep -r "drizzle" src/ --include="*.ts" --include="*.tsx"
 grep -r "@neondatabase" src/ --include="*.ts" --include="*.tsx"
@@ -1519,6 +1550,7 @@ git push origin main
 - [ ] **Step 2: Verify Vercel deployment**
 
 Check the Vercel deployment succeeds. Test the following flows manually:
+
 1. Home page loads and shows products (public, no auth needed)
 2. Register a new user
 3. Verify email callback works

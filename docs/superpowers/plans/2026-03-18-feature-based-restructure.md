@@ -13,6 +13,7 @@
 ## File Structure
 
 ### New directories to create
+
 - `src/features/auth/` — services, types, validations, context, components
 - `src/features/products/` — services, types, components
 
@@ -42,6 +43,7 @@
 | `src/components/indicators/favorite/` | `src/features/products/components/favorite/` |
 
 ### Files that stay
+
 - `src/components/controls/` — shared UI primitives
 - `src/components/layout/` — shared layout components
 - `src/components/navigation/` — shared navigation components
@@ -53,6 +55,7 @@
 - `src/app/` — route layer (imports from features)
 
 ### Empty directories to clean up after moves
+
 - `src/services/` (will be empty)
 - `src/validations/` (will be empty)
 - `src/context/` (will be empty)
@@ -65,23 +68,23 @@
 
 After moving files, these imports need updating across the codebase:
 
-| Old import path | New import path | Files affected |
-|----------------|-----------------|----------------|
-| `@/services/auth` | `@/features/auth/services/auth` | navbar, login form, registration form, forgot-password form, reset-password form, dashboard/account |
-| `@/services/product` | `@/features/products/services/product` | page.tsx (home), item/[id], dashboard/products, add-product form |
-| `@/types/auth` | `@/features/auth/types/auth` | login form, registration form |
-| `@/types/forms` | `@/features/auth/types/forms` | useFormState, login form, registration form, forgot-password form, reset-password form |
-| `@/types/product` | `@/features/products/types/product` | product service, product-card, add-product form, page.tsx (home), item/[id], dashboard/products |
-| `@/validations/auth` | `@/features/auth/validations/auth` | login form, registration form |
-| `@/context/auth` | `@/features/auth/context` | layout.tsx, navbar, add-product form, dashboard/account, dashboard/products |
-| `@/components/forms/login` | `@/features/auth/components/login-form` | navbar |
-| `@/components/forms/registration` | `@/features/auth/components/registration-form` | navbar |
-| `@/components/forms/forgot-password` | `@/features/auth/components/forgot-password-form` | auth/forgot-password/page.tsx |
-| `@/components/forms/reset-password` | `@/features/auth/components/reset-password-form` | auth/callback/page.tsx |
-| `@/components/forms/add-product` | `@/features/products/components/add-product-form` | dashboard/products/page.tsx |
-| `@/components/cards/product-card` | `@/features/products/components/product-card` | page.tsx (home), dashboard/products/page.tsx |
-| `@/components/indicators/favorite` | `@/features/products/components/favorite` | product-card |
-| `@/components/indicators/product-reviews` | `@/features/products/components/product-reviews` | product-card |
+| Old import path                           | New import path                                   | Files affected                                                                                      |
+| ----------------------------------------- | ------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `@/services/auth`                         | `@/features/auth/services/auth`                   | navbar, login form, registration form, forgot-password form, reset-password form, dashboard/account |
+| `@/services/product`                      | `@/features/products/services/product`            | page.tsx (home), item/[id], dashboard/products, add-product form                                    |
+| `@/types/auth`                            | `@/features/auth/types/auth`                      | login form, registration form                                                                       |
+| `@/types/forms`                           | `@/features/auth/types/forms`                     | useFormState, login form, registration form, forgot-password form, reset-password form              |
+| `@/types/product`                         | `@/features/products/types/product`               | product service, product-card, add-product form, page.tsx (home), item/[id], dashboard/products     |
+| `@/validations/auth`                      | `@/features/auth/validations/auth`                | login form, registration form                                                                       |
+| `@/context/auth`                          | `@/features/auth/context`                         | layout.tsx, navbar, add-product form, dashboard/account, dashboard/products                         |
+| `@/components/forms/login`                | `@/features/auth/components/login-form`           | navbar                                                                                              |
+| `@/components/forms/registration`         | `@/features/auth/components/registration-form`    | navbar                                                                                              |
+| `@/components/forms/forgot-password`      | `@/features/auth/components/forgot-password-form` | auth/forgot-password/page.tsx                                                                       |
+| `@/components/forms/reset-password`       | `@/features/auth/components/reset-password-form`  | auth/callback/page.tsx                                                                              |
+| `@/components/forms/add-product`          | `@/features/products/components/add-product-form` | dashboard/products/page.tsx                                                                         |
+| `@/components/cards/product-card`         | `@/features/products/components/product-card`     | page.tsx (home), dashboard/products/page.tsx                                                        |
+| `@/components/indicators/favorite`        | `@/features/products/components/favorite`         | product-card                                                                                        |
+| `@/components/indicators/product-reviews` | `@/features/products/components/product-reviews`  | product-card                                                                                        |
 
 ---
 
@@ -90,6 +93,7 @@ After moving files, these imports need updating across the codebase:
 ### Task 1: Create feature directory structure and move auth files
 
 **Files:**
+
 - Create: `src/features/auth/services/auth.ts` (moved)
 - Create: `src/features/auth/types/auth.ts` (moved)
 - Create: `src/features/auth/types/forms.ts` (moved)
@@ -129,18 +133,23 @@ git mv src/components/forms/reset-password/index.tsx src/features/auth/component
 - [ ] **Step 4: Update internal imports within moved auth files**
 
 In `src/features/auth/types/forms.ts`:
+
 - `@/types/auth` → `@/features/auth/types/auth`
 
 In `src/features/auth/context.tsx`:
+
 - No change needed (`@/libs/supabase/client` stays)
 
 In `src/features/auth/services/auth.ts`:
+
 - No change needed (`@/libs/supabase/client` stays)
 
 In `src/features/auth/validations/auth.ts`:
+
 - No change needed (only imports `yup`)
 
 In `src/features/auth/components/login-form/index.tsx`:
+
 - `@/validations/auth` → `@/features/auth/validations/auth`
 - `@/types/auth` → `@/features/auth/types/auth`
 - `@/services/auth` → `@/features/auth/services/auth`
@@ -149,6 +158,7 @@ In `src/features/auth/components/login-form/index.tsx`:
 - `@/components/controls` stays (shared component)
 
 In `src/features/auth/components/registration-form/index.tsx`:
+
 - `@/validations/auth` → `@/features/auth/validations/auth`
 - `@/types/auth` → `@/features/auth/types/auth`
 - `@/services/auth` → `@/features/auth/services/auth`
@@ -158,12 +168,14 @@ In `src/features/auth/components/registration-form/index.tsx`:
 - `@/components/layout/grid` stays
 
 In `src/features/auth/components/forgot-password-form/index.tsx`:
+
 - `@/services/auth` → `@/features/auth/services/auth`
 - `@/types/forms` → `@/features/auth/types/forms`
 - `@/hooks/useFormState` stays
 - `@/components/controls` stays
 
 In `src/features/auth/components/reset-password-form/index.tsx`:
+
 - `@/services/auth` → `@/features/auth/services/auth`
 - `@/types/forms` → `@/features/auth/types/forms`
 - `@/components/controls` stays
@@ -180,6 +192,7 @@ git commit -m "refactor: move auth domain files into features/auth/"
 ### Task 2: Create products feature directory and move product files
 
 **Files:**
+
 - Create: `src/features/products/services/product.ts` (moved)
 - Create: `src/features/products/types/product.ts` (moved)
 - Create: `src/features/products/components/add-product-form/index.tsx` (moved)
@@ -216,18 +229,22 @@ git mv src/components/indicators/favorite/Favorite.module.scss src/features/prod
 - [ ] **Step 4: Update internal imports within moved product files**
 
 In `src/features/products/services/product.ts`:
+
 - `@/types/product` → `@/features/products/types/product`
 
 In `src/features/products/types/product.ts`:
+
 - `./database` → `@/types/database` (now needs absolute path since it moved)
 
 In `src/features/products/components/product-card/index.tsx`:
+
 - `@/components/indicators/pill` stays (shared component)
 - `@/components/indicators/favorite` → `@/features/products/components/favorite`
 - `@/components/indicators/product-reviews` → `@/features/products/components/product-reviews`
 - `@/types/product` → `@/features/products/types/product`
 
 In `src/features/products/components/add-product-form/index.tsx`:
+
 - `@/context/auth` → `@/features/auth/context`
 - `@/services/product` → `@/features/products/services/product`
 - `@/types/product` → `@/features/products/types/product`
@@ -245,6 +262,7 @@ git commit -m "refactor: move product domain files into features/products/"
 ### Task 3: Update all consumer imports in app/ and shared components
 
 **Files:**
+
 - Modify: `src/app/(frontend)/layout.tsx`
 - Modify: `src/app/(frontend)/page.tsx`
 - Modify: `src/app/(frontend)/item/[id]/page.tsx`
@@ -296,6 +314,7 @@ import ProductCard from '@/features/products/components/product-card';
 - [ ] **Step 4: Update item/[id] pages**
 
 In `src/app/(frontend)/item/[id]/page.tsx`:
+
 ```typescript
 // Change:
 import { getAllProducts } from '@/services/product';
@@ -306,6 +325,7 @@ import type { ProductWithImages } from '@/features/products/types/product';
 ```
 
 In `src/app/(frontend)/item/[id]/ItemIdPage.tsx`:
+
 ```typescript
 // Change:
 import { ProductWithImages } from '@/types/product';
@@ -316,6 +336,7 @@ import { ProductWithImages } from '@/features/products/types/product';
 - [ ] **Step 5: Update auth pages**
 
 In `src/app/(frontend)/auth/callback/page.tsx`:
+
 ```typescript
 // Change:
 import ResetPasswordForm from '@/components/forms/reset-password';
@@ -324,6 +345,7 @@ import ResetPasswordForm from '@/features/auth/components/reset-password-form';
 ```
 
 In `src/app/(frontend)/auth/forgot-password/page.tsx`:
+
 ```typescript
 // Change:
 import ForgotPasswordForm from '@/components/forms/forgot-password';
@@ -334,6 +356,7 @@ import ForgotPasswordForm from '@/features/auth/components/forgot-password-form'
 - [ ] **Step 6: Update dashboard pages**
 
 In `src/app/(frontend)/dashboard/account/page.tsx`:
+
 ```typescript
 // Change:
 import { useAuth } from '@/context/auth';
@@ -344,6 +367,7 @@ import { logout } from '@/features/auth/services/auth';
 ```
 
 In `src/app/(frontend)/dashboard/products/page.tsx`:
+
 ```typescript
 // Change:
 import { useAuth } from '@/context/auth';
@@ -362,6 +386,7 @@ import ProductCard from '@/features/products/components/product-card';
 - [ ] **Step 7: Update useFormState hook**
 
 In `src/hooks/useFormState.ts`:
+
 ```typescript
 // Change:
 import { FormState } from '@/types/forms';
@@ -404,6 +429,7 @@ git commit -m "chore: remove empty directories after feature restructure"
 ### Task 5: Add feature CLAUDE.md files
 
 **Files:**
+
 - Create: `src/features/auth/CLAUDE.md`
 - Create: `src/features/products/CLAUDE.md`
 
@@ -413,9 +439,11 @@ git commit -m "chore: remove empty directories after feature restructure"
 # Auth Feature
 
 ## Overview
+
 Authentication feature using Supabase Auth with cookie-based sessions via `@supabase/ssr`.
 
 ## Architecture
+
 - **context.tsx** — `AuthProvider` and `useAuth()` hook wrapping Supabase session state (client-side)
 - **services/auth.ts** — Client-side auth API functions (login, register, logout, password reset)
 - **types/auth.ts** — Auth data interfaces (RegisterData, LoginData, ResetPasswordData, AuthResponse)
@@ -423,18 +451,21 @@ Authentication feature using Supabase Auth with cookie-based sessions via `@supa
 - **validations/auth.ts** — Yup schemas for login, registration, and password reset forms
 
 ## Session Flow
+
 1. `proxy.ts` refreshes Supabase sessions on every request (server-side)
 2. `AuthProvider` listens to `onAuthStateChange` for client-side state
 3. Auth forms call services which use the Supabase browser client
 4. Registration goes through `/api/auth/register` (uses admin client to bypass RLS)
 
 ## Key Patterns
+
 - Cookie-based sessions — no localStorage tokens
 - Server-side: API routes use server client from `src/libs/supabase/server.ts`
 - Client-side: Components use browser client from `src/libs/supabase/client.ts`
 - Admin operations: Registration uses admin client from `src/libs/supabase/admin.ts`
 
 ## Components
+
 - **login-form** — Email/password login with redirect support
 - **registration-form** — New user signup with email verification
 - **forgot-password-form** — Password reset email request
@@ -447,26 +478,32 @@ Authentication feature using Supabase Auth with cookie-based sessions via `@supa
 # Products Feature
 
 ## Overview
+
 Product management feature with CRUD operations, image uploads via Vercel Blob, and product display components.
 
 ## Architecture
+
 - **services/product.ts** — Client-side product API functions (CRUD + image upload via axios)
 - **types/product.ts** — Database-derived types (Product, ProductImage, ProductWithImages)
 
 ## API Routes
+
 Product API routes live in `src/app/api/products/`:
+
 - `route.ts` — GET all products, POST create product
 - `[id]/route.ts` — GET/PUT/DELETE single product
 - `user/route.ts` — GET current user's products
 - `upload/route.ts` — POST image upload to Vercel Blob
 
 ## Components
+
 - **product-card** — Product display card with image carousel (Swiper), pricing, reviews, favorites
 - **add-product-form** — Form for creating new products with multi-image upload
 - **product-reviews** — Star rating display component
 - **favorite** — Heart toggle button component
 
 ## Key Patterns
+
 - Images uploaded to Vercel Blob, URLs stored in `product_images` table
 - Product types derived from Supabase database schema via `@/types/database`
 - Product card uses Swiper for image carousel with navigation/pagination
@@ -484,6 +521,7 @@ git commit -m "docs: add CLAUDE.md files for auth and products features"
 ### Task 6: Update root CLAUDE.md
 
 **Files:**
+
 - Modify: `CLAUDE.md`
 
 - [ ] **Step 1: Update Key Directories section in root CLAUDE.md**

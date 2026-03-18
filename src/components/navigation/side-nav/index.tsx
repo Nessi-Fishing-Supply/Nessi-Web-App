@@ -8,13 +8,20 @@ const SideNav = () => {
     <nav className={styles.sideNav}>
       <ul>
         <li>
-          <AppLink href="/dashboard" icon={<HiOutlineHome />}>Dashboard</AppLink>
+          <AppLink href="/dashboard" icon={<HiOutlineHome />}>
+            Dashboard
+          </AppLink>
         </li>
         <li>
-          <AppLink href="/dashboard/account" icon={<HiOutlineUserCircle />}>Account</AppLink>
+          <AppLink href="/dashboard/account" icon={<HiOutlineUserCircle />}>
+            Account
+          </AppLink>
         </li>
         <li>
-          <AppLink href="/dashboard/products" icon={<HiOutlineShoppingBag />}>Products</AppLink> {/* Update icon here */}
+          <AppLink href="/dashboard/products" icon={<HiOutlineShoppingBag />}>
+            Products
+          </AppLink>{' '}
+          {/* Update icon here */}
         </li>
       </ul>
     </nav>

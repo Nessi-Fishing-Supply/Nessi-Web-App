@@ -1,4 +1,4 @@
-@use "sass:map";
+@use 'sass:map';
 
 ////////////////////////
 /// Breakpoint Variables
@@ -7,7 +7,7 @@ $breakpoints: (
   sm: 480px,
   md: 768px,
   lg: 1024px,
-  xl: 1200px
+  xl: 1200px,
 ) !default;
 
 ////////////////////////
@@ -21,10 +21,10 @@ $breakpoints: (
     @media (min-width: #{$size}) {
       @content;
     }
-  } 
+  }
+
   // Handle invalid breakpoints
   @else {
-    @error "No value found for breakpoint `#{$breakpoint}`. "
-           + "Available breakpoints: #{map-keys($breakpoints)}.";
+    @error "No value found for breakpoint `#{$breakpoint}`. " + "Available breakpoints: #{map-keys($breakpoints)}.";
   }
 }

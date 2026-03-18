@@ -8,7 +8,7 @@ export default function NotificationBar() {
       <p className={styles.text}>Maker’s Week | Shop Unique and Custom Baits</p>
       <a className={styles.link}>
         <span>Link Text</span>
-        <HiChevronRight className={styles.icon}/>
+        <HiChevronRight className={styles.icon} />
       </a>
     </div>
   );

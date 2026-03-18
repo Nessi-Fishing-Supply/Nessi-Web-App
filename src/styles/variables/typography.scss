@@ -14,9 +14,9 @@
   --font-size-4xl: calc(var(--font-size-3xl) * var(--font-scale-ratio));
   --font-size-3xl: calc(var(--font-size-2xl) * var(--font-scale-ratio));
   --font-size-2xl: calc(var(--font-size-xl) * var(--font-scale-ratio));
-  --font-size-xl:  calc(var(--font-size-lg) * var(--font-scale-ratio));
-  --font-size-lg:  calc(var(--font-size-md) * var(--font-scale-ratio));
-  --font-size-md:  calc(var(--font-size-base) * var(--font-scale-ratio));
+  --font-size-xl: calc(var(--font-size-lg) * var(--font-scale-ratio));
+  --font-size-lg: calc(var(--font-size-md) * var(--font-scale-ratio));
+  --font-size-md: calc(var(--font-size-base) * var(--font-scale-ratio));
 
   // Smaller sizes (dividing by the ratio)
   --font-size-sm: calc(var(--font-size-base) / var(--font-scale-ratio));

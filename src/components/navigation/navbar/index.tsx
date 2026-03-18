@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useEffect, useState, useSyncExternalStore } from 'react';
 import styles from './Navbar.module.scss';
@@ -34,7 +34,11 @@ import { logout } from '@/features/auth/services/auth';
  * Provides user menu and navigation
  */
 export default function Navbar() {
-  const mounted = useSyncExternalStore(() => () => {}, () => true, () => false);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
   const [isLoginModalOpen, setLoginModalOpen] = useState(false);
   const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
   const [registerSuccess, setRegisterSuccess] = useState(false);
@@ -59,12 +63,12 @@ export default function Navbar() {
   };
 
   const toggleLoginModal = () => {
-    setLoginModalOpen(prev => !prev);
+    setLoginModalOpen((prev) => !prev);
     if (isRegisterModalOpen) setRegisterModalOpen(false);
   };
 
   const toggleRegisterModal = () => {
-    setRegisterModalOpen(prev => !prev);
+    setRegisterModalOpen((prev) => !prev);
     setRegisterSuccess(false);
     if (isLoginModalOpen) setLoginModalOpen(false);
   };
@@ -90,7 +94,7 @@ export default function Navbar() {
         </Link>
         <form className={styles.form}>
           <input type="search" placeholder="Search Fishing Gear" />
-          <button className={styles.form__button} type="submit">
+          <button className={styles.searchButton} type="submit">
             <HiSearch />
           </button>
         </form>
@@ -101,20 +105,32 @@ export default function Navbar() {
         {mounted && isAuthenticated && user ? (
           <Dropdown icon={<HiUser />}>
             <DropdownItem isClickable={false}>
-              <p>{firstName} {lastName}</p>
+              <p>
+                {firstName} {lastName}
+              </p>
             </DropdownItem>
-            <DropdownTitle><p>My Account</p></DropdownTitle>
+            <DropdownTitle>
+              <p>My Account</p>
+            </DropdownTitle>
             <DropdownItem>
-              <AppLink href="/dashboard" icon={<HiOutlineHome />}>Dashboard</AppLink>
+              <AppLink href="/dashboard" icon={<HiOutlineHome />}>
+                Dashboard
+              </AppLink>
             </DropdownItem>
             <DropdownItem>
-              <AppLink href="/dashboard/account" icon={<HiOutlineUserCircle />}>Account</AppLink>
+              <AppLink href="/dashboard/account" icon={<HiOutlineUserCircle />}>
+                Account
+              </AppLink>
             </DropdownItem>
             <DropdownItem>
-              <AppLink href="/dashboard/products" icon={<HiOutlineShoppingBag />}>Products</AppLink>
+              <AppLink href="/dashboard/products" icon={<HiOutlineShoppingBag />}>
+                Products
+              </AppLink>
             </DropdownItem>
             <DropdownItem>
-              <Button onClick={handleLogout} fullWidth>Log Out</Button>
+              <Button onClick={handleLogout} fullWidth>
+                Log Out
+              </Button>
             </DropdownItem>
           </Dropdown>
         ) : (
@@ -130,10 +146,20 @@ export default function Navbar() {
 
       <div className={styles.categories}>
         {[
-          'Rods', 'Reels', 'Combos', 'Baits', 'Lures',
-          'Tackle', 'Line', 'Storage', 'Apparel', 'Bargain Bin',
-        ].map(category => (
-          <Link key={category} href="#">{category}</Link>
+          'Rods',
+          'Reels',
+          'Combos',
+          'Baits',
+          'Lures',
+          'Tackle',
+          'Line',
+          'Storage',
+          'Apparel',
+          'Bargain Bin',
+        ].map((category) => (
+          <Link key={category} href="#">
+            {category}
+          </Link>
         ))}
       </div>
 
@@ -144,10 +170,7 @@ export default function Navbar() {
             Register
           </Button>
         </div>
-        <LoginForm
-          onSuccess={handleLoginSuccess}
-          redirectUrl="/dashboard"
-        />
+        <LoginForm onSuccess={handleLoginSuccess} redirectUrl="/dashboard" />
       </Modal>
 
       <Modal isOpen={isRegisterModalOpen} onClose={toggleRegisterModal}>

@@ -37,7 +37,10 @@ export const logout = async () => {
 
 export const getUserProfile = async () => {
   const supabase = createClient();
-  const { data: { user }, error } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
   if (error) throw new Error(error.message);
   return user;
 };
@@ -52,10 +55,7 @@ export const forgotPassword = async (data: { email: string }) => {
   return { message: 'Reset link sent! Check your email.' };
 };
 
-export const resetPassword = async (data: {
-  newPassword: string;
-  confirmNewPassword: string;
-}) => {
+export const resetPassword = async (data: { newPassword: string; confirmNewPassword: string }) => {
   if (data.newPassword !== data.confirmNewPassword) {
     throw new Error('Passwords do not match');
   }

@@ -20,9 +20,9 @@ interface ResetPasswordFormData {
  * Validates password requirements and confirmation
  * Redirects to login on success
  */
-const ResetPasswordForm: React.FC<AuthFormProps<ResetPasswordFormData>> = ({ 
-  onSuccess, 
-  onError 
+const ResetPasswordForm: React.FC<AuthFormProps<ResetPasswordFormData>> = ({
+  onSuccess,
+  onError,
 }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -61,7 +61,13 @@ const ResetPasswordForm: React.FC<AuthFormProps<ResetPasswordFormData>> = ({
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onSubmit)} className="authForm">
-        <Input name="password" label="New Password" type="password" isRequired showPasswordStrength />
+        <Input
+          name="password"
+          label="New Password"
+          type="password"
+          isRequired
+          showPasswordStrength
+        />
         <Input name="confirmPassword" label="Confirm Password" type="password" isRequired />
         {errorMsg && <p className="errorMessage">{errorMsg}</p>}
         <Button type="submit" fullWidth loading={isLoading}>

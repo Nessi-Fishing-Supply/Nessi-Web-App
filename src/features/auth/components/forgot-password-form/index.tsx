@@ -5,7 +5,11 @@ import * as Yup from 'yup';
 import { useFormState } from '@/features/shared/hooks/useFormState';
 import { Input, Button } from '@/components/controls';
 import { forgotPassword } from '@/features/auth/services/auth';
-import { AuthFormProps, ForgotPasswordFormData, AuthFormResponse } from '@/features/auth/types/forms';
+import {
+  AuthFormProps,
+  ForgotPasswordFormData,
+  AuthFormResponse,
+} from '@/features/auth/types/forms';
 
 /**
  * Forgot password form component
@@ -13,9 +17,9 @@ import { AuthFormProps, ForgotPasswordFormData, AuthFormResponse } from '@/featu
  * Validates email and provides feedback
  * Manages loading and error states
  */
-const ForgotPasswordForm: React.FC<AuthFormProps<ForgotPasswordFormData, AuthFormResponse>> = ({ 
-  onSuccess, 
-  onError 
+const ForgotPasswordForm: React.FC<AuthFormProps<ForgotPasswordFormData, AuthFormResponse>> = ({
+  onSuccess,
+  onError,
 }) => {
   const { isLoading, error, success, setLoading, setError, setSuccess } = useFormState();
 

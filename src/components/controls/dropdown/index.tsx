@@ -29,7 +29,10 @@ const DropdownItem: React.FC<DropdownItemProps> = ({ children, isClickable = tru
   };
 
   return (
-    <div onClick={handleClick} className={isClickable ? styles.dropdownItem : styles.dropdownItemNoClick}>
+    <div
+      onClick={handleClick}
+      className={isClickable ? styles.dropdownItem : styles.dropdownItemNoClick}
+    >
       {children}
     </div>
   );
@@ -37,11 +40,7 @@ const DropdownItem: React.FC<DropdownItemProps> = ({ children, isClickable = tru
 
 // DropdownTitle component
 const DropdownTitle: React.FC<DropdownTitleProps> = ({ children }) => {
-  return (
-    <div className={styles.dropdownTitle}>
-      {children}
-    </div>
-  );
+  return <div className={styles.dropdownTitle}>{children}</div>;
 };
 
 // Dropdown component
@@ -98,7 +97,10 @@ const Dropdown: React.FC<DropdownProps> = ({ children, label, icon }) => {
         {isOpen && (
           <div ref={dropdownRef} className={styles.menu}>
             {React.Children.map(children, (child) => {
-              if (React.isValidElement(child) && (child.type === DropdownItem || child.type === DropdownTitle)) {
+              if (
+                React.isValidElement(child) &&
+                (child.type === DropdownItem || child.type === DropdownTitle)
+              ) {
                 return React.cloneElement(child);
               }
               return <DropdownItem>{child}</DropdownItem>;

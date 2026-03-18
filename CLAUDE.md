@@ -11,6 +11,10 @@ Nessi is an e-commerce web application built with Next.js 16 (App Router), Supab
 - **Dev server:** `pnpm dev`
 - **Build:** `pnpm build`
 - **Lint:** `pnpm lint`
+- **Lint styles:** `pnpm lint:styles`
+- **Type check:** `pnpm typecheck`
+- **Format:** `pnpm format` (write) / `pnpm format:check` (verify)
+- **Test:** `pnpm test` (watch) / `pnpm test:run` (CI)
 - **DB generate types:** `pnpm db:types`
 
 Package manager is **pnpm** (v10.13.1). Do not use npm or yarn.
@@ -69,6 +73,10 @@ SCSS with CSS Modules for component-scoped styles. Global variables in `src/styl
 
 Required in `.env.local`: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`, `BLOB_READ_WRITE_TOKEN`, `NEXT_PUBLIC_APP_URL`.
 
-## ESLint
+## Code Quality
 
-Extends `next/core-web-vitals` and `next/typescript`. `@typescript-eslint/no-explicit-any` is disabled.
+- **ESLint** — `next/core-web-vitals` + `next/typescript` + `eslint-config-prettier`. `@typescript-eslint/no-explicit-any` is disabled.
+- **Prettier** — Single quotes, trailing commas, 100 char width. Config in `.prettierrc`.
+- **Stylelint** — `stylelint-config-standard-scss`. Config in `.stylelintrc.json`.
+- **Vitest** — Unit tests with `@testing-library/react` and jsdom. Config in `vitest.config.mts`.
+- **TypeScript** — `strict: true`. Run `pnpm typecheck` for standalone type checking.

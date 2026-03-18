@@ -12,7 +12,15 @@ interface TextareaProps {
   isRequired?: boolean;
 }
 
-const Textarea: React.FC<TextareaProps> = ({ name, label, value, placeholder, helperText, onChange, isRequired = false }) => {
+const Textarea: React.FC<TextareaProps> = ({
+  name,
+  label,
+  value,
+  placeholder,
+  helperText,
+  onChange,
+  isRequired = false,
+}) => {
   const formContext = useFormContext();
   if (!formContext) {
     return null;

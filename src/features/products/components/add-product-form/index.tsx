@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import React, { useState, ChangeEvent, FormEvent } from "react";
-import { useAuth } from "@/features/auth/context";
-import { createProduct, uploadProductImage } from "@/features/products/services/product";
-import axios from "axios";
-import { useForm, FormProvider } from "react-hook-form";
-import Input from "@/components/controls/input";
-import Textarea from "@/components/controls/text-area";
-import Button from "@/components/controls/button";
-import type { ProductWithImages } from "@/features/products/types/product";
+import React, { useState, ChangeEvent, FormEvent } from 'react';
+import { useAuth } from '@/features/auth/context';
+import { createProduct, uploadProductImage } from '@/features/products/services/product';
+import axios from 'axios';
+import { useForm, FormProvider } from 'react-hook-form';
+import Input from '@/components/controls/input';
+import Textarea from '@/components/controls/text-area';
+import Button from '@/components/controls/button';
+import type { ProductWithImages } from '@/features/products/types/product';
 
 interface AddProductFormProps {
   onProductCreated: (product: ProductWithImages) => void;
@@ -24,14 +24,14 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onProductCreated }) => 
     price: string;
     images: { id: number; file: File | null; url: string; name: string }[];
   }>({
-    title: "",
-    description: "",
-    price: "",
-    images: [{ id: 0, file: null, url: "", name: "" }],
+    title: '',
+    description: '',
+    price: '',
+    images: [{ id: 0, file: null, url: '', name: '' }],
   });
 
   const handleInputChange = (
-    e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setNewProduct((prev) => ({ ...prev, [name]: value }));
@@ -55,7 +55,7 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onProductCreated }) => 
   const addImageField = () => {
     setNewProduct((prev) => ({
       ...prev,
-      images: [...prev.images, { id: Date.now(), file: null, url: "", name: "" }],
+      images: [...prev.images, { id: Date.now(), file: null, url: '', name: '' }],
     }));
   };
 
@@ -74,7 +74,7 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onProductCreated }) => 
             ...image,
             url,
           };
-        })
+        }),
       );
 
       const payload = {
@@ -82,7 +82,7 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onProductCreated }) => 
         images: uploadedImages.map(({ url, name }) => ({ url, name })),
       };
 
-      console.log("Submitting product payload:", payload);
+      console.log('Submitting product payload:', payload);
 
       const createdProduct = await createProduct(payload);
 
@@ -96,24 +96,21 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onProductCreated }) => 
         })),
       };
 
-      console.log("Product successfully created:", fullProduct);
+      console.log('Product successfully created:', fullProduct);
 
       onProductCreated(fullProduct);
 
       setNewProduct({
-        title: "",
-        description: "",
-        price: "",
-        images: [{ id: 0, file: null, url: "", name: "" }],
+        title: '',
+        description: '',
+        price: '',
+        images: [{ id: 0, file: null, url: '', name: '' }],
       });
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        console.error(
-          "Error creating product:",
-          error.response?.data || error.message
-        );
+        console.error('Error creating product:', error.response?.data || error.message);
       } else {
-        console.error("Unexpected error:", error as Error);
+        console.error('Unexpected error:', error as Error);
       }
     }
   };
@@ -149,9 +146,7 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onProductCreated }) => 
             key={image.id}
             type="file"
             name={`image-${index}`}
-            onChange={(e) =>
-              handleImageChange(e as ChangeEvent<HTMLInputElement>, index)
-            }
+            onChange={(e) => handleImageChange(e as ChangeEvent<HTMLInputElement>, index)}
             isRequired
           />
         ))}

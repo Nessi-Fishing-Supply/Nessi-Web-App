@@ -1,11 +1,10 @@
-"use client";
+'use client';
 
 import React from 'react';
 import styles from './ForgotPassword.module.scss';
 import ForgotPasswordForm from '@/features/auth/components/forgot-password-form';
 
 export default function ForgotPassword() {
-  
   return (
     <div className={styles.container}>
       <section className={styles.form}>

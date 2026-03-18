@@ -18,7 +18,9 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ count, average }) => {
         <FaStar />
         <FaRegStar />
       </div>
-      <p className={styles.text}>{average.toFixed(1)} ({count} reviews)</p>
+      <p className={styles.text}>
+        {average.toFixed(1)} ({count} reviews)
+      </p>
     </div>
   );
 };

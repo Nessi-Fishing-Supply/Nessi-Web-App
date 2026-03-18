@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { createClient } from '@/libs/supabase/client';
@@ -28,26 +28,28 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setIsLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setUser(session?.user ?? null);
-        setIsLoading(false);
-      }
-    );
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      setIsLoading(false);
+    });
 
     return () => subscription.unsubscribe();
   }, [supabase]);
 
   return (
-    <AuthContext.Provider value={{
-      user,
-      isAuthenticated: !!user,
-      isLoading,
-      setAuthenticated: () => {},
-      token: null,
-      setToken: () => {},
-      setUser: () => {},
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated: !!user,
+        isLoading,
+        setAuthenticated: () => {},
+        token: null,
+        setToken: () => {},
+        setUser: () => {},
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

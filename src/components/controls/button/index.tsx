@@ -45,14 +45,18 @@ export default function Button({
     <>
       {/* Loader or icon on the left if iconPosition is 'left' */}
       {renderLoader && iconPosition === 'left' && <span className={styles.icon}>{loader}</span>}
-      {!renderLoader && icon && iconPosition === 'left' && <span className={styles.icon}>{icon}</span>}
+      {!renderLoader && icon && iconPosition === 'left' && (
+        <span className={styles.icon}>{icon}</span>
+      )}
 
       {/* Button text */}
       {children}
 
       {/* Loader or icon on the right if no iconPosition is specified or it's 'right' */}
       {renderLoader && iconPosition === 'right' && <span className={styles.icon}>{loader}</span>}
-      {!renderLoader && icon && iconPosition === 'right' && <span className={styles.icon}>{icon}</span>}
+      {!renderLoader && icon && iconPosition === 'right' && (
+        <span className={styles.icon}>{icon}</span>
+      )}
     </>
   );
 
@@ -62,10 +66,10 @@ export default function Button({
       onClick={onClick}
       className={`
         ${styles[style]}
-        ${ outline ? styles.outline : ''}
-        ${ round ? styles.round : ''}
-        ${ fullWidth ? styles.fullWidth : ''}
-        ${ marginBottom ? styles.marginBottom : ''}
+        ${outline ? styles.outline : ''}
+        ${round ? styles.round : ''}
+        ${fullWidth ? styles.fullWidth : ''}
+        ${marginBottom ? styles.marginBottom : ''}
       `}
       disabled={isDisabled}
       aria-label={ariaLabel || undefined}

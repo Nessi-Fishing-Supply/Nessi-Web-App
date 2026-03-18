@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import React, { useEffect } from "react";
-import styles from "./ProductCard.module.scss";
-import { useRouter } from "next/navigation";
-import Pill from "@/components/indicators/pill";
-import { FaTruck, FaTag } from "react-icons/fa";
-import Favorite from "@/features/products/components/favorite";
-import ProductReviews from "@/features/products/components/product-reviews";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import Image from "next/image";
-import type { ProductWithImages } from "@/features/products/types/product";
+import React, { useEffect } from 'react';
+import styles from './ProductCard.module.scss';
+import { useRouter } from 'next/navigation';
+import Pill from '@/components/indicators/pill';
+import { FaTruck, FaTag } from 'react-icons/fa';
+import Favorite from '@/features/products/components/favorite';
+import ProductReviews from '@/features/products/components/product-reviews';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import Image from 'next/image';
+import type { ProductWithImages } from '@/features/products/types/product';
 
 interface ProductCardProps {
   product: ProductWithImages;
@@ -22,7 +22,7 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const router = useRouter();
   const price =
-    typeof product.price === "number"
+    typeof product.price === 'number'
       ? `$${product.price.toFixed(2)}`
       : `$${parseFloat(product.price).toFixed(2)}`;
 
@@ -32,28 +32,26 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   };
 
   const handleMouseEnter = (e: React.MouseEvent) => {
-    const swiper = e.currentTarget.querySelector(".swiper__product-card");
-    swiper?.classList.add("swiper-hovered");
+    const swiper = e.currentTarget.querySelector('.swiper__product-card');
+    swiper?.classList.add('swiper-hovered');
   };
 
   const handleMouseLeave = (e: React.MouseEvent) => {
-    const swiper = e.currentTarget.querySelector(".swiper__product-card");
-    swiper?.classList.remove("swiper-hovered");
+    const swiper = e.currentTarget.querySelector('.swiper__product-card');
+    swiper?.classList.remove('swiper-hovered');
   };
 
   useEffect(() => {
     const stop = (e: Event) => e.stopPropagation();
-    const buttons = document.querySelectorAll(
-      ".swiper-button-prev, .swiper-button-next"
-    );
-    const bullets = document.querySelectorAll(".swiper-pagination-bullet");
+    const buttons = document.querySelectorAll('.swiper-button-prev, .swiper-button-next');
+    const bullets = document.querySelectorAll('.swiper-pagination-bullet');
 
-    buttons.forEach((btn) => btn.addEventListener("click", stop));
-    bullets.forEach((bullet) => bullet.addEventListener("click", stop));
+    buttons.forEach((btn) => btn.addEventListener('click', stop));
+    bullets.forEach((bullet) => bullet.addEventListener('click', stop));
 
     return () => {
-      buttons.forEach((btn) => btn.removeEventListener("click", stop));
-      bullets.forEach((bullet) => bullet.removeEventListener("click", stop));
+      buttons.forEach((btn) => btn.removeEventListener('click', stop));
+      bullets.forEach((bullet) => bullet.removeEventListener('click', stop));
     };
   }, []);
 
@@ -86,7 +84,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                   height={300}
                 />
               </SwiperSlide>
-            ) : null
+            ) : null,
           )}
         </Swiper>
       </div>

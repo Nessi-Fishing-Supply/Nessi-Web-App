@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     if (!firstName || !lastName || !email || !password || !terms) {
       return NextResponse.json(
         { error: 'All fields are required and terms must be accepted' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -29,13 +29,10 @@ export async function POST(req: Request) {
 
     return NextResponse.json(
       { message: 'Registration successful. Please check your email to verify your account.' },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error('Registration error:', error);
-    return NextResponse.json(
-      { error: 'An unexpected error occurred' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'An unexpected error occurred' }, { status: 500 });
   }
 }

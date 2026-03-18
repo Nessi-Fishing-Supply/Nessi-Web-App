@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useEffect, useState } from 'react';
 import { getAllProducts } from '@/features/products/services/product';
@@ -13,10 +13,12 @@ export default function Home() {
     const fetchProducts = async () => {
       try {
         const data = await getAllProducts();
-        setProducts(data.map((product) => ({
-          ...product,
-          price: typeof product.price === 'number' ? product.price : parseFloat(product.price)
-        })));
+        setProducts(
+          data.map((product) => ({
+            ...product,
+            price: typeof product.price === 'number' ? product.price : parseFloat(product.price),
+          })),
+        );
       } catch (error) {
         console.error('Error fetching products:', error);
       }

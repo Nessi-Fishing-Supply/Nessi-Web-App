@@ -14,7 +14,9 @@ interface InputProps {
   placeholder?: string;
   isRequired?: boolean;
   showPasswordStrength?: boolean;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onChange?: (
+    e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>,
+  ) => void;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -102,7 +104,8 @@ const Input: React.FC<InputProps> = ({
               {isRequired && <span>*</span>}
             </label>
           )}
-          <div className={`${styles.container} 
+          <div
+            className={`${styles.container} 
               ${error ? styles.error : ''} 
               ${isTouched && !error && isDirty ? styles.success : ''} 
               ${isFocused ? styles.focused : ''}`}
@@ -152,7 +155,7 @@ const Input: React.FC<InputProps> = ({
                   style={{ width: `${(passwordStrength / 4) * 100}%` }}
                 />
                 <small className={styles.passwordStrengthText}>
-                  {passwordStrength === 0 || passwordStrength === 1 && 'Weak'}
+                  {passwordStrength === 0 || (passwordStrength === 1 && 'Weak')}
                   {passwordStrength === 2 && 'Fair'}
                   {passwordStrength === 3 && 'Good'}
                   {passwordStrength === 4 && 'Strong'}
@@ -160,19 +163,26 @@ const Input: React.FC<InputProps> = ({
               </div>
               <ul className={styles.passwordRequirements}>
                 <li>
-                  At least 8 characters {passwordRequirements.length && <FaCheckCircle className={styles.checkIcon} />}
+                  At least 8 characters{' '}
+                  {passwordRequirements.length && <FaCheckCircle className={styles.checkIcon} />}
                 </li>
                 <li>
-                  At least one uppercase letter {passwordRequirements.uppercase && <FaCheckCircle className={styles.checkIcon} />}
+                  At least one uppercase letter{' '}
+                  {passwordRequirements.uppercase && <FaCheckCircle className={styles.checkIcon} />}
                 </li>
                 <li>
-                  At least one lowercase letter {passwordRequirements.lowercase && <FaCheckCircle className={styles.checkIcon} />}
+                  At least one lowercase letter{' '}
+                  {passwordRequirements.lowercase && <FaCheckCircle className={styles.checkIcon} />}
                 </li>
                 <li>
-                  At least one number {passwordRequirements.number && <FaCheckCircle className={styles.checkIcon} />}
+                  At least one number{' '}
+                  {passwordRequirements.number && <FaCheckCircle className={styles.checkIcon} />}
                 </li>
                 <li>
-                  At least one special character {passwordRequirements.specialChar && <FaCheckCircle className={styles.checkIcon} />}
+                  At least one special character{' '}
+                  {passwordRequirements.specialChar && (
+                    <FaCheckCircle className={styles.checkIcon} />
+                  )}
                 </li>
               </ul>
             </>

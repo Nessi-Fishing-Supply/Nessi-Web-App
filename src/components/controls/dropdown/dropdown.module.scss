@@ -25,7 +25,7 @@
   background-color: var(--color-white);
   border-radius: var(--radius-md);
   min-width: 200px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 16px 0 rgb(0 0 0 / 20%);
   z-index: 1;
 
   p {
@@ -38,8 +38,8 @@
   padding: var(--space-sm) var(--space-base) 0 var(--space-base);
 
   &:last-child {
-    margin-bottom: var(--space-sm)
-  };
+    margin-bottom: var(--space-sm);
+  }
 }
 
 .dropdownTitle {

@@ -35,7 +35,7 @@ export const updateProduct = async (
     description: string;
     price: string;
     images?: { url: string }[];
-  }
+  },
 ): Promise<ProductWithImages> => {
   const res = await axios.put(`${BASE_URL}/${id}`, data);
   return res.data;

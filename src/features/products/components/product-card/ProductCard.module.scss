@@ -10,7 +10,9 @@
   cursor: pointer;
   transition: var(--transition-basic);
 
-  &:hover, &:focus, &:active {
+  &:hover,
+  &:focus,
+  &:active {
     box-shadow: var(--shadow-modal);
   }
 }
@@ -74,12 +76,12 @@
       display: flex;
       align-items: center;
       gap: var(--space-xs);
-  
+
       > svg {
         width: var(--space-sm);
         height: var(--space-sm);
       }
-  
+
       > p {
         font-size: var(--font-size-xs);
         color: var(--color-dark);

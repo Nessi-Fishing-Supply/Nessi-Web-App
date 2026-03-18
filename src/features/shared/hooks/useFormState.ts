@@ -10,17 +10,15 @@ export const useFormState = (initialState?: Partial<FormState>) => {
     ...initialState,
   });
 
-  const setLoading = (isLoading: boolean) => 
-    setState(prev => ({ ...prev, isLoading }));
-  
-  const setError = (error: string | null) => 
-    setState(prev => ({ ...prev, error, success: null }));
-  
-  const setSuccess = (success: string | null) => 
-    setState(prev => ({ ...prev, success, error: null }));
-  
-  const resetState = () => 
-    setState({ isLoading: false, error: null, success: null });
+  const setLoading = (isLoading: boolean) => setState((prev) => ({ ...prev, isLoading }));
+
+  const setError = (error: string | null) =>
+    setState((prev) => ({ ...prev, error, success: null }));
+
+  const setSuccess = (success: string | null) =>
+    setState((prev) => ({ ...prev, success, error: null }));
+
+  const resetState = () => setState({ isLoading: false, error: null, success: null });
 
   return {
     ...state,

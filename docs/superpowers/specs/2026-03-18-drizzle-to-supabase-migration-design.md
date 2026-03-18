@@ -34,6 +34,7 @@ Dependencies: @supabase/supabase-js, @neondatabase/serverless, drizzle-orm, driz
 ```
 
 **Problems**:
+
 - `x-user-id` header is spoofable (no server-side verification)
 - DELETE `/api/products/[id]` has no auth check at all
 - localStorage tokens vulnerable to XSS
@@ -104,12 +105,12 @@ Three client utilities in `src/libs/supabase/`:
 
 ### 5.1 Session Management
 
-| Aspect | Before | After |
-|---|---|---|
+| Aspect          | Before                             | After                                          |
+| --------------- | ---------------------------------- | ---------------------------------------------- |
 | Session storage | localStorage (`authToken`, `user`) | HTTP-only cookies (managed by `@supabase/ssr`) |
-| Session refresh | None (token could expire) | `proxy.ts` refreshes on every request |
-| Server access | Not available (client-only) | Available in Server Components via cookies |
-| Security | XSS-vulnerable localStorage | HTTP-only cookies, not accessible to JS |
+| Session refresh | None (token could expire)          | `proxy.ts` refreshes on every request          |
+| Server access   | Not available (client-only)        | Available in Server Components via cookies     |
+| Security        | XSS-vulnerable localStorage        | HTTP-only cookies, not accessible to JS        |
 
 ### 5.2 proxy.ts (Next.js 16 — replaces middleware.ts)
 
@@ -118,6 +119,7 @@ Location: `src/proxy.ts` (same level as `src/app/`)
 In Next.js 16, `middleware.ts` was renamed to `proxy.ts`. It exports a named `proxy` function and a `config` object with a `matcher` array. The function receives a `NextRequest` and returns a `NextResponse`.
 
 Responsibilities:
+
 1. Create Supabase server client with request/response cookie handlers
 2. Call `supabase.auth.getUser()` to refresh expired tokens
 3. Pass refreshed tokens to both the request (for downstream Server Components) and the response (for the browser)
@@ -138,20 +140,20 @@ export async function proxy(request: NextRequest) {
       cookies: {
         getAll: () => request.cookies.getAll(),
         setAll: (cookiesToSet) => {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
           response = NextResponse.next({ request });
           cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
+            response.cookies.set(name, value, options),
           );
         },
       },
-    }
+    },
   );
 
   // Refresh the session — this updates cookies if the token was expired
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   // Redirect unauthenticated users from protected routes
   if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
@@ -162,9 +164,7 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-  ],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
 };
 ```
 
@@ -172,12 +172,12 @@ export const config = {
 
 ### 5.3 Auth Routes Changes
 
-| Route | Before | After |
-|---|---|---|
-| `/api/auth/register` | Keeps server-side (needs service role for user metadata) | Rewrite to use admin client |
-| `/api/auth/login` | Server-side API route | **Remove** — use browser client `supabase.auth.signInWithPassword()` directly |
-| `/api/auth/logout` | Server-side API route | **Remove** — use browser client `supabase.auth.signOut()` directly |
-| `/api/auth/forgot-password` | Server-side API route | **Remove** — use browser client `supabase.auth.resetPasswordForEmail()` directly |
+| Route                       | Before                                                   | After                                                                            |
+| --------------------------- | -------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `/api/auth/register`        | Keeps server-side (needs service role for user metadata) | Rewrite to use admin client                                                      |
+| `/api/auth/login`           | Server-side API route                                    | **Remove** — use browser client `supabase.auth.signInWithPassword()` directly    |
+| `/api/auth/logout`          | Server-side API route                                    | **Remove** — use browser client `supabase.auth.signOut()` directly               |
+| `/api/auth/forgot-password` | Server-side API route                                    | **Remove** — use browser client `supabase.auth.resetPasswordForEmail()` directly |
 
 ### 5.4 AuthProvider / useAuth Replacement
 
@@ -195,6 +195,7 @@ A lightweight `useAuth` hook can be retained for convenience in client component
 The current callback page (`src/app/(frontend)/auth/callback/page.tsx`) parses `access_token` and `refresh_token` from `window.location.hash` (implicit flow) and calls `supabase.auth.setSession()`. This changes to the PKCE flow, which is the recommended Supabase pattern:
 
 **New: Server-side Route Handler** (`src/app/(frontend)/auth/callback/route.ts`):
+
 ```typescript
 import { createClient } from '@/libs/supabase/server';
 import { NextResponse } from 'next/server';
@@ -245,17 +246,17 @@ This is critical — a root-level client component prevents all descendants from
 ### 6.1 Query Migration (Drizzle to Supabase Client)
 
 **GET all products (public)**
+
 ```typescript
 // Before (Drizzle)
 const products = await db.query.products.findMany({ with: { images: true } });
 
 // After (Supabase)
-const { data: products, error } = await supabase
-  .from('products')
-  .select('*, product_images(*)');
+const { data: products, error } = await supabase.from('products').select('*, product_images(*)');
 ```
 
 **GET product by ID**
+
 ```typescript
 // Before
 const product = await db.query.products.findFirst({
@@ -272,10 +273,16 @@ const { data: product, error } = await supabase
 ```
 
 **INSERT product + images**
+
 ```typescript
 // Before
-const [product] = await db.insert(products).values({ title, description, price, userId }).returning();
-await db.insert(productImages).values(images.map(img => ({ imageUrl: img.url, productId: product.id })));
+const [product] = await db
+  .insert(products)
+  .values({ title, description, price, userId })
+  .returning();
+await db
+  .insert(productImages)
+  .values(images.map((img) => ({ imageUrl: img.url, productId: product.id })));
 
 // After
 const { data: product, error } = await supabase
@@ -287,7 +294,7 @@ const { data: product, error } = await supabase
 if (images.length > 0) {
   await supabase
     .from('product_images')
-    .insert(images.map(img => ({ image_url: img.url, product_id: product.id })));
+    .insert(images.map((img) => ({ image_url: img.url, product_id: product.id })));
 }
 ```
 
@@ -305,15 +312,12 @@ const { error: updateError } = await supabase
 // Replace images if provided (delete old, insert new)
 if (images && images.length > 0) {
   // RLS DELETE policy checks product ownership
-  await supabase
-    .from('product_images')
-    .delete()
-    .eq('product_id', id);
+  await supabase.from('product_images').delete().eq('product_id', id);
 
   // RLS INSERT policy checks product ownership
   await supabase
     .from('product_images')
-    .insert(images.map(img => ({ image_url: img.url, product_id: id })));
+    .insert(images.map((img) => ({ image_url: img.url, product_id: id })));
 }
 
 // Re-fetch the updated product with images
@@ -325,13 +329,11 @@ const { data, error } = await supabase
 ```
 
 **DELETE product**
+
 ```typescript
 // After — RLS ensures only the owner can delete
 // Cascade delete on product_images handled by FK constraint
-const { error } = await supabase
-  .from('products')
-  .delete()
-  .eq('id', id);
+const { error } = await supabase.from('products').delete().eq('id', id);
 ```
 
 ### 6.2 API Route Auth Pattern
@@ -343,7 +345,10 @@ import { createClient } from '@/libs/supabase/server';
 
 export async function POST(req: Request) {
   const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
   if (!user) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
@@ -459,6 +464,7 @@ Replace Drizzle schema files with Supabase-generated types:
 ```
 
 This generates types like:
+
 ```typescript
 export type Database = {
   public: {
@@ -485,7 +491,7 @@ import type { Database } from '@/types/database';
 export function createClient() {
   return createBrowserClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   );
 }
 ```
@@ -538,64 +544,66 @@ The `userId` field is removed from the request body for create/update. The serve
 
 ## 10. Files Removed
 
-| File/Directory | Reason |
-|---|---|
-| `src/libs/db.ts` | Drizzle client — replaced by Supabase clients |
-| `src/db/schema/` (entire directory) | Drizzle schema — replaced by generated types |
-| `drizzle.config.ts` | Drizzle configuration |
-| `migrations/` (directory, if exists) | Drizzle migration output — no longer needed |
-| `src/app/api/auth/login/route.ts` | Login moves to client-side Supabase call |
-| `src/app/api/auth/logout/route.ts` | Logout moves to client-side Supabase call |
+| File/Directory                              | Reason                                             |
+| ------------------------------------------- | -------------------------------------------------- |
+| `src/libs/db.ts`                            | Drizzle client — replaced by Supabase clients      |
+| `src/db/schema/` (entire directory)         | Drizzle schema — replaced by generated types       |
+| `drizzle.config.ts`                         | Drizzle configuration                              |
+| `migrations/` (directory, if exists)        | Drizzle migration output — no longer needed        |
+| `src/app/api/auth/login/route.ts`           | Login moves to client-side Supabase call           |
+| `src/app/api/auth/logout/route.ts`          | Logout moves to client-side Supabase call          |
 | `src/app/api/auth/forgot-password/route.ts` | Forgot password moves to client-side Supabase call |
 
 ### Packages Removed
 
-| Package | Reason |
-|---|---|
-| `drizzle-orm` | ORM replaced by Supabase client |
-| `drizzle-kit` | CLI tooling for Drizzle |
-| `@neondatabase/serverless` | Neon connection — using Supabase DB now |
-| `pg` | PostgreSQL driver — not needed with Supabase client |
-| `dotenv` | Drizzle config used this — Next.js handles env vars natively |
+| Package                    | Reason                                                       |
+| -------------------------- | ------------------------------------------------------------ |
+| `drizzle-orm`              | ORM replaced by Supabase client                              |
+| `drizzle-kit`              | CLI tooling for Drizzle                                      |
+| `@neondatabase/serverless` | Neon connection — using Supabase DB now                      |
+| `pg`                       | PostgreSQL driver — not needed with Supabase client          |
+| `dotenv`                   | Drizzle config used this — Next.js handles env vars natively |
 
 ## 11. Files Added
 
-| File | Purpose |
-|---|---|
-| `src/libs/supabase/client.ts` | Browser Supabase client (Client Components) |
-| `src/libs/supabase/server.ts` | Server Supabase client (Server Components, Route Handlers) |
-| `src/libs/supabase/admin.ts` | Admin Supabase client (service role, bypasses RLS) |
-| `src/proxy.ts` | Next.js 16 proxy for session refresh |
-| `src/app/(frontend)/auth/callback/route.ts` | Server-side PKCE auth callback handler |
-| `src/types/database.ts` | Generated Supabase types |
+| File                                        | Purpose                                                    |
+| ------------------------------------------- | ---------------------------------------------------------- |
+| `src/libs/supabase/client.ts`               | Browser Supabase client (Client Components)                |
+| `src/libs/supabase/server.ts`               | Server Supabase client (Server Components, Route Handlers) |
+| `src/libs/supabase/admin.ts`                | Admin Supabase client (service role, bypasses RLS)         |
+| `src/proxy.ts`                              | Next.js 16 proxy for session refresh                       |
+| `src/app/(frontend)/auth/callback/route.ts` | Server-side PKCE auth callback handler                     |
+| `src/types/database.ts`                     | Generated Supabase types                                   |
 
 ## 12. Files Modified
 
-| File | Changes |
-|---|---|
-| `src/libs/supabase.ts` | **Remove** — replaced by `src/libs/supabase/` directory |
-| `src/context/auth.tsx` | Rewrite — cookie-based auth, remove localStorage |
-| `src/services/auth.ts` | Rewrite — use browser Supabase client directly |
-| `src/services/product.ts` | Remove `x-user-id` headers, remove `userId` from request bodies |
-| `src/app/api/auth/register/route.ts` | Use admin client instead of old server client |
-| `src/app/api/products/route.ts` | Supabase queries, server client auth |
-| `src/app/api/products/[id]/route.ts` | Supabase queries, server client auth, RLS handles access control |
-| `src/app/api/products/user/route.ts` | Supabase queries, server client auth |
-| `src/app/api/products/upload/route.ts` | Add server client auth check (`supabase.auth.getUser()`) — Vercel Blob is outside RLS so must be protected at application level |
-| `src/app/(frontend)/auth/callback/page.tsx` | Replace with server-side PKCE callback (see Section 5.5) |
-| `src/app/(frontend)/layout.tsx` | Remove `"use client"` and `AuthProvider` wrapper — convert to Server Component so descendants can be Server Components by default |
-| `src/types/product.ts` | Derive from generated Database types (snake_case fields — see Section 8.3) |
-| `package.json` | Remove Drizzle/Neon packages, add `@supabase/ssr`, add `db:types` script, update scripts |
-| `CLAUDE.md` | Update architecture documentation |
+| File                                        | Changes                                                                                                                           |
+| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `src/libs/supabase.ts`                      | **Remove** — replaced by `src/libs/supabase/` directory                                                                           |
+| `src/context/auth.tsx`                      | Rewrite — cookie-based auth, remove localStorage                                                                                  |
+| `src/services/auth.ts`                      | Rewrite — use browser Supabase client directly                                                                                    |
+| `src/services/product.ts`                   | Remove `x-user-id` headers, remove `userId` from request bodies                                                                   |
+| `src/app/api/auth/register/route.ts`        | Use admin client instead of old server client                                                                                     |
+| `src/app/api/products/route.ts`             | Supabase queries, server client auth                                                                                              |
+| `src/app/api/products/[id]/route.ts`        | Supabase queries, server client auth, RLS handles access control                                                                  |
+| `src/app/api/products/user/route.ts`        | Supabase queries, server client auth                                                                                              |
+| `src/app/api/products/upload/route.ts`      | Add server client auth check (`supabase.auth.getUser()`) — Vercel Blob is outside RLS so must be protected at application level   |
+| `src/app/(frontend)/auth/callback/page.tsx` | Replace with server-side PKCE callback (see Section 5.5)                                                                          |
+| `src/app/(frontend)/layout.tsx`             | Remove `"use client"` and `AuthProvider` wrapper — convert to Server Component so descendants can be Server Components by default |
+| `src/types/product.ts`                      | Derive from generated Database types (snake_case fields — see Section 8.3)                                                        |
+| `package.json`                              | Remove Drizzle/Neon packages, add `@supabase/ssr`, add `db:types` script, update scripts                                          |
+| `CLAUDE.md`                                 | Update architecture documentation                                                                                                 |
 
 ---
 
 ## 13. Environment Variables
 
 ### Removed
+
 - `DATABASE_URL` (Neon connection string)
 
 ### Kept
+
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY` (admin client only)
@@ -623,6 +631,7 @@ Since Neon's `DATABASE_URL` connects to a separate database from Supabase, the d
 ### Code
 
 Phased approach:
+
 1. **Phase 1**: Set up new Supabase client architecture (`src/libs/supabase/`, proxy.ts, generated types)
 2. **Phase 2**: Migrate auth (cookie-based sessions, remove localStorage, simplify auth routes)
 3. **Phase 3**: Migrate product API routes (Drizzle queries to Supabase client)
@@ -635,6 +644,7 @@ Phased approach:
 ## 15. Future Considerations
 
 This migration sets the foundation for:
+
 - **Supabase Realtime** for live updates (new listings, order status, messaging)
 - **Supabase Storage** as potential alternative to Vercel Blob for product images
 - **Supabase Edge Functions** for background processing (notifications, search indexing)

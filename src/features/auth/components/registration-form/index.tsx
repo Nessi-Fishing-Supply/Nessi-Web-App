@@ -17,9 +17,12 @@ import { AuthFormProps, RegisterFormData, AuthFormResponse } from '@/features/au
  * Collects user details and validates terms acceptance
  * Provides success/error feedback and loading states
  */
-const RegisterForm: React.FC<AuthFormProps<RegisterFormData, AuthFormResponse>> = ({ onSuccess, onError }) => {
+const RegisterForm: React.FC<AuthFormProps<RegisterFormData, AuthFormResponse>> = ({
+  onSuccess,
+  onError,
+}) => {
   const { isLoading, error, success, setLoading, setError, setSuccess } = useFormState();
-  
+
   const methods = useForm<RegisterData>({
     resolver: yupResolver(registerSchema),
     mode: 'onBlur',

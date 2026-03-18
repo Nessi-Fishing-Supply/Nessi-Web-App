@@ -16,10 +16,10 @@ import { AuthFormProps, LoginFormData } from '@/features/auth/types/forms';
  * Supports redirect after successful login
  * Provides error handling and loading states
  */
-const LoginForm: React.FC<AuthFormProps<LoginFormData>> = ({ 
-  onSuccess, 
+const LoginForm: React.FC<AuthFormProps<LoginFormData>> = ({
+  onSuccess,
   onError,
-  redirectUrl = '/dashboard' 
+  redirectUrl = '/dashboard',
 }) => {
   const { isLoading, error, setLoading, setError } = useFormState();
 

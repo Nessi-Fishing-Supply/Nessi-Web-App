@@ -9,7 +9,9 @@ interface ExternalLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
 
 // Props for internal Next.js links
 interface InternalLinkProps extends NextLinkProps {
-  href: string | { pathname: string; query?: Record<string, string | number | boolean | undefined> };
+  href:
+    | string
+    | { pathname: string; query?: Record<string, string | number | boolean | undefined> };
 }
 
 // Combine external and internal props along with additional custom props
@@ -21,7 +23,7 @@ type AppLinkProps = (InternalLinkProps | ExternalLinkProps) & {
   center?: boolean;
   icon?: ReactNode;
   iconPosition?: 'left' | 'right';
-  children: ReactNode; 
+  children: ReactNode;
 };
 
 const AppLink: React.FC<AppLinkProps> = ({

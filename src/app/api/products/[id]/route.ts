@@ -30,7 +30,9 @@ export async function PUT(req: Request, context: { params: Promise<{ id: string 
 
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -48,10 +50,7 @@ export async function PUT(req: Request, context: { params: Promise<{ id: string 
     }
 
     if (images && images.length > 0) {
-      await supabase
-        .from('product_images')
-        .delete()
-        .eq('product_id', id);
+      await supabase.from('product_images').delete().eq('product_id', id);
 
       const imageRows = images
         .filter((img: { url: string }) => img.url)
@@ -87,7 +86,9 @@ export async function DELETE(_: Request, context: { params: Promise<{ id: string
 
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -108,10 +109,7 @@ export async function DELETE(_: Request, context: { params: Promise<{ id: string
       }
     }
 
-    const { error } = await supabase
-      .from('products')
-      .delete()
-      .eq('id', id);
+    const { error } = await supabase.from('products').delete().eq('id', id);
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });

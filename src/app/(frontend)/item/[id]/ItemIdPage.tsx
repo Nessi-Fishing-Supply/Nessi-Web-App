@@ -11,20 +11,26 @@ const ProductClientComponent = ({ product }: { product: ProductWithImages }) => 
     <div>
       <h1>{product.title}</h1>
       <p>{product.description}</p>
-      <p>Price: ${typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price.toFixed(2)}</p>
+      <p>
+        Price: $
+        {typeof product.price === 'string'
+          ? parseFloat(product.price).toFixed(2)
+          : product.price.toFixed(2)}
+      </p>
 
       <div>
-        {product.product_images.map((image, index) => (
-          image.image_url && (
-            <Image
-              key={index}
-              src={image.image_url}
-              alt={`${product.title} image ${index + 1}`}
-              width={500}
-              height={500}
-            />
-          )
-        ))}
+        {product.product_images.map(
+          (image, index) =>
+            image.image_url && (
+              <Image
+                key={index}
+                src={image.image_url}
+                alt={`${product.title} image ${index + 1}`}
+                width={500}
+                height={500}
+              />
+            ),
+        )}
       </div>
     </div>
   );

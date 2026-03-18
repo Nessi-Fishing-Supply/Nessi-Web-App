@@ -27,7 +27,7 @@
   .loader {
     width: 16px;
     height: 16px;
-    border: 2px solid rgba(0, 0, 0, 0.2);
+    border: 2px solid rgb(0 0 0 / 20%);
     border-top: 2px solid black;
     border-radius: 50%;
     animation: spin 1s linear infinite;
@@ -55,7 +55,7 @@
     &:disabled {
       color: var(--color-gray-500);
     }
-  
+
     &:hover:not(:disabled) {
       background-color: transparent;
     }
@@ -64,6 +64,7 @@
 
 .primary {
   @extend .base;
+
   background-color: var(--color-primary);
   border-color: var(--color-primary);
   color: var(--color-white);
@@ -81,6 +82,7 @@
 
 .secondary {
   @extend .base;
+
   background-color: var(--color-secondary);
   border-color: var(--color-secondary);
   color: var(--color-white);
@@ -98,6 +100,7 @@
 
 .dark {
   @extend .base;
+
   background-color: var(--color-dark);
   border-color: var(--color-dark);
   color: var(--color-white);
@@ -115,6 +118,7 @@
 
 .light {
   @extend .base;
+
   background-color: var(--color-light);
   border-color: var(--color-light);
   color: var(--color-dark);
@@ -135,6 +139,7 @@
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }

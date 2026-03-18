@@ -23,7 +23,7 @@ Nessi Web App is a feature-rich e-commerce platform that allows users to:
   - [Swiper](https://swiperjs.com/) for carousels and image galleries
 
 - **Backend**:
-  - [Next.js API Routes](https://nextjs.org/docs/api-routes/introduction) 
+  - [Next.js API Routes](https://nextjs.org/docs/api-routes/introduction)
   - [Supabase](https://supabase.com/) for authentication
   - [Drizzle ORM](https://orm.drizzle.team/) for database operations
   - [Neon Database](https://neon.tech/) (PostgreSQL) for data storage
@@ -60,17 +60,20 @@ This will automatically set up all necessary environment variables including Sup
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://your-repository-url/nessi-web-app.git
 cd nessi-web-app
 ```
 
 2. Install dependencies:
+
 ```bash
 pnpm install
 ```
 
 3. Start the development server:
+
 ```bash
 pnpm dev
 ```

@@ -36,7 +36,7 @@ const Products: React.FC = () => {
   }, [isAuthenticated]);
 
   const handleProductCreated = (newProduct: ProductWithImages) => {
-    setProducts(prev => [...prev, newProduct]);
+    setProducts((prev) => [...prev, newProduct]);
     setIsModalOpen(false);
   };
 

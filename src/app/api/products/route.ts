@@ -4,7 +4,9 @@ import { NextResponse } from 'next/server';
 export async function POST(req: Request) {
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -13,10 +15,7 @@ export async function POST(req: Request) {
     const { title, description, price, images } = await req.json();
 
     if (!title || !price) {
-      return NextResponse.json(
-        { error: 'Title and price are required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Title and price are required' }, { status: 400 });
     }
 
     const { data: product, error: productError } = await supabase
