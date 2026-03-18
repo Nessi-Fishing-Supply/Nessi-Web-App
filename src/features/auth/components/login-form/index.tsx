@@ -3,12 +3,12 @@
 import React from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { loginSchema } from '@/validations/auth';
-import { LoginData } from '@/types/auth';
-import { useFormState } from '@/hooks/useFormState';
+import { loginSchema } from '@/features/auth/validations/auth';
+import { LoginData } from '@/features/auth/types/auth';
+import { useFormState } from '@/features/shared/hooks/useFormState';
 import { Input, Button, AppLink } from '@/components/controls';
-import { login } from '@/services/auth';
-import { AuthFormProps, LoginFormData } from '@/types/forms';
+import { login } from '@/features/auth/services/auth';
+import { AuthFormProps, LoginFormData } from '@/features/auth/types/forms';
 
 /**
  * Login form component

@@ -28,7 +28,7 @@ Next.js App Router with a `(frontend)` route group for all UI pages. No Pages Ro
 - **Server-side:** API routes use server client from `src/libs/supabase/server.ts` (user JWT from cookies)
 - **Client-side:** Components use browser client from `src/libs/supabase/client.ts`
 - **Admin operations:** Registration uses admin client from `src/libs/supabase/admin.ts` (bypasses RLS)
-- `src/context/auth.tsx` provides `useAuth()` hook wrapping Supabase session state
+- `src/features/auth/context.tsx` provides `useAuth()` hook wrapping Supabase session state
 
 ### Database
 
@@ -43,13 +43,19 @@ Image uploads use Vercel Blob via `src/app/api/products/upload/route.ts`.
 
 ### Key Directories
 
+- `src/features/auth/` — Auth domain: services, types, validations, context, form components (see its CLAUDE.md)
+- `src/features/products/` — Products domain: services, types, product display and form components (see its CLAUDE.md)
 - `src/app/api/` — API routes (auth, products, upload)
-- `src/components/` — React components organized by type: cards, controls, forms, layout, navigation, indicators
-- `src/services/` — Client-side API service functions (axios-based)
-- `src/hooks/` — Custom hooks for form handling
-- `src/validations/` — Yup validation schemas
-- `src/types/` — TypeScript type definitions
+- `src/app/(frontend)/` — UI pages (App Router with route group)
+- `src/features/shared/` — Shared hooks (useForm, useFormState) and types (FormState)
+- `src/components/` — Shared React components: controls, layout, navigation, indicators
+- `src/types/` — Generated/infra types (database.ts)
+- `src/libs/supabase/` — Supabase client utilities (browser, server, admin)
 - `src/styles/` — SCSS with variables, mixins, and utilities
+
+### Feature Organization
+
+Domain-specific code lives in `src/features/{domain}/` with its own services, types, validations, and components. Each feature has a `CLAUDE.md` for AI-assisted context. Shared UI primitives remain in `src/components/`, shared hooks and types in `src/features/shared/`.
 
 ### Styling
 

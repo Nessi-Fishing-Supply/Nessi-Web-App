@@ -3,13 +3,13 @@
 import React from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { registerSchema } from '@/validations/auth';
-import { RegisterData } from '@/types/auth';
-import { useFormState } from '@/hooks/useFormState';
+import { registerSchema } from '@/features/auth/validations/auth';
+import { RegisterData } from '@/features/auth/types/auth';
+import { useFormState } from '@/features/shared/hooks/useFormState';
 import { Input, Button, Checkbox } from '@/components/controls';
-import { register as registerUser } from '@/services/auth';
+import { register as registerUser } from '@/features/auth/services/auth';
 import Grid from '@/components/layout/grid';
-import { AuthFormProps, RegisterFormData, AuthFormResponse } from '@/types/forms';
+import { AuthFormProps, RegisterFormData, AuthFormResponse } from '@/features/auth/types/forms';
 
 /**
  * Registration form component

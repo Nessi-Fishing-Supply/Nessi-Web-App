@@ -1,6 +1,6 @@
 'use client';
 
-import { ProductWithImages } from '@/types/product';
+import { ProductWithImages } from '@/features/products/types/product';
 import Image from 'next/image';
 import React from 'react';
 

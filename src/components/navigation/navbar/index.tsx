@@ -16,16 +16,16 @@ import {
 // Components
 import NotificationBar from '@/components/navigation/notification-bar';
 import Modal from '@/components/layout/modal';
-import LoginForm from '@/components/forms/login';
-import RegisterForm from '@/components/forms/registration';
+import LoginForm from '@/features/auth/components/login-form';
+import RegisterForm from '@/features/auth/components/registration-form';
 import { Button, AppLink, Dropdown, DropdownItem, DropdownTitle } from '@/components/controls';
 
 // Assets
 import LogoFull from '@/assets/logos/logo_full.svg';
 
 // Auth
-import { useAuth } from '@/context/auth';
-import { logout } from '@/services/auth';
+import { useAuth } from '@/features/auth/context';
+import { logout } from '@/features/auth/services/auth';
 
 /**
  * Main navigation component

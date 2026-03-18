@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { getAllProducts } from '@/services/product';
-import { ProductWithImages } from '@/types/product';
-import ProductCard from '@/components/cards/product-card';
+import { getAllProducts } from '@/features/products/services/product';
+import { ProductWithImages } from '@/features/products/types/product';
+import ProductCard from '@/features/products/components/product-card';
 import Grid from '@/components/layout/grid';
 
 export default function Home() {

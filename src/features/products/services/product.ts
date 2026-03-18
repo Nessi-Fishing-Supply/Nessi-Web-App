@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { ProductWithImages } from '@/types/product';
+import type { ProductWithImages } from '@/features/products/types/product';
 
 const BASE_URL = '/api/products';
 

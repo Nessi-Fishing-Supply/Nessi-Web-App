@@ -7,13 +7,6 @@ export interface AuthFormProps<TData = any, TResponse = TData> {
   redirectUrl?: string;
 }
 
-// Form state management
-export interface FormState {
-  isLoading: boolean;
-  error: string | null;
-  success: string | null;
-}
-
 // Form data types
 export type LoginFormData = LoginData;
 export type RegisterFormData = RegisterData;

@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { useAuth } from '@/context/auth';
-import { logout } from '@/services/auth';
+import { useAuth } from '@/features/auth/context';
+import { logout } from '@/features/auth/services/auth';
 
 const Account: React.FC = () => {
   const { user, isAuthenticated, isLoading } = useAuth();

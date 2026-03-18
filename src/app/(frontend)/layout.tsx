@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 import { Inter } from 'next/font/google';
 import '@/styles/globals.scss';
 import Navbar from "@/components/navigation/navbar";
-import { AuthProvider } from '@/context/auth';
+import { AuthProvider } from '@/features/auth/context';
 
 const inter = Inter({
   subsets: ['latin'],

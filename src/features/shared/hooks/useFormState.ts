@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FormState } from '@/types/forms';
+import { FormState } from '@/features/shared/types/forms';
 
 // Hook for managing form state (loading, errors, success messages)
 export const useFormState = (initialState?: Partial<FormState>) => {

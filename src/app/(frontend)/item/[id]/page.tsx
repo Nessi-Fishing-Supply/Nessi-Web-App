@@ -1,6 +1,6 @@
-import { getAllProducts } from '@/services/product';
+import { getAllProducts } from '@/features/products/services/product';
 import ProductClientComponent from './ItemIdPage';
-import type { ProductWithImages } from '@/types/product';
+import type { ProductWithImages } from '@/features/products/types/product';
 
 export async function generateStaticParams() {
   try {

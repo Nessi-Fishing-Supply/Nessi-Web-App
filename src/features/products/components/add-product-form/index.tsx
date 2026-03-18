@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useState, ChangeEvent, FormEvent } from "react";
-import { useAuth } from "@/context/auth";
-import { createProduct, uploadProductImage } from "@/services/product";
+import { useAuth } from "@/features/auth/context";
+import { createProduct, uploadProductImage } from "@/features/products/services/product";
 import axios from "axios";
 import { useForm, FormProvider } from "react-hook-form";
 import Input from "@/components/controls/input";
 import Textarea from "@/components/controls/text-area";
 import Button from "@/components/controls/button";
-import type { ProductWithImages } from "@/types/product";
+import type { ProductWithImages } from "@/features/products/types/product";
 
 interface AddProductFormProps {
   onProductCreated: (product: ProductWithImages) => void;

@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '@/context/auth';
-import { getUserProducts } from '@/services/product';
-import type { ProductWithImages } from '@/types/product';
-import ProductForm from '@/components/forms/add-product';
-import ProductCard from '@/components/cards/product-card';
+import { useAuth } from '@/features/auth/context';
+import { getUserProducts } from '@/features/products/services/product';
+import type { ProductWithImages } from '@/features/products/types/product';
+import ProductForm from '@/features/products/components/add-product-form';
+import ProductCard from '@/features/products/components/product-card';
 import Button from '@/components/controls/button';
 import Modal from '@/components/layout/modal';
 import axios from 'axios';

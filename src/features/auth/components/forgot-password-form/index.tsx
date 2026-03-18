@@ -2,10 +2,10 @@ import React from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import { useFormState } from '@/hooks/useFormState';
+import { useFormState } from '@/features/shared/hooks/useFormState';
 import { Input, Button } from '@/components/controls';
-import { forgotPassword } from '@/services/auth';
-import { AuthFormProps, ForgotPasswordFormData, AuthFormResponse } from '@/types/forms';
+import { forgotPassword } from '@/features/auth/services/auth';
+import { AuthFormProps, ForgotPasswordFormData, AuthFormResponse } from '@/features/auth/types/forms';
 
 /**
  * Forgot password form component

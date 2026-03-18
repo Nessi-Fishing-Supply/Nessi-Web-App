@@ -5,15 +5,15 @@ import styles from "./ProductCard.module.scss";
 import { useRouter } from "next/navigation";
 import Pill from "@/components/indicators/pill";
 import { FaTruck, FaTag } from "react-icons/fa";
-import Favorite from "@/components/indicators/favorite";
-import ProductReviews from "@/components/indicators/product-reviews";
+import Favorite from "@/features/products/components/favorite";
+import ProductReviews from "@/features/products/components/product-reviews";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import Image from "next/image";
-import type { ProductWithImages } from "@/types/product";
+import type { ProductWithImages } from "@/features/products/types/product";
 
 interface ProductCardProps {
   product: ProductWithImages;
