@@ -2,10 +2,7 @@
 name: a11y-audit
 description: Run a WCAG 2.1 AA accessibility audit — static code analysis + live browser testing with scored findings
 user-invocable: true
-arguments:
-  - name: scope
-    description: "Optional scope (e.g., 'home', 'dashboard', 'forms', 'navigation', 'all'). Defaults to 'all'."
-    required: false
+argument-hint: [scope: home, dashboard, forms, navigation, or all]
 ---
 
 # Accessibility Audit

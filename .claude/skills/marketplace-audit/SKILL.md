@@ -2,10 +2,7 @@
 name: marketplace-audit
 description: Run a marketplace UX audit against C2C best practices — produces scored findings and improvement tickets
 user-invocable: true
-arguments:
-  - name: focus
-    description: "Optional focus area (e.g., 'trust', 'conversion', 'mobile', 'accessibility', 'seo', 'all'). Defaults to 'all'."
-    required: false
+argument-hint: [focus: trust, conversion, mobile, a11y, seo, or all]
 ---
 
 # Marketplace Audit
