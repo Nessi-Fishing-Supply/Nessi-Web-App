@@ -4,7 +4,7 @@ description: Scans the codebase and breaks a feature into execution-ready GitHub
 model: opus
 color: pink
 tools: Read, Grep, Glob, Bash
-allowedTools: mcp__supabase__*
+allowedTools: mcp__plugin_supabase_supabase__*
 maxTurns: 30
 ---
 

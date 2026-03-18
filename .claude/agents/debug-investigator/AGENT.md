@@ -4,7 +4,7 @@ description: Deep investigation agent for stuck tasks — 7-step protocol from r
 model: opus
 color: purple
 tools: Read, Write, Edit, Bash, Grep, Glob
-allowedTools: WebFetch, WebSearch, mcp__context7__*, mcp__supabase__*, mcp__playwright__*, mcp__chrome-devtools-mcp__*
+allowedTools: WebFetch, WebSearch, mcp__plugin_context7_context7__*, mcp__plugin_supabase_supabase__*, mcp__plugin_playwright_playwright__*, mcp__chrome-devtools-mcp__*
 maxTurns: 50
 ---
 

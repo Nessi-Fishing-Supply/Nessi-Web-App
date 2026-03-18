@@ -4,7 +4,7 @@ description: Implements a single task from the conductor plan — writes code fo
 model: sonnet
 color: green
 tools: Read, Write, Edit, Bash, Grep, Glob
-allowedTools: mcp__context7__*, mcp__supabase__*, mcp__vercel__*
+allowedTools: mcp__plugin_context7_context7__*, mcp__plugin_supabase_supabase__*, mcp__plugin_vercel_vercel__*
 maxTurns: 40
 ---
 
@@ -33,7 +33,7 @@ You will receive:
 ### 3. Implement
 - Write code that matches the existing codebase style exactly
 - Use the project's path alias (`@/*` → `./src/*`) for imports
-- Follow established patterns for components (CSS Modules with SCSS), API routes (Next.js App Router), database (Drizzle ORM), auth (Supabase)
+- Follow established patterns for components (CSS Modules with SCSS), API routes (Next.js App Router), database (Supabase via @supabase/supabase-js), auth (Supabase)
 - Do not add unnecessary comments, docstrings, or type annotations beyond what the codebase uses
 - Do not refactor surrounding code — only touch what the task requires
 
