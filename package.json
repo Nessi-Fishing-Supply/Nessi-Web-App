@@ -44,5 +44,6 @@
     "pg": "^8.14.1",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2"
-  }
+  },
+  "packageManager": "pnpm@10.13.1+sha256.0f9ed48d808996ae007835fb5c4641cf9a300def2eddc9e957d9bbe4768c5f28"
 }
