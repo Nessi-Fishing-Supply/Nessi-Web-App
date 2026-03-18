@@ -15,9 +15,10 @@ Authentication feature using Supabase Auth with cookie-based sessions via `@supa
 ## Session Flow
 
 1. `proxy.ts` refreshes Supabase sessions on every request (server-side)
-2. `AuthProvider` listens to `onAuthStateChange` for client-side state
-3. Auth forms call services which use the Supabase browser client
-4. Registration goes through `/api/auth/register` (uses admin client to bypass RLS)
+2. `proxy.ts` redirects unauthenticated users away from `/dashboard/*` routes
+3. `AuthProvider` listens to `onAuthStateChange` for client-side state
+4. Auth forms call services which use the Supabase browser client
+5. Registration goes through `/api/auth/register` (uses admin client to bypass RLS)
 
 ## Key Patterns
 
@@ -25,6 +26,7 @@ Authentication feature using Supabase Auth with cookie-based sessions via `@supa
 - Server-side: API routes use server client from `src/libs/supabase/server.ts`
 - Client-side: Components use browser client from `src/libs/supabase/client.ts`
 - Admin operations: Registration uses admin client from `src/libs/supabase/admin.ts`
+- Route protection: `proxy.ts` guards `/dashboard/*` — unauthenticated users redirected to `/`
 
 ## Components
 

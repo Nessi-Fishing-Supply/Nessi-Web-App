@@ -16,9 +16,15 @@ Nessi is a consumer-to-consumer marketplace where users can:
 
 ## Tech Stack
 
-- **Frontend**: [Next.js 16](https://nextjs.org/) (React 19) with App Router, SCSS Modules
-- **Backend**: Next.js API Routes, [Supabase](https://supabase.com/) (Auth, PostgreSQL, Storage)
-- **Deployment**: [Vercel](https://vercel.com/)
+- **Framework**: [Next.js 16](https://nextjs.org/) (React 19), App Router
+- **Backend**: [Supabase](https://supabase.com/) — Auth, PostgreSQL, Storage
+- **State**: [Tanstack Query](https://tanstack.com/query) (server), [Zustand](https://zustand.docs.pmnd.rs/) (client)
+- **Styling**: SCSS Modules, CSS custom properties
+- **Forms**: React Hook Form + Yup validation
+- **Testing**: Vitest + Testing Library
+- **Code Quality**: ESLint, Prettier, Stylelint, TypeScript strict
+- **CI/CD**: GitHub Actions, [Vercel](https://vercel.com/)
+- **Observability**: Vercel Analytics + Speed Insights
 
 ## Getting Started
 
@@ -69,16 +75,18 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ```
 src/
-├── features/           # Domain logic (auth, products, shared)
-│   ├── auth/           # Auth services, types, validations, components
-│   ├── products/       # Product services, types, components
-│   └── shared/         # Shared hooks and types
-├── components/         # Shared UI components (controls, layout, navigation)
-├── app/                # Next.js routing layer and API routes
-├── libs/supabase/      # Supabase client utilities
-├── types/              # Generated types (database.ts)
-├── styles/             # Global SCSS variables, mixins, utilities
-└── assets/             # Static assets (icons, logos)
+├── features/              # Domain logic (feature-based organization)
+│   ├── auth/              # Auth: services, types, validations, context, components
+│   ├── products/          # Products: services, types, hooks, components
+│   └── shared/            # Shared hooks (useForm, useFormState) and types
+├── components/            # Shared UI components (controls, layout, navigation)
+├── app/                   # Next.js App Router pages and API routes
+│   ├── (frontend)/        # UI pages (route group)
+│   └── api/               # API routes (auth, products)
+├── libs/                  # Infrastructure (Supabase clients, providers, query client)
+├── types/                 # Generated types (database.ts)
+├── styles/                # Global SCSS variables, mixins, utilities
+└── assets/                # Static assets (icons, logos)
 ```
 
 ## License

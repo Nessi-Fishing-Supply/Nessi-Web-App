@@ -54,7 +54,7 @@ Image uploads use Supabase Storage (`product-images` bucket) via `src/app/api/pr
 - `src/features/shared/` — Shared hooks (useForm, useFormState) and types (FormState)
 - `src/components/` — Shared React components: controls, layout, navigation, indicators
 - `src/types/` — Generated/infra types (database.ts)
-- `src/libs/supabase/` — Supabase client utilities (browser, server, admin)
+- `src/libs/` — Infrastructure: Supabase clients (`supabase/`), query client (`query-client.ts`), providers (`providers.tsx`), Zustand utilities (`create-selectors.ts`)
 - `src/styles/` — SCSS with variables, mixins, and utilities
 
 ### Feature Organization
