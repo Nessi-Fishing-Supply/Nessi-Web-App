@@ -16,8 +16,10 @@ import {
 // Components
 import NotificationBar from '@/components/navigation/notification-bar';
 import Modal from '@/components/layout/modal';
+import Toast from '@/components/indicators/toast';
 import LoginForm from '@/features/auth/components/login-form';
 import RegisterForm from '@/features/auth/components/registration-form';
+import ResendVerificationForm from '@/features/auth/components/resend-verification-form';
 import { Button, AppLink, Dropdown, DropdownItem, DropdownTitle } from '@/components/controls';
 
 // Assets
@@ -27,12 +29,6 @@ import LogoFull from '@/assets/logos/logo_full.svg';
 import { useAuth } from '@/features/auth/context';
 import { logout } from '@/features/auth/services/auth';
 
-/**
- * Main navigation component
- * Handles user authentication state
- * Manages login/registration modals
- * Provides user menu and navigation
- */
 export default function Navbar() {
   const mounted = useSyncExternalStore(
     () => () => {},
@@ -41,17 +37,48 @@ export default function Navbar() {
   );
   const [isLoginModalOpen, setLoginModalOpen] = useState(false);
   const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
-  const [registerSuccess, setRegisterSuccess] = useState(false);
+  const [isResendModalOpen, setResendModalOpen] = useState(false);
+  const [loginBanner, setLoginBanner] = useState<{ type: 'verified' } | null>(null);
+
+  // Toast state for registration success
+  const [toast, setToast] = useState<{
+    visible: boolean;
+    email: string;
+  }>({ visible: false, email: '' });
 
   const { user, isAuthenticated } = useAuth();
   const searchParams = useSearchParams();
-  const loginQuery = searchParams?.get('login');
 
+  // Detect query params and open appropriate modals
   useEffect(() => {
+    const loginQuery = searchParams?.get('login');
+    const verified = searchParams?.get('verified');
+    const authError = searchParams?.get('auth_error');
+
     if (loginQuery === 'true') {
       requestAnimationFrame(() => setLoginModalOpen(true));
     }
-  }, [loginQuery]);
+
+    if (verified === 'true') {
+      requestAnimationFrame(() => {
+        setLoginBanner({ type: 'verified' });
+        setLoginModalOpen(true);
+      });
+    }
+
+    if (authError === 'true') {
+      requestAnimationFrame(() => setResendModalOpen(true));
+    }
+
+    // Clean up query params after consuming
+    if (loginQuery || verified || authError) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('login');
+      url.searchParams.delete('verified');
+      url.searchParams.delete('auth_error');
+      window.history.replaceState({}, '', url.pathname + url.search);
+    }
+  }, [searchParams]);
 
   const handleLogout = async () => {
     try {
@@ -64,21 +91,42 @@ export default function Navbar() {
 
   const toggleLoginModal = () => {
     setLoginModalOpen((prev) => !prev);
+    setLoginBanner(null);
     if (isRegisterModalOpen) setRegisterModalOpen(false);
+    if (isResendModalOpen) setResendModalOpen(false);
   };
 
   const toggleRegisterModal = () => {
     setRegisterModalOpen((prev) => !prev);
-    setRegisterSuccess(false);
     if (isLoginModalOpen) setLoginModalOpen(false);
+    if (isResendModalOpen) setResendModalOpen(false);
+  };
+
+  const toggleResendModal = () => {
+    setResendModalOpen((prev) => !prev);
+    if (isLoginModalOpen) setLoginModalOpen(false);
+    if (isRegisterModalOpen) setRegisterModalOpen(false);
   };
 
   const handleLoginSuccess = () => {
     setLoginModalOpen(false);
+    setLoginBanner(null);
   };
 
-  const handleRegisterSuccess = () => {
-    setRegisterSuccess(true);
+  const handleRegisterSuccess = (response: { message: string; email?: string }) => {
+    setRegisterModalOpen(false);
+    setToast({ visible: true, email: response.email || '' });
+  };
+
+  const handleResendToLogin = () => {
+    setResendModalOpen(false);
+    setLoginModalOpen(true);
+    setLoginBanner(null);
+  };
+
+  const handleUnverifiedResend = () => {
+    setLoginModalOpen(false);
+    setResendModalOpen(true);
   };
 
   const firstName = user?.user_metadata?.firstName ?? '';
@@ -162,6 +210,7 @@ export default function Navbar() {
         ))}
       </div>
 
+      {/* Login Modal */}
       <Modal isOpen={isLoginModalOpen} onClose={toggleLoginModal}>
         <div className={styles.modalHeader}>
           <h6>Log In</h6>
@@ -169,18 +218,35 @@ export default function Navbar() {
             Register
           </Button>
         </div>
-        <LoginForm onSuccess={handleLoginSuccess} redirectUrl="/dashboard" />
+        <LoginForm
+          onSuccess={handleLoginSuccess}
+          onClose={toggleLoginModal}
+          onResendVerification={handleUnverifiedResend}
+          redirectUrl="/dashboard"
+          banner={loginBanner}
+        />
       </Modal>
 
+      {/* Register Modal */}
       <Modal isOpen={isRegisterModalOpen} onClose={toggleRegisterModal}>
         <h6>Create Your Account</h6>
-        {registerSuccess && (
-          <p className="successMessage">
-            Registration successful! Please check your inbox to verify your email before logging in.
-          </p>
-        )}
         <RegisterForm onSuccess={handleRegisterSuccess} />
       </Modal>
+
+      {/* Resend Verification Modal */}
+      <Modal isOpen={isResendModalOpen} onClose={toggleResendModal}>
+        <ResendVerificationForm onBackToLogin={handleResendToLogin} />
+      </Modal>
+
+      {/* Registration Success Toast */}
+      <Toast
+        visible={toast.visible}
+        type="success"
+        message="Account created!"
+        description={`Check your inbox at ${toast.email} for a verification link.`}
+        subtitle="Come back and sign in once verified."
+        onDismiss={() => setToast({ visible: false, email: '' })}
+      />
     </nav>
   );
 }
