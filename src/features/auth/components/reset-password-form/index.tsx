@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as Yup from 'yup';
 import { useRouter } from 'next/navigation';
+import { resetPasswordSchema } from '@/features/auth/validations/auth';
 import { Input, Button } from '@/components/controls';
 import { resetPassword } from '@/features/auth/services/auth';
 import { AuthFormProps } from '@/features/auth/types/forms';
@@ -28,15 +28,8 @@ const ResetPasswordForm: React.FC<AuthFormProps<ResetPasswordFormData>> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const schema = Yup.object().shape({
-    password: Yup.string().min(8, 'Minimum 8 characters').required(),
-    confirmPassword: Yup.string()
-      .oneOf([Yup.ref('password')], 'Passwords must match')
-      .required(),
-  });
-
   const methods = useForm<ResetPasswordFormData>({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(resetPasswordSchema),
     mode: 'onBlur',
   });
 
