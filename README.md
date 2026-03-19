@@ -151,6 +151,49 @@ GitHub Actions runs on every push to `main` and every PR:
 
 Vercel deploys automatically on push to `main` (production) and on PR branches (preview).
 
+## AI Development Fleet
+
+Nessi uses a fleet of **14 AI agents** and **21 skills** for autonomous feature development via [Claude Code](https://claude.ai/code). The system replaces the need for design comps by researching C2C marketplace competitors and generating design specifications.
+
+### Quick Start
+
+```bash
+# End-to-end: research → design → tickets → build
+/feature-pipeline "search and filters"
+
+# Or step by step
+/design-spec "seller profiles"          # Research competitors, generate spec
+/ticket-gen "seller profiles"           # Create GitHub issues
+/conductor start #15                    # Autonomous build → PR
+
+# Quality checks
+/preflight                              # Build, lint, type, format, tests, UI, a11y
+/audit                                  # Combined quality + UX + accessibility dashboard
+
+# Development tools
+/feature-scaffold "messaging"           # New feature directory with CLAUDE.md
+/db-migrate "add orders table"          # Supabase migration with RLS
+/write-tests "src/features/products"    # Generate Vitest tests
+/debug "cart total is wrong"            # 7-step investigation protocol
+
+# Tech experts (also auto-trigger on file edits)
+/ask-supabase "RLS policy for orders?"  # Database, Auth, Storage
+/ask-nextjs "ISR vs SSR for listings?"  # App Router, rendering
+/ask-scss "responsive product grid?"    # SCSS Modules, breakpoints
+```
+
+### Architecture
+
+```
+/feature-pipeline "{feature}"
+    ├── /design-spec → ux-researcher agent (competitor research)
+    ├── /ticket-gen → ticket-generator agent (GitHub issues)
+    └── /conductor start → plan-architect → task-executor → /preflight → PR
+                                                └── expert skills (auto-consulted)
+```
+
+Skills live in `.claude/skills/`, agents in `.claude/agents/`, Conductor docs in `.claude/conductor/CLAUDE.md`.
+
 ## Future Roadmap
 
 Not yet implemented — address before or during launch:

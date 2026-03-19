@@ -134,6 +134,57 @@ All file and folder names use **kebab-case**, enforced by `eslint-plugin-check-f
 - **TypeScript** — `strict: true`. Run `pnpm typecheck` for standalone type checking.
 - **CI** — GitHub Actions runs lint, lint:styles, typecheck, format:check, test:run, and build on every PR and push to main.
 
+## AI Development Fleet
+
+Nessi uses a fleet of Claude Code skills and agents for autonomous feature development. Skills live in `.claude/skills/`, agents in `.claude/agents/`. The Conductor pipeline (`.claude/conductor/CLAUDE.md`) orchestrates ticket-to-PR automation.
+
+### Key Workflows
+
+- **`/feature-pipeline "{feature}"`** — End-to-end: competitor research → design spec → tickets → conductor
+- **`/design-spec "{feature}"`** — Research C2C marketplace patterns, generate a design specification (replaces Figma comps)
+- **`/ticket-gen "{feature}"`** — Break a feature into conductor-ready GitHub issues
+- **`/conductor start #N`** — Autonomous ticket → PR pipeline
+
+### Quality Gates
+
+- **`/preflight`** — Build, lint, typecheck, format, tests, UI verification, accessibility (WCAG 2.1 AA)
+- **`/audit`** — Combined code quality + marketplace UX + accessibility dashboard
+- **`/marketplace-audit`** — C2C UX audit against competitor best practices
+- **`/a11y-audit`** — WCAG 2.1 AA accessibility audit with Playwright browser testing
+- **`/ui-test`** — Playwright smoke tests (page renders, console errors, interactions)
+
+### Development Tools
+
+- **`/feature-scaffold "{domain}"`** — Create `src/features/{domain}/` with CLAUDE.md, types, services, hooks
+- **`/db-migrate "{change}"`** — Generate Supabase SQL migrations with RLS policies
+- **`/write-tests "{file}"`** — Generate Vitest tests following project patterns
+- **`/debug "{problem}"`** — 7-step investigation protocol (reproduce → isolate → fix → verify)
+
+### Tech Expert Skills (auto-trigger on file edits)
+
+- **`/ask-supabase`** — Auth, RLS, schema, Storage (triggers on `src/libs/supabase/*`, `database.ts`)
+- **`/ask-nextjs`** — App Router, rendering, proxy.ts (triggers on `src/app/**`, `next.config.*`)
+- **`/ask-vercel`** — Deployment, env vars, functions (triggers on `vercel.json`)
+- **`/ask-scss`** — Styling, responsive, tokens (triggers on `*.module.scss`, `src/styles/**`)
+- **`/ask-state`** — Tanstack Query + Zustand (triggers on `*/hooks/*`, `*/stores/*`)
+
+### Agents (14 total — invoked by skills, not directly)
+
+| Layer | Agents |
+|-------|--------|
+| Conductor | plan-architect, task-executor, phase-verifier, review-orchestrator, finding-resolver, debug-investigator, pr-creator, ticket-generator |
+| Design | ux-researcher, marketplace-audit |
+| Testing | test-author, ui-tester, a11y-auditor |
+| Debugging | browser-debug |
+
+### Skill Authoring Notes
+
+When creating new skills for this project:
+- Use `user-invocable: true` (hyphenated, not underscored)
+- Use `argument-hint: "quoted string"` (not `arguments:` YAML blocks)
+- Use `metadata.filePattern` for dynamic triggers
+- MCP namespace: `mcp__plugin_context7_context7__*` (fully qualified, not short-form)
+
 ## Future Considerations
 
 These items are not yet implemented but should be addressed before or during launch:
