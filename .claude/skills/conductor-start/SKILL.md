@@ -137,12 +137,33 @@ Display the plan summary:
 5. Update `state.json` → `status: "reviewing"`, loop back to Step 4
 6. Maximum 2 review/fix cycles. If still failing, escalate to blocked.
 
-### Step 6: PR Creation
+### Step 6: Documentation & Diagrams
+
+After review passes and before PR creation, update project documentation:
+
+1. **Feature CLAUDE.md** — If a new feature domain was created (`src/features/{domain}/`), ensure its `CLAUDE.md` is accurate and complete. If the feature was modified, update the existing CLAUDE.md to reflect changes.
+
+2. **Root CLAUDE.md** — If the changes affect architecture, add new key directories, change state management patterns, or introduce new conventions, update the relevant sections in the root `CLAUDE.md`.
+
+3. **README.md** — If the changes add user-facing features, new scripts, or change the project structure, update the README accordingly.
+
+4. **Diagrams** — If the changes introduce a new user journey, data flow, or significant architectural component, generate a Mermaid diagram via `/diagram` and save to `docs/diagrams/`. Update existing diagrams if the changes modify documented flows.
+
+5. **API documentation** — If new API routes were created or modified (`src/app/api/`), ensure the route's purpose, request/response format, and auth requirements are documented in the feature's CLAUDE.md.
+
+Rules for this step:
+- Only update docs that are actually affected by the changes — don't touch unrelated docs
+- Documentation updates are committed as part of the final phase, not as a separate PR
+- If no documentation changes are needed (e.g., a pure bug fix with no architectural impact), skip this step and note "No doc updates needed" in the PR body
+- Diagrams are optional unless the feature introduces a new user-facing flow
+
+### Step 7: PR Creation
 
 1. Update `state.json` → `status: "complete"`, persist to disk
 2. Launch **pr-creator** agent to:
    - Push the branch
    - Create PR via `gh pr create` with title and body derived from plan + changes
+   - Include a "Documentation" section in the PR body listing what was updated
    - Move GitHub issue to **Ready for Review** on kanban board
 3. Display completion:
    ```
