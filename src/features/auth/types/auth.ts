@@ -23,4 +23,5 @@ export interface ResetPasswordData {
 export interface AuthResponse {
   message: string;
   error?: string;
+  email?: string;
 }

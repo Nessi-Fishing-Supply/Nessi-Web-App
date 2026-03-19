@@ -21,7 +21,7 @@ const RegisterForm: React.FC<AuthFormProps<RegisterFormData, AuthFormResponse>> 
   onSuccess,
   onError,
 }) => {
-  const { isLoading, error, success, setLoading, setError, setSuccess } = useFormState();
+  const { isLoading, error, setLoading, setError } = useFormState();
 
   const methods = useForm<RegisterData>({
     resolver: yupResolver(registerSchema),
@@ -32,8 +32,7 @@ const RegisterForm: React.FC<AuthFormProps<RegisterFormData, AuthFormResponse>> 
     setLoading(true);
     try {
       const response = await registerUser(data);
-      setSuccess(response.message);
-      if (onSuccess) onSuccess(response);
+      if (onSuccess) onSuccess({ ...response, email: data.email });
     } catch (error: unknown) {
       if (error instanceof Error) {
         setError(error.message);
@@ -50,7 +49,6 @@ const RegisterForm: React.FC<AuthFormProps<RegisterFormData, AuthFormResponse>> 
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(handleSubmit)} className="authForm">
         {error && <div className="errorMessage">{error}</div>}
-        {success && <div className="successMessage">{success}</div>}
 
         <Grid columns={2}>
           <Input name="firstName" label="First Name" type="text" isRequired />
