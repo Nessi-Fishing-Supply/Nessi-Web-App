@@ -212,10 +212,12 @@ These items close the gaps in what's already partially built. Nothing else can b
 **Architecture decision: Escrow-based payments.** Nessi uses an escrow model for buyer protection — the #1 trust signal for a gear marketplace where condition accuracy matters. Funds are captured at checkout but NOT transferred to the seller until the buyer verifies the item. This differs from the original spec (which assumed standard Stripe Connect payout schedule).
 
 **Escrow flow:**
+
 ```
 Checkout → Funds captured (held by Nessi platform) → Seller ships (tracking) →
 Item delivered → 3-day verification window → Released to seller OR disputed
 ```
+
 - Buyer can manually accept ("item is as described") → immediate release
 - 3 days pass with no action → auto-release to seller
 - Buyer disputes → funds held, support intervenes
@@ -334,16 +336,16 @@ Item delivered → 3-day verification window → Released to seller OR disputed
 
 ## Progress Tracking
 
-| Phase | Items | Tickets Cut | Completed |
-|-------|-------|-------------|-----------|
-| 1 — Foundation | #1-4 | | |
-| 2 — Image/Listing Infra | #5-7 | | |
-| 3 — Listing CRUD | #8-10 | | |
-| 4 — Discovery | #11-13 | | |
-| 5 — Transactions | #14-17 | | |
-| 6 — Trust & Comms | #18-20 | | |
-| 7 — Shipping | #21-22 | | |
-| 8 — Reviews & Identity | #23-24 | | |
-| 9 — Discovery & AI | #25-27 | | |
-| 10 — Seller Dashboard | #28-29 | | |
-| Infrastructure | #30-33 | | |
+| Phase                   | Items  | Tickets Cut | Completed |
+| ----------------------- | ------ | ----------- | --------- |
+| 1 — Foundation          | #1-4   |             |           |
+| 2 — Image/Listing Infra | #5-7   |             |           |
+| 3 — Listing CRUD        | #8-10  |             |           |
+| 4 — Discovery           | #11-13 |             |           |
+| 5 — Transactions        | #14-17 |             |           |
+| 6 — Trust & Comms       | #18-20 |             |           |
+| 7 — Shipping            | #21-22 |             |           |
+| 8 — Reviews & Identity  | #23-24 |             |           |
+| 9 — Discovery & AI      | #25-27 |             |           |
+| 10 — Seller Dashboard   | #28-29 |             |           |
+| Infrastructure          | #30-33 |             |           |
