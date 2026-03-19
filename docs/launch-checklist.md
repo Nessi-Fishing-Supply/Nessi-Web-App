@@ -6,9 +6,9 @@ Items to address before Nessi goes to production. Organized by priority.
 
 ## Critical (must-have for launch)
 
-- [ ] **Production URLs in Supabase** — Update Site URL from `http://localhost:3000` to production domain. Update redirect URLs in Authentication > URL Configuration.
-- [ ] **Environment variables** — Ensure `NEXT_PUBLIC_APP_URL` is set to production domain in Vercel env vars.
-- [ ] **Resend custom domain** — Verify a custom sending domain in Resend (e.g., `nessi.com`) so auth emails don't come from `onboarding@resend.dev`. Improves deliverability and trust.
+- [x] **Environment variables** — ~~Vercel env vars split per environment.~~ Done 2026-03-19. `NEXT_PUBLIC_APP_URL`: production=`https://nessifishingsupply.com`, preview=`https://nessifishingsupply.com`, development=`http://localhost:3000`. Supabase vars (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`) added to all environments.
+- [x] **Production URLs in Supabase** — ~~Update Site URL and redirect allowlist.~~ Done 2026-03-19. Site URL set to `https://nessifishingsupply.com`. Redirect allowlist: `https://nessifishingsupply.com/api/auth/callback`, `http://localhost:3000/api/auth/callback`.
+- [x] **Resend custom domain + Supabase SMTP** — ~~Verify custom sending domain and configure SMTP.~~ Done 2026-03-19. Resend domain verified for `nessifishingsupply.com`. Supabase Custom SMTP configured with Resend (`smtp.resend.com:465`).
 
 ## High Priority (should-have for launch)
 
@@ -23,6 +23,10 @@ Items to address before Nessi goes to production. Organized by priority.
 - [x] **`autocomplete` attributes** — ~~Verify all auth form inputs have correct autocomplete hints.~~ Done 2026-03-19.
 - [ ] **`?redirect=` post-login routing** — After login, redirect to the page the user was trying to access (e.g., `/dashboard/products`) instead of always going to `/dashboard`.
 - [ ] **Loading/timeout behavior** — Add 8-second timeout on auth API calls with inline error "Something went wrong. Check your connection and try again." Preserve form data.
+
+## Post-Launch Infrastructure
+
+- [ ] **Supabase branching** — Create dev/preview branches for database isolation. Branches auto-provision per git branch, giving each Vercel preview deploy its own database. ~$10/month per active branch. Requires Pro plan ($25/month). Valuable once there's a team or real user data to protect from dev testing.
 
 ## Nice to Have (post-launch is fine)
 
