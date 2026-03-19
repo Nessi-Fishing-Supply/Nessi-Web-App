@@ -1,15 +1,17 @@
 import { createAdminClient } from '@/libs/supabase/admin';
+import { validateRegisterInput } from '@/features/auth/validations/server';
 import { NextResponse } from 'next/server';
+
+const AUTH_HEADERS = { 'Cache-Control': 'private, no-store' };
 
 export async function POST(req: Request) {
   try {
-    const { firstName, lastName, email, password, terms } = await req.json();
+    const body = await req.json();
+    const { firstName, lastName, email, password, terms } = body;
 
-    if (!firstName || !lastName || !email || !password || !terms) {
-      return NextResponse.json(
-        { error: 'All fields are required and terms must be accepted' },
-        { status: 400 },
-      );
+    const validationError = validateRegisterInput({ firstName, lastName, email, password, terms });
+    if (validationError) {
+      return NextResponse.json({ error: validationError }, { status: 400, headers: AUTH_HEADERS });
     }
 
     const supabase = createAdminClient();
@@ -24,15 +26,18 @@ export async function POST(req: Request) {
     });
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      return NextResponse.json({ error: error.message }, { status: 400, headers: AUTH_HEADERS });
     }
 
     return NextResponse.json(
       { message: 'Registration successful. Please check your email to verify your account.' },
-      { status: 201 },
+      { status: 201, headers: AUTH_HEADERS },
     );
   } catch (error) {
     console.error('Registration error:', error);
-    return NextResponse.json({ error: 'An unexpected error occurred' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'An unexpected error occurred' },
+      { status: 500, headers: AUTH_HEADERS },
+    );
   }
 }
