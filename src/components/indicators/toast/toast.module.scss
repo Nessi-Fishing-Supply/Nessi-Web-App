@@ -1,0 +1,140 @@
+// Toast/banner colors use hardcoded hex values because the project's design token
+// system only has base --color-success/#007e33 and --color-error/#c00, not the full
+// shade scale needed for soft card backgrounds/borders. These specific shades were
+// chosen during UX brainstorming for the toast aesthetic. If reused elsewhere,
+// extract to src/styles/variables/colors.scss as semantic tokens.
+
+@use '@/styles/mixins/breakpoints' as *;
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  padding: var(--space-sm);
+  pointer-events: none;
+
+  @include breakpoint(md) {
+    padding: var(--space-md);
+  }
+}
+
+.toast {
+  pointer-events: auto;
+  width: 100%;
+  max-width: 420px;
+  border-radius: var(--radius-lg);
+  padding: var(--space-sm) var(--space-md);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  animation: slideDown 0.3s ease-out;
+  box-shadow: var(--shadow-lg);
+}
+
+.success {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
+
+.error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+  font-size: var(--font-size-sm);
+  color: var(--color-white);
+}
+
+.iconSuccess {
+  background: #22c55e;
+}
+
+.iconError {
+  background: #ef4444;
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+}
+
+.message {
+  margin: 0 0 2px;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.messageSuccess {
+  color: #166534;
+}
+
+.messageError {
+  color: #991b1b;
+}
+
+.description {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  line-height: 1.4;
+}
+
+.descriptionSuccess {
+  color: #15803d;
+}
+
+.descriptionError {
+  color: #b91c1c;
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  font-size: var(--font-size-xs);
+}
+
+.subtitleSuccess {
+  color: #6b9e7a;
+}
+
+.subtitleError {
+  color: #999;
+}
+
+.close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: var(--color-gray-400);
+  font-size: var(--font-size-md);
+  line-height: 1;
+  flex-shrink: 0;
+
+  &:hover {
+    color: var(--color-gray-600);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
