@@ -8,6 +8,7 @@ Authentication feature using Supabase Auth with cookie-based sessions via `@supa
 
 - **context.tsx** -- `AuthProvider` and `useAuth()` hook wrapping Supabase session state (client-side)
 - **services/auth.ts** -- Client-side auth API functions (login, register, logout, password reset)
+- **services/onboarding.ts** -- Post-login onboarding completeness check (stub — returns `{ isComplete: true }` until profiles table exists)
 - **types/auth.ts** -- Auth data interfaces (RegisterData, LoginData, ResetPasswordData, AuthResponse)
 - **types/forms.ts** -- Auth form prop interfaces and form data types (AuthFormProps, LoginFormData, etc.)
 - **validations/auth.ts** -- Yup schemas for login, registration, and password reset forms (client-side)
@@ -22,6 +23,8 @@ Authentication feature using Supabase Auth with cookie-based sessions via `@supa
 5. `AuthProvider` listens to `onAuthStateChange` for client-side state
 6. Auth forms call services which use the Supabase browser client
 7. Registration goes through `/api/auth/register` (uses admin client to bypass RLS)
+8. After successful login, `LoginForm` calls `checkOnboardingComplete()` — if incomplete, redirects to `/onboarding`; if complete, calls `onSuccess` (closes modal, user stays on current page)
+9. Onboarding check currently always returns `{ isComplete: true }` (stub) — will query profiles table when it exists
 
 ## Security
 
@@ -55,7 +58,7 @@ All auth service functions except `logout` and `getUserProfile` apply an 8-secon
 
 ## Components
 
-- **login-form** -- Email/password login with redirect support
+- **login-form** -- Email/password login with post-login onboarding gate
 - **registration-form** -- New user signup with email verification
 - **forgot-password-form** -- Password reset email request
 - **reset-password-form** -- New password entry after reset link (uses shared `resetPasswordSchema`)
