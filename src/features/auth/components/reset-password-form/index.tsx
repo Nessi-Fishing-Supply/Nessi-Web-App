@@ -58,8 +58,9 @@ const ResetPasswordForm: React.FC<AuthFormProps<ResetPasswordFormData>> = ({
           type="password"
           isRequired
           showPasswordStrength
+          autoComplete="new-password"
         />
-        <Input name="confirmPassword" label="Confirm Password" type="password" isRequired />
+        <Input name="confirmPassword" label="Confirm Password" type="password" isRequired autoComplete="new-password" />
         {errorMsg && <p className="errorMessage">{errorMsg}</p>}
         <Button type="submit" fullWidth loading={isLoading}>
           Update Password

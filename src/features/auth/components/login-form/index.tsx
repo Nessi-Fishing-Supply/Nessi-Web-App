@@ -66,9 +66,9 @@ const LoginForm: React.FC<LoginFormProps> = ({
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(handleSubmit)} className="authForm">
         {banner?.type === 'verified' && (
-          <div className={`${styles.banner} ${styles.bannerSuccess}`}>
+          <div className={`${styles.banner} ${styles.bannerSuccess}`} role="status" aria-live="polite">
             <div className={`${styles.bannerIcon} ${styles.bannerIconSuccess}`}>
-              <HiCheck />
+              <HiCheck aria-hidden="true" />
             </div>
             <p className={`${styles.bannerText} ${styles.bannerTextSuccess}`}>
               Email verified! Sign in to get started.
@@ -76,12 +76,16 @@ const LoginForm: React.FC<LoginFormProps> = ({
           </div>
         )}
 
-        {error && !isUnverifiedError && <div className="errorMessage">{error}</div>}
+        {error && !isUnverifiedError && (
+          <div className="errorMessage" role="alert">
+            {error}
+          </div>
+        )}
 
         {isUnverifiedError && (
-          <div className={`${styles.banner} ${styles.bannerError}`}>
+          <div className={`${styles.banner} ${styles.bannerError}`} role="alert" aria-live="assertive">
             <div className={`${styles.bannerIcon} ${styles.bannerIconError}`}>
-              <HiExclamation />
+              <HiExclamation aria-hidden="true" />
             </div>
             <div className={styles.unverifiedBody}>
               <p className={`${styles.bannerText} ${styles.bannerTextError}`}>
@@ -96,8 +100,8 @@ const LoginForm: React.FC<LoginFormProps> = ({
           </div>
         )}
 
-        <Input name="email" label="Email" type="email" isRequired />
-        <Input name="password" label="Password" type="password" isRequired />
+        <Input name="email" label="Email" type="email" isRequired autoComplete="email" />
+        <Input name="password" label="Password" type="password" isRequired autoComplete="current-password" />
         <Button type="submit" fullWidth marginBottom loading={isLoading}>
           Submit
         </Button>

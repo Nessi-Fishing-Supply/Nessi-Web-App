@@ -47,14 +47,14 @@ const ResendVerificationForm: React.FC<ResendVerificationFormProps> = ({
     <div>
       <div className={styles.header}>
         <div className={`${styles.iconCircle} ${styles.warningIcon}`}>
-          <HiOutlineExclamation />
+          <HiOutlineExclamation aria-hidden="true" />
         </div>
         <h6 className={styles.title}>Verification link expired</h6>
         <p className={styles.subtitle}>Enter your email to resend the verification link.</p>
       </div>
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(onSubmit)} className="authForm">
-          <Input name="email" label="Email" type="email" isRequired />
+          <Input name="email" label="Email" type="email" isRequired autoComplete="email" />
           {error && <p className="errorMessage">{error}</p>}
           <Button type="submit" fullWidth loading={isLoading}>
             Resend Verification Email
