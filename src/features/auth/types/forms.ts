@@ -4,7 +4,6 @@ import { RegisterData, LoginData, AuthResponse } from './auth';
 export interface AuthFormProps<TData = any, TResponse = TData> {
   onSuccess?: (response: TResponse) => void;
   onError?: (error: any) => void;
-  redirectUrl?: string;
 }
 
 // Form data types

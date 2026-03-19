@@ -17,6 +17,7 @@ interface LoginFormProps extends AuthFormProps<LoginFormData> {
   banner?: { type: 'verified' } | null;
   onClose?: () => void;
   onResendVerification?: () => void;
+  redirectUrl?: string;
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({
