@@ -95,14 +95,16 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, ariaLabelledBy
 
   return isOpen
     ? ReactDOM.createPortal(
-        <div
-          className={styles.modalOverlay}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby={ariaLabelledBy}
-          aria-label={!ariaLabelledBy ? ariaLabel || 'Dialog' : undefined}
-        >
-          <div className={styles.modalContent} ref={modalRef} tabIndex={-1}>
+        <div className={styles.modalOverlay}>
+          <div
+            className={styles.modalContent}
+            ref={modalRef}
+            tabIndex={-1}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={ariaLabelledBy}
+            aria-label={!ariaLabelledBy ? ariaLabel || 'Dialog' : undefined}
+          >
             <button className={styles.closeButton} onClick={onClose} aria-label="Close dialog">
               <HiOutlineX aria-hidden="true" />
             </button>

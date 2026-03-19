@@ -16,7 +16,7 @@ function CallbackContent() {
   if (status === 'recovery') {
     return (
       <section className={styles.form}>
-        <h5>Reset Password</h5>
+        <h1>Reset Password</h1>
         <p>Enter a new password for your account.</p>
         <ResetPasswordForm />
       </section>

@@ -67,7 +67,11 @@ const ResetPasswordForm: React.FC<AuthFormProps<ResetPasswordFormData>> = ({
           isRequired
           autoComplete="new-password"
         />
-        {errorMsg && <p className="errorMessage">{errorMsg}</p>}
+        {errorMsg && (
+          <p className="errorMessage" role="alert" aria-live="assertive">
+            {errorMsg}
+          </p>
+        )}
         <Button type="submit" fullWidth loading={isLoading}>
           Update Password
         </Button>

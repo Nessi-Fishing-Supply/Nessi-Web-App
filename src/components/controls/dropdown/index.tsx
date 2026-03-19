@@ -1,10 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import styles from './dropdown.module.scss';
 
 interface DropdownProps {
   children: React.ReactNode;
   label?: string;
   icon?: React.ReactNode;
+  ariaLabel?: string;
 }
 
 interface DropdownItemProps {
@@ -28,38 +29,55 @@ const DropdownItem: React.FC<DropdownItemProps> = ({ children, isClickable = tru
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (isClickable && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      closeDropdown();
+    }
+  };
+
   return (
-    <div
+    <li
+      role="menuitem"
+      tabIndex={isClickable ? 0 : -1}
       onClick={handleClick}
+      onKeyDown={handleKeyDown}
       className={isClickable ? styles.dropdownItem : styles.dropdownItemNoClick}
     >
       {children}
-    </div>
+    </li>
   );
 };
 
 // DropdownTitle component
 const DropdownTitle: React.FC<DropdownTitleProps> = ({ children }) => {
-  return <div className={styles.dropdownTitle}>{children}</div>;
+  return (
+    <li role="presentation" className={styles.dropdownTitle}>
+      {children}
+    </li>
+  );
 };
 
 // Dropdown component
-const Dropdown: React.FC<DropdownProps> = ({ children, label, icon }) => {
+const Dropdown: React.FC<DropdownProps> = ({ children, label, icon, ariaLabel }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLUListElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
 
-  const closeDropdown = () => {
+  const closeDropdown = useCallback(() => {
     setIsOpen(false);
-  };
+    triggerRef.current?.focus();
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        closeDropdown();
+      const container = triggerRef.current?.parentElement;
+      if (container && !container.contains(event.target as Node)) {
+        setIsOpen(false);
       }
     };
 
@@ -85,17 +103,60 @@ const Dropdown: React.FC<DropdownProps> = ({ children, label, icon }) => {
       if (dropdownRect.left < margin) {
         dropdownRef.current.style.left = `${margin - dropdownRect.left}px`;
       }
+
+      // Focus the first focusable item
+      const firstItem = dropdownRef.current.querySelector('[role="menuitem"]') as HTMLElement;
+      firstItem?.focus();
     }
   }, [isOpen]);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!isOpen || !dropdownRef.current) return;
+
+    const items = Array.from(
+      dropdownRef.current.querySelectorAll('[role="menuitem"][tabindex="0"]'),
+    ) as HTMLElement[];
+    const currentIndex = items.indexOf(document.activeElement as HTMLElement);
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        items[(currentIndex + 1) % items.length]?.focus();
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        items[(currentIndex - 1 + items.length) % items.length]?.focus();
+        break;
+      case 'Escape':
+        e.preventDefault();
+        closeDropdown();
+        break;
+      case 'Home':
+        e.preventDefault();
+        items[0]?.focus();
+        break;
+      case 'End':
+        e.preventDefault();
+        items[items.length - 1]?.focus();
+        break;
+    }
+  };
 
   return (
     <DropdownContext.Provider value={{ closeDropdown }}>
       <div className={styles.dropdown}>
-        <button onClick={toggleDropdown} className={styles.trigger}>
+        <button
+          ref={triggerRef}
+          onClick={toggleDropdown}
+          className={styles.trigger}
+          aria-expanded={isOpen}
+          aria-haspopup="menu"
+          aria-label={ariaLabel}
+        >
           {icon ? icon : label}
         </button>
         {isOpen && (
-          <div ref={dropdownRef} className={styles.menu}>
+          <ul ref={dropdownRef} role="menu" className={styles.menu} onKeyDown={handleKeyDown}>
             {React.Children.map(children, (child) => {
               if (
                 React.isValidElement(child) &&
@@ -105,7 +166,7 @@ const Dropdown: React.FC<DropdownProps> = ({ children, label, icon }) => {
               }
               return <DropdownItem>{child}</DropdownItem>;
             })}
-          </div>
+          </ul>
         )}
       </div>
     </DropdownContext.Provider>

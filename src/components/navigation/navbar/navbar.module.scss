@@ -14,13 +14,14 @@
 
 .button {
   background-color: var(--color-secondary);
-  color: var(--color-light);
+  color: var(--color-dark);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--space-sm) var(--space-md);
   border-radius: var(--space-xs);
   border: none;
+  font-weight: 600;
 }
 
 .form {
@@ -88,13 +89,15 @@
   padding: var(--space-base) var(--space-xl);
   gap: var(--space-sm);
 
-  > a {
+  > a,
+  > .categoryLink {
     color: var(--color-primary);
     font-size: 14px;
     font-weight: bold;
     letter-spacing: 1.26px;
     text-transform: uppercase;
     text-decoration: none;
+    cursor: default;
   }
 }
 
@@ -103,7 +106,8 @@
   display: flex;
   justify-content: space-between;
 
-  > h6 {
+  > h2 {
     margin-bottom: 0;
+    font-size: var(--font-size-lg);
   }
 }
