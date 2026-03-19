@@ -37,11 +37,15 @@ const Toast: React.FC<ToastProps> = ({
   return (
     <div className={styles.overlay}>
       <div className={`${styles.toast} ${styles[type]}`}>
-        <div className={`${styles.icon} ${type === 'success' ? styles.iconSuccess : styles.iconError}`}>
+        <div
+          className={`${styles.icon} ${type === 'success' ? styles.iconSuccess : styles.iconError}`}
+        >
           <Icon />
         </div>
         <div className={styles.body}>
-          <p className={`${styles.message} ${type === 'success' ? styles.messageSuccess : styles.messageError}`}>
+          <p
+            className={`${styles.message} ${type === 'success' ? styles.messageSuccess : styles.messageError}`}
+          >
             {message}
           </p>
           <p
@@ -50,7 +54,9 @@ const Toast: React.FC<ToastProps> = ({
             {description}
           </p>
           {subtitle && (
-            <p className={`${styles.subtitle} ${type === 'success' ? styles.subtitleSuccess : styles.subtitleError}`}>
+            <p
+              className={`${styles.subtitle} ${type === 'success' ? styles.subtitleSuccess : styles.subtitleError}`}
+            >
               {subtitle}
             </p>
           )}
