@@ -123,3 +123,107 @@ CREATE TRIGGER on_profiles_updated_at
 CREATE TRIGGER on_profiles_system_fields
   BEFORE UPDATE ON profiles
   FOR EACH ROW EXECUTE FUNCTION public.handle_profiles_system_fields();
+
+-- ============================================================
+-- Row Level Security: profiles
+-- ============================================================
+
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+
+-- Anyone can view profiles (public marketplace)
+CREATE POLICY "Profiles are viewable by everyone"
+  ON profiles FOR SELECT
+  TO authenticated, anon
+  USING (true);
+
+-- Authenticated users can insert only their own profile
+CREATE POLICY "Users can insert own profile"
+  ON profiles FOR INSERT
+  TO authenticated
+  WITH CHECK ((SELECT auth.uid()) = id);
+
+-- Authenticated users can update only their own profile
+CREATE POLICY "Users can update own profile"
+  ON profiles FOR UPDATE
+  TO authenticated
+  USING ((SELECT auth.uid()) = id)
+  WITH CHECK ((SELECT auth.uid()) = id);
+
+-- ============================================================
+-- Row Level Security: products
+-- ============================================================
+
+ALTER TABLE products ENABLE ROW LEVEL SECURITY;
+
+-- Anyone can view products (public marketplace)
+CREATE POLICY "Products are viewable by everyone"
+  ON products FOR SELECT
+  TO authenticated, anon
+  USING (true);
+
+-- Authenticated users can insert their own products
+CREATE POLICY "Users can insert own products"
+  ON products FOR INSERT
+  TO authenticated
+  WITH CHECK ((SELECT auth.uid()) = user_id);
+
+-- Users can only update their own products
+CREATE POLICY "Users can update own products"
+  ON products FOR UPDATE
+  TO authenticated
+  USING ((SELECT auth.uid()) = user_id)
+  WITH CHECK ((SELECT auth.uid()) = user_id);
+
+-- Users can only delete their own products
+CREATE POLICY "Users can delete own products"
+  ON products FOR DELETE
+  TO authenticated
+  USING ((SELECT auth.uid()) = user_id);
+
+-- ============================================================
+-- Row Level Security: product_images
+-- ============================================================
+
+ALTER TABLE product_images ENABLE ROW LEVEL SECURITY;
+
+-- Anyone can view product images (follows product visibility)
+CREATE POLICY "Product images are viewable by everyone"
+  ON product_images FOR SELECT
+  TO authenticated, anon
+  USING (true);
+
+-- Authenticated users can insert images for their own products
+CREATE POLICY "Users can insert images for own products"
+  ON product_images FOR INSERT
+  TO authenticated
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM products
+      WHERE products.id = product_id
+      AND products.user_id = (SELECT auth.uid())
+    )
+  );
+
+-- Users can update images for their own products
+CREATE POLICY "Users can update images for own products"
+  ON product_images FOR UPDATE
+  TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM products
+      WHERE products.id = product_id
+      AND products.user_id = (SELECT auth.uid())
+    )
+  );
+
+-- Users can delete images for their own products
+CREATE POLICY "Users can delete images for own products"
+  ON product_images FOR DELETE
+  TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM products
+      WHERE products.id = product_id
+      AND products.user_id = (SELECT auth.uid())
+    )
+  );
