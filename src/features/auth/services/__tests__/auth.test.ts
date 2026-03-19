@@ -58,9 +58,9 @@ describe('register', () => {
   };
 
   it('passes AbortController signal to fetch', async () => {
-    const fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValueOnce(
-      new Response(JSON.stringify({ user: { id: '1' } }), { status: 200 }),
-    );
+    const fetchSpy = vi
+      .spyOn(global, 'fetch')
+      .mockResolvedValueOnce(new Response(JSON.stringify({ user: { id: '1' } }), { status: 200 }));
 
     await register(validData);
 
@@ -200,7 +200,9 @@ describe('getUserProfile', () => {
   it('throws when getUser returns an error', async () => {
     const mockSupabase = {
       auth: {
-        getUser: vi.fn().mockResolvedValue({ data: { user: null }, error: { message: 'Not authenticated' } }),
+        getUser: vi
+          .fn()
+          .mockResolvedValue({ data: { user: null }, error: { message: 'Not authenticated' } }),
       },
     };
     vi.mocked(createClient).mockReturnValue(mockSupabase as any);

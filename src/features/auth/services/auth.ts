@@ -10,10 +10,7 @@ export const withTimeout = <T>(promise: Promise<T>, ms: number): Promise<T> => {
     }, ms);
   });
 
-  return Promise.race([
-    promise.finally(() => clearTimeout(timer)),
-    timeout,
-  ]);
+  return Promise.race([promise.finally(() => clearTimeout(timer)), timeout]);
 };
 
 export const register = async (data: {
