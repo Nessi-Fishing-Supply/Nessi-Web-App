@@ -96,6 +96,14 @@ describe('register', () => {
 
     await expect(register(validData)).rejects.toThrow('Email already in use');
   });
+
+  it('throws DUPLICATE_EMAIL when the API returns 409 with that error code', async () => {
+    vi.spyOn(global, 'fetch').mockResolvedValueOnce(
+      new Response(JSON.stringify({ error: 'DUPLICATE_EMAIL' }), { status: 409 }),
+    );
+
+    await expect(register(validData)).rejects.toThrow('DUPLICATE_EMAIL');
+  });
 });
 
 describe('login', () => {
