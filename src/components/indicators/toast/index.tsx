@@ -35,12 +35,17 @@ const Toast: React.FC<ToastProps> = ({
   const Icon = type === 'success' ? HiCheck : HiExclamation;
 
   return (
-    <div className={styles.overlay}>
+    <div
+      className={styles.overlay}
+      role={type === 'error' ? 'alert' : 'status'}
+      aria-live={type === 'error' ? 'assertive' : 'polite'}
+      aria-atomic="true"
+    >
       <div className={`${styles.toast} ${styles[type]}`}>
         <div
           className={`${styles.icon} ${type === 'success' ? styles.iconSuccess : styles.iconError}`}
         >
-          <Icon />
+          <Icon aria-hidden="true" />
         </div>
         <div className={styles.body}>
           <p
