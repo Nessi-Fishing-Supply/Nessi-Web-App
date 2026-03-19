@@ -3,30 +3,39 @@
 import React from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useRouter } from 'next/navigation';
 import { loginSchema } from '@/features/auth/validations/auth';
 import { LoginData } from '@/features/auth/types/auth';
 import { useFormState } from '@/features/shared/hooks/use-form-state';
-import { Input, Button, AppLink } from '@/components/controls';
+import { Input, Button } from '@/components/controls';
 import { login } from '@/features/auth/services/auth';
 import { AuthFormProps, LoginFormData } from '@/features/auth/types/forms';
+import { HiCheck, HiExclamation } from 'react-icons/hi';
+import styles from './login-form.module.scss';
 
-/**
- * Login form component
- * Handles user authentication and session management
- * Supports redirect after successful login
- * Provides error handling and loading states
- */
-const LoginForm: React.FC<AuthFormProps<LoginFormData>> = ({
+interface LoginFormProps extends AuthFormProps<LoginFormData> {
+  banner?: { type: 'verified' } | null;
+  onClose?: () => void;
+  onResendVerification?: () => void;
+}
+
+const LoginForm: React.FC<LoginFormProps> = ({
   onSuccess,
   onError,
+  onClose,
+  onResendVerification,
   redirectUrl = '/dashboard',
+  banner,
 }) => {
   const { isLoading, error, setLoading, setError } = useFormState();
+  const router = useRouter();
 
   const methods = useForm<LoginData>({
     resolver: yupResolver(loginSchema),
     mode: 'onBlur',
   });
+
+  const isUnverifiedError = error?.includes('Email not confirmed');
 
   const handleSubmit = async (data: LoginData) => {
     setLoading(true);
@@ -48,18 +57,53 @@ const LoginForm: React.FC<AuthFormProps<LoginFormData>> = ({
     }
   };
 
+  const handleForgotPassword = () => {
+    onClose?.();
+    router.push('/auth/forgot-password');
+  };
+
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(handleSubmit)} className="authForm">
-        {error && <div className="errorMessage">{error}</div>}
+        {banner?.type === 'verified' && (
+          <div className={`${styles.banner} ${styles.bannerSuccess}`}>
+            <div className={`${styles.bannerIcon} ${styles.bannerIconSuccess}`}>
+              <HiCheck />
+            </div>
+            <p className={`${styles.bannerText} ${styles.bannerTextSuccess}`}>
+              Email verified! Sign in to get started.
+            </p>
+          </div>
+        )}
+
+        {error && !isUnverifiedError && <div className="errorMessage">{error}</div>}
+
+        {isUnverifiedError && (
+          <div className={`${styles.banner} ${styles.bannerError}`}>
+            <div className={`${styles.bannerIcon} ${styles.bannerIconError}`}>
+              <HiExclamation />
+            </div>
+            <div className={styles.unverifiedBody}>
+              <p className={`${styles.bannerText} ${styles.bannerTextError}`}>
+                Your email hasn&apos;t been verified yet.
+              </p>
+              {onResendVerification && (
+                <button type="button" onClick={onResendVerification} className={styles.resendLink}>
+                  Resend verification email
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
         <Input name="email" label="Email" type="email" isRequired />
         <Input name="password" label="Password" type="password" isRequired />
         <Button type="submit" fullWidth marginBottom loading={isLoading}>
           Submit
         </Button>
-        <AppLink fullWidth center underline size="sm" href="/auth/forgot-password">
+        <button type="button" onClick={handleForgotPassword} className={styles.forgotLink}>
           Forgot your password?
-        </AppLink>
+        </button>
       </form>
     </FormProvider>
   );
