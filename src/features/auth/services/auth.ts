@@ -48,7 +48,7 @@ export const getUserProfile = async () => {
 export const forgotPassword = async (data: { email: string }) => {
   const supabase = createClient();
   const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
-    redirectTo: `${window.location.origin}/api/auth/callback?type=recovery`,
+    redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/callback?type=recovery`,
   });
 
   if (error) throw new Error(error.message);
