@@ -40,11 +40,12 @@ export default function Navbar() {
   const [isResendModalOpen, setResendModalOpen] = useState(false);
   const [loginBanner, setLoginBanner] = useState<{ type: 'verified' } | null>(null);
 
-  // Toast state for registration success
+  // Toast state for auth success notifications
   const [toast, setToast] = useState<{
     visible: boolean;
     email: string;
-  }>({ visible: false, email: '' });
+    message: string;
+  }>({ visible: false, email: '', message: '' });
 
   const { user, isAuthenticated } = useAuth();
   const searchParams = useSearchParams();
@@ -115,7 +116,12 @@ export default function Navbar() {
 
   const handleRegisterSuccess = (response: { message: string; email?: string }) => {
     setRegisterModalOpen(false);
-    setToast({ visible: true, email: response.email || '' });
+    setToast({ visible: true, email: response.email || '', message: 'Account created!' });
+  };
+
+  const handleResendSuccess = (email: string) => {
+    setResendModalOpen(false);
+    setToast({ visible: true, email, message: 'Verification email sent!' });
   };
 
   const handleResendToLogin = () => {
@@ -235,17 +241,17 @@ export default function Navbar() {
 
       {/* Resend Verification Modal */}
       <Modal isOpen={isResendModalOpen} onClose={toggleResendModal}>
-        <ResendVerificationForm onBackToLogin={handleResendToLogin} />
+        <ResendVerificationForm onBackToLogin={handleResendToLogin} onSuccess={handleResendSuccess} />
       </Modal>
 
       {/* Registration Success Toast */}
       <Toast
         visible={toast.visible}
         type="success"
-        message="Account created!"
+        message={toast.message}
         description={`Check your inbox at ${toast.email} for a verification link.`}
         subtitle="Come back and sign in once verified."
-        onDismiss={() => setToast({ visible: false, email: '' })}
+        onDismiss={() => setToast({ visible: false, email: '', message: '' })}
       />
     </nav>
   );

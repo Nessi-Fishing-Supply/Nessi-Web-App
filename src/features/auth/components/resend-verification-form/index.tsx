@@ -1,26 +1,29 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { Input, Button } from '@/components/controls';
 import { resendVerification } from '@/features/auth/services/auth';
 import { useFormState } from '@/features/shared/hooks/use-form-state';
-import { HiOutlineExclamation, HiCheck } from 'react-icons/hi';
+import { HiOutlineExclamation } from 'react-icons/hi';
 import styles from './resend-verification-form.module.scss';
 
 interface ResendVerificationFormProps {
   onBackToLogin?: () => void;
+  onSuccess?: (email: string) => void;
 }
 
 const schema = Yup.object().shape({
   email: Yup.string().email('Invalid email').required('Email is required'),
 });
 
-const ResendVerificationForm: React.FC<ResendVerificationFormProps> = ({ onBackToLogin }) => {
+const ResendVerificationForm: React.FC<ResendVerificationFormProps> = ({
+  onBackToLogin,
+  onSuccess,
+}) => {
   const { isLoading, error, setLoading, setError } = useFormState();
-  const [sentToEmail, setSentToEmail] = useState<string | null>(null);
 
   const methods = useForm<{ email: string }>({
     resolver: yupResolver(schema),
@@ -32,39 +35,13 @@ const ResendVerificationForm: React.FC<ResendVerificationFormProps> = ({ onBackT
     setError(null);
     try {
       await resendVerification({ email: data.email });
-      setSentToEmail(data.email);
+      if (onSuccess) onSuccess(data.email);
     } catch (err: any) {
       setError(err.message || 'Failed to resend verification email. Please try again.');
     } finally {
       setLoading(false);
     }
   };
-
-  if (sentToEmail) {
-    return (
-      <div>
-        <div className={styles.successCard}>
-          <div className={`${styles.iconCircle} ${styles.successIcon}`}>
-            <HiCheck />
-          </div>
-          <p className={styles.successTitle}>Verification email sent!</p>
-          <p className={styles.successDescription}>
-            Check your inbox at <strong>{sentToEmail}</strong>
-          </p>
-          <p className={styles.successSubtitle}>
-            Click the link in the email, then come back and sign in.
-          </p>
-        </div>
-        {onBackToLogin && (
-          <div className={styles.backLink}>
-            <button onClick={onBackToLogin} className="link">
-              Back to Sign In
-            </button>
-          </div>
-        )}
-      </div>
-    );
-  }
 
   return (
     <div>
@@ -86,7 +63,7 @@ const ResendVerificationForm: React.FC<ResendVerificationFormProps> = ({ onBackT
       </FormProvider>
       {onBackToLogin && (
         <div className={styles.backLink}>
-          <button onClick={onBackToLogin} className="link">
+          <button onClick={onBackToLogin} className={styles.backLinkButton}>
             Back to Sign In
           </button>
         </div>

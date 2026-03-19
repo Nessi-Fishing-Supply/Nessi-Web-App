@@ -66,4 +66,18 @@
 .backLink {
   text-align: center;
   margin-top: var(--space-sm);
+
+  button {
+    background: none;
+    border: none;
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-600);
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+
+    &:hover {
+      color: var(--color-gray-800);
+    }
+  }
 }
