@@ -90,21 +90,21 @@ Display the plan summary:
       #### Expert Context Pre-Loading (within implementation loop)
 
       If the current task has `Expert Domains` specified in the plan:
-      1. For each expert domain, launch the corresponding expert agent with the task context
-      2. Collect expert guidance (recommended patterns, gotchas, code examples)
-      3. Include the expert guidance in the task-executor's prompt as "Expert Context"
+      1. For each expert domain, invoke the corresponding expert skill
+      2. The skill provides guidance (recommended patterns, gotchas, code examples)
+      3. Include the skill's guidance in the task-executor's prompt as "Expert Context"
       4. This happens BEFORE task-executor starts, not reactively during execution
 
-      Expert agent mapping:
-      | Domain | Agent |
+      Expert skill mapping:
+      | Domain | Skill |
       |--------|-------|
-      | supabase | supabase-expert |
-      | nextjs | nextjs-expert |
-      | vercel | vercel-expert |
-      | scss | scss-expert |
-      | state-management | state-management-expert |
+      | supabase | /ask-supabase |
+      | nextjs | /ask-nextjs |
+      | vercel | /ask-vercel |
+      | scss | /ask-scss |
+      | state-management | /ask-state |
 
-      Multiple expert agents can be launched in parallel for a single task.
+      Multiple expert skills can be invoked in parallel for a single task.
 
       - Launch **task-executor** agent with task details + relevant spec context from plan.md + any expert context collected above
       - **On success**: Mark task complete in state, reset `failureCount.currentTask`, persist
