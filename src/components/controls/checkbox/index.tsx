@@ -38,7 +38,14 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
                 {field.value && <HiOutlineCheck className={styles.checkIcon} />}
               </span>
               {label}
-              {isRequired && <span className={styles.requiredIndicator}>*</span>}
+              {isRequired && (
+                <>
+                  <span className={styles.requiredIndicator} aria-hidden="true">
+                    *
+                  </span>
+                  <span className="sr-only"> (required)</span>
+                </>
+              )}
             </label>
 
             {error && (

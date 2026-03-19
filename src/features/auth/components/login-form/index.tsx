@@ -9,6 +9,7 @@ import { LoginData } from '@/features/auth/types/auth';
 import { useFormState } from '@/features/shared/hooks/use-form-state';
 import { Input, Button } from '@/components/controls';
 import { login } from '@/features/auth/services/auth';
+import { checkOnboardingComplete } from '@/features/auth/services/onboarding';
 import { AuthFormProps, LoginFormData } from '@/features/auth/types/forms';
 import { HiCheck, HiExclamation } from 'react-icons/hi';
 import styles from './login-form.module.scss';
@@ -24,7 +25,6 @@ const LoginForm: React.FC<LoginFormProps> = ({
   onError,
   onClose,
   onResendVerification,
-  redirectUrl = '/dashboard',
   banner,
 }) => {
   const { isLoading, error, setLoading, setError } = useFormState();
@@ -46,8 +46,12 @@ const LoginForm: React.FC<LoginFormProps> = ({
       });
 
       setError(null);
+      const { isComplete } = await checkOnboardingComplete();
+      if (!isComplete) {
+        window.location.href = '/onboarding';
+        return;
+      }
       onSuccess?.call(null, data);
-      window.location.href = redirectUrl;
     } catch (error) {
       const err = error as Error;
       setError(err.message || 'Login failed. Please try again.');

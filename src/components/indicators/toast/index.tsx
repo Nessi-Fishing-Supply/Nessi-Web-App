@@ -68,7 +68,7 @@ const Toast: React.FC<ToastProps> = ({
         </div>
         {onDismiss && (
           <button className={styles.close} onClick={onDismiss} aria-label="Dismiss notification">
-            <HiX />
+            <HiX aria-hidden="true" />
           </button>
         )}
       </div>

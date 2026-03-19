@@ -63,8 +63,16 @@ const ForgotPasswordForm: React.FC<AuthFormProps<ForgotPasswordFormData, AuthFor
         <Button type="submit" fullWidth loading={isLoading}>
           Send Reset Link
         </Button>
-        {success && <p className="successMessage">{success}</p>}
-        {error && <p className="errorMessage">{error}</p>}
+        {success && (
+          <p className="successMessage" role="status" aria-live="polite">
+            {success}
+          </p>
+        )}
+        {error && (
+          <p className="errorMessage" role="alert" aria-live="assertive">
+            {error}
+          </p>
+        )}
       </form>
     </FormProvider>
   );

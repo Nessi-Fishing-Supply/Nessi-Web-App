@@ -20,11 +20,13 @@
 
 .closeButton {
   position: absolute;
-  top: 0;
-  right: calc((var(--space-md) + var(--space-base)) * -1);
-  width: var(--space-md);
-  height: var(--space-md);
-  color: var(--color-white);
+  top: var(--space-sm);
+  right: var(--space-sm);
+  width: var(--space-lg);
+  height: var(--space-lg);
+  min-width: 44px;
+  min-height: 44px;
+  color: var(--color-gray-600);
   background: transparent;
   display: flex;
   align-items: center;
@@ -32,9 +34,15 @@
   padding: 0;
   border: 0;
   cursor: pointer;
+  border-radius: var(--radius-sm);
+
+  &:hover {
+    color: var(--color-dark);
+    background-color: var(--color-gray-100);
+  }
 
   > svg {
-    width: inherit;
-    height: inherit;
+    width: var(--space-md);
+    height: var(--space-md);
   }
 }

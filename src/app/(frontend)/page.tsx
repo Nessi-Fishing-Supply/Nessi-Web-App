@@ -13,18 +13,16 @@ export default function Home() {
   }
 
   return (
-    <div>
-      <main>
-        {products.length === 0 ? (
-          <p>No products available.</p>
-        ) : (
-          <Grid columns={4}>
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </Grid>
-        )}
-      </main>
-    </div>
+    <main>
+      {products.length === 0 ? (
+        <p>No products available.</p>
+      ) : (
+        <Grid columns={4}>
+          {products.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </Grid>
+      )}
+    </main>
   );
 }

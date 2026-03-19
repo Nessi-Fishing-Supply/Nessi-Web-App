@@ -130,7 +130,12 @@ const Input: React.FC<InputProps> = ({
             {label && (
               <label className={styles.label} htmlFor={name}>
                 {label}
-                {isRequired && <span>*</span>}
+                {isRequired && (
+                  <>
+                    <span aria-hidden="true">*</span>
+                    <span className="sr-only"> (required)</span>
+                  </>
+                )}
               </label>
             )}
             <div
@@ -144,7 +149,7 @@ const Input: React.FC<InputProps> = ({
                 type={type === 'password' && isPasswordVisible ? 'text' : type}
                 placeholder={placeholder}
                 {...field}
-                value={value}
+                value={value ?? field.value}
                 className={styles.input}
                 required={isRequired}
                 aria-required={isRequired}

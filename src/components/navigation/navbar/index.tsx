@@ -164,21 +164,26 @@ export default function Navbar() {
     <nav>
       <NotificationBar />
       <div className={styles.container}>
-        <Link href="/">
-          <LogoFull className={styles.logo} />
+        <Link href="/" aria-label="Nessi — Home">
+          <LogoFull className={styles.logo} aria-hidden="true" />
         </Link>
-        <form className={styles.form}>
-          <input type="search" placeholder="Search Fishing Gear" />
-          <button className={styles.searchButton} type="submit">
-            <HiSearch />
+        <form className={styles.form} role="search" aria-label="Site search">
+          <label htmlFor="site-search" className="sr-only">
+            Search fishing gear
+          </label>
+          <input id="site-search" type="search" placeholder="Search Fishing Gear" />
+          <button className={styles.searchButton} type="submit" aria-label="Submit search">
+            <HiSearch aria-hidden="true" />
           </button>
         </form>
-        <button className={styles.button}>Sell Your Gear</button>
+        <button className={styles.button} type="button" aria-disabled="true">
+          Sell Your Gear
+        </button>
 
-        {mounted && isAuthenticated && <HiBell className={styles.icon} />}
+        {mounted && isAuthenticated && <HiBell className={styles.icon} aria-hidden="true" />}
 
         {mounted && isAuthenticated && user ? (
-          <Dropdown icon={<HiUser />}>
+          <Dropdown icon={<HiUser aria-hidden="true" />} ariaLabel="Account menu">
             <DropdownItem isClickable={false}>
               <p>
                 {firstName} {lastName}
@@ -216,7 +221,7 @@ export default function Navbar() {
           )
         )}
 
-        <HiOutlineShoppingBag className={styles.icon} />
+        <HiOutlineShoppingBag className={styles.icon} aria-hidden="true" />
       </div>
 
       <div className={styles.categories}>
@@ -232,16 +237,16 @@ export default function Navbar() {
           'Apparel',
           'Bargain Bin',
         ].map((category) => (
-          <Link key={category} href="#">
+          <span key={category} className={styles.categoryLink} role="link" aria-disabled="true">
             {category}
-          </Link>
+          </span>
         ))}
       </div>
 
       {/* Login Modal */}
       <Modal isOpen={isLoginModalOpen} onClose={toggleLoginModal} ariaLabelledBy="login-title">
         <div className={styles.modalHeader}>
-          <h6 id="login-title">Log In</h6>
+          <h2 id="login-title">Log In</h2>
           <Button style="dark" round outline onClick={toggleRegisterModal}>
             Register
           </Button>
@@ -250,7 +255,6 @@ export default function Navbar() {
           onSuccess={handleLoginSuccess}
           onClose={toggleLoginModal}
           onResendVerification={handleUnverifiedResend}
-          redirectUrl="/dashboard"
           banner={loginBanner}
         />
       </Modal>
@@ -261,7 +265,7 @@ export default function Navbar() {
         onClose={toggleRegisterModal}
         ariaLabelledBy="register-title"
       >
-        <h6 id="register-title">Create Your Account</h6>
+        <h2 id="register-title">Create Your Account</h2>
         <RegisterForm onSuccess={handleRegisterSuccess} onSwitchToLogin={handleRegisterToLogin} />
       </Modal>
 
