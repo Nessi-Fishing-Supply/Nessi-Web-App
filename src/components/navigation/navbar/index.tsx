@@ -57,6 +57,7 @@ export default function Navbar() {
     const loginQuery = searchParams?.get('login');
     const verified = searchParams?.get('verified');
     const authError = searchParams?.get('auth_error');
+    const passwordReset = searchParams?.get('password_reset');
 
     if (loginQuery === 'true') {
       requestAnimationFrame(() => setLoginModalOpen(true));
@@ -73,12 +74,25 @@ export default function Navbar() {
       requestAnimationFrame(() => setResendModalOpen(true));
     }
 
+    if (passwordReset === 'true') {
+      requestAnimationFrame(() =>
+        setToast({
+          visible: true,
+          email: '',
+          message: 'Password updated!',
+          description: 'Your password has been reset and you are now logged in.',
+          subtitle: '',
+        }),
+      );
+    }
+
     // Clean up query params after consuming
-    if (loginQuery || verified || authError) {
+    if (loginQuery || verified || authError || passwordReset) {
       const url = new URL(window.location.href);
       url.searchParams.delete('login');
       url.searchParams.delete('verified');
       url.searchParams.delete('auth_error');
+      url.searchParams.delete('password_reset');
       window.history.replaceState({}, '', url.pathname + url.search);
     }
   }, [searchParams]);

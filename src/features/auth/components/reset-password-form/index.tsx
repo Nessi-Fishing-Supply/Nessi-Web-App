@@ -41,7 +41,7 @@ const ResetPasswordForm: React.FC<AuthFormProps<ResetPasswordFormData>> = ({
         newPassword: data.password,
         confirmNewPassword: data.confirmPassword,
       });
-      router.push('/?login=true');
+      window.location.href = '/dashboard?password_reset=true';
       if (onSuccess) onSuccess(data);
     } catch (err: any) {
       setErrorMsg(err.message || 'Reset failed');
