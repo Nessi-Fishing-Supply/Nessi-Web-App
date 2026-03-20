@@ -31,14 +31,22 @@ Before planning, check if the ticket body references a design spec:
 
 1. **Understand the ticket** — Parse all acceptance criteria, requirements, and edge cases from the issue
 2. **Scan the codebase** — Find relevant existing files, patterns, conventions, and related code. Understand how similar features are structured.
-3. **Identify scope** — Determine what needs to be created vs modified. Map dependencies between changes.
-4. **Design phases** — Break the work into 2-5 phases following these principles:
+3. **Audit existing components** — Before planning ANY new component, search for it in the existing codebase:
+   - Search `src/components/` (shared UI primitives) for components that match or overlap with what the ticket needs
+   - Search `src/features/*/components/` for feature-scoped components that could be reused or extended
+   - Use Glob patterns like `**/{component-name}*` and Grep for related exports/types
+   - If a matching component exists: plan to **import and use it** (or modify it if it needs extension)
+   - If no matching component exists: determine placement based on reusability:
+     - **Shared** (`src/components/{category}/`) — if 2+ features could use it, or it's a generic UI primitive (buttons, pills, modals, inputs, selectors)
+     - **Feature-scoped** (`src/features/{domain}/components/`) — if it's tightly coupled to one feature's domain logic
+4. **Identify scope** — Determine what needs to be created vs modified. Map dependencies between changes.
+5. **Design phases** — Break the work into 2-5 phases following these principles:
    - Early phases = foundation (types, schemas, API clients, hooks, database changes)
    - Middle phases = core implementation (components, pages, routes, logic)
    - Final phases = polish (loading states, error handling, edge cases)
    - Each phase MUST be independently verifiable (`pnpm build` must pass after each)
    - Each phase produces a meaningful commit
-5. **Define tasks** — Each phase has 2-7 tasks. Each task must be atomic enough for a single agent to execute.
+6. **Define tasks** — Each phase has 2-7 tasks. Each task must be atomic enough for a single agent to execute.
 
 ## Output Format
 
@@ -90,3 +98,5 @@ Example:
 - Reference existing patterns you find in the codebase — new code should match established conventions
 - Do NOT include tasks for committing, branching, or PR creation — the conductor handles git operations
 - If the ticket references database schema changes, plan those in the earliest phase
+- NEVER plan to create a component that already exists — reuse or extend it. If a plan task needs a pill, toast, modal, button, input, selector, or any UI primitive, verify it doesn't already exist in `src/components/` before specifying a new file path.
+- When a task reuses an existing component, note it explicitly: `**Reuses:** src/components/indicators/pill/`

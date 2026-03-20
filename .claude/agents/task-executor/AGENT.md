@@ -25,6 +25,7 @@ You will receive:
 - Read the target files (and their neighbors) to understand existing patterns
 - Read related files to understand how similar features are implemented
 - Identify the conventions: naming, file structure, imports, styling approach
+- **Check for existing components** — Before creating any new component, search `src/components/` and `src/features/*/components/` using Glob for components with similar names or purposes. If a matching component exists, use it instead of creating a duplicate. If the plan says to create a component that already exists, import the existing one and note the deviation in your report.
 
 ### 2. Plan
 - Determine the exact changes needed
@@ -56,3 +57,5 @@ Return a structured result:
 - Do not create new patterns when existing ones exist — follow what's already there
 - If the task requires a file that doesn't exist yet, create it matching the conventions of similar files
 - If you encounter an issue outside the task scope, note it in your report but do not fix it
+- NEVER create a component that already exists elsewhere in the codebase — always search first. If the plan specifies creating a component but one with the same purpose exists in `src/components/` or another feature, import the existing one and report the deviation.
+- When creating a genuinely new component, determine placement: generic UI primitives go in `src/components/{category}/`, feature-specific components go in `src/features/{domain}/components/`
