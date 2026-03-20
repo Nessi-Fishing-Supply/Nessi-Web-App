@@ -48,11 +48,6 @@ export async function proxy(request: NextRequest) {
       if (onboardingComplete && pathname === '/onboarding') {
         return NextResponse.redirect(new URL('/', request.url));
       }
-
-      // Incomplete users visiting anything other than /onboarding → redirect to /onboarding
-      if (!onboardingComplete && pathname !== '/onboarding') {
-        return NextResponse.redirect(new URL('/onboarding', request.url));
-      }
     }
   }
 

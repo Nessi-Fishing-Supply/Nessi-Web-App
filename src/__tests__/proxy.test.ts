@@ -106,13 +106,11 @@ describe('proxy — /dashboard', () => {
     expect(NextResponse.redirect).not.toHaveBeenCalled();
   });
 
-  it('redirects authenticated user without completed onboarding to /onboarding', async () => {
+  it('does not redirect authenticated user without completed onboarding (banner handles it)', async () => {
     mockGetUser({ id: 'user-1' }, null);
     const request = makeRequest('/dashboard');
     await proxy(request);
-    expect(NextResponse.redirect).toHaveBeenCalledOnce();
-    const redirectArg = vi.mocked(NextResponse.redirect).mock.calls[0][0] as URL;
-    expect(redirectArg.pathname).toBe('/onboarding');
+    expect(NextResponse.redirect).not.toHaveBeenCalled();
   });
 });
 
