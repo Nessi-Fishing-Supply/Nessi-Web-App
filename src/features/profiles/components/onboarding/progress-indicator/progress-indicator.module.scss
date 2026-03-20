@@ -1,0 +1,55 @@
+@use '@/styles/mixins/breakpoints' as *;
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: var(--space-md) 0;
+}
+
+.step {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.completed {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.current {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.future {
+  background-color: transparent;
+  border: 2px solid var(--color-gray-300);
+  color: var(--color-gray-500);
+}
+
+.line {
+  flex: 1;
+  height: 2px;
+  max-width: 60px;
+
+  @include breakpoint(md) {
+    max-width: 80px;
+  }
+}
+
+.lineCompleted {
+  background-color: var(--color-primary);
+}
+
+.linePending {
+  background-color: var(--color-gray-300);
+}

@@ -1,0 +1,34 @@
+@use '@/styles/mixins/breakpoints' as *;
+
+.wizard {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+
+.progressWrapper {
+  padding: var(--space-base) var(--space-base) 0;
+
+  @include breakpoint(md) {
+    padding: var(--space-lg) var(--space-lg) 0;
+  }
+}
+
+.stepContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  font-size: var(--font-size-base);
+  color: var(--color-gray-500);
+}
