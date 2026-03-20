@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
+import Image from 'next/image';
 import { HiCamera } from 'react-icons/hi';
 import styles from './avatar-upload.module.scss';
 
@@ -85,7 +86,7 @@ export default function AvatarUpload({
         disabled={disabled || isUploading}
       >
         {avatarUrl ? (
-          <img src={avatarUrl} alt={displayName} className={styles.image} />
+          <Image src={avatarUrl} alt={displayName} fill sizes="120px" style={{ objectFit: 'cover' }} />
         ) : (
           <span className={styles.initials} style={{ backgroundColor: bgColor }} aria-hidden="true">
             {initials}

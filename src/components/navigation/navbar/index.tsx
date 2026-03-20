@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useSyncExternalStore } from 'react';
+import Image from 'next/image';
 import styles from './navbar.module.scss';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -187,9 +188,11 @@ export default function Navbar() {
           <Dropdown
             icon={
               profile?.avatar_url ? (
-                <img
+                <Image
                   src={profile.avatar_url}
                   alt={`${firstName} ${lastName}`}
+                  width={32}
+                  height={32}
                   className={styles.navAvatar}
                 />
               ) : (

@@ -26,8 +26,11 @@ const ProductClientComponent = ({ product }: { product: ProductWithImages }) => 
                 key={index}
                 src={image.image_url}
                 alt={`${product.title} image ${index + 1}`}
-                width={500}
-                height={500}
+                width={600}
+                height={600}
+                sizes="(max-width: 480px) 100vw, (max-width: 768px) 80vw, 600px"
+                style={{ objectFit: 'cover' }}
+                priority={index === 0}
               />
             ),
         )}
