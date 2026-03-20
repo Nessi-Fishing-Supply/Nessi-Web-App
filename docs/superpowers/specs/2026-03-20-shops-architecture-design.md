@@ -1,0 +1,385 @@
+# Shops Architecture — Design Spec
+
+**Date:** 2026-03-20
+**Status:** Draft
+**Authors:** Kyle Holloway, Claude (Conductor)
+
+---
+
+## 1. Overview
+
+Nessi separates personal identity (members) from business identity (shops). Every registered user is a member. Members can optionally sell items on their profile or create a premium shop for a full-featured storefront. Guest checkout allows purchases without an account.
+
+### Account Tiers
+
+| Tier | Entity | Can Buy | Can Sell | URL | Cost |
+|------|--------|---------|----------|-----|------|
+| Guest | none | yes (checkout only) | no | n/a | free |
+| Member (buyer) | `members` | yes | no | `/member/{slug}` | free |
+| Member (buyer+seller) | `members` | yes | yes (basic) | `/member/{slug}` | free |
+| Shop | `shops` | no | yes (premium) | `/shop/{slug}` | subscription |
+
+### Key Principles
+
+- Members are people. Shops are businesses.
+- `is_seller` on the member profile is a personal preference toggle — independent of shop ownership.
+- A member can own/manage a shop without `is_seller` enabled on their member profile.
+- Products have a polymorphic owner: either a member or a shop.
+- Shops are a premium subscription with features that free member-sellers don't get.
+- Guest checkout is supported — no account required to purchase.
+
+---
+
+## 2. Domain Model
+
+### 2.1 `members` table (renamed from `profiles`)
+
+The member is a person. Every registered user has one.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `id` | UUID PK | FK → `auth.users.id` ON DELETE CASCADE |
+| `first_name` | TEXT | nullable |
+| `last_name` | TEXT | nullable |
+| `slug` | TEXT UNIQUE | member handle, e.g., `kyle-holloway-4829` |
+| `avatar_url` | TEXT | nullable |
+| `bio` | TEXT | nullable, 280 char max |
+| `is_seller` | BOOLEAN | default false, toggled in member settings |
+| `primary_species` | TEXT[] | fishing preferences (for product recommendations) |
+| `primary_technique` | TEXT[] | fishing preferences |
+| `home_state` | TEXT | nullable |
+| `years_fishing` | INTEGER | nullable |
+| `notification_preferences` | JSONB | email notification toggles |
+| `stripe_account_id` | TEXT | personal Stripe Connect (for member-level selling) |
+| `is_stripe_connected` | BOOLEAN | default false |
+| `stripe_onboarding_status` | TEXT | default 'not_started' |
+| `onboarding_completed_at` | TIMESTAMPTZ | nullable |
+| `average_rating` | DECIMAL | nullable, computed from reviews |
+| `review_count` | INTEGER | default 0 |
+| `total_transactions` | INTEGER | default 0 |
+| `response_time_hours` | DECIMAL | nullable |
+| `last_seen_at` | TIMESTAMPTZ | nullable |
+| `deleted_at` | TIMESTAMPTZ | nullable (soft delete) |
+| `created_at` | TIMESTAMPTZ | default now() |
+| `updated_at` | TIMESTAMPTZ | default now(), auto-updated |
+
+**Removed from profiles:** `shop_name` (moves to `shops` table)
+
+**Behavior when `is_seller` is toggled off:** Member listings are hidden from public view (not deleted). The member can toggle it back on to restore visibility.
+
+### 2.2 `shops` table (new)
+
+A shop is a business entity. Created by a member, owned independently.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `id` | UUID PK | default gen_random_uuid() |
+| `owner_id` | UUID | FK → `members.id` ON DELETE CASCADE, the creating member |
+| `shop_name` | TEXT NOT NULL | not unique — multiple shops can share a name |
+| `slug` | TEXT UNIQUE NOT NULL | unique handle, e.g., `kyles-tackle-shop` |
+| `avatar_url` | TEXT | nullable |
+| `description` | TEXT | nullable |
+| `hero_banner_url` | TEXT | nullable (premium feature) |
+| `brand_colors` | JSONB | nullable, e.g., `{ primary: "#2563eb", accent: "#f59e0b" }` |
+| `is_verified` | BOOLEAN | default false |
+| `subscription_tier` | TEXT | 'basic' or 'premium', default 'basic' |
+| `subscription_status` | TEXT | 'active', 'past_due', 'cancelled', 'trialing' |
+| `stripe_account_id` | TEXT | shop's own Stripe Connect account |
+| `is_stripe_connected` | BOOLEAN | default false |
+| `stripe_onboarding_status` | TEXT | default 'not_started' |
+| `stripe_subscription_id` | TEXT | Stripe subscription for shop premium |
+| `average_rating` | DECIMAL | nullable |
+| `review_count` | INTEGER | default 0 |
+| `total_transactions` | INTEGER | default 0 |
+| `deleted_at` | TIMESTAMPTZ | nullable (soft delete) |
+| `created_at` | TIMESTAMPTZ | default now() |
+| `updated_at` | TIMESTAMPTZ | default now(), auto-updated |
+
+**Constraints:**
+- `slug` format: `^[a-z0-9][a-z0-9-]*[a-z0-9]$`
+- `slug` must be globally unique (checked against both `members.slug` AND `shops.slug`)
+- `shop_name` length: 3-60 characters
+
+### 2.3 `shop_members` table (new)
+
+Join table for multi-admin support (premium shops).
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `id` | UUID PK | default gen_random_uuid() |
+| `shop_id` | UUID | FK → `shops.id` ON DELETE CASCADE |
+| `member_id` | UUID | FK → `members.id` ON DELETE CASCADE |
+| `role` | TEXT | 'owner', 'admin', 'contributor' |
+| `created_at` | TIMESTAMPTZ | default now() |
+
+**Constraints:**
+- UNIQUE on `(shop_id, member_id)` — a member can only have one role per shop
+- Every shop must have exactly one `owner` role
+- Only premium shops can have more than one `shop_members` entry
+
+**Roles:**
+- `owner` — full control, billing, can delete shop, transfer ownership
+- `admin` — manage listings, respond to messages, view analytics
+- `contributor` — create/edit listings only
+
+### 2.4 `products` table (modified)
+
+Products have a polymorphic owner — either a member or a shop.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `id` | UUID PK | existing |
+| `owner_type` | TEXT NOT NULL | 'member' or 'shop' |
+| `owner_id` | UUID NOT NULL | references `members.id` or `shops.id` |
+| `title` | TEXT NOT NULL | existing |
+| `description` | TEXT | existing |
+| `price` | DECIMAL NOT NULL | existing |
+| `created_at` | TIMESTAMPTZ | existing |
+
+**Migration:** Drop `user_id` column, add `owner_type` + `owner_id`. No data migration needed (no production data).
+
+**RLS:** Policies check `owner_type` to determine which table to validate ownership against.
+
+### 2.5 Slug Uniqueness
+
+Member handles and shop handles share a global namespace to avoid URL confusion. A slug taken by a member cannot be used by a shop and vice versa.
+
+**Implementation:** A `reserved_slugs` check function or a shared `slugs` lookup table:
+```
+slugs (slug TEXT UNIQUE, entity_type TEXT, entity_id UUID)
+```
+Both `members` and `shops` insert into this table on create/update. This guarantees global uniqueness.
+
+---
+
+## 3. Onboarding Flows
+
+### 3.1 Registration + Initial Onboarding
+
+**Step 1 (everyone):**
+- Upload avatar
+- Set first name, last name
+- Pick member handle (slug) — checked for global uniqueness
+
+**Step 2 (branch point):**
+- "How do you plan to use Nessi?"
+  - "I'm here to buy" → buyer path
+  - "I want to buy and sell" → seller opt-in path
+
+**Buyer path:**
+- Step 3: Fishing preferences (species, techniques, home state)
+- Done → lean buyer dashboard
+
+**Seller opt-in path:**
+- Step 3: Fishing preferences (same)
+- Step 4: "How do you want to sell?"
+  - **Free** — sell on your member profile → sets `is_seller = true`, optional Stripe setup
+  - **Shop** (premium) — create a shop → shop creation mini-flow (name, slug, avatar), subscription signup
+- Done → full dashboard with selling features
+
+### 3.2 Seller Opt-In via Dashboard (post-onboarding)
+
+For members who chose buyer-only and later want to sell:
+
+- Dashboard → "Start selling" CTA
+- Same Step 4 from above: free member selling OR premium shop
+- If free: mini onboarding (seller terms, Stripe setup), `is_seller = true`
+- If shop: shop creation flow + subscription
+
+### 3.3 Shop Creation (anytime)
+
+Available to any member, regardless of `is_seller` status:
+
+- Dashboard → "Create a Shop" CTA
+- Shop name, shop handle (slug), shop avatar, description
+- Subscription plan selection
+- Stripe Connect onboarding for the shop
+- Shop created, member added to `shop_members` as owner
+
+### 3.4 `is_seller` Toggle
+
+Lives in member settings. Can be toggled on/off at any time:
+- **On:** Member can list products, seller features visible in dashboard, listings visible on public profile
+- **Off:** Listings hidden (not deleted), seller features hidden from dashboard, can toggle back on
+
+Independent of shop ownership. A member can have `is_seller = false` and still own/manage a shop.
+
+---
+
+## 4. Free Member Seller vs Premium Shop
+
+| Feature | Free Member Seller | Premium Shop |
+|---------|-------------------|--------------|
+| List products | yes (capped, configurable limit) | unlimited |
+| Product images | limited per listing | more per listing |
+| Product video | no | yes |
+| Public page | `/member/{slug}` (basic layout) | `/shop/{slug}` (custom branding) |
+| Hero banner | no | yes |
+| Custom brand colors | no | yes |
+| Verified badge | no | yes (after business verification) |
+| Analytics | basic (views, sales count) | detailed dashboard |
+| Multiple admins/contributors | no (solo) | yes |
+| Separate identity/inbox | no (uses member identity) | yes (shop identity) |
+| Shipping options | standard | premium options/discounts |
+| Stripe account | member's personal | shop's own business account |
+
+**Exact limits** (listing count, image count, etc.) are configurable via a limits table or config — not hardcoded. This allows easy tuning and A/B testing.
+
+### 4.1 Upsell Touchpoints
+
+Contextual upsells appear at natural friction points for free member-sellers:
+
+- Hit image limit on a listing → "Want more images? Create a shop"
+- Try to add video → "Video is a shop feature"
+- Hit listing cap → "Upgrade to unlimited listings with a shop"
+- Want better analytics → "Detailed analytics with a shop"
+- Want shipping discounts → "Shop members get preferred rates"
+- Want team management → "Add admins with a premium shop"
+
+Each upsell links directly to the shop creation flow.
+
+---
+
+## 5. Navigation & Account Switching
+
+### 5.1 Navbar User Dropdown
+
+Current member context shows in the navbar (avatar + name):
+
+**For members without shops:**
+```
+[Avatar] Kyle Holloway ▾
+├── Dashboard
+├── Account
+├── Settings
+└── Log out
+```
+
+**For members with shop(s):**
+```
+[Avatar] Kyle Holloway ▾        ← or shop avatar/name if in shop context
+├── Dashboard
+├── Account
+├── Settings
+├── ─────────────
+├── Switch to: Kyle's Tackle Shop    ← only shows when not in shop context
+├── Switch to: Member Account        ← only shows when in shop context
+└── Log out
+```
+
+If a member manages multiple shops, all are listed in the switch section.
+
+### 5.2 Context Awareness
+
+When in shop context:
+- Dashboard shows shop-specific data (shop listings, shop orders, shop analytics)
+- Avatar and name in navbar reflect the shop identity
+- Creating a listing defaults to the shop as owner
+- Messages go to the shop inbox
+
+When in member context:
+- Dashboard shows member data (purchases, personal listings if `is_seller`, member reviews)
+- Avatar and name reflect the member identity
+- Creating a listing (if `is_seller`) defaults to the member as owner
+
+### 5.3 Cross-Notifications
+
+Notifications bridge contexts:
+- "Kyle's Tackle Shop received a new order" → appears in member notifications with "Switch to shop" action
+- "Kyle Holloway, someone messaged you about your rod listing" → appears in shop notifications if the member is in shop context, with "Switch to member" action
+
+---
+
+## 6. Public Pages
+
+### 6.1 Member Profile (`/member/{slug}`)
+
+Always exists for every member. Content varies by role:
+
+**Buyer-only member:**
+- Avatar, name, handle
+- Member since date
+- Buyer reviews
+- Fishing preferences (species, techniques)
+
+**Member with `is_seller = true`:**
+- Everything above, plus:
+- Product listings grid
+- Seller reviews
+- Response time, transaction count
+
+### 6.2 Shop Page (`/shop/{slug}`)
+
+Only exists for shops. Premium features progressively enhance the page:
+
+**Basic shop:**
+- Shop avatar, name, handle
+- Description
+- Product listings grid
+- Shop reviews, transaction count
+
+**Premium shop (additions):**
+- Hero banner image
+- Custom brand colors
+- Verified badge
+- Enhanced layout options
+
+---
+
+## 7. Impact on Existing Codebase
+
+### Tables
+
+| Table | Action |
+|-------|--------|
+| `profiles` | Rename to `members`, drop `shop_name` |
+| `shops` | Create new |
+| `shop_members` | Create new |
+| `products` | Drop `user_id`, add `owner_type` + `owner_id` |
+| `slugs` | Create new (global slug uniqueness) |
+
+### Features
+
+| Feature | Action |
+|---------|--------|
+| Onboarding wizard | Rework: add buyer/seller branch, seller opt-in steps, shop creation flow |
+| Account page | Rework: remove shop_name, add `is_seller` toggle in settings, "Create Shop" CTA |
+| Dashboard | Add context switching (member vs shop), conditional feature rendering |
+| Navbar | Add shop switcher to user dropdown |
+| Product listings | Update to use polymorphic owner |
+| Auth/proxy | Add shop context awareness to session |
+| Public profiles | Build `/member/{slug}` and `/shop/{slug}` pages |
+
+### Files Renamed
+
+| Old | New |
+|-----|-----|
+| `src/features/profiles/` | `src/features/members/` |
+| `src/types/database.ts` (profiles references) | Updated to `members` |
+| All `profile` imports/hooks/services | Renamed to `member` equivalents |
+
+### New Feature Domains
+
+| Domain | Purpose |
+|--------|---------|
+| `src/features/shops/` | Shop CRUD, shop members, shop settings, shop page |
+| `src/features/subscriptions/` | Shop subscription management, Stripe billing |
+| `src/features/context/` | Active context (member vs shop) provider, switcher |
+
+---
+
+## 8. What This Spec Does NOT Cover
+
+These are future concerns, not part of the initial implementation:
+
+- Orders/transactions table and checkout flow
+- Guest checkout implementation
+- Messaging system (member-to-member, member-to-shop)
+- Review system
+- Search and discovery
+- Stripe payment processing details
+- Subscription billing implementation details
+- Shop analytics dashboard
+- Shipping integration
+- Business verification flow
+- Exact listing/image limits (configurable, tuned later)
