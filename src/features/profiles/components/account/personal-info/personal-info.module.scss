@@ -11,7 +11,7 @@
   }
 }
 
-.title {
+.heading {
   font-family: var(--font-family-primary);
   font-size: var(--font-size-md);
   font-weight: 600;
@@ -45,6 +45,21 @@
   flex-direction: column;
   gap: var(--space-sm);
   flex: 1;
+}
+
+.nameRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+
+  @include breakpoint(sm) {
+    flex-direction: row;
+    gap: var(--space-md);
+
+    > * {
+      flex: 1;
+    }
+  }
 }
 
 .fieldRow {

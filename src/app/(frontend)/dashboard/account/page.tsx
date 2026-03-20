@@ -85,13 +85,7 @@ export default function Account() {
       {profile && <ProfileCompleteness profile={profile as Profile} />}
 
       <div className={styles.sections}>
-        {profile && (
-          <PersonalInfo
-            profile={profile as Profile}
-            userId={userId}
-            fullName={`${user?.user_metadata?.firstName ?? ''} ${user?.user_metadata?.lastName ?? ''}`.trim()}
-          />
-        )}
+        {profile && <PersonalInfo profile={profile as Profile} userId={userId} />}
         {profile && <FishingIdentity profile={profile as Profile} userId={userId} />}
         {profile && <Notifications profile={profile as Profile} userId={userId} />}
         <LinkedAccounts />

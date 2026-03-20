@@ -8,15 +8,15 @@ import { useDisplayNameCheck, useUpdateProfile } from '@/features/profiles/hooks
 import { generateSlug } from '@/features/profiles/services/profile';
 import type { Profile } from '@/features/profiles/types/profile';
 import { useToast } from '@/components/indicators/toast/context';
+import { createClient } from '@/libs/supabase/client';
 import styles from './personal-info.module.scss';
 
 interface PersonalInfoProps {
   profile: Profile;
   userId: string;
-  fullName: string;
 }
 
-export default function PersonalInfo({ profile, userId, fullName }: PersonalInfoProps) {
+export default function PersonalInfo({ profile, userId }: PersonalInfoProps) {
   const { showToast } = useToast();
   const updateProfile = useUpdateProfile();
 
@@ -46,6 +46,40 @@ export default function PersonalInfo({ profile, userId, fullName }: PersonalInfo
     setDraftName(val);
   };
 
+  const handleFirstNameSave = async (newFirstName: string) => {
+    await updateProfile.mutateAsync({
+      userId,
+      data: { first_name: newFirstName || null },
+    });
+    const supabase = createClient();
+    await supabase.auth.updateUser({
+      data: { firstName: newFirstName || null },
+    });
+    showToast({
+      message: 'Saved',
+      description: 'Your first name has been updated.',
+      type: 'success',
+      duration: 2000,
+    });
+  };
+
+  const handleLastNameSave = async (newLastName: string) => {
+    await updateProfile.mutateAsync({
+      userId,
+      data: { last_name: newLastName || null },
+    });
+    const supabase = createClient();
+    await supabase.auth.updateUser({
+      data: { lastName: newLastName || null },
+    });
+    showToast({
+      message: 'Saved',
+      description: 'Your last name has been updated.',
+      type: 'success',
+      duration: 2000,
+    });
+  };
+
   const handleDisplayNameSave = async (newName: string) => {
     if (nameTaken) return;
     await updateProfile.mutateAsync({
@@ -59,7 +93,7 @@ export default function PersonalInfo({ profile, userId, fullName }: PersonalInfo
     setDebouncedName('');
     showToast({
       message: 'Saved',
-      description: 'Your display name has been updated.',
+      description: 'Your shop name has been updated.',
       type: 'success',
       duration: 2000,
     });
@@ -93,7 +127,7 @@ export default function PersonalInfo({ profile, userId, fullName }: PersonalInfo
 
   return (
     <section className={styles.card}>
-      <h2 className={styles.title}>Personal Info</h2>
+      <h2 className={styles.heading}>Personal Info</h2>
       <div className={styles.content}>
         <div className={styles.avatarSection}>
           <AvatarUpload
@@ -105,37 +139,58 @@ export default function PersonalInfo({ profile, userId, fullName }: PersonalInfo
         </div>
 
         <div className={styles.fields}>
-          <div className={styles.fieldRow}>
-            <span className={styles.fieldLabel}>Name</span>
-            <span className={styles.fieldStatic}>{fullName || 'Not set'}</span>
+          <div className={styles.nameRow}>
+            <div className={styles.fieldRow}>
+              <span className={styles.fieldLabel}>First name</span>
+              <div className={styles.fieldValue}>
+                <InlineEdit
+                  value={profile.first_name ?? ''}
+                  onSave={handleFirstNameSave}
+                  placeholder="Add first name"
+                  ariaLabel="first name"
+                />
+              </div>
+            </div>
+
+            <div className={styles.fieldRow}>
+              <span className={styles.fieldLabel}>Last name</span>
+              <div className={styles.fieldValue}>
+                <InlineEdit
+                  value={profile.last_name ?? ''}
+                  onSave={handleLastNameSave}
+                  placeholder="Add last name"
+                  ariaLabel="last name"
+                />
+              </div>
+            </div>
           </div>
 
           <div className={styles.fieldRow}>
-            <span className={styles.fieldLabel}>Display name</span>
+            <span className={styles.fieldLabel}>Shop name</span>
             <div className={styles.fieldValue}>
               <InlineEdit
                 value={profile.display_name ?? ''}
                 onSave={handleDisplayNameSave}
                 onChange={handleDisplayNameChange}
-                placeholder="Add a display name"
+                placeholder="Add a shop name"
                 validating={isChecking || nameTaken}
-                ariaLabel="display name"
+                ariaLabel="shop name"
               />
               {showAvailabilityIcon && nameAvailable && !isChecking && (
                 <span className={styles.availabilityIcon}>
                   <HiCheckCircle className={styles.iconSuccess} aria-hidden="true" />
-                  <span className="sr-only">Display name is available</span>
+                  <span className="sr-only">Shop name is available</span>
                 </span>
               )}
               {showAvailabilityIcon && nameTaken && (
                 <span className={styles.availabilityIcon}>
                   <HiXCircle className={styles.iconError} aria-hidden="true" />
-                  <span className="sr-only">Display name is taken</span>
+                  <span className="sr-only">Shop name is taken</span>
                 </span>
               )}
               {nameTaken && (
                 <p className={styles.errorText} role="alert">
-                  That display name is already taken
+                  That shop name is already taken
                 </p>
               )}
             </div>
@@ -144,7 +199,7 @@ export default function PersonalInfo({ profile, userId, fullName }: PersonalInfo
           <div className={styles.fieldRow}>
             <span className={styles.fieldLabel}>Handle</span>
             <span className={styles.fieldStatic}>
-              {profile.slug ? `@${profile.slug}` : 'Generated from display name'}
+              {profile.slug ? `@${profile.slug}` : 'Generated from shop name'}
             </span>
           </div>
 
