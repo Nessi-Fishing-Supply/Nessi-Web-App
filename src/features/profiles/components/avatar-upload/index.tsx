@@ -3,6 +3,8 @@
 import React, { useRef, useState } from 'react';
 import Image from 'next/image';
 import { HiCamera } from 'react-icons/hi';
+import ImageCropper from '@/components/controls/image-cropper';
+import Modal from '@/components/layout/modal';
 import styles from './avatar-upload.module.scss';
 
 interface AvatarUploadProps {
@@ -36,6 +38,7 @@ export default function AvatarUpload({
   disabled,
 }: AvatarUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
+  const [cropSource, setCropSource] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleButtonClick = () => {
@@ -44,14 +47,23 @@ export default function AvatarUpload({
     }
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    const objectUrl = URL.createObjectURL(file);
+    setCropSource(objectUrl);
+
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
+  };
+
+  const handleCrop = async (croppedBlob: Blob) => {
     setIsUploading(true);
     try {
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', croppedBlob, 'avatar.webp');
 
       const response = await fetch('/api/profiles/avatar', {
         method: 'POST',
@@ -66,10 +78,15 @@ export default function AvatarUpload({
       onUpload(data.url);
     } finally {
       setIsUploading(false);
-      if (inputRef.current) {
-        inputRef.current.value = '';
-      }
+      handleCancelCrop();
     }
+  };
+
+  const handleCancelCrop = () => {
+    if (cropSource) {
+      URL.revokeObjectURL(cropSource);
+    }
+    setCropSource(null);
   };
 
   const initials = getInitials(displayName || '??');
@@ -86,9 +103,19 @@ export default function AvatarUpload({
         disabled={disabled || isUploading}
       >
         {avatarUrl ? (
-          <Image src={avatarUrl} alt={displayName} fill sizes="120px" style={{ objectFit: 'cover' }} />
+          <Image
+            src={avatarUrl}
+            alt={displayName}
+            fill
+            sizes="120px"
+            style={{ objectFit: 'cover' }}
+          />
         ) : (
-          <span className={styles.initials} style={{ backgroundColor: bgColor }} aria-hidden="true">
+          <span
+            className={styles.initials}
+            style={{ backgroundColor: bgColor }}
+            aria-hidden="true"
+          >
             {initials}
           </span>
         )}
@@ -113,6 +140,23 @@ export default function AvatarUpload({
         aria-label="Choose avatar image"
         tabIndex={-1}
       />
+
+      <Modal
+        isOpen={!!cropSource}
+        onClose={handleCancelCrop}
+        ariaLabel="Crop avatar image"
+      >
+        {cropSource && (
+          <ImageCropper
+            imageSrc={cropSource}
+            aspect={1}
+            cropShape="round"
+            onCrop={handleCrop}
+            onCancel={handleCancelCrop}
+            loading={isUploading}
+          />
+        )}
+      </Modal>
     </div>
   );
 }
