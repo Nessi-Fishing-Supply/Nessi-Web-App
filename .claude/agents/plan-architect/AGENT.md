@@ -18,6 +18,10 @@ You will receive:
 - The full GitHub issue content (title, description, acceptance criteria, comments, labels)
 - The project's tech stack: Next.js 16 (App Router), React 19, Supabase Auth + PostgreSQL + Storage, Tanstack Query, Zustand, SCSS with CSS Modules
 - Path alias: `@/*` → `./src/*`
+- Available MCP integrations (the task-executor can use these to provision infrastructure directly):
+  - **Supabase MCP** (`mcp__plugin_supabase_supabase__*`) — execute SQL, apply migrations, create buckets, manage RLS policies, list tables/extensions, deploy edge functions
+  - **Vercel MCP** (`mcp__plugin_vercel_vercel__*`) — manage deployments, environment variables, domains, project settings
+  - **Context7 MCP** (`mcp__plugin_context7_context7__*`) — query up-to-date library documentation
 
 ## Design Spec Integration
 
@@ -39,14 +43,21 @@ Before planning, check if the ticket body references a design spec:
    - If no matching component exists: determine placement based on reusability:
      - **Shared** (`src/components/{category}/`) — if 2+ features could use it, or it's a generic UI primitive (buttons, pills, modals, inputs, selectors)
      - **Feature-scoped** (`src/features/{domain}/components/`) — if it's tightly coupled to one feature's domain logic
-4. **Identify scope** — Determine what needs to be created vs modified. Map dependencies between changes.
-5. **Design phases** — Break the work into 2-5 phases following these principles:
-   - Early phases = foundation (types, schemas, API clients, hooks, database changes)
+4. **Audit infrastructure requirements** — Determine if the feature needs any backend infrastructure that must be provisioned via MCP:
+   - **Storage buckets** — Does the feature handle file uploads (images, documents, avatars)? If so, plan a task to create the Supabase Storage bucket with appropriate RLS policies via MCP.
+   - **Database tables/columns** — Does the feature need new tables, columns, or schema changes? Plan migration tasks that use MCP to apply SQL.
+   - **RLS policies** — Any new tables or buckets need RLS policies. Plan these in the same task as the table/bucket creation.
+   - **Environment variables** — Does the feature need new env vars (API keys, config)? Plan a task to add them via Vercel MCP.
+   - Infrastructure tasks go in Phase 1 (foundation), BEFORE any code that depends on them.
+   - Tag infrastructure tasks with `**MCP:** supabase` or `**MCP:** vercel` so the task-executor knows to use MCP tools.
+5. **Identify scope** — Determine what needs to be created vs modified. Map dependencies between changes.
+6. **Design phases** — Break the work into 2-5 phases following these principles:
+   - Early phases = foundation (types, schemas, API clients, hooks, database changes, **infrastructure provisioning via MCP**)
    - Middle phases = core implementation (components, pages, routes, logic)
    - Final phases = polish (loading states, error handling, edge cases)
    - Each phase MUST be independently verifiable (`pnpm build` must pass after each)
    - Each phase produces a meaningful commit
-6. **Define tasks** — Each phase has 2-7 tasks. Each task must be atomic enough for a single agent to execute.
+7. **Define tasks** — Each phase has 2-7 tasks. Each task must be atomic enough for a single agent to execute.
 
 ## Output Format
 
@@ -97,6 +108,7 @@ Example:
 - Acceptance criteria must be testable conditions, not vague descriptions
 - Reference existing patterns you find in the codebase — new code should match established conventions
 - Do NOT include tasks for committing, branching, or PR creation — the conductor handles git operations
-- If the ticket references database schema changes, plan those in the earliest phase
+- If the ticket references database schema changes, storage buckets, or any backend infrastructure, plan those as MCP tasks in the earliest phase. Code that references a bucket, table, or column MUST NOT be planned before the task that creates it.
+- Tag infrastructure tasks with `**MCP:** supabase` and/or `**MCP:** vercel` — this tells the task-executor to use MCP tools instead of leaving manual setup instructions
 - NEVER plan to create a component that already exists — reuse or extend it. If a plan task needs a pill, toast, modal, button, input, selector, or any UI primitive, verify it doesn't already exist in `src/components/` before specifying a new file path.
 - When a task reuses an existing component, note it explicitly: `**Reuses:** src/components/indicators/pill/`

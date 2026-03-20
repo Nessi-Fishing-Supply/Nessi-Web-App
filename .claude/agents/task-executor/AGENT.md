@@ -38,6 +38,28 @@ You will receive:
 - Do not add unnecessary comments, docstrings, or type annotations beyond what the codebase uses
 - Do not refactor surrounding code — only touch what the task requires
 
+#### MCP Infrastructure Provisioning
+
+If the task is tagged with `**MCP:**` or requires backend infrastructure, use the available MCP tools directly — do NOT leave manual setup instructions or assume someone else will create it.
+
+**Supabase MCP** (`mcp__plugin_supabase_supabase__*`):
+- `execute_sql` — Run SQL to create tables, columns, RLS policies, triggers, functions
+- `apply_migration` — Apply a named migration
+- `list_tables` — Check what tables/columns already exist before creating
+- `list_extensions` — Check available extensions
+
+Common patterns:
+- **New storage bucket**: Use `execute_sql` to `INSERT INTO storage.buckets` and create RLS policies
+- **New table**: Use `execute_sql` with CREATE TABLE + RLS policies + FK constraints
+- **Schema changes**: Use `apply_migration` for ALTER TABLE, new columns, indexes
+- **Cleanup triggers**: Add to `handle_profile_deletion()` when creating user-owned resources with storage
+
+**Vercel MCP** (`mcp__plugin_vercel_vercel__*`):
+- Manage environment variables, deployments, project settings
+
+**Context7 MCP** (`mcp__plugin_context7_context7__*`):
+- Query up-to-date library documentation when unsure about an API
+
 ### 4. Verify
 - Run `pnpm build` to ensure the build passes
 - If it fails, read the error output and fix the issue
@@ -59,3 +81,4 @@ Return a structured result:
 - If you encounter an issue outside the task scope, note it in your report but do not fix it
 - NEVER create a component that already exists elsewhere in the codebase — always search first. If the plan specifies creating a component but one with the same purpose exists in `src/components/` or another feature, import the existing one and report the deviation.
 - When creating a genuinely new component, determine placement: generic UI primitives go in `src/components/{category}/`, feature-specific components go in `src/features/{domain}/components/`
+- NEVER leave "manual setup required" instructions for infrastructure (buckets, tables, RLS policies, env vars). You have MCP tools — use them. If code references a bucket or table, that bucket or table must exist before the task is marked complete.
