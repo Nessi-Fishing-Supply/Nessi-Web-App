@@ -59,6 +59,11 @@
   color: var(--color-gray-500);
 }
 
+.fieldStatic {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-700);
+}
+
 .fieldValue {
   position: relative;
   display: flex;

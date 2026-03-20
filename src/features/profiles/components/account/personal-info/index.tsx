@@ -13,9 +13,10 @@ import styles from './personal-info.module.scss';
 interface PersonalInfoProps {
   profile: Profile;
   userId: string;
+  fullName: string;
 }
 
-export default function PersonalInfo({ profile, userId }: PersonalInfoProps) {
+export default function PersonalInfo({ profile, userId, fullName }: PersonalInfoProps) {
   const { showToast } = useToast();
   const updateProfile = useUpdateProfile();
 
@@ -105,6 +106,11 @@ export default function PersonalInfo({ profile, userId }: PersonalInfoProps) {
 
         <div className={styles.fields}>
           <div className={styles.fieldRow}>
+            <span className={styles.fieldLabel}>Name</span>
+            <span className={styles.fieldStatic}>{fullName || 'Not set'}</span>
+          </div>
+
+          <div className={styles.fieldRow}>
             <span className={styles.fieldLabel}>Display name</span>
             <div className={styles.fieldValue}>
               <InlineEdit
@@ -133,6 +139,13 @@ export default function PersonalInfo({ profile, userId }: PersonalInfoProps) {
                 </p>
               )}
             </div>
+          </div>
+
+          <div className={styles.fieldRow}>
+            <span className={styles.fieldLabel}>Handle</span>
+            <span className={styles.fieldStatic}>
+              {profile.slug ? `@${profile.slug}` : 'Generated from display name'}
+            </span>
           </div>
 
           <div className={styles.fieldRow}>
