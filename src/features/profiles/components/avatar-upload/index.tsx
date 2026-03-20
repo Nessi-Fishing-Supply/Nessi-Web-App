@@ -111,8 +111,9 @@ export default function AvatarUpload({
             style={{ objectFit: 'cover' }}
           />
         ) : (
-          <span className={styles.initials} style={{ backgroundColor: bgColor }} aria-hidden="true">
-            {initials}
+          <span className={styles.placeholder} aria-hidden="true">
+            <HiCamera className={styles.placeholderIcon} />
+            <span className={styles.placeholderText}>Upload photo</span>
           </span>
         )}
 
