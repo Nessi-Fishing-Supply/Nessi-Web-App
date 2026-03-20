@@ -7,6 +7,7 @@ import styles from './inline-edit.module.scss';
 interface InlineEditProps {
   value: string;
   onSave: (value: string) => Promise<void>;
+  onChange?: (value: string) => void;
   maxLength?: number;
   multiline?: boolean;
   placeholder?: string;
@@ -17,6 +18,7 @@ interface InlineEditProps {
 export default function InlineEdit({
   value,
   onSave,
+  onChange,
   maxLength,
   multiline = false,
   placeholder,
@@ -47,11 +49,13 @@ export default function InlineEdit({
 
   const handleActivate = () => {
     setDraft(value);
+    onChange?.(value);
     setIsEditing(true);
   };
 
   const handleCancel = () => {
     setDraft(value);
+    onChange?.('');
     setIsEditing(false);
   };
 
@@ -117,7 +121,7 @@ export default function InlineEdit({
           ref={textareaRef}
           className={`${styles.input} ${styles.textarea}`}
           value={draft}
-          onChange={(e) => setDraft(e.target.value)}
+          onChange={(e) => { setDraft(e.target.value); onChange?.(e.target.value); }}
           onKeyDown={handleKeyDown}
           maxLength={maxLength !== undefined ? maxLength + 1 : undefined}
           placeholder={placeholder}
@@ -132,7 +136,7 @@ export default function InlineEdit({
           type="text"
           className={styles.input}
           value={draft}
-          onChange={(e) => setDraft(e.target.value)}
+          onChange={(e) => { setDraft(e.target.value); onChange?.(e.target.value); }}
           onKeyDown={handleKeyDown}
           maxLength={maxLength}
           placeholder={placeholder}
