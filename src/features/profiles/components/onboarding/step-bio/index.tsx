@@ -57,8 +57,8 @@ export default function StepBio() {
           avatar_url: avatarUrl,
           primary_species: step2Data.primarySpecies,
           primary_technique: step2Data.primaryTechnique,
-          home_state: step2Data.homeState,
-          bio: bioValue,
+          home_state: step2Data.homeState || null,
+          bio: bioValue || null,
         },
       });
 
