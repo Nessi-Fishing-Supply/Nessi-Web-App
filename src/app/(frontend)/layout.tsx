@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 import { Inter } from 'next/font/google';
 import '@/styles/globals.scss';
 import Navbar from '@/components/navigation/navbar';
+import OnboardingBanner from '@/components/navigation/onboarding-banner';
 import Providers from '@/libs/providers';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -24,6 +25,7 @@ export default function RootLayout({
         <Providers>
           <Suspense fallback={<div>Loading...</div>}>
             <Navbar />
+            <OnboardingBanner />
           </Suspense>
           {children}
           <div id="modal-root"></div>

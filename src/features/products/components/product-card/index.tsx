@@ -76,13 +76,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           {product.product_images.map((image, index) =>
             image.image_url ? (
               <SwiperSlide key={index}>
-                <Image
-                  src={image.image_url}
-                  alt={`${product.title} image ${index + 1}`}
-                  objectFit="cover"
-                  width={300}
-                  height={300}
-                />
+                <div className={styles.slide}>
+                  <Image
+                    src={image.image_url}
+                    alt={`${product.title} image ${index + 1}`}
+                    fill
+                    sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, 300px"
+                    style={{ objectFit: 'cover' }}
+                  />
+                </div>
               </SwiperSlide>
             ) : null,
           )}

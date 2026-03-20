@@ -29,11 +29,20 @@ function makeRequest(pathname: string) {
   } as unknown as import('next/server').NextRequest;
 }
 
-function mockGetUser(user: object | null) {
+function mockGetUser(user: object | null, onboardingCompletedAt: string | null = '2026-01-01') {
+  const mockSingle = vi.fn().mockResolvedValue({
+    data: user ? { onboarding_completed_at: onboardingCompletedAt } : null,
+    error: null,
+  });
+  const mockEq = vi.fn().mockReturnValue({ single: mockSingle });
+  const mockSelect = vi.fn().mockReturnValue({ eq: mockEq });
+  const mockFrom = vi.fn().mockReturnValue({ select: mockSelect });
+
   const mockSupabase = {
     auth: {
       getUser: vi.fn().mockResolvedValue({ data: { user } }),
     },
+    from: mockFrom,
   };
   vi.mocked(createServerClient).mockReturnValue(mockSupabase as any);
 }
@@ -90,9 +99,41 @@ describe('proxy — /dashboard', () => {
     expect(redirectArg.pathname).toBe('/');
   });
 
-  it('does not redirect authenticated user', async () => {
-    mockGetUser({ id: 'user-1' });
+  it('does not redirect authenticated user with completed onboarding', async () => {
+    mockGetUser({ id: 'user-1' }, '2026-01-01');
     const request = makeRequest('/dashboard');
+    await proxy(request);
+    expect(NextResponse.redirect).not.toHaveBeenCalled();
+  });
+
+  it('does not redirect authenticated user without completed onboarding (banner handles it)', async () => {
+    mockGetUser({ id: 'user-1' }, null);
+    const request = makeRequest('/dashboard');
+    await proxy(request);
+    expect(NextResponse.redirect).not.toHaveBeenCalled();
+  });
+});
+
+describe('proxy — /onboarding', () => {
+  it('redirects completed user away from /onboarding to /', async () => {
+    mockGetUser({ id: 'user-1' }, '2026-01-01');
+    const request = makeRequest('/onboarding');
+    await proxy(request);
+    expect(NextResponse.redirect).toHaveBeenCalledOnce();
+    const redirectArg = vi.mocked(NextResponse.redirect).mock.calls[0][0] as URL;
+    expect(redirectArg.pathname).toBe('/');
+  });
+
+  it('does not redirect incomplete user visiting /onboarding', async () => {
+    mockGetUser({ id: 'user-1' }, null);
+    const request = makeRequest('/onboarding');
+    await proxy(request);
+    expect(NextResponse.redirect).not.toHaveBeenCalled();
+  });
+
+  it('redirects unauthenticated user away from /onboarding', async () => {
+    mockGetUser(null);
+    const request = makeRequest('/onboarding');
     await proxy(request);
     expect(NextResponse.redirect).not.toHaveBeenCalled();
   });

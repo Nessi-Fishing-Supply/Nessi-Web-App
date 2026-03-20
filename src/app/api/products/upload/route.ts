@@ -1,5 +1,12 @@
 import { createClient } from '@/libs/supabase/server';
 import { NextResponse } from 'next/server';
+import sharp from 'sharp';
+
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_WIDTH = 1200;
+const MAX_HEIGHT = 1200;
+const WEBP_QUALITY = 85;
 
 export async function POST(req: Request) {
   try {
@@ -19,13 +26,26 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+    if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+      return NextResponse.json({ error: 'Invalid file type' }, { status: 400 });
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json({ error: 'File exceeds 5MB limit' }, { status: 400 });
+    }
+
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const resized = await sharp(buffer)
+      .resize(MAX_WIDTH, MAX_HEIGHT, { fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: WEBP_QUALITY })
+      .toBuffer();
+
+    const fileName = `${user.id}/${Date.now()}.webp`;
 
     const { error: uploadError } = await supabase.storage
       .from('product-images')
-      .upload(fileName, file, {
-        contentType: file.type,
+      .upload(fileName, resized, {
+        contentType: 'image/webp',
         upsert: false,
       });
 

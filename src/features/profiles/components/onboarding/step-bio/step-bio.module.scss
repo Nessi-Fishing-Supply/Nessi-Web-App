@@ -1,0 +1,146 @@
+@use '@/styles/mixins/breakpoints' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-base) var(--space-lg);
+
+  @include breakpoint(md) {
+    padding: var(--space-lg) var(--space-2xl);
+  }
+}
+
+.backLink {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-600);
+  text-decoration: underline;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--color-dark);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+}
+
+.stepHeader {
+  text-align: center;
+}
+
+.stepTitle {
+  font-size: var(--font-size-xl);
+  font-weight: 800;
+  color: var(--color-dark);
+  margin: 0;
+  letter-spacing: -0.02em;
+
+  @include breakpoint(md) {
+    font-size: var(--font-size-2xl);
+  }
+}
+
+.stepSubtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-500);
+  margin: var(--space-2xs) 0 0;
+  line-height: 1.5;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+}
+
+.label {
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  color: var(--color-dark);
+}
+
+.textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: var(--space-sm) var(--space-base);
+  border: 1px solid var(--color-dark);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  color: var(--color-dark);
+  background: transparent;
+  resize: vertical;
+  outline: none;
+  transition: border-color var(--transition-fast, 0.2s ease);
+  font-family: inherit;
+
+  &::placeholder {
+    color: var(--color-gray-500);
+  }
+
+  &:hover {
+    border-color: var(--color-primary--light);
+  }
+
+  &:focus {
+    border-color: var(--color-primary--light);
+    outline: 2px solid var(--color-primary);
+    outline-offset: 0;
+  }
+
+  @include breakpoint(md) {
+    min-height: 140px;
+  }
+}
+
+.charCounter {
+  align-self: flex-end;
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-500);
+}
+
+.charCounterWarn {
+  color: var(--color-error);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.skipLink {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-600);
+  cursor: pointer;
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    text-decoration: underline;
+    color: var(--color-dark);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

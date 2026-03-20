@@ -248,7 +248,33 @@ When escalating to blocked:
 
 ---
 
-## 8. GitHub Integration
+## 8. MCP Integrations
+
+The conductor has access to MCP (Model Context Protocol) servers for direct infrastructure provisioning. **Agents must use these tools — never leave manual setup instructions.**
+
+| MCP Server | Tool Prefix | Capabilities | Used By |
+|-----------|-------------|--------------|---------|
+| **Supabase** | `mcp__plugin_supabase_supabase__*` | Execute SQL, apply migrations, list tables/extensions, manage storage buckets, RLS policies, deploy edge functions | task-executor, debug-investigator, ticket-generator |
+| **Vercel** | `mcp__plugin_vercel_vercel__*` | Manage deployments, environment variables, domains, project settings | task-executor |
+| **Context7** | `mcp__plugin_context7_context7__*` | Query up-to-date library docs | plan-architect, task-executor, debug-investigator, ux-researcher |
+
+### Infrastructure-as-Task Pattern
+
+When a feature requires backend infrastructure (storage buckets, tables, columns, RLS policies), the plan-architect creates explicit tasks tagged with `**MCP:** supabase` or `**MCP:** vercel`. These tasks:
+- Go in Phase 1 (foundation), before any code that depends on them
+- Are executed by the task-executor using MCP tools directly
+- Must be verified (e.g., `list_tables` to confirm the table exists after creation)
+
+**Common infrastructure tasks:**
+- Create a Supabase Storage bucket with RLS policies
+- Add a new table with FK constraints and RLS
+- Add columns to existing tables
+- Add cleanup logic to `handle_profile_deletion()` for new user-owned resources
+- Add environment variables via Vercel MCP
+
+---
+
+## 9. GitHub Integration
 
 All GitHub interaction happens via the `gh` CLI. Ensure `gh auth status` passes before running the conductor.
 
@@ -287,7 +313,7 @@ When fetching a ticket, the conductor reads:
 
 ---
 
-## 9. Plan Architect Detail
+## 10. Plan Architect Detail
 
 ### Phase Design Principles
 
@@ -326,7 +352,7 @@ Estimated scope: {small|medium|large}
 
 ---
 
-## 10. Task Execution Loop
+## 11. Task Execution Loop
 
 Within `conductor-start`, for each task in the current phase:
 
@@ -348,7 +374,7 @@ At phase boundary:
 
 ---
 
-## 11. Review/Fix Cycle
+## 12. Review/Fix Cycle
 
 ### Review
 
@@ -379,7 +405,7 @@ Maximum 2 review/fix cycles. If findings persist after 2 cycles, escalate to blo
 
 ---
 
-## 12. Git & PR Conventions
+## 13. Git & PR Conventions
 
 ### Branch Naming
 
@@ -394,7 +420,11 @@ Type is inferred from issue labels or content. Defaults to `feat`.
 
 ### Commit Strategy (Per-Phase)
 
-Each completed phase produces one commit:
+Each completed phase produces one commit. **Always stage `.claude/conductor/` alongside source changes** — track state, plan, learnings, and review logs are part of the feature branch and must be pushed to GitHub.
+
+```bash
+git add .claude/conductor/ <source files...>
+```
 
 ```
 {type}({scope}): #{issue} {phase description}
@@ -419,7 +449,7 @@ Body includes:
 
 ---
 
-## 13. Knowledge Capture
+## 14. Knowledge Capture
 
 At phase boundaries, the conductor appends observations to `learnings.md` in the track directory. This captures:
 
@@ -432,7 +462,7 @@ Knowledge capture never blocks execution. It's a best-effort append that enriche
 
 ---
 
-## 14. UX Patterns
+## 15. UX Patterns
 
 ### Train Theming
 
@@ -485,7 +515,7 @@ Every command exit includes the next suggested action. The developer always know
 
 ---
 
-## 15. Session Resume
+## 16. Session Resume
 
 If Claude disconnects mid-execution, the conductor can resume:
 
@@ -497,7 +527,7 @@ This is why **every state transition is persisted to disk immediately** — it's
 
 ---
 
-## 16. Key Design Decisions
+## 17. Key Design Decisions
 
 1. **File-based state, read fresh every invocation** — no in-memory session state. Enables crash recovery and cross-session resume.
 2. **Append-only review log** — `review-log.md` is never overwritten, providing full audit trail.

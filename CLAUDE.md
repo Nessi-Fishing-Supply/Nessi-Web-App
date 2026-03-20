@@ -43,7 +43,63 @@ Next.js App Router with a `(frontend)` route group for all UI pages. No Pages Ro
 
 ### File Storage
 
-Image uploads use Supabase Storage (`product-images` bucket) via `src/app/api/products/upload/route.ts`. Images are stored under `{user_id}/{timestamp}.{ext}` paths with RLS policies enforcing per-user access. 5MB limit, JPEG/PNG/WebP/GIF only.
+Two Supabase Storage buckets (both public):
+
+| Bucket           | Path Pattern                 | API Route                              | Purpose                                     |
+| ---------------- | ---------------------------- | -------------------------------------- | ------------------------------------------- |
+| `product-images` | `{user_id}/{timestamp}.webp` | `src/app/api/products/upload/route.ts` | Product listing photos (max 1200x1200 WebP) |
+| `avatars`        | `{user_id}.webp`             | `src/app/api/profiles/avatar/route.ts` | User avatar (200x200 WebP via Sharp)        |
+
+RLS policies enforce per-user access on both buckets. 5MB limit, JPEG/PNG/WebP/GIF only.
+
+### Image Handling Standards
+
+All images in Nessi follow a strict pipeline: **validate → optimize → store as WebP → render with `next/image`**.
+
+**Upload (API routes):**
+
+- Validate MIME type (`image/jpeg`, `image/png`, `image/webp`, `image/gif`)
+- Enforce 5MB file size limit
+- Resize via `sharp` with `fit: 'inside'` + `withoutEnlargement: true` (preserves aspect ratio, never upscales)
+- Convert to WebP at 80-85% quality before storing to Supabase Storage
+- Store with `contentType: 'image/webp'`
+
+**Rendering (components):**
+
+- **Always use `next/image`** — never raw `<img>` tags for user-uploaded or remote images
+- **Always provide `sizes`** — tells the browser which srcset variant to download. Examples:
+  - Product cards: `sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, 300px"`
+  - Product detail: `sizes="(max-width: 480px) 100vw, (max-width: 768px) 80vw, 600px"`
+  - Fixed-size avatars: `sizes="120px"` or use `width`/`height` props
+- **Use `fill` layout** when the image should fill its container (carousel slides, avatar circles). Parent must have `position: relative`.
+- **Use `width`/`height`** for fixed-size inline images (navbar avatar at 32x32)
+- **Add `priority`** on the first above-the-fold image (LCP candidate) — e.g., `priority={index === 0}`
+- **Always provide `alt` text** — descriptive for content images, empty `alt=""` for decorative
+- **`object-fit: cover`** via `style={{ objectFit: 'cover' }}` when using `fill`, or via CSS Modules
+
+**Why this matters:** Nessi is an image-heavy marketplace. `next/image` auto-serves WebP/AVIF at the right resolution per device via Vercel's Image Optimization API. Raw `<img>` bypasses all of this — every user downloads the full original regardless of screen size.
+
+**Config:** `next.config.mjs` has `remotePatterns` for `*.supabase.co` — all Supabase Storage URLs are optimized automatically by Vercel.
+
+### Account Deletion & Cascade Cleanup
+
+Deleting a user from `auth.users` triggers a full cleanup chain:
+
+```
+auth.users DELETE
+  → profiles row CASCADE (FK: profiles_id_fkey ON DELETE CASCADE)
+    → BEFORE DELETE trigger: handle_profile_deletion()
+      → Deletes avatar from `avatars` bucket
+      → Deletes all product images from `product-images` bucket
+    → Profile row removed
+```
+
+**When adding new user-owned resources** (listings, orders, messages, reviews, etc.):
+
+1. Add a FK to `profiles.id` (or `auth.users.id`) with `ON DELETE CASCADE`
+2. If the resource has storage objects, add cleanup logic to `handle_profile_deletion()` in Supabase
+3. If the resource has cross-references (e.g., buyer ↔ seller on an order), decide whether to cascade or soft-delete — document the decision in the feature's CLAUDE.md
+4. Test the full deletion chain before shipping
 
 ### Key Directories
 
