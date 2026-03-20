@@ -28,7 +28,12 @@ function getAvatarColor(name: string): string {
   return `hsl(${hue}, 55%, 45%)`;
 }
 
-export default function AvatarUpload({ displayName, avatarUrl, onUpload, disabled }: AvatarUploadProps) {
+export default function AvatarUpload({
+  displayName,
+  avatarUrl,
+  onUpload,
+  disabled,
+}: AvatarUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 

@@ -39,10 +39,12 @@ export async function POST(req: Request) {
 
     const fileName = `${user.id}.webp`;
 
-    const { error: uploadError } = await supabase.storage.from('avatars').upload(fileName, resized, {
-      contentType: 'image/webp',
-      upsert: true,
-    });
+    const { error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(fileName, resized, {
+        contentType: 'image/webp',
+        upsert: true,
+      });
 
     if (uploadError) {
       return NextResponse.json({ error: uploadError.message }, { status: 500 });

@@ -27,25 +27,25 @@ Profile management for Nessi's C2C marketplace users. Handles profile data fetch
 
 ## Hooks
 
-| Hook                               | Query Key                                  | Purpose                                                            |
-| ---------------------------------- | ------------------------------------------ | ------------------------------------------------------------------ |
-| `useProfile(userId, enabled?)`     | `['profiles', userId]`                     | Fetch profile by user ID                                           |
-| `useProfileBySlug(slug, enabled?)` | `['profiles', 'slug', slug]`               | Fetch profile by slug                                              |
-| `useUpdateProfile()`               | mutation, invalidates `['profiles']`       | Update profile fields                                              |
-| `useCompleteOnboarding()`          | mutation, invalidates `['profiles']`       | Mark onboarding complete by setting `onboarding_completed_at`      |
-| `useDisplayNameCheck(name)`        | `['profiles', 'display-name-check', name]` | Availability check (enabled when name >= 2 chars, 30s stale time)  |
+| Hook                               | Query Key                                  | Purpose                                                           |
+| ---------------------------------- | ------------------------------------------ | ----------------------------------------------------------------- |
+| `useProfile(userId, enabled?)`     | `['profiles', userId]`                     | Fetch profile by user ID                                          |
+| `useProfileBySlug(slug, enabled?)` | `['profiles', 'slug', slug]`               | Fetch profile by slug                                             |
+| `useUpdateProfile()`               | mutation, invalidates `['profiles']`       | Update profile fields                                             |
+| `useCompleteOnboarding()`          | mutation, invalidates `['profiles']`       | Mark onboarding complete by setting `onboarding_completed_at`     |
+| `useDisplayNameCheck(name)`        | `['profiles', 'display-name-check', name]` | Availability check (enabled when name >= 2 chars, 30s stale time) |
 
 ## Onboarding Components
 
 The wizard lives under `components/onboarding/` and is composed of step-specific forms, a container, and a progress indicator.
 
-| Component                                  | Purpose                                                                                          |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------ |
-| `onboarding-wizard/`                       | Main container — reads auth state, guards against unauthenticated access, routes between steps   |
-| `step-display-name/`                       | Step 1 — display name text input with real-time availability check + `AvatarUpload` integration  |
-| `step-fishing-identity/`                   | Step 2 — species and technique `PillSelector` multi-selects + home state dropdown (all optional) |
-| `step-bio/`                                | Step 3 — bio textarea (280 char max), calls `useCompleteOnboarding` on submit                    |
-| `progress-indicator/`                      | 3-circle step progress bar, highlights current step, used inside the wizard container            |
+| Component                | Purpose                                                                                          |
+| ------------------------ | ------------------------------------------------------------------------------------------------ |
+| `onboarding-wizard/`     | Main container — reads auth state, guards against unauthenticated access, routes between steps   |
+| `step-display-name/`     | Step 1 — display name text input with real-time availability check + `AvatarUpload` integration  |
+| `step-fishing-identity/` | Step 2 — species and technique `PillSelector` multi-selects + home state dropdown (all optional) |
+| `step-bio/`              | Step 3 — bio textarea (280 char max), calls `useCompleteOnboarding` on submit                    |
+| `progress-indicator/`    | 3-circle step progress bar, highlights current step, used inside the wizard container            |
 
 ### AvatarUpload (`components/avatar-upload/`)
 
@@ -53,12 +53,12 @@ Reusable avatar component used in Step 1. Shows initials fallback (deterministic
 
 Props:
 
-| Prop          | Type                      | Description                                      |
-| ------------- | ------------------------- | ------------------------------------------------ |
-| `displayName` | `string`                  | Used for initials and background color fallback  |
-| `avatarUrl`   | `string \| null`          | Current avatar URL; `null` renders initials      |
-| `onUpload`    | `(url: string) => void`   | Callback with public URL after successful upload |
-| `disabled?`   | `boolean`                 | Prevents interaction during external loading     |
+| Prop          | Type                    | Description                                      |
+| ------------- | ----------------------- | ------------------------------------------------ |
+| `displayName` | `string`                | Used for initials and background color fallback  |
+| `avatarUrl`   | `string \| null`        | Current avatar URL; `null` renders initials      |
+| `onUpload`    | `(url: string) => void` | Callback with public URL after successful upload |
+| `disabled?`   | `boolean`               | Prevents interaction during external loading     |
 
 ## Avatar Upload API
 

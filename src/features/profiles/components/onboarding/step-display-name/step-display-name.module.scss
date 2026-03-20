@@ -56,7 +56,9 @@
   border: 1.5px solid var(--color-gray-300);
   border-radius: var(--radius-md);
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
   padding-right: var(--space-2xl);
 
   &::placeholder {
@@ -68,7 +70,7 @@
     box-shadow: 0 0 0 3px rgb(var(--color-primary-rgb, 0 122 255) / 15%);
   }
 
-  &:hover:not(:focus-visible):not(.inputError):not(.inputSuccess) {
+  &:hover:not(:focus-visible, .inputError, .inputSuccess) {
     border-color: var(--color-gray-400);
   }
 }
