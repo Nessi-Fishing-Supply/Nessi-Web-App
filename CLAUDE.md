@@ -45,10 +45,10 @@ Next.js App Router with a `(frontend)` route group for all UI pages. No Pages Ro
 
 Two Supabase Storage buckets (both public):
 
-| Bucket | Path Pattern | API Route | Purpose |
-|--------|-------------|-----------|---------|
+| Bucket           | Path Pattern                 | API Route                              | Purpose                                     |
+| ---------------- | ---------------------------- | -------------------------------------- | ------------------------------------------- |
 | `product-images` | `{user_id}/{timestamp}.webp` | `src/app/api/products/upload/route.ts` | Product listing photos (max 1200x1200 WebP) |
-| `avatars` | `{user_id}.webp` | `src/app/api/profiles/avatar/route.ts` | User avatar (200x200 WebP via Sharp) |
+| `avatars`        | `{user_id}.webp`             | `src/app/api/profiles/avatar/route.ts` | User avatar (200x200 WebP via Sharp)        |
 
 RLS policies enforce per-user access on both buckets. 5MB limit, JPEG/PNG/WebP/GIF only.
 
@@ -57,6 +57,7 @@ RLS policies enforce per-user access on both buckets. 5MB limit, JPEG/PNG/WebP/G
 All images in Nessi follow a strict pipeline: **validate → optimize → store as WebP → render with `next/image`**.
 
 **Upload (API routes):**
+
 - Validate MIME type (`image/jpeg`, `image/png`, `image/webp`, `image/gif`)
 - Enforce 5MB file size limit
 - Resize via `sharp` with `fit: 'inside'` + `withoutEnlargement: true` (preserves aspect ratio, never upscales)
@@ -64,6 +65,7 @@ All images in Nessi follow a strict pipeline: **validate → optimize → store 
 - Store with `contentType: 'image/webp'`
 
 **Rendering (components):**
+
 - **Always use `next/image`** — never raw `<img>` tags for user-uploaded or remote images
 - **Always provide `sizes`** — tells the browser which srcset variant to download. Examples:
   - Product cards: `sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, 300px"`
@@ -93,6 +95,7 @@ auth.users DELETE
 ```
 
 **When adding new user-owned resources** (listings, orders, messages, reviews, etc.):
+
 1. Add a FK to `profiles.id` (or `auth.users.id`) with `ON DELETE CASCADE`
 2. If the resource has storage objects, add cleanup logic to `handle_profile_deletion()` in Supabase
 3. If the resource has cross-references (e.g., buyer ↔ seller on an order), decide whether to cascade or soft-delete — document the decision in the feature's CLAUDE.md

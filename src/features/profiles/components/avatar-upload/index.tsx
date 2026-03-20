@@ -111,11 +111,7 @@ export default function AvatarUpload({
             style={{ objectFit: 'cover' }}
           />
         ) : (
-          <span
-            className={styles.initials}
-            style={{ backgroundColor: bgColor }}
-            aria-hidden="true"
-          >
+          <span className={styles.initials} style={{ backgroundColor: bgColor }} aria-hidden="true">
             {initials}
           </span>
         )}
@@ -141,11 +137,7 @@ export default function AvatarUpload({
         tabIndex={-1}
       />
 
-      <Modal
-        isOpen={!!cropSource}
-        onClose={handleCancelCrop}
-        ariaLabel="Crop avatar image"
-      >
+      <Modal isOpen={!!cropSource} onClose={handleCancelCrop} ariaLabel="Crop avatar image">
         {cropSource && (
           <ImageCropper
             imageSrc={cropSource}

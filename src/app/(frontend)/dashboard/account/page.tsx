@@ -72,7 +72,11 @@ const Account: React.FC = () => {
               Permanently delete your account and all associated data including your profile,
               listings, and images. This action cannot be undone.
             </p>
-            <Button style="primary" onClick={() => setDeleteModalOpen(true)} ariaLabel="Delete account">
+            <Button
+              style="primary"
+              onClick={() => setDeleteModalOpen(true)}
+              ariaLabel="Delete account"
+            >
               Delete Account
             </Button>
           </div>

@@ -2,19 +2,30 @@
 
 .wizard {
   width: 100%;
-  max-width: 480px;
+  max-width: 520px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   min-height: 0;
   flex: 1;
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+
+  @include breakpoint(md) {
+    flex: none;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg, var(--shadow-md));
+  }
 }
 
 .progressWrapper {
-  padding: var(--space-base) var(--space-base) 0;
+  padding: var(--space-md) var(--space-lg) 0;
+  background: var(--color-white);
 
   @include breakpoint(md) {
-    padding: var(--space-lg) var(--space-lg) 0;
+    padding: var(--space-lg) var(--space-2xl) 0;
   }
 }
 
@@ -22,13 +33,26 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  animation: fade-slide-in 0.3s ease-out;
+}
+
+@keyframes fade-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .loading {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 200px;
+  min-height: 300px;
   font-size: var(--font-size-base);
   color: var(--color-gray-500);
 }

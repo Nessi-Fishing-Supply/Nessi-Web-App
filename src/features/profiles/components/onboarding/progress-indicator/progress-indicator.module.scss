@@ -5,41 +5,47 @@
   align-items: center;
   justify-content: center;
   gap: 0;
-  padding: var(--space-md) 0;
+  padding: var(--space-sm) 0;
 }
 
 .step {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: var(--font-size-sm);
-  font-weight: 600;
+  font-weight: 700;
   flex-shrink: 0;
+  transition: all 0.3s ease;
 }
 
 .completed {
   background-color: var(--color-primary);
   color: var(--color-white);
+  box-shadow: 0 2px 8px rgb(30 74 64 / 25%);
 }
 
 .current {
-  background-color: var(--color-primary);
+  background-color: var(--color-secondary);
   color: var(--color-white);
+  box-shadow: 0 2px 8px rgb(226 119 57 / 30%);
+  transform: scale(1.1);
 }
 
 .future {
-  background-color: transparent;
-  border: 2px solid var(--color-gray-300);
-  color: var(--color-gray-500);
+  background-color: var(--color-gray-100);
+  border: none;
+  color: var(--color-gray-400);
 }
 
 .line {
   flex: 1;
-  height: 2px;
-  max-width: 60px;
+  height: 3px;
+  max-width: 64px;
+  border-radius: 2px;
+  transition: background-color 0.3s ease;
 
   @include breakpoint(md) {
     max-width: 80px;
@@ -51,5 +57,5 @@
 }
 
 .linePending {
-  background-color: var(--color-gray-300);
+  background-color: var(--color-gray-200);
 }

@@ -67,6 +67,13 @@ export default function StepDisplayName() {
     <FormProvider {...methods}>
       <div className={styles.container}>
         <div className={styles.formBody}>
+          <div className={styles.stepHeader}>
+            <h2 className={styles.stepTitle}>Let&#39;s get you set up</h2>
+            <p className={styles.stepSubtitle}>
+              Choose a name and photo that other anglers will see.
+            </p>
+          </div>
+
           <div className={styles.avatarSection}>
             <AvatarUpload
               displayName={watchedName}

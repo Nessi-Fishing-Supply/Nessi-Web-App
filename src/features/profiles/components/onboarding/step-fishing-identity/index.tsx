@@ -37,6 +37,11 @@ export default function StepFishingIdentity() {
         </button>
       </div>
 
+      <div className={styles.stepHeader}>
+        <h2 className={styles.stepTitle}>What&#39;s your style?</h2>
+        <p className={styles.stepSubtitle}>Help us personalize your experience. All optional.</p>
+      </div>
+
       <div className={styles.sections}>
         <div className={styles.section}>
           <p className={styles.sectionLabel}>What do you fish for?</p>

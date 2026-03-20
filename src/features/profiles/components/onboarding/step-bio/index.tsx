@@ -89,6 +89,13 @@ export default function StepBio() {
         Back
       </button>
 
+      <div className={styles.stepHeader}>
+        <h2 className={styles.stepTitle}>Tell your story</h2>
+        <p className={styles.stepSubtitle}>
+          A short bio helps build trust with buyers and sellers.
+        </p>
+      </div>
+
       <div className={styles.fieldGroup}>
         <label htmlFor="bio" className={styles.label}>
           Bio

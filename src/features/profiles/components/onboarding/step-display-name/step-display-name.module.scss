@@ -18,6 +18,29 @@
   }
 }
 
+.stepHeader {
+  text-align: center;
+}
+
+.stepTitle {
+  font-size: var(--font-size-xl);
+  font-weight: 800;
+  color: var(--color-dark);
+  margin: 0;
+  letter-spacing: -0.02em;
+
+  @include breakpoint(md) {
+    font-size: var(--font-size-2xl);
+  }
+}
+
+.stepSubtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-500);
+  margin: var(--space-2xs) 0 0;
+  line-height: 1.5;
+}
+
 .avatarSection {
   display: flex;
   justify-content: center;
@@ -125,13 +148,12 @@
 .footer {
   position: sticky;
   bottom: 0;
-  padding: var(--space-base);
-  background: var(--color-white);
-  border-top: 1px solid var(--color-gray-100);
+  padding: var(--space-base) var(--space-lg);
+  background: linear-gradient(to top, var(--color-white) 80%, transparent);
 
   @include breakpoint(md) {
     position: static;
-    padding: var(--space-lg);
-    border-top: none;
+    padding: var(--space-md) var(--space-lg) var(--space-lg);
+    background: var(--color-white);
   }
 }

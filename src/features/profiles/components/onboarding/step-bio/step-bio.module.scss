@@ -4,10 +4,10 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
-  padding: var(--space-base);
+  padding: var(--space-base) var(--space-lg);
 
   @include breakpoint(md) {
-    padding: var(--space-lg);
+    padding: var(--space-lg) var(--space-2xl);
   }
 }
 
@@ -31,6 +31,29 @@
     outline-offset: 2px;
     border-radius: var(--radius-sm);
   }
+}
+
+.stepHeader {
+  text-align: center;
+}
+
+.stepTitle {
+  font-size: var(--font-size-xl);
+  font-weight: 800;
+  color: var(--color-dark);
+  margin: 0;
+  letter-spacing: -0.02em;
+
+  @include breakpoint(md) {
+    font-size: var(--font-size-2xl);
+  }
+}
+
+.stepSubtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-500);
+  margin: var(--space-2xs) 0 0;
+  line-height: 1.5;
 }
 
 .fieldGroup {
