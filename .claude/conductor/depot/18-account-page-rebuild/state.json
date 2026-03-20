@@ -3,7 +3,7 @@
   "issue": 18,
   "title": "Account page rebuild — inline editing with profiles table",
   "branch": "feat/18/account-page-rebuild",
-  "status": "complete",
+  "status": "pr_open",
   "phase": {
     "current": 3,
     "total": 3,
@@ -15,5 +15,8 @@
   },
   "health": { "build": "pass", "lint": "pass", "tests": "pass" },
   "failureCount": { "currentTask": 0 },
-  "timestamps": { "started": "2026-03-20T12:00:00Z", "lastActivity": "2026-03-20T12:04:00Z" }
+  "timestamps": { "started": "2026-03-20T12:00:00Z", "lastActivity": "2026-03-20T12:05:00Z" },
+  "completedAt": "2026-03-20T12:05:00Z",
+  "pruneAfter": "2026-05-19T12:05:00Z",
+  "pr": "https://github.com/Nessi-Fishing-Supply/Nessi-Web-App/pull/64"
 }

@@ -61,6 +61,9 @@
 
 .contentInner {
   overflow: hidden;
+}
+
+.contentExpanded .contentInner {
   padding: 0 var(--space-base) var(--space-sm);
 
   @include breakpoint(md) {

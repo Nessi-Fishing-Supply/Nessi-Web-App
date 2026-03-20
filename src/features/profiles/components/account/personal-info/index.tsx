@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { HiCheckCircle, HiXCircle } from 'react-icons/hi';
 import AvatarUpload from '@/features/profiles/components/avatar-upload';
-import CollapsibleCard from '@/components/layout/collapsible-card';
 import InlineEdit from '@/components/controls/inline-edit';
 import { useDisplayNameCheck, useUpdateProfile } from '@/features/profiles/hooks/use-profile';
 import { generateSlug } from '@/features/profiles/services/profile';
@@ -92,7 +91,8 @@ export default function PersonalInfo({ profile, userId }: PersonalInfoProps) {
   };
 
   return (
-    <CollapsibleCard title="Personal Info" defaultExpanded>
+    <section className={styles.card}>
+      <h2 className={styles.title}>Personal Info</h2>
       <div className={styles.content}>
         <div className={styles.avatarSection}>
           <AvatarUpload
@@ -150,6 +150,6 @@ export default function PersonalInfo({ profile, userId }: PersonalInfoProps) {
           </div>
         </div>
       </div>
-    </CollapsibleCard>
+    </section>
   );
 }
