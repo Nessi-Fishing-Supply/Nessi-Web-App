@@ -2,19 +2,19 @@
 
 **Date:** 2026-03-20
 **Status:** Draft
-**Authors:** Kyle Holloway, Claude (Conductor)
+**Authors:** Kyle Holloway, Paul (Product), Claude (Conductor)
 
 ---
 
 ## 1. Overview
 
-Nessi separates personal identity (members) from business identity (shops). Every registered user is a member. Members can optionally sell items on their profile or create a premium shop for a full-featured storefront. Guest checkout allows purchases without an account.
+Nessi separates personal identity (members) from business identity (shops). Every registered user is a member. Members can optionally sell items on their profile or create a premium shop for a full-featured storefront. Guest checkout allows purchases without an account (future).
 
 ### Account Tiers
 
 | Tier | Entity | Can Buy | Can Sell | URL | Cost |
 |------|--------|---------|----------|-----|------|
-| Guest | none | yes (checkout only) | no | n/a | free |
+| Guest (future) | none | yes (checkout only) | no | n/a | free |
 | Member (buyer) | `members` | yes | no | `/member/{slug}` | free |
 | Member (buyer+seller) | `members` | yes | yes (basic) | `/member/{slug}` | free |
 | Shop | `shops` | no | yes (premium) | `/shop/{slug}` | subscription |
@@ -24,9 +24,10 @@ Nessi separates personal identity (members) from business identity (shops). Ever
 - Members are people. Shops are businesses.
 - `is_seller` on the member profile is a personal preference toggle — independent of shop ownership.
 - A member can own/manage a shop without `is_seller` enabled on their member profile.
-- Products have a polymorphic owner: either a member or a shop.
+- Products belong to either a member or a shop via dual FK columns (not polymorphic `owner_type`).
 - Shops are a premium subscription with features that free member-sellers don't get.
-- Guest checkout is supported — no account required to purchase.
+- Guest checkout is planned but not part of the initial implementation.
+- Slugs are globally unique across members and shops via a shared `slugs` lookup table.
 
 ---
 
@@ -39,9 +40,10 @@ The member is a person. Every registered user has one.
 | Column | Type | Notes |
 |--------|------|-------|
 | `id` | UUID PK | FK → `auth.users.id` ON DELETE CASCADE |
-| `first_name` | TEXT | nullable |
-| `last_name` | TEXT | nullable |
-| `slug` | TEXT UNIQUE | member handle, e.g., `kyle-holloway-4829` |
+| `display_name` | TEXT NOT NULL | community identity (3-40 chars), shown in navbar, messaging, reviews |
+| `first_name` | TEXT | nullable, legal/personal name |
+| `last_name` | TEXT | nullable, legal/personal name |
+| `slug` | TEXT UNIQUE NOT NULL | member handle, e.g., `kyle-holloway-4829` |
 | `avatar_url` | TEXT | nullable |
 | `bio` | TEXT | nullable, 280 char max |
 | `is_seller` | BOOLEAN | default false, toggled in member settings |
@@ -63,7 +65,9 @@ The member is a person. Every registered user has one.
 | `created_at` | TIMESTAMPTZ | default now() |
 | `updated_at` | TIMESTAMPTZ | default now(), auto-updated |
 
-**Removed from profiles:** `shop_name` (moves to `shops` table)
+**`display_name`** is the member's community-facing identity (required, unique via case-insensitive index). It is what shows in the navbar, messaging threads, and reviews. First/last name are optional personal details shown on the member's profile page.
+
+**`shop_name`** is removed — it now lives on the `shops` table.
 
 **Behavior when `is_seller` is toggled off:** Member listings are hidden from public view (not deleted). The member can toggle it back on to restore visibility.
 
@@ -74,13 +78,13 @@ A shop is a business entity. Created by a member, owned independently.
 | Column | Type | Notes |
 |--------|------|-------|
 | `id` | UUID PK | default gen_random_uuid() |
-| `owner_id` | UUID | FK → `members.id` ON DELETE CASCADE, the creating member |
+| `owner_id` | UUID NOT NULL | FK → `members.id` ON DELETE RESTRICT |
 | `shop_name` | TEXT NOT NULL | not unique — multiple shops can share a name |
 | `slug` | TEXT UNIQUE NOT NULL | unique handle, e.g., `kyles-tackle-shop` |
 | `avatar_url` | TEXT | nullable |
 | `description` | TEXT | nullable |
 | `hero_banner_url` | TEXT | nullable (premium feature) |
-| `brand_colors` | JSONB | nullable, e.g., `{ primary: "#2563eb", accent: "#f59e0b" }` |
+| `brand_colors` | JSONB | nullable, e.g., `{ "primary": "#2563eb", "accent": "#f59e0b" }` |
 | `is_verified` | BOOLEAN | default false |
 | `subscription_tier` | TEXT | 'basic' or 'premium', default 'basic' |
 | `subscription_status` | TEXT | 'active', 'past_due', 'cancelled', 'trialing' |
@@ -97,8 +101,13 @@ A shop is a business entity. Created by a member, owned independently.
 
 **Constraints:**
 - `slug` format: `^[a-z0-9][a-z0-9-]*[a-z0-9]$`
-- `slug` must be globally unique (checked against both `members.slug` AND `shops.slug`)
+- `slug` globally unique (enforced via `slugs` table — see Section 2.5)
 - `shop_name` length: 3-60 characters
+- `brand_colors` validated at the application layer (hex color format)
+
+**`owner_id` uses ON DELETE RESTRICT** (not CASCADE). A member who owns a shop must transfer ownership or delete the shop before deleting their account. This protects other shop members and prevents accidental destruction of a business entity with active orders.
+
+**Shop name disambiguation:** Multiple shops can share a name. The UI disambiguates in search results and messaging via the slug/handle (e.g., "Kyle's Tackle (@kyles-tackle-shop)") and verified badges where applicable.
 
 ### 2.3 `shop_members` table (new)
 
@@ -114,41 +123,63 @@ Join table for multi-admin support (premium shops).
 
 **Constraints:**
 - UNIQUE on `(shop_id, member_id)` — a member can only have one role per shop
-- Every shop must have exactly one `owner` role
-- Only premium shops can have more than one `shop_members` entry
+- UNIQUE partial index: one `owner` per shop (`CREATE UNIQUE INDEX ... WHERE role = 'owner'`)
+- Only premium shops can have more than one `shop_members` entry (enforced at application layer)
+
+**`shops.owner_id` vs `shop_members` owner role:** `shops.owner_id` is the canonical owner reference (used for account deletion checks, billing). The `shop_members` entry with `role = 'owner'` is created automatically when a shop is created and must always match `shops.owner_id`. Ownership transfer updates both atomically.
 
 **Roles:**
 - `owner` — full control, billing, can delete shop, transfer ownership
 - `admin` — manage listings, respond to messages, view analytics
 - `contributor` — create/edit listings only
 
+**Initial implementation:** One shop per member (enforced at application layer). Multi-shop support is architecturally supported but gated.
+
 ### 2.4 `products` table (modified)
 
-Products have a polymorphic owner — either a member or a shop.
+Products belong to either a member or a shop via two nullable FK columns.
 
 | Column | Type | Notes |
 |--------|------|-------|
 | `id` | UUID PK | existing |
-| `owner_type` | TEXT NOT NULL | 'member' or 'shop' |
-| `owner_id` | UUID NOT NULL | references `members.id` or `shops.id` |
+| `member_id` | UUID | FK → `members.id` ON DELETE CASCADE, nullable |
+| `shop_id` | UUID | FK → `shops.id` ON DELETE CASCADE, nullable |
 | `title` | TEXT NOT NULL | existing |
 | `description` | TEXT | existing |
 | `price` | DECIMAL NOT NULL | existing |
+| `is_visible` | BOOLEAN | default true, set false when `is_seller` toggled off |
 | `created_at` | TIMESTAMPTZ | existing |
 
-**Migration:** Drop `user_id` column, add `owner_type` + `owner_id`. No data migration needed (no production data).
+**Constraints:**
+- CHECK: `(member_id IS NOT NULL AND shop_id IS NULL) OR (member_id IS NULL AND shop_id IS NOT NULL)` — exactly one owner
+- FK constraints provide real referential integrity and cascade behavior
+- When a member deletes their account, their member-owned products cascade delete
+- When a shop is deleted, its shop-owned products cascade delete
 
-**RLS:** Policies check `owner_type` to determine which table to validate ownership against.
+**Migration:** Drop `user_id` column, add `member_id` + `shop_id`. No data migration needed (no production data).
 
-### 2.5 Slug Uniqueness
+**RLS policies:** Straightforward — `auth.uid() = member_id` for member-owned products, or `auth.uid() IN (SELECT member_id FROM shop_members WHERE shop_id = products.shop_id)` for shop-owned products.
 
-Member handles and shop handles share a global namespace to avoid URL confusion. A slug taken by a member cannot be used by a shop and vice versa.
+### 2.5 `slugs` table (new)
 
-**Implementation:** A `reserved_slugs` check function or a shared `slugs` lookup table:
-```
-slugs (slug TEXT UNIQUE, entity_type TEXT, entity_id UUID)
-```
-Both `members` and `shops` insert into this table on create/update. This guarantees global uniqueness.
+Global slug uniqueness across members and shops.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `slug` | TEXT PK | the unique slug |
+| `entity_type` | TEXT NOT NULL | 'member' or 'shop' |
+| `entity_id` | UUID NOT NULL | references `members.id` or `shops.id` |
+| `created_at` | TIMESTAMPTZ | default now() |
+
+**Atomic slug operations:** All slug creation and updates go through a `reserve_slug(slug, entity_type, entity_id)` database function that:
+1. Validates slug format
+2. Inserts into `slugs` table (fails if taken)
+3. Updates the entity's `slug` column
+4. All within a single transaction
+
+**`handle_new_user()` trigger** is updated to call `reserve_slug()` when creating a member's initial slug.
+
+**`check_slug_available(slug)` function** replaces the current `checkSlugAvailable` service — queries the `slugs` table instead of individual entity tables.
 
 ---
 
@@ -158,8 +189,9 @@ Both `members` and `shops` insert into this table on create/update. This guarant
 
 **Step 1 (everyone):**
 - Upload avatar
-- Set first name, last name
-- Pick member handle (slug) — checked for global uniqueness
+- Set display name (community identity)
+- Set first name, last name (optional)
+- Pick member handle (slug) — checked for global uniqueness via `slugs` table
 
 **Step 2 (branch point):**
 - "How do you plan to use Nessi?"
@@ -198,9 +230,9 @@ Available to any member, regardless of `is_seller` status:
 
 ### 3.4 `is_seller` Toggle
 
-Lives in member settings. Can be toggled on/off at any time:
+Available in member settings AND during onboarding. Can be toggled on/off at any time:
 - **On:** Member can list products, seller features visible in dashboard, listings visible on public profile
-- **Off:** Listings hidden (not deleted), seller features hidden from dashboard, can toggle back on
+- **Off:** Member-owned listings set `is_visible = false` (not deleted), seller features hidden from dashboard, can toggle back on
 
 Independent of shop ownership. A member can have `is_seller = false` and still own/manage a shop.
 
@@ -223,7 +255,7 @@ Independent of shop ownership. A member can have `is_seller = false` and still o
 | Shipping options | standard | premium options/discounts |
 | Stripe account | member's personal | shop's own business account |
 
-**Exact limits** (listing count, image count, etc.) are configurable via a limits table or config — not hardcoded. This allows easy tuning and A/B testing.
+**Exact limits** (listing count, image count, etc.) are configurable via a limits config — not hardcoded. This allows easy tuning and A/B testing.
 
 ### 4.1 Upsell Touchpoints
 
@@ -269,24 +301,33 @@ Current member context shows in the navbar (avatar + name):
 
 If a member manages multiple shops, all are listed in the switch section.
 
-### 5.2 Context Awareness
+### 5.2 Context Switching Architecture
 
-When in shop context:
-- Dashboard shows shop-specific data (shop listings, shop orders, shop analytics)
-- Avatar and name in navbar reflect the shop identity
-- Creating a listing defaults to the shop as owner
-- Messages go to the shop inbox
+**Storage:** Active context stored in a Zustand store (`useContextStore`) with the shape:
+```typescript
+{
+  activeContext: { type: 'member' } | { type: 'shop', shopId: string }
+}
+```
 
-When in member context:
-- Dashboard shows member data (purchases, personal listings if `is_seller`, member reviews)
-- Avatar and name reflect the member identity
-- Creating a listing (if `is_seller`) defaults to the member as owner
+**Persistence:** Context persisted to `localStorage` so it survives page refresh. Defaults to member context on login.
 
-### 5.3 Cross-Notifications
+**Server-side propagation:** Context is sent as a custom header (`X-Nessi-Context: member` or `X-Nessi-Context: shop:{shopId}`) on API requests. Server-side routes use this to scope queries appropriately.
 
-Notifications bridge contexts:
+**`proxy.ts` awareness:** Proxy does NOT need context awareness — it only handles auth session refresh and route protection. Context is an application-layer concern.
+
+**Context switching flow:**
+1. User clicks "Switch to: Kyle's Tackle Shop" in dropdown
+2. Zustand store updates `activeContext`
+3. `localStorage` synced
+4. Dashboard re-renders with shop-scoped data
+5. Navbar avatar/name updates to shop identity
+
+### 5.3 Cross-Notifications (future)
+
+Notifications bridge contexts — this is aspirational and not part of the initial implementation:
 - "Kyle's Tackle Shop received a new order" → appears in member notifications with "Switch to shop" action
-- "Kyle Holloway, someone messaged you about your rod listing" → appears in shop notifications if the member is in shop context, with "Switch to member" action
+- "Kyle Holloway, someone messaged you about your rod listing" → appears in shop notifications with "Switch to member" action
 
 ---
 
@@ -297,14 +338,14 @@ Notifications bridge contexts:
 Always exists for every member. Content varies by role:
 
 **Buyer-only member:**
-- Avatar, name, handle
+- Avatar, display name, handle
 - Member since date
 - Buyer reviews
 - Fishing preferences (species, techniques)
 
 **Member with `is_seller = true`:**
 - Everything above, plus:
-- Product listings grid
+- Product listings grid (only `is_visible = true` products)
 - Seller reviews
 - Response time, transaction count
 
@@ -320,7 +361,7 @@ Only exists for shops. Premium features progressively enhance the page:
 
 **Premium shop (additions):**
 - Hero banner image
-- Custom brand colors
+- Custom brand colors applied to page
 - Verified badge
 - Enhanced layout options
 
@@ -332,22 +373,22 @@ Only exists for shops. Premium features progressively enhance the page:
 
 | Table | Action |
 |-------|--------|
-| `profiles` | Rename to `members`, drop `shop_name` |
+| `profiles` | Rename to `members`, drop `shop_name`, restore `display_name` |
 | `shops` | Create new |
 | `shop_members` | Create new |
-| `products` | Drop `user_id`, add `owner_type` + `owner_id` |
 | `slugs` | Create new (global slug uniqueness) |
+| `products` | Drop `user_id`, add `member_id` + `shop_id` with CHECK constraint |
 
 ### Features
 
 | Feature | Action |
 |---------|--------|
 | Onboarding wizard | Rework: add buyer/seller branch, seller opt-in steps, shop creation flow |
-| Account page | Rework: remove shop_name, add `is_seller` toggle in settings, "Create Shop" CTA |
+| Account page | Rework: restore display_name, add `is_seller` toggle in settings, "Create Shop" CTA |
 | Dashboard | Add context switching (member vs shop), conditional feature rendering |
 | Navbar | Add shop switcher to user dropdown |
-| Product listings | Update to use polymorphic owner |
-| Auth/proxy | Add shop context awareness to session |
+| Product listings | Update to use dual FK columns |
+| Auth/proxy | No changes needed — context is application-layer |
 | Public profiles | Build `/member/{slug}` and `/shop/{slug}` pages |
 
 ### Files Renamed
@@ -357,6 +398,9 @@ Only exists for shops. Premium features progressively enhance the page:
 | `src/features/profiles/` | `src/features/members/` |
 | `src/types/database.ts` (profiles references) | Updated to `members` |
 | All `profile` imports/hooks/services | Renamed to `member` equivalents |
+| `checkShopNameAvailable` | Reverted to `checkDisplayNameAvailable` (for member display names) |
+
+**Rename strategy:** Execute as an isolated step (not mixed with feature work). Run full CI pipeline after to catch any missed references.
 
 ### New Feature Domains
 
@@ -378,8 +422,10 @@ These are future concerns, not part of the initial implementation:
 - Review system
 - Search and discovery
 - Stripe payment processing details
-- Subscription billing implementation details
+- Subscription billing implementation details (Stripe subscription webhooks, etc.)
 - Shop analytics dashboard
 - Shipping integration
 - Business verification flow
 - Exact listing/image limits (configurable, tuned later)
+- Cross-context notification system (Section 5.3)
+- Multi-shop per member (architecturally supported, gated at application layer)
