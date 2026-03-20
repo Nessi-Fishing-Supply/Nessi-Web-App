@@ -30,8 +30,7 @@ export default function PersonalInfo({ profile, userId }: PersonalInfoProps) {
     return () => clearTimeout(timer);
   }, [draftName]);
 
-  const isCurrentName =
-    debouncedName.toLowerCase() === (profile.display_name ?? '').toLowerCase();
+  const isCurrentName = debouncedName.toLowerCase() === (profile.display_name ?? '').toLowerCase();
 
   const { data: isAvailable, isLoading: isChecking } = useDisplayNameCheck(
     isCurrentName || debouncedName.length < 2 ? '' : debouncedName,

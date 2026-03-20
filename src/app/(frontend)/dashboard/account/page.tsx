@@ -16,9 +16,14 @@ import type { Profile } from '@/features/profiles/types/profile';
 import styles from './account.module.scss';
 
 export default function Account() {
-  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const userId = user?.id ?? '';
-  const { data: profile, isLoading: profileLoading, isError, refetch } = useProfile(userId, !!userId);
+  const {
+    data: profile,
+    isLoading: profileLoading,
+    isError,
+    refetch,
+  } = useProfile(userId, !!userId);
   const { showToast } = useToast();
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);

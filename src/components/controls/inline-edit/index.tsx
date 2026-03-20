@@ -106,7 +106,9 @@ export default function InlineEdit({
         onClick={handleActivate}
         aria-label={`Edit ${ariaLabel ?? 'value'}`}
       >
-        <span className={styles.displayText}>{value || <span className={styles.placeholder}>{placeholder}</span>}</span>
+        <span className={styles.displayText}>
+          {value || <span className={styles.placeholder}>{placeholder}</span>}
+        </span>
         <span className={styles.editIcon} aria-hidden="true">
           <HiPencil />
         </span>
@@ -121,7 +123,10 @@ export default function InlineEdit({
           ref={textareaRef}
           className={`${styles.input} ${styles.textarea}`}
           value={draft}
-          onChange={(e) => { setDraft(e.target.value); onChange?.(e.target.value); }}
+          onChange={(e) => {
+            setDraft(e.target.value);
+            onChange?.(e.target.value);
+          }}
           onKeyDown={handleKeyDown}
           maxLength={maxLength !== undefined ? maxLength + 1 : undefined}
           placeholder={placeholder}
@@ -136,7 +141,10 @@ export default function InlineEdit({
           type="text"
           className={styles.input}
           value={draft}
-          onChange={(e) => { setDraft(e.target.value); onChange?.(e.target.value); }}
+          onChange={(e) => {
+            setDraft(e.target.value);
+            onChange?.(e.target.value);
+          }}
           onKeyDown={handleKeyDown}
           maxLength={maxLength}
           placeholder={placeholder}
@@ -163,7 +171,11 @@ export default function InlineEdit({
           aria-label="Save"
           aria-busy={saving}
         >
-          {saving ? <span className={styles.spinner} aria-hidden="true" /> : <HiCheck aria-hidden="true" />}
+          {saving ? (
+            <span className={styles.spinner} aria-hidden="true" />
+          ) : (
+            <HiCheck aria-hidden="true" />
+          )}
         </button>
         <button
           type="button"

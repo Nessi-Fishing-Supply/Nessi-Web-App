@@ -31,7 +31,10 @@ export default function CollapsibleCard({
         onClick={() => setExpanded((prev) => !prev)}
       >
         <span className={styles.title}>{title}</span>
-        <span className={`${styles.chevron} ${expanded ? styles.chevronExpanded : ''}`} aria-hidden="true">
+        <span
+          className={`${styles.chevron} ${expanded ? styles.chevronExpanded : ''}`}
+          aria-hidden="true"
+        >
           <HiChevronDown />
         </span>
       </button>

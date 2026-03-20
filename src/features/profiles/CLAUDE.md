@@ -83,12 +83,12 @@ The onboarding wizard uses a Zustand store (`stores/onboarding-store.ts`) to hol
 
 The account page (`/dashboard/account`) displays and edits profile data via collapsible card sections. Components live under `components/account/`.
 
-| Component          | Purpose                                                                                         |
-| ------------------ | ----------------------------------------------------------------------------------------------- |
-| `personal-info/`   | Display name inline-edit with uniqueness check, avatar upload, bio textarea (280 char)          |
-| `fishing-identity/`| Species/technique pill selectors, home state dropdown, years fishing inline-edit                 |
-| `notifications/`   | 4 toggle switches for `notification_preferences.email` JSONB — saves immediately on toggle      |
-| `linked-accounts/` | Stripe Connect placeholder (disabled "Connect" button) — ready for future integration           |
+| Component           | Purpose                                                                                    |
+| ------------------- | ------------------------------------------------------------------------------------------ |
+| `personal-info/`    | Display name inline-edit with uniqueness check, avatar upload, bio textarea (280 char)     |
+| `fishing-identity/` | Species/technique pill selectors, home state dropdown, years fishing inline-edit           |
+| `notifications/`    | 4 toggle switches for `notification_preferences.email` JSONB — saves immediately on toggle |
+| `linked-accounts/`  | Stripe Connect placeholder (disabled "Connect" button) — ready for future integration      |
 
 ### ProfileCompleteness (`components/profile-completeness/`)
 
