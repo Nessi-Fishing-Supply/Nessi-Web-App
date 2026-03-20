@@ -25,6 +25,37 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Onboarding redirect logic for authenticated users
+  if (user) {
+    const pathname = request.nextUrl.pathname;
+
+    // Skip DB query for API routes, auth routes, and Next.js internals
+    const skipOnboardingCheck =
+      pathname.startsWith('/api/') ||
+      pathname.startsWith('/auth/') ||
+      pathname.startsWith('/_next/');
+
+    if (!skipOnboardingCheck) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('onboarding_completed_at')
+        .eq('id', user.id)
+        .single();
+
+      const onboardingComplete = !!profile?.onboarding_completed_at;
+
+      // Completed users visiting /onboarding → redirect to home
+      if (onboardingComplete && pathname === '/onboarding') {
+        return NextResponse.redirect(new URL('/', request.url));
+      }
+
+      // Incomplete users visiting anything other than /onboarding → redirect to /onboarding
+      if (!onboardingComplete && pathname !== '/onboarding') {
+        return NextResponse.redirect(new URL('/onboarding', request.url));
+      }
+    }
+  }
+
   if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
     return NextResponse.redirect(new URL('/', request.url));
   }
