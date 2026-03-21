@@ -21,8 +21,11 @@ ALTER INDEX profiles_slug_unique RENAME TO members_slug_unique;
 ALTER INDEX profiles_home_state_idx RENAME TO members_home_state_idx;
 ALTER INDEX profiles_is_seller_idx RENAME TO members_is_seller_idx;
 
--- 5. Replace trigger function handle_profiles_system_fields → handle_members_system_fields
--- (must happen before trigger recreation since the new trigger references this function)
+-- 5. Drop old triggers first (must happen before dropping the old function they reference)
+DROP TRIGGER IF EXISTS on_profiles_updated_at ON public.members;
+DROP TRIGGER IF EXISTS on_profiles_system_fields ON public.members;
+
+-- 6. Replace trigger function handle_profiles_system_fields → handle_members_system_fields
 CREATE OR REPLACE FUNCTION public.handle_members_system_fields()
 RETURNS trigger AS $$
 BEGIN
@@ -38,18 +41,16 @@ $$ LANGUAGE plpgsql;
 
 DROP FUNCTION IF EXISTS public.handle_profiles_system_fields();
 
--- 6. Drop and recreate triggers (PostgreSQL does not support ALTER TRIGGER RENAME)
-DROP TRIGGER IF EXISTS on_profiles_updated_at ON public.members;
+-- 7. Recreate triggers with new names
 CREATE TRIGGER on_members_updated_at
   BEFORE UPDATE ON public.members
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
-DROP TRIGGER IF EXISTS on_profiles_system_fields ON public.members;
 CREATE TRIGGER on_members_system_fields
   BEFORE UPDATE ON public.members
   FOR EACH ROW EXECUTE FUNCTION public.handle_members_system_fields();
 
--- 7. Replace handle_new_user() to use members table and display_name column
+-- 8. Replace handle_new_user() to use members table and display_name column
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger AS $$
 DECLARE
@@ -85,7 +86,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- 8. Drop and recreate RLS policies with new names
+-- 9. Drop and recreate RLS policies with new names
 DROP POLICY IF EXISTS "Profiles are viewable by everyone" ON public.members;
 CREATE POLICY "Members are viewable by everyone"
   ON public.members FOR SELECT

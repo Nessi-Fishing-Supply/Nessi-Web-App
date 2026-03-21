@@ -4,8 +4,8 @@
   "title": "chore(database): rename profiles table to members",
   "branch": "chore/65/rename-profiles-to-members",
   "status": "implementing",
-  "phase": { "current": 1, "total": 2, "tasks": { "completed": ["1.1"], "current": null, "remaining": ["2.1", "2.2"] } },
-  "health": { "build": "unknown", "lint": "unknown", "tests": "unknown" },
+  "phase": { "current": 2, "total": 2, "tasks": { "completed": ["1.1", "2.1", "2.2"], "current": null, "remaining": [] } },
+  "health": { "build": "pass", "lint": "unknown", "tests": "unknown" },
   "failureCount": { "currentTask": 0 },
-  "timestamps": { "started": "2026-03-20T18:00:00Z", "lastActivity": "2026-03-20T18:03:00Z" }
+  "timestamps": { "started": "2026-03-20T18:00:00Z", "lastActivity": "2026-03-20T18:10:00Z" }
 }
