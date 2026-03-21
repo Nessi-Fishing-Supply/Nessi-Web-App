@@ -4,7 +4,9 @@ import { useEffect, useState } from 'react';
 import { HiCheckCircle, HiXCircle } from 'react-icons/hi';
 import AvatarUpload from '@/features/members/components/avatar-upload';
 import InlineEdit from '@/components/controls/inline-edit';
-import { useUpdateShop, useShopSlugCheck } from '@/features/shops/hooks/use-shops';
+import Modal from '@/components/layout/modal';
+import Button from '@/components/controls/button';
+import { useUpdateShop, useUpdateShopSlug, useShopSlugCheck } from '@/features/shops/hooks/use-shops';
 import type { Shop } from '@/features/shops/types/shop';
 import { useToast } from '@/components/indicators/toast/context';
 import styles from './shop-details-section.module.scss';
@@ -16,9 +18,12 @@ interface ShopDetailsSectionProps {
 export default function ShopDetailsSection({ shop }: ShopDetailsSectionProps) {
   const { showToast } = useToast();
   const updateShop = useUpdateShop();
+  const updateShopSlug = useUpdateShopSlug();
 
   const [draftSlug, setDraftSlug] = useState('');
   const [debouncedSlug, setDebouncedSlug] = useState('');
+  const [isSlugModalOpen, setIsSlugModalOpen] = useState(false);
+  const [pendingSlug, setPendingSlug] = useState('');
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -55,15 +60,40 @@ export default function ShopDetailsSection({ shop }: ShopDetailsSectionProps) {
 
   const handleSlugSave = async (newSlug: string) => {
     if (slugTaken) return;
-    await updateShop.mutateAsync({ id: shop.id, data: { slug: newSlug } });
-    setDraftSlug('');
-    setDebouncedSlug('');
-    showToast({
-      message: 'Saved',
-      description: 'Your shop handle has been updated.',
-      type: 'success',
-      duration: 2000,
-    });
+    setPendingSlug(newSlug);
+    setIsSlugModalOpen(true);
+  };
+
+  const handleSlugModalCancel = () => {
+    setIsSlugModalOpen(false);
+    setPendingSlug('');
+  };
+
+  const handleSlugConfirm = async () => {
+    try {
+      await updateShopSlug.mutateAsync({ shopId: shop.id, slug: pendingSlug });
+      setIsSlugModalOpen(false);
+      setPendingSlug('');
+      setDraftSlug('');
+      setDebouncedSlug('');
+      showToast({
+        message: 'Saved',
+        description: 'Your shop handle has been updated.',
+        type: 'success',
+        duration: 2000,
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : '';
+      const is409 = message.includes('taken') || message.includes('409');
+      showToast({
+        message: 'Update failed',
+        description: is409
+          ? 'That handle was just taken by someone else'
+          : 'Failed to update handle',
+        type: 'error',
+        duration: 4000,
+      });
+    }
   };
 
   const handleDescriptionSave = async (newDesc: string) => {
@@ -87,6 +117,7 @@ export default function ShopDetailsSection({ shop }: ShopDetailsSectionProps) {
   };
 
   return (
+    <>
     <section className={styles.card}>
       <h2 className={styles.heading}>Shop Details</h2>
       <div className={styles.content}>
@@ -142,9 +173,11 @@ export default function ShopDetailsSection({ shop }: ShopDetailsSectionProps) {
                   That handle is already taken
                 </p>
               )}
-              <p className={styles.warningText}>
-                Changing your handle will break existing links to your shop.
-              </p>
+              {draftSlug.length > 0 && (
+                <p className={styles.slugPreview} aria-live="polite">
+                  @{draftSlug}
+                </p>
+              )}
             </div>
           </div>
 
@@ -164,5 +197,36 @@ export default function ShopDetailsSection({ shop }: ShopDetailsSectionProps) {
         </div>
       </div>
     </section>
+
+    <Modal
+      isOpen={isSlugModalOpen}
+      onClose={handleSlugModalCancel}
+      ariaLabel="Confirm handle change"
+    >
+      <div className={styles.modalContent}>
+        <h2>Change your handle?</h2>
+        <p>
+          Changing your handle will break any existing links to your shop. Are you sure?
+        </p>
+        <div className={styles.modalActions}>
+          <Button
+            style="secondary"
+            onClick={handleSlugModalCancel}
+            disabled={updateShopSlug.isPending}
+          >
+            Cancel
+          </Button>
+          <Button
+            style="primary"
+            onClick={handleSlugConfirm}
+            loading={updateShopSlug.isPending}
+            ariaLabel="Confirm handle change"
+          >
+            Yes, change handle
+          </Button>
+        </div>
+      </div>
+    </Modal>
+    </>
   );
 }
