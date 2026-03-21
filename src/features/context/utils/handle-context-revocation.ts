@@ -1,3 +1,4 @@
+import { getQueryClient } from '@/libs/query-client';
 import useContextStore from '@/features/context/stores/context-store';
 
 type RevocationResult = { revoked: true; shopName: string } | { revoked: false };
@@ -21,6 +22,10 @@ export function handleContextRevocation(): RevocationResult {
 
   lastRevocationTimestamp = now;
   switchToMember();
+
+  const queryClient = getQueryClient();
+  queryClient.cancelQueries();
+  queryClient.invalidateQueries();
 
   window.dispatchEvent(
     new CustomEvent('nessi:context-revoked', { detail: { shopName } }),
