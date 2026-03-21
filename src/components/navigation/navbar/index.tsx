@@ -193,6 +193,7 @@ export default function Navbar() {
                   alt={`${firstName} ${lastName}`}
                   width={32}
                   height={32}
+                  priority
                   className={styles.navAvatar}
                 />
               ) : (
