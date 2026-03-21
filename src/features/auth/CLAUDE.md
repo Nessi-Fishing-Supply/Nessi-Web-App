@@ -33,9 +33,11 @@ Authentication feature using Supabase Auth with cookie-based sessions via `@supa
 - **`/api/auth/delete-account`** (DELETE) -- Permanently deletes the authenticated member's account. Requires an authenticated session (server client). Before deletion: checks for active shops owned by the member and releases the member's slug from the `slugs` table. After cleanup, calls `deleteUser()` via admin client.
 
   **Shop ownership guard:** If the member owns one or more shops, the route returns `409` before deleting:
+
   ```json
   { "error": "OWNS_SHOPS", "shops": [{ "id": "uuid", "shop_name": "My Shop" }] }
   ```
+
   The account page (`src/app/(frontend)/dashboard/account/page.tsx`) handles this 409 by showing an inline warning inside the deletion confirmation modal. Each shop name is rendered as a link to `/dashboard/shop/settings` so the member can delete their shops before retrying account deletion.
 
 ## Auth Pages

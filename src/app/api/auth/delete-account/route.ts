@@ -96,10 +96,7 @@ export async function DELETE() {
       .is('deleted_at', null);
 
     if (activeShops && activeShops.length > 0) {
-      return NextResponse.json(
-        { error: 'OWNS_SHOPS', shops: activeShops },
-        { status: 409 },
-      );
+      return NextResponse.json({ error: 'OWNS_SHOPS', shops: activeShops }, { status: 409 });
     }
 
     // Clean up storage before deleting the user (best-effort)
