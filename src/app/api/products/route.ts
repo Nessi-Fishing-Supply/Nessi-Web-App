@@ -20,7 +20,7 @@ export async function POST(req: Request) {
 
     const { data: product, error: productError } = await supabase
       .from('products')
-      .insert({ title, description, price: parseFloat(price), user_id: user.id })
+      .insert({ title, description, price: parseFloat(price), member_id: user.id })
       .select('id')
       .single<{ id: string }>();
 
