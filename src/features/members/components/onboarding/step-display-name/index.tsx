@@ -3,9 +3,7 @@
 import React from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { HiCheckCircle, HiXCircle } from 'react-icons/hi';
 import { step1Schema } from '@/features/members/validations/onboarding';
-import { useDisplayNameCheck } from '@/features/members/hooks/use-member';
 import { generateSlug } from '@/features/members/services/member';
 import AvatarUpload from '@/features/members/components/avatar-upload';
 import useOnboardingStore from '@/features/members/stores/onboarding-store';
@@ -38,12 +36,7 @@ export default function StepDisplayName() {
   const watchedName = watch('displayName') ?? '';
   const slug = generateSlug(watchedName);
 
-  const { data: isAvailable, isLoading: isCheckingAvailability } = useDisplayNameCheck(watchedName);
-
-  const nameIsLongEnough = watchedName.length >= 3;
-  const availabilityKnown = watchedName.length >= 2 && !isCheckingAvailability;
-  const nameIsTaken = availabilityKnown && isAvailable === false;
-  const canProceed = nameIsLongEnough && isValid && !errors.displayName && isAvailable === true;
+  const canProceed = watchedName.length >= 3 && isValid && !errors.displayName;
 
   const handleNext = () => {
     setStep1Data({ displayName: watchedName });
@@ -53,14 +46,9 @@ export default function StepDisplayName() {
 
   const displayNameId = 'display-name-input';
   const errorId = 'display-name-error';
-  const takenErrorId = 'display-name-taken-error';
   const slugPreviewId = 'slug-preview';
 
-  const describedBy = [
-    errors.displayName ? errorId : null,
-    nameIsTaken ? takenErrorId : null,
-    slugPreviewId,
-  ]
+  const describedBy = [errors.displayName ? errorId : null, slugPreviewId]
     .filter(Boolean)
     .join(' ');
 
@@ -97,40 +85,18 @@ export default function StepDisplayName() {
                 {...register('displayName')}
                 id={displayNameId}
                 type="text"
-                className={`${styles.input}${errors.displayName || nameIsTaken ? ` ${styles.inputError}` : ''}${availabilityKnown && isAvailable ? ` ${styles.inputSuccess}` : ''}`}
+                className={`${styles.input}${errors.displayName ? ` ${styles.inputError}` : ''}`}
                 aria-required="true"
-                aria-invalid={!!(errors.displayName || nameIsTaken)}
+                aria-invalid={!!errors.displayName}
                 aria-describedby={describedBy || undefined}
                 autoComplete="nickname"
                 placeholder="e.g. BassKing"
               />
-
-              {availabilityKnown && !errors.displayName && (
-                <span className={styles.availabilityIcon}>
-                  {isAvailable ? (
-                    <>
-                      <HiCheckCircle className={styles.iconSuccess} aria-hidden="true" />
-                      <span className="sr-only">Display name is available</span>
-                    </>
-                  ) : (
-                    <>
-                      <HiXCircle className={styles.iconError} aria-hidden="true" />
-                      <span className="sr-only">Display name is taken</span>
-                    </>
-                  )}
-                </span>
-              )}
             </div>
 
             {errors.displayName && (
               <p id={errorId} className={styles.errorText} role="alert">
                 {errors.displayName.message}
-              </p>
-            )}
-
-            {nameIsTaken && !errors.displayName && (
-              <p id={takenErrorId} className={styles.errorText} role="alert">
-                That display name is already taken
               </p>
             )}
 

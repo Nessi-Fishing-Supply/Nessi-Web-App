@@ -56,7 +56,6 @@ export default function StepBio() {
       await updateMember.mutateAsync({
         userId: user.id,
         data: {
-          display_name: step1Data.displayName,
           slug: generateSlug(step1Data.displayName),
           avatar_url: avatarUrl,
           primary_species: fishingData.primarySpecies,
