@@ -99,7 +99,7 @@ The onboarding wizard uses a Zustand store (`stores/onboarding-store.ts`) to hol
 
 ## Key Patterns
 
-- **Direct Supabase access** — Services use the browser client (`@/libs/supabase/client`) directly, not axios/API routes. RLS policies enforce that users can only read any member but only update their own.
+- **Direct Supabase access** — Services use the browser client (`@/libs/supabase/client`) directly, not API routes. RLS policies enforce that users can only read any member but only update their own.
 - **Database-derived types** — `Member` type comes from `Database['public']['Tables']['members']['Row']`, ensuring type safety with the schema.
 - **System-managed fields** — `MemberUpdateInput` omits 11 fields (id, timestamps, Stripe fields, reputation stats, activity stats) that are managed by database triggers or admin operations.
 - **Onboarding integration** — The `checkOnboardingComplete()` function in `src/features/auth/services/onboarding.ts` queries this feature's members table for `onboarding_completed_at`.

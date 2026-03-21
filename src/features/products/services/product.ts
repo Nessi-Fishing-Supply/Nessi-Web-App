@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { get, post, put, del } from '@/libs/fetch';
 import type { ProductWithImages } from '@/features/products/types/product';
 
 const BASE_URL = '/api/products';
@@ -9,23 +9,19 @@ export const createProduct = async (data: {
   price: string;
   images?: { url: string }[];
 }): Promise<ProductWithImages> => {
-  const res = await axios.post(BASE_URL, data);
-  return res.data;
+  return post<ProductWithImages>(BASE_URL, data);
 };
 
 export const getAllProducts = async (): Promise<ProductWithImages[]> => {
-  const res = await axios.get(BASE_URL);
-  return res.data;
+  return get<ProductWithImages[]>(BASE_URL);
 };
 
 export const getUserProducts = async (): Promise<ProductWithImages[]> => {
-  const res = await axios.get(`${BASE_URL}/user`);
-  return res.data;
+  return get<ProductWithImages[]>(`${BASE_URL}/user`);
 };
 
 export const getProductById = async (id: string): Promise<ProductWithImages> => {
-  const res = await axios.get(`${BASE_URL}/${id}`);
-  return res.data;
+  return get<ProductWithImages>(`${BASE_URL}/${id}`);
 };
 
 export const updateProduct = async (
@@ -37,18 +33,16 @@ export const updateProduct = async (
     images?: { url: string }[];
   },
 ): Promise<ProductWithImages> => {
-  const res = await axios.put(`${BASE_URL}/${id}`, data);
-  return res.data;
+  return put<ProductWithImages>(`${BASE_URL}/${id}`, data);
 };
 
 export const deleteProduct = async (id: string): Promise<{ success: boolean }> => {
-  const res = await axios.delete(`${BASE_URL}/${id}`);
-  return res.data;
+  return del<{ success: boolean }>(`${BASE_URL}/${id}`);
 };
 
 export const uploadProductImage = async (file: File): Promise<string> => {
   const formData = new FormData();
   formData.append('file', file);
-  const res = await axios.post(`${BASE_URL}/upload`, formData);
-  return res.data.url;
+  const data = await post<{ url: string }>(`${BASE_URL}/upload`, formData);
+  return data.url;
 };

@@ -3,7 +3,6 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { useAuth } from '@/features/auth/context';
 import { createProduct, uploadProductImage } from '@/features/products/services/product';
-import axios from 'axios';
 import { useForm, FormProvider } from 'react-hook-form';
 import Input from '@/components/controls/input';
 import Textarea from '@/components/controls/text-area';
@@ -103,10 +102,10 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onProductCreated }) => 
         images: [{ id: 0, file: null, url: '', name: '' }],
       });
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error('Error creating product:', error.response?.data || error.message);
+      if (error instanceof Error) {
+        console.error('Error creating product:', error.message);
       } else {
-        console.error('Unexpected error:', error as Error);
+        console.error('Unexpected error:', error);
       }
     }
   };

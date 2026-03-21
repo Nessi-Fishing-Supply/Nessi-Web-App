@@ -6,7 +6,7 @@ Product management feature with CRUD operations, image uploads via Supabase Stor
 
 ## Architecture
 
-- **services/product.ts** — Client-side product API functions (CRUD + image upload via axios)
+- **services/product.ts** — Client-side product API functions (CRUD + image upload via fetch wrapper)
 - **types/product.ts** — Database-derived types (Product, ProductImage, ProductWithImages)
 - **hooks/use-products.ts** — Tanstack Query hooks (`useAllProducts`, `useUserProducts`)
 
