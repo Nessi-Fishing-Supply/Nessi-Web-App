@@ -1,0 +1,106 @@
+import { notFound } from 'next/navigation';
+import Image from 'next/image';
+import type { Metadata } from 'next';
+import { getShopBySlugServer } from '@/features/shops/services/shop-server';
+import { getProductsByShopServer } from '@/features/products/services/product-server';
+import ProductCard from '@/features/products/components/product-card';
+import styles from './shop-page.module.scss';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const shop = await getShopBySlugServer(slug);
+
+  if (!shop) {
+    return { title: 'Shop Not Found' };
+  }
+
+  const description = shop.description
+    ? shop.description
+    : `${shop.shop_name} on Nessi — browse fishing gear and tackle.`;
+
+  return {
+    title: shop.shop_name,
+    description,
+    openGraph: {
+      title: shop.shop_name,
+      description,
+      ...(shop.avatar_url && { images: [{ url: shop.avatar_url }] }),
+    },
+  };
+}
+
+export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const shop = await getShopBySlugServer(slug);
+
+  if (!shop) {
+    notFound();
+  }
+
+  const products = await getProductsByShopServer(shop.id);
+
+  const shopSince = new Intl.DateTimeFormat('en-US', {
+    month: 'long',
+    year: 'numeric',
+  }).format(new Date(shop.created_at));
+
+  const initials = shop.shop_name.charAt(0).toUpperCase();
+
+  return (
+    <div className={styles.page}>
+      {/* TODO: Premium shops will display hero_banner_url here */}
+
+      <div className={styles.header}>
+        <div className={styles.avatarContainer}>
+          {shop.avatar_url ? (
+            <Image
+              src={shop.avatar_url}
+              alt={`${shop.shop_name} logo`}
+              fill
+              sizes="120px"
+              style={{ objectFit: 'cover' }}
+            />
+          ) : (
+            <div className={styles.avatarFallback} aria-hidden="true">
+              {initials}
+            </div>
+          )}
+        </div>
+        <div className={styles.headerInfo}>
+          <h1 className={styles.shopName}>{shop.shop_name}</h1>
+          <p className={styles.handle}>@{shop.slug}</p>
+          <p className={styles.shopSince}>Shop since {shopSince}</p>
+          {shop.description && <p className={styles.description}>{shop.description}</p>}
+        </div>
+      </div>
+
+      <section className={styles.stats}>
+        <div className={styles.statItem}>
+          <span className={styles.statValue}>{shop.total_transactions ?? 0}</span>
+          <span className={styles.statLabel}>Sales</span>
+        </div>
+        <div className={styles.statItem}>
+          <span className={styles.statValue}>{shop.review_count ?? 0}</span>
+          <span className={styles.statLabel}>Reviews</span>
+        </div>
+      </section>
+
+      <section className={styles.listings}>
+        <h2 className={styles.sectionHeading}>Products</h2>
+        {products.length > 0 ? (
+          <div className={styles.productGrid}>
+            {products.map((p) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+          </div>
+        ) : (
+          <p className={styles.emptyState}>No listings yet</p>
+        )}
+      </section>
+    </div>
+  );
+}
