@@ -37,9 +37,18 @@
   }
 }
 
+.header {
+  margin-bottom: var(--space-lg);
+}
+
 .title {
   font-size: var(--font-size-xl);
-  margin-bottom: var(--space-lg);
+}
+
+.contextHint {
+  color: var(--color-gray-500);
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-3xs);
 }
 
 .ctaGrid {

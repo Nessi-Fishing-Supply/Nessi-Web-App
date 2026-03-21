@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useSyncExternalStore } from 'react';
 import Image from 'next/image';
 import styles from './navbar.module.scss';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import {
   HiBell,
@@ -51,6 +51,7 @@ export default function Navbar() {
   const [isResendModalOpen, setResendModalOpen] = useState(false);
   const [loginBanner, setLoginBanner] = useState<{ type: 'verified' } | null>(null);
 
+  const router = useRouter();
   const { user, isAuthenticated } = useAuth();
   const { showToast } = useToast();
   const { data: member } = useMember(user?.id ?? '', !!user);
@@ -270,7 +271,10 @@ export default function Navbar() {
                     <button
                       type="button"
                       className={styles.switchItem}
-                      onClick={() => switchToMember()}
+                      onClick={() => {
+                        switchToMember();
+                        router.push('/dashboard');
+                      }}
                     >
                       <span className={styles.switchAvatar} aria-hidden="true">
                         {(firstName?.[0] ?? '').toUpperCase()}
@@ -288,7 +292,10 @@ export default function Navbar() {
                     <button
                       type="button"
                       className={styles.switchItem}
-                      onClick={() => switchToShop(shop.id)}
+                      onClick={() => {
+                        switchToShop(shop.id);
+                        router.push('/dashboard');
+                      }}
                     >
                       {shop.avatar_url ? (
                         <Image

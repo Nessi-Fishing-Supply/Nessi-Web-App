@@ -163,13 +163,19 @@ const Dropdown: React.FC<DropdownProps> = ({ children, label, icon, ariaLabel })
         {isOpen && (
           <ul ref={dropdownRef} role="menu" className={styles.menu} onKeyDown={handleKeyDown}>
             {React.Children.map(children, (child) => {
+              if (!React.isValidElement(child)) {
+                return <DropdownItem>{child}</DropdownItem>;
+              }
               if (
-                React.isValidElement(child) &&
-                (child.type === DropdownItem ||
-                  child.type === DropdownTitle ||
-                  child.type === DropdownDivider)
+                child.type === DropdownItem ||
+                child.type === DropdownTitle ||
+                child.type === DropdownDivider
               ) {
                 return React.cloneElement(child);
+              }
+              if (child.type === React.Fragment) {
+                return (child as React.ReactElement<{ children: React.ReactNode }>).props
+                  .children;
               }
               return <DropdownItem>{child}</DropdownItem>;
             })}

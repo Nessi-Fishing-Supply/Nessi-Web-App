@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { HiExternalLink } from 'react-icons/hi';
 import { useAuth } from '@/features/auth/context';
 import { useMember } from '@/features/members/hooks/use-member';
 import { logout } from '@/features/auth/services/auth';
@@ -94,6 +95,11 @@ export default function Account() {
           <div className={styles.heroText}>
             <h1 className={styles.heroTitle}>Your Account</h1>
             <p className={styles.heroSubtitle}>Manage your profile, preferences, and identity</p>
+            {member?.slug && (
+              <Link href={`/member/${member.slug}`} className={styles.viewProfile}>
+                View public profile <HiExternalLink aria-hidden="true" />
+              </Link>
+            )}
           </div>
           <span className={styles.heroIcon} aria-hidden="true">
             <GiAnglerFish />

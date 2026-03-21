@@ -36,13 +36,21 @@ export default function Dashboard() {
     }
   };
 
-  const welcomeName = memberLoading ? null : member?.display_name;
+  const isShopContext = mounted && activeContext.type === 'shop' && !!shop;
+  const welcomeName = isShopContext ? shop.shop_name : memberLoading ? null : member?.display_name;
 
   return (
     <div className={styles.page}>
-      <h1 className={styles.title}>
-        {welcomeName ? `Welcome back, ${welcomeName}` : 'Welcome back'}
-      </h1>
+      <div className={styles.header}>
+        <h1 className={styles.title}>
+          {welcomeName ? `Welcome back, ${welcomeName}` : 'Welcome back'}
+        </h1>
+        {isShopContext && member && (
+          <p className={styles.contextHint}>
+            Logged in as <strong>{member.display_name}</strong>
+          </p>
+        )}
+      </div>
 
       {mounted && activeContext.type === 'member' && (
         <>
