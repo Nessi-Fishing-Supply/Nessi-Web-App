@@ -27,9 +27,7 @@ export function handleContextRevocation(): RevocationResult {
   queryClient.cancelQueries();
   queryClient.invalidateQueries();
 
-  window.dispatchEvent(
-    new CustomEvent('nessi:context-revoked', { detail: { shopName } }),
-  );
+  window.dispatchEvent(new CustomEvent('nessi:context-revoked', { detail: { shopName } }));
 
   return { revoked: true, shopName };
 }

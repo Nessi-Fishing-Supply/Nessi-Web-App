@@ -25,11 +25,11 @@ Discriminated union representing the two possible active identities:
 
 **Actions:**
 
-| Action                           | Purpose                                                        |
-| -------------------------------- | -------------------------------------------------------------- |
-| `switchToMember()`               | Set active context to the member identity                      |
+| Action                            | Purpose                                                                       |
+| --------------------------------- | ----------------------------------------------------------------------------- |
+| `switchToMember()`                | Set active context to the member identity                                     |
 | `switchToShop(shopId, shopName?)` | Set active context to a specific shop by ID, optionally storing the shop name |
-| `reset()`                        | Clear to default member context (used on logout)               |
+| `reset()`                         | Clear to default member context (used on logout)                              |
 
 ## Persistence
 
@@ -83,13 +83,13 @@ API response 403
 
 ### Files Involved
 
-| File | Role |
-| ---- | ---- |
-| `src/libs/fetch-error.ts` | `FetchError` class with `status` property |
-| `src/libs/fetch.ts` | Throws `FetchError` on non-OK responses; calls `handleContextRevocation()` on 403 |
-| `src/libs/query-client.ts` | Global `QueryCache` `onError` handler as safety net |
-| `src/features/context/utils/handle-context-revocation.ts` | Core revocation handler: dedup, store reset, query cancel/invalidate, event dispatch |
-| `src/features/context/components/context-revocation-listener.tsx` | Dashboard-mounted listener; shows toast and navigates on revocation event |
+| File                                                              | Role                                                                                 |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `src/libs/fetch-error.ts`                                         | `FetchError` class with `status` property                                            |
+| `src/libs/fetch.ts`                                               | Throws `FetchError` on non-OK responses; calls `handleContextRevocation()` on 403    |
+| `src/libs/query-client.ts`                                        | Global `QueryCache` `onError` handler as safety net                                  |
+| `src/features/context/utils/handle-context-revocation.ts`         | Core revocation handler: dedup, store reset, query cancel/invalidate, event dispatch |
+| `src/features/context/components/context-revocation-listener.tsx` | Dashboard-mounted listener; shows toast and navigates on revocation event            |
 
 ## Key Patterns
 
