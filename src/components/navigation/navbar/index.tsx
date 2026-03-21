@@ -107,6 +107,7 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
+      useContextStore.getState().reset();
       await logout();
       window.location.href = '/';
     } catch {
