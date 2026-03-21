@@ -174,8 +174,7 @@ const Dropdown: React.FC<DropdownProps> = ({ children, label, icon, ariaLabel })
                 return React.cloneElement(child);
               }
               if (child.type === React.Fragment) {
-                return (child as React.ReactElement<{ children: React.ReactNode }>).props
-                  .children;
+                return (child as React.ReactElement<{ children: React.ReactNode }>).props.children;
               }
               return <DropdownItem>{child}</DropdownItem>;
             })}

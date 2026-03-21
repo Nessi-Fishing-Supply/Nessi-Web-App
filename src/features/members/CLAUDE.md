@@ -28,9 +28,9 @@ Member profile management for Nessi's C2C marketplace users. Handles member data
 
 ### Server-side Service Functions (`services/member-server.ts`)
 
-| Function                              | Purpose                                                                                   |
-| ------------------------------------- | ----------------------------------------------------------------------------------------- |
-| `getMemberBySlugServer(slug)`         | Server-side fetch member by slug (for server components), returns `Member \| null`        |
+| Function                      | Purpose                                                                            |
+| ----------------------------- | ---------------------------------------------------------------------------------- |
+| `getMemberBySlugServer(slug)` | Server-side fetch member by slug (for server components), returns `Member \| null` |
 
 ## Hooks
 

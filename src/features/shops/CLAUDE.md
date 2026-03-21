@@ -31,9 +31,9 @@ Shops are business entities in Nessi's C2C marketplace, separate from member ide
 
 ### Server-side Service Functions (`services/shop-server.ts`)
 
-| Function                              | Purpose                                                                              |
-| ------------------------------------- | ------------------------------------------------------------------------------------ |
-| `getShopBySlugServer(slug)`           | Server-side fetch shop by slug (for server components), returns `Shop \| null`       |
+| Function                    | Purpose                                                                        |
+| --------------------------- | ------------------------------------------------------------------------------ |
+| `getShopBySlugServer(slug)` | Server-side fetch shop by slug (for server components), returns `Shop \| null` |
 
 ## Hooks
 
