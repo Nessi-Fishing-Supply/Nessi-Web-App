@@ -16,14 +16,14 @@ Member profile management for Nessi's C2C marketplace users. Handles member data
 
 ## Service Functions
 
-| Function                          | Purpose                                                                                       |
-| --------------------------------- | --------------------------------------------------------------------------------------------- |
-| `getMember(userId)`               | Fetch member by user ID, returns `Member \| null`                                             |
-| `getMemberBySlug(slug)`           | Fetch member by URL slug (excludes soft-deleted), returns `Member \| null`                    |
-| `updateMember(userId, data)`      | Update allowed member fields, returns updated `Member`                                        |
-| `checkSlugAvailable(slug)`        | Slug uniqueness check via `check_slug_available` RPC against `slugs` table, returns `boolean` |
-| `generateSlug(name)`              | Convert name to URL-safe slug (pure function, no DB call)                                     |
-| `completeOnboarding(userId)`      | Sets `onboarding_completed_at` to now via `updateMember`, returns `Member`                    |
+| Function                     | Purpose                                                                                       |
+| ---------------------------- | --------------------------------------------------------------------------------------------- |
+| `getMember(userId)`          | Fetch member by user ID, returns `Member \| null`                                             |
+| `getMemberBySlug(slug)`      | Fetch member by URL slug (excludes soft-deleted), returns `Member \| null`                    |
+| `updateMember(userId, data)` | Update allowed member fields, returns updated `Member`                                        |
+| `checkSlugAvailable(slug)`   | Slug uniqueness check via `check_slug_available` RPC against `slugs` table, returns `boolean` |
+| `generateSlug(name)`         | Convert name to URL-safe slug (pure function, no DB call)                                     |
+| `completeOnboarding(userId)` | Sets `onboarding_completed_at` to now via `updateMember`, returns `Member`                    |
 
 ### Server-side Service Functions (`services/member-server.ts`)
 
@@ -33,20 +33,20 @@ Member profile management for Nessi's C2C marketplace users. Handles member data
 
 ## Hooks
 
-| Hook                              | Query Key                                 | Purpose                                                                                    |
-| --------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------ |
-| `useMember(userId, enabled?)`     | `['members', userId]`                     | Fetch member by user ID                                                                    |
-| `useMemberBySlug(slug, enabled?)` | `['members', 'slug', slug]`               | Fetch member by slug                                                                       |
-| `useUpdateMember()`               | mutation, invalidates `['members']`       | Update member fields                                                                       |
-| `useCompleteOnboarding()`         | mutation, invalidates `['members']`       | Mark onboarding complete by setting `onboarding_completed_at`                              |
-| `useSlugCheck(slug, enabled?)`    | `['slugs', 'check', slug]`                | Slug availability check via slugs table RPC (enabled when slug >= 2 chars, 30s stale time) |
+| Hook                              | Query Key                           | Purpose                                                                                    |
+| --------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------ |
+| `useMember(userId, enabled?)`     | `['members', userId]`               | Fetch member by user ID                                                                    |
+| `useMemberBySlug(slug, enabled?)` | `['members', 'slug', slug]`         | Fetch member by slug                                                                       |
+| `useUpdateMember()`               | mutation, invalidates `['members']` | Update member fields                                                                       |
+| `useCompleteOnboarding()`         | mutation, invalidates `['members']` | Mark onboarding complete by setting `onboarding_completed_at`                              |
+| `useSlugCheck(slug, enabled?)`    | `['slugs', 'check', slug]`          | Slug availability check via slugs table RPC (enabled when slug >= 2 chars, 30s stale time) |
 
 ## Utilities
 
-| Function                                   | File                   | Purpose                                       |
-| ------------------------------------------ | ---------------------- | --------------------------------------------- |
-| `formatMemberName(firstName, lastName)`    | `utils/format-name.ts` | Returns `"firstName lastName"` for display    |
-| `getMemberInitials(firstName, lastName)`   | `utils/format-name.ts` | Returns uppercase initials (e.g. "KH")        |
+| Function                                 | File                   | Purpose                                    |
+| ---------------------------------------- | ---------------------- | ------------------------------------------ |
+| `formatMemberName(firstName, lastName)`  | `utils/format-name.ts` | Returns `"firstName lastName"` for display |
+| `getMemberInitials(firstName, lastName)` | `utils/format-name.ts` | Returns uppercase initials (e.g. "KH")     |
 
 ## Onboarding Components
 
