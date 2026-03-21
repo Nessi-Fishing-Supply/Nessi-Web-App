@@ -3,8 +3,7 @@ import useContextStore from '@/features/context/stores/context-store';
 function getHeaders(body?: unknown): HeadersInit {
   const { activeContext } = useContextStore.getState();
   const headers: HeadersInit = {
-    'X-Nessi-Context':
-      activeContext.type === 'member' ? 'member' : `shop:${activeContext.shopId}`,
+    'X-Nessi-Context': activeContext.type === 'member' ? 'member' : `shop:${activeContext.shopId}`,
   };
 
   if (body !== undefined && !(body instanceof FormData)) {
