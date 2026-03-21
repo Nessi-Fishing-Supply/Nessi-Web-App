@@ -133,7 +133,7 @@ Join table for multi-admin support (premium shops).
 - `admin` — manage listings, respond to messages, view analytics
 - `contributor` — create/edit listings only
 
-**Initial implementation:** One shop per member (enforced at application layer). Multi-shop support is architecturally supported but gated.
+**Multi-shop:** A member can create and manage multiple shops. The switching UI (Section 5) lists all shops the member belongs to.
 
 ### 2.4 `products` table (modified)
 
@@ -512,7 +512,6 @@ These are future concerns, not part of the initial implementation:
 - Business verification flow
 - Exact listing/image limits (configurable, tuned later)
 - Cross-context notification system (Section 5.3)
-- Multi-shop per member (architecturally supported, gated at application layer)
 - Badges & achievements system (see Section 9)
 - Similar fishing styles feature (see Section 9)
 - Favorites / follows / wishlists
