@@ -58,6 +58,11 @@ const DropdownTitle: React.FC<DropdownTitleProps> = ({ children }) => {
   );
 };
 
+// DropdownDivider component
+const DropdownDivider: React.FC = () => {
+  return <li role="separator" className={styles.dropdownDivider} />;
+};
+
 // Dropdown component
 const Dropdown: React.FC<DropdownProps> = ({ children, label, icon, ariaLabel }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -160,7 +165,9 @@ const Dropdown: React.FC<DropdownProps> = ({ children, label, icon, ariaLabel })
             {React.Children.map(children, (child) => {
               if (
                 React.isValidElement(child) &&
-                (child.type === DropdownItem || child.type === DropdownTitle)
+                (child.type === DropdownItem ||
+                  child.type === DropdownTitle ||
+                  child.type === DropdownDivider)
               ) {
                 return React.cloneElement(child);
               }
@@ -173,4 +180,4 @@ const Dropdown: React.FC<DropdownProps> = ({ children, label, icon, ariaLabel })
   );
 };
 
-export { Dropdown, DropdownItem, DropdownTitle };
+export { Dropdown, DropdownItem, DropdownTitle, DropdownDivider };

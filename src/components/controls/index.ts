@@ -2,4 +2,4 @@ export { default as Input } from './input';
 export { default as Button } from './button';
 export { default as Checkbox } from './checkbox';
 export { default as AppLink } from './app-link';
-export { Dropdown, DropdownItem, DropdownTitle } from './dropdown';
+export { Dropdown, DropdownItem, DropdownTitle, DropdownDivider } from './dropdown';

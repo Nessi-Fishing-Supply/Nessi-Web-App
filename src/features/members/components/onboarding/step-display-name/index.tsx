@@ -34,6 +34,7 @@ export default function StepDisplayName() {
     formState: { errors, isValid },
   } = methods;
 
+  // eslint-disable-next-line react-hooks/incompatible-library -- watch() from react-hook-form is inherently non-memoizable
   const watchedName = watch('displayName') ?? '';
   const slug = generateSlug(watchedName);
 
