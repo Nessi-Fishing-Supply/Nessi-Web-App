@@ -15,7 +15,7 @@ export async function GET() {
     const { data: products, error } = await supabase
       .from('products')
       .select('*, product_images(*)')
-      .eq('user_id', user.id);
+      .eq('member_id', user.id);
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
