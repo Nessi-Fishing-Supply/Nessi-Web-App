@@ -3,7 +3,7 @@
   "issue": 73,
   "title": "Build shop creation flow, settings page, and management UI",
   "branch": "feat/73/shop-creation-settings-management",
-  "status": "implementing",
+  "status": "fixing",
   "phase": {
     "current": 5,
     "total": 5,

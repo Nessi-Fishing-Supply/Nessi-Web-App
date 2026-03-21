@@ -47,20 +47,20 @@ Shops are business entities in Nessi's C2C marketplace, separate from member ide
 
 ## Components
 
-| Component                  | Location                                            | Purpose                                                                                           |
-| -------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `ShopCreationForm`         | `components/shop-creation-form/`                    | Multi-field form with slug auto-generation, availability check, and context switching on submit   |
-| `ShopDetailsSection`       | `components/shop-settings/shop-details-section/`    | Inline-edit section for shop name, slug, description, and avatar (uses InlineEdit + AvatarUpload) |
-| `ShopSubscriptionSection`  | `components/shop-settings/shop-subscription-section/` | Stripe subscription placeholder (Coming Soon)                                                   |
-| `OwnershipTransferSection` | `components/shop-settings/ownership-transfer-section/` | Two-step confirmation modal for transferring shop ownership                                    |
-| `ShopDeletionSection`      | `components/shop-settings/shop-deletion-section/`   | Danger zone with type-to-confirm deletion modal                                                   |
+| Component                  | Location                                               | Purpose                                                                                           |
+| -------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| `ShopCreationForm`         | `components/shop-creation-form/`                       | Multi-field form with slug auto-generation, availability check, and context switching on submit   |
+| `ShopDetailsSection`       | `components/shop-settings/shop-details-section/`       | Inline-edit section for shop name, slug, description, and avatar (uses InlineEdit + AvatarUpload) |
+| `ShopSubscriptionSection`  | `components/shop-settings/shop-subscription-section/`  | Stripe subscription placeholder (Coming Soon)                                                     |
+| `OwnershipTransferSection` | `components/shop-settings/ownership-transfer-section/` | Two-step confirmation modal for transferring shop ownership                                       |
+| `ShopDeletionSection`      | `components/shop-settings/shop-deletion-section/`      | Danger zone with type-to-confirm deletion modal                                                   |
 
 ## Pages
 
-| Route                       | Description                                                                         |
-| --------------------------- | ----------------------------------------------------------------------------------- |
-| `/dashboard/shop/create`    | Shop creation page — renders `ShopCreationForm`                                     |
-| `/dashboard/shop/settings`  | Shop settings page — shop context only; owner sees transfer and deletion sections   |
+| Route                      | Description                                                                       |
+| -------------------------- | --------------------------------------------------------------------------------- |
+| `/dashboard/shop/create`   | Shop creation page — renders `ShopCreationForm`                                   |
+| `/dashboard/shop/settings` | Shop settings page — shop context only; owner sees transfer and deletion sections |
 
 ## Avatar Upload API
 

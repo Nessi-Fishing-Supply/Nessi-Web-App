@@ -7,7 +7,11 @@ import { HiCheckCircle, HiXCircle } from 'react-icons/hi';
 import { useRouter } from 'next/navigation';
 import * as Yup from 'yup';
 import { createShopSchema } from '@/features/shops/validations/shop';
-import { useCreateShop, useAddShopMember, useShopSlugCheck } from '@/features/shops/hooks/use-shops';
+import {
+  useCreateShop,
+  useAddShopMember,
+  useShopSlugCheck,
+} from '@/features/shops/hooks/use-shops';
 import { generateSlug } from '@/features/shared/utils/slug';
 import useContextStore from '@/features/context/stores/context-store';
 import { useToast } from '@/components/indicators/toast/context';
@@ -46,7 +50,6 @@ export default function ShopCreationForm({ ownerId }: ShopCreationFormProps) {
 
   // eslint-disable-next-line react-hooks/incompatible-library -- watch() from react-hook-form is inherently non-memoizable
   const watchedName = watch('shopName') ?? '';
-  // eslint-disable-next-line react-hooks/incompatible-library -- watch() from react-hook-form is inherently non-memoizable
   const watchedSlug = watch('slug') ?? '';
 
   useEffect(() => {

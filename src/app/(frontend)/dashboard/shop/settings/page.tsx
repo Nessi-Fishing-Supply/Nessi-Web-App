@@ -54,14 +54,10 @@ export default function ShopSettings() {
       <div className={styles.sections}>
         {shop && <ShopDetailsSection shop={shop} />}
         <ShopSubscriptionSection />
-        {shop && user && shop.owner_id === user.id && (
-          <OwnershipTransferSection shop={shop} />
-        )}
+        {shop && user && shop.owner_id === user.id && <OwnershipTransferSection shop={shop} />}
       </div>
 
-      {shop && user && shop.owner_id === user.id && (
-        <ShopDeletionSection shop={shop} />
-      )}
+      {shop && user && shop.owner_id === user.id && <ShopDeletionSection shop={shop} />}
     </div>
   );
 }

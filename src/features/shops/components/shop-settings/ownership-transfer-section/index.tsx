@@ -75,9 +75,7 @@ export default function OwnershipTransferSection({ shop }: OwnershipTransferSect
       </p>
 
       {transferableCandidates.length === 0 ? (
-        <p className={styles.emptyText}>
-          Add members to your shop before transferring ownership.
-        </p>
+        <p className={styles.emptyText}>Add members to your shop before transferring ownership.</p>
       ) : (
         <div className={styles.selectRow}>
           <label htmlFor="transfer-member-select" className="sr-only">
