@@ -75,7 +75,9 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
             </div>
           )}
         </div>
-        <h1 className={styles.displayName}>{formatMemberName(member.first_name, member.last_name)}</h1>
+        <h1 className={styles.displayName}>
+          {formatMemberName(member.first_name, member.last_name)}
+        </h1>
         <p className={styles.handle}>@{member.slug}</p>
         <p className={styles.memberSince}>Member since {memberSince}</p>
       </div>

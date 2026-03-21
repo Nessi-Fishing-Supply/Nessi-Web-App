@@ -93,13 +93,7 @@ export default function AvatarUpload({
         disabled={disabled || isUploading}
       >
         {avatarUrl ? (
-          <Image
-            src={avatarUrl}
-            alt={name}
-            fill
-            sizes="120px"
-            style={{ objectFit: 'cover' }}
-          />
+          <Image src={avatarUrl} alt={name} fill sizes="120px" style={{ objectFit: 'cover' }} />
         ) : (
           <span className={styles.placeholder} aria-hidden="true">
             <HiCamera className={styles.placeholderIcon} />
