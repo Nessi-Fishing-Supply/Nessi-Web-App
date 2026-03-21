@@ -44,7 +44,7 @@ useContextStore.use.activeContext();
 ## Consumers
 
 - **Navbar** (`src/components/navigation/navbar/`) — displays active identity (member or shop avatar/name), shows context switch dropdown items for available shops
-- **Axios interceptor** (`src/libs/axios.ts`) — attaches `X-Nessi-Context` header on every request (`member` or `shop:{shopId}`) by reading from `useContextStore.getState()` outside React
+- **Fetch wrapper** (`src/libs/fetch.ts`) — attaches `X-Nessi-Context` header on every request (`member` or `shop:{shopId}`) by reading from `useContextStore.getState()` outside React
 
 ## Key Patterns
 
