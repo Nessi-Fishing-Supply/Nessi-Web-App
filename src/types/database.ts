@@ -132,27 +132,48 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          is_visible: boolean
+          member_id: string | null
           price: number
+          shop_id: string | null
           title: string
-          user_id: string
         }
         Insert: {
           created_at?: string
           description?: string | null
           id?: string
+          is_visible?: boolean
+          member_id?: string | null
           price: number
+          shop_id?: string | null
           title: string
-          user_id: string
         }
         Update: {
           created_at?: string
           description?: string | null
           id?: string
+          is_visible?: boolean
+          member_id?: string | null
           price?: number
+          shop_id?: string | null
           title?: string
-          user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "products_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "shops"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       shop_members: {
         Row: {
