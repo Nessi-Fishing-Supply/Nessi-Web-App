@@ -23,6 +23,7 @@ Shops are business entities in Nessi's C2C marketplace, separate from member ide
 | `createShop(data)`                      | Insert a new shop row, returns created `Shop`                                                |
 | `updateShop(id, data)`                  | Update allowed shop fields, returns updated `Shop`                                           |
 | `deleteShop(id)`                        | Calls `DELETE /api/shops/{id}` for server-side deletion with storage cleanup, returns `void` |
+| `updateShopSlug(shopId, slug)`          | Calls `POST /api/shops/slug` to atomically update the shop's slug via the slugs table, returns `void` |
 | `getShopMembers(shopId)`                | Fetch all members of a shop with their roles, returns `ShopMember[]`                         |
 | `addShopMember(shopId, memberId, role)` | Add a member to a shop with a given role, returns created `ShopMember`                       |
 | `removeShopMember(shopId, memberId)`    | Remove a member from a shop                                                                  |
@@ -48,6 +49,7 @@ Shops are business entities in Nessi's C2C marketplace, separate from member ide
 | `useCreateShop()`            | mutation, invalidates `['shops']`                    | Create a new shop                                        |
 | `useUpdateShop()`            | mutation, invalidates `['shops']`                    | Update shop fields                                       |
 | `useDeleteShop()`            | mutation, invalidates `['shops']`                    | Delete a shop via API route with storage cleanup         |
+| `useUpdateShopSlug()`        | mutation, invalidates `['shops']`                    | Update a shop's slug via `POST /api/shops/slug`          |
 | `useAddShopMember()`         | mutation, invalidates `['shops', shopId, 'members']` | Add a member to a shop                                   |
 | `useRemoveShopMember()`      | mutation, invalidates `['shops', shopId, 'members']` | Remove a member from a shop                              |
 | `useTransferOwnership()`     | mutation, invalidates `['shops']`                    | Transfer shop ownership to another member                |

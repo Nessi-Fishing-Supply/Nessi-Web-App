@@ -118,6 +118,19 @@ export async function deleteShop(id: string): Promise<void> {
   }
 }
 
+export async function updateShopSlug(shopId: string, slug: string): Promise<void> {
+  const response = await fetch('/api/shops/slug', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ shopId, slug }),
+  });
+
+  if (!response.ok) {
+    const body = await response.json();
+    throw new Error(body.error || 'Failed to update shop slug');
+  }
+}
+
 export async function getShopMembers(shopId: string): Promise<ShopMember[]> {
   const supabase = createClient();
   const { data, error } = await supabase.from('shop_members').select('*').eq('shop_id', shopId);

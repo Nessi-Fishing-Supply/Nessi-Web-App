@@ -1,0 +1,19 @@
+{
+  "version": "1.0.0",
+  "issue": 89,
+  "title": "slug change settings for shops — handle editing with global uniqueness",
+  "branch": "feat/89/slug-change-settings-shops",
+  "status": "implementing",
+  "phase": {
+    "current": 1,
+    "total": 2,
+    "tasks": {
+      "completed": ["1.1"],
+      "current": "1.2",
+      "remaining": ["2.1", "2.2", "2.3"]
+    }
+  },
+  "health": { "build": "unknown", "lint": "unknown", "tests": "unknown" },
+  "failureCount": { "currentTask": 0 },
+  "timestamps": { "started": "2026-03-21T00:00:00Z", "lastActivity": "2026-03-21T00:02:00Z" }
+}

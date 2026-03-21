@@ -9,6 +9,7 @@ import {
   createShop,
   updateShop,
   deleteShop,
+  updateShopSlug,
   addShopMember,
   removeShopMember,
   transferOwnership,
@@ -88,6 +89,17 @@ export function useDeleteShop() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => deleteShop(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['shops'] });
+    },
+  });
+}
+
+export function useUpdateShopSlug() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ shopId, slug }: { shopId: string; slug: string }) =>
+      updateShopSlug(shopId, slug),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['shops'] });
     },
