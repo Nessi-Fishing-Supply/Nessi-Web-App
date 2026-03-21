@@ -12,6 +12,7 @@ import PersonalInfo from '@/features/members/components/account/personal-info';
 import FishingIdentity from '@/features/members/components/account/fishing-identity';
 import Notifications from '@/features/members/components/account/notifications';
 import LinkedAccounts from '@/features/members/components/account/linked-accounts';
+import SellerSettings from '@/features/members/components/account/seller-settings';
 import type { Member } from '@/features/members/types/member';
 import styles from './account.module.scss';
 
@@ -83,6 +84,7 @@ export default function Account() {
         {member && <PersonalInfo member={member as Member} userId={userId} />}
         {member && <FishingIdentity member={member as Member} userId={userId} />}
         {member && <Notifications member={member as Member} userId={userId} />}
+        {member && <SellerSettings member={member as Member} userId={userId} />}
         <LinkedAccounts />
       </div>
 
