@@ -7,6 +7,8 @@ import useContextStore from '@/features/context/stores/context-store';
 import { useShop } from '@/features/shops/hooks/use-shops';
 import ShopDetailsSection from '@/features/shops/components/shop-settings/shop-details-section';
 import ShopSubscriptionSection from '@/features/shops/components/shop-settings/shop-subscription-section';
+import OwnershipTransferSection from '@/features/shops/components/shop-settings/ownership-transfer-section';
+import ShopDeletionSection from '@/features/shops/components/shop-settings/shop-deletion-section';
 import Button from '@/components/controls/button';
 import styles from './shop-settings.module.scss';
 
@@ -52,7 +54,14 @@ export default function ShopSettings() {
       <div className={styles.sections}>
         {shop && <ShopDetailsSection shop={shop} />}
         <ShopSubscriptionSection />
+        {shop && user && shop.owner_id === user.id && (
+          <OwnershipTransferSection shop={shop} />
+        )}
       </div>
+
+      {shop && user && shop.owner_id === user.id && (
+        <ShopDeletionSection shop={shop} />
+      )}
     </div>
   );
 }
