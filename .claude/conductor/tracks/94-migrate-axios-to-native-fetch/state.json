@@ -1,0 +1,11 @@
+{
+  "version": "1.0.0",
+  "issue": 94,
+  "title": "chore(infra): migrate from Axios to native fetch — remove HTTP client dependency",
+  "branch": "chore/94/migrate-axios-to-native-fetch",
+  "status": "implementing",
+  "phase": { "current": 1, "total": 2, "tasks": { "completed": ["1.1", "1.2", "1.3"], "current": null, "remaining": ["2.1", "2.2"] } },
+  "health": { "build": "unknown", "lint": "unknown", "tests": "unknown" },
+  "failureCount": { "currentTask": 0 },
+  "timestamps": { "started": "2026-03-21T00:00:00Z", "lastActivity": "2026-03-21T00:03:00Z" }
+}
