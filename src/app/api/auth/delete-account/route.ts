@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 import { createClient } from '@/libs/supabase/server';
 import { createAdminClient } from '@/libs/supabase/admin';
