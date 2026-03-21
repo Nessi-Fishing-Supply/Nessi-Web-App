@@ -1,5 +1,6 @@
 import { FetchError } from '@/libs/fetch-error';
 import useContextStore from '@/features/context/stores/context-store';
+import { handleContextRevocation } from '@/features/context/utils/handle-context-revocation';
 
 function getHeaders(body?: unknown): HeadersInit {
   const { activeContext } = useContextStore.getState();
@@ -25,6 +26,9 @@ async function request<T>(url: string, options: RequestInit = {}): Promise<T> {
       else if (errorData.message) message = errorData.message;
     } catch {
       // Response body is not JSON — use default message
+    }
+    if (res.status === 403) {
+      handleContextRevocation();
     }
     throw new FetchError(message, res.status);
   }
