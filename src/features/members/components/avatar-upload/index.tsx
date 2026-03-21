@@ -14,23 +14,6 @@ interface AvatarUploadProps {
   disabled?: boolean;
 }
 
-function getInitials(name: string): string {
-  const words = name.trim().split(/\s+/);
-  if (words.length >= 2) {
-    return (words[0][0] + words[1][0]).toUpperCase();
-  }
-  return name.slice(0, 2).toUpperCase();
-}
-
-function getAvatarColor(name: string): string {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const hue = Math.abs(hash) % 360;
-  return `hsl(${hue}, 55%, 45%)`;
-}
-
 export default function AvatarUpload({
   displayName,
   avatarUrl,
@@ -88,9 +71,6 @@ export default function AvatarUpload({
     }
     setCropSource(null);
   };
-
-  const initials = getInitials(displayName || '??');
-  const bgColor = getAvatarColor(displayName || '');
 
   return (
     <div className={styles.wrapper}>

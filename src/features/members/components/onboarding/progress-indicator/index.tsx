@@ -15,7 +15,6 @@ const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({ currentStep, tota
       {steps.map((step, index) => {
         const isCompleted = step < currentStep;
         const isCurrent = step === currentStep;
-        const isFuture = step > currentStep;
 
         let srText = '';
         if (isCompleted) srText = `Step ${step} of ${totalSteps}, completed`;
