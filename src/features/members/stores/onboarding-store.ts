@@ -45,7 +45,7 @@ function computeTotalSteps(intent: OnboardingIntentData['intent']): number {
   return intent === 'buyer' ? 4 : 5;
 }
 
-const useOnboardingStoreBase = create<OnboardingState>()((set, get) => ({
+const useOnboardingStoreBase = create<OnboardingState>()((set) => ({
   ...initialState,
   nextStep: () =>
     set((state) => {
