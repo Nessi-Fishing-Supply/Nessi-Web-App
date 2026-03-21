@@ -59,6 +59,20 @@
   margin: 0;
 }
 
+.viewProfile {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3xs);
+  color: var(--color-primary-600);
+  font-size: var(--font-size-sm);
+  text-decoration: none;
+  margin-top: var(--space-xs);
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .heroIcon {
   display: inline-flex;
   align-items: center;

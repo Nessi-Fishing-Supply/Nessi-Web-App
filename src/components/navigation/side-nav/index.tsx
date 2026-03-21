@@ -8,7 +8,6 @@ import {
   HiOutlineShoppingBag,
   HiOutlineCog,
   HiOutlinePlusCircle,
-  HiOutlineArrowLeft,
 } from 'react-icons/hi';
 import AppLink from '@/components/controls/app-link';
 import useContextStore from '@/features/context/stores/context-store';
@@ -43,15 +42,6 @@ const SideNav = () => {
               <AppLink href="/dashboard/products" icon={<HiOutlineShoppingBag />}>
                 Products
               </AppLink>
-            </li>
-            <li>
-              <button
-                className={styles.backButton}
-                onClick={() => useContextStore.getState().switchToMember()}
-              >
-                <HiOutlineArrowLeft />
-                Back to Member
-              </button>
             </li>
           </>
         ) : (
