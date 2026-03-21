@@ -109,20 +109,13 @@ export async function updateShop(id: string, data: ShopUpdate): Promise<Shop> {
   return updated;
 }
 
-export async function deleteShop(id: string): Promise<Shop> {
-  const supabase = createClient();
-  const { data: deleted, error } = await supabase
-    .from('shops')
-    .update({ deleted_at: new Date().toISOString() })
-    .eq('id', id)
-    .select()
-    .single();
+export async function deleteShop(id: string): Promise<void> {
+  const response = await fetch(`/api/shops/${id}`, { method: 'DELETE' });
 
-  if (error) {
-    throw new Error(`Failed to delete shop: ${error.message}`);
+  if (!response.ok) {
+    const body = await response.json();
+    throw new Error(body.error || 'Failed to delete shop');
   }
-
-  return deleted;
 }
 
 export async function getShopMembers(shopId: string): Promise<ShopMember[]> {
