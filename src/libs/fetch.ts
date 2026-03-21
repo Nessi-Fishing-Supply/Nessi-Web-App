@@ -1,3 +1,4 @@
+import { FetchError } from '@/libs/fetch-error';
 import useContextStore from '@/features/context/stores/context-store';
 
 function getHeaders(body?: unknown): HeadersInit {
@@ -25,7 +26,7 @@ async function request<T>(url: string, options: RequestInit = {}): Promise<T> {
     } catch {
       // Response body is not JSON — use default message
     }
-    throw new Error(message);
+    throw new FetchError(message, res.status);
   }
 
   return res.json();
