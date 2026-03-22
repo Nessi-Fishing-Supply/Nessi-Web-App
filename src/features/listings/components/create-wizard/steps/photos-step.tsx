@@ -29,25 +29,33 @@ export default function PhotosStep() {
 
   const createDraft = useCreateDraft();
   const guidanceTitleId = useId();
-  const draftCreatedRef = useRef(false);
+  const draftCreatingRef = useRef(false);
 
-  // Auto-create draft on mount so PhotoManager has a real listingId.
-  // Uses listingId from the React selector (not getState) so it
-  // re-runs after Zustand rehydrates from localStorage.
+  // Create draft on first user interaction (first photo upload attempt).
+  // This avoids orphan drafts from re-renders after publish/reset.
+  const [needsDraft, setNeedsDraft] = useState(!listingId);
+
   useEffect(() => {
-    if (listingId || draftCreatedRef.current) return;
-    draftCreatedRef.current = true;
+    if (!needsDraft || draftCreatingRef.current) return;
+    const currentId = useCreateWizardStore.getState().listingId;
+    if (currentId) {
+      setNeedsDraft(false);
+      return;
+    }
+    draftCreatingRef.current = true;
 
     createDraft
       .mutateAsync()
       .then((draft) => {
         setField('listingId', draft.id);
         setField('draftId', draft.id);
+        setNeedsDraft(false);
       })
       .catch(() => {
-        draftCreatedRef.current = false;
+        draftCreatingRef.current = false;
       });
-  }, [listingId, createDraft, setField]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [needsDraft]);
 
   function handlePhotosChange(updated: ListingPhoto[]) {
     setField('photos', updated);

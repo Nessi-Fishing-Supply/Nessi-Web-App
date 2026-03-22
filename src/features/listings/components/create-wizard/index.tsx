@@ -239,13 +239,16 @@ export default function CreateWizard({ initialDraft }: CreateWizardProps) {
         },
       });
       await updateStatus.mutateAsync({ id: listingId, status: 'active' });
-      reset();
+      // Navigate BEFORE reset to prevent photos step from seeing listingId=null
+      // and creating an orphan draft. The store is reset lazily on next wizard entry.
+      router.push(`/listing/${listingId}`);
       showToast({
         type: 'success',
         message: 'Listing published!',
         description: 'Your listing is now live on Nessi.',
       });
-      router.push(`/listing/${listingId}`);
+      // Delay reset so the navigation completes first
+      setTimeout(() => reset(), 500);
     } catch {
       showToast({
         type: 'error',
@@ -263,6 +266,17 @@ export default function CreateWizard({ initialDraft }: CreateWizardProps) {
       ? styles.slideLeft
       : styles.slideRight
     : '';
+
+  // Reset stale wizard state on fresh entry (no draft to resume)
+  const resetOnEntryRef = useRef(false);
+  useEffect(() => {
+    if (resetOnEntryRef.current) return;
+    resetOnEntryRef.current = true;
+    if (!initialDraft && useCreateWizardStore.getState().listingId) {
+      reset();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const hydratedRef = useRef(false);
   useEffect(() => {
