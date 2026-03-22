@@ -51,10 +51,10 @@
 .tileSelected {
   border-color: var(--color-primary);
   border-width: 2px;
-  background-color: rgb(30 74 64 / 8%);
+  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);
 
   &:hover {
-    background-color: rgb(30 74 64 / 8%);
+    background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);
   }
 }
 

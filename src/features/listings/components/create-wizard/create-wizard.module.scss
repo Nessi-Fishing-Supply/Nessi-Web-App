@@ -91,6 +91,7 @@
 .stepContainer {
   flex: 1;
   padding: var(--space-md) var(--space-base);
+
   // Reserve space for fixed footer (48px button + padding)
   padding-bottom: calc(48px + var(--space-lg) + var(--space-md));
   overflow-y: auto;
@@ -115,15 +116,15 @@
 
 // Forward slide — new step enters from right
 .slideLeft {
-  animation: slideInFromRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: slide-in-from-right 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 // Backward slide — new step enters from left
 .slideRight {
-  animation: slideInFromLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: slide-in-from-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-@keyframes slideInFromRight {
+@keyframes slide-in-from-right {
   from {
     transform: translateX(24px);
     opacity: 0;
@@ -135,7 +136,7 @@
   }
 }
 
-@keyframes slideInFromLeft {
+@keyframes slide-in-from-left {
   from {
     transform: translateX(-24px);
     opacity: 0;
@@ -189,5 +190,12 @@
     flex-direction: row-reverse;
     gap: var(--space-sm);
     width: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slideLeft,
+  .slideRight {
+    animation: none;
   }
 }
