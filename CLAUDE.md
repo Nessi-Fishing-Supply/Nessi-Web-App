@@ -45,10 +45,10 @@ Next.js App Router with a `(frontend)` route group for all UI pages. No Pages Ro
 
 Two Supabase Storage buckets (both public):
 
-| Bucket           | Path Pattern                                    | API Route                               | Purpose                                      |
-| ---------------- | ----------------------------------------------- | --------------------------------------- | -------------------------------------------- |
-| `listing-images` | `listings/{listing_id}/{uuid}.webp`             | `src/app/api/listings/upload/route.ts`  | Listing photos (max 1200x1200 WebP)          |
-| `avatars`        | `{user_id}.webp`                                | `src/app/api/members/avatar/route.ts`   | User avatar (200x200 WebP via Sharp)         |
+| Bucket           | Path Pattern                        | API Route                              | Purpose                              |
+| ---------------- | ----------------------------------- | -------------------------------------- | ------------------------------------ |
+| `listing-images` | `listings/{listing_id}/{uuid}.webp` | `src/app/api/listings/upload/route.ts` | Listing photos (max 1200x1200 WebP)  |
+| `avatars`        | `{user_id}.webp`                    | `src/app/api/members/avatar/route.ts`  | User avatar (200x200 WebP via Sharp) |
 
 RLS policies enforce per-user access on both buckets. 5MB limit, JPEG/PNG/WebP/GIF only.
 
