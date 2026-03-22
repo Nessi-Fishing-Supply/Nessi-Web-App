@@ -3,7 +3,9 @@
   "issue": 26,
   "title": "Listing edit, deactivate, mark as sold, and delete",
   "branch": "feat/26/listing-edit-deactivate-mark-sold-delete",
-  "status": "complete",
+  "status": "pr_open",
+  "completedAt": "2026-03-22T13:00:00Z",
+  "pruneAfter": "2026-05-21T13:00:00Z",
   "phase": {
     "current": 5,
     "total": 5,
