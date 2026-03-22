@@ -1,13 +1,13 @@
 import React from 'react';
-import styles from './product-reviews.module.scss';
+import styles from './reviews.module.scss';
 import { FaStar, FaRegStar } from 'react-icons/fa';
 
-interface ProductReviewsProps {
+interface ReviewsProps {
   count: number;
   average: number;
 }
 
-const ProductReviews: React.FC<ProductReviewsProps> = ({ count, average }) => {
+const Reviews: React.FC<ReviewsProps> = ({ count, average }) => {
   return (
     <div className={styles.reviews}>
       <div className={styles.stars}>
@@ -25,4 +25,4 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ count, average }) => {
   );
 };
 
-export default ProductReviews;
+export default Reviews;

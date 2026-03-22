@@ -5,8 +5,8 @@ import styles from './listing-card.module.scss';
 import { useRouter } from 'next/navigation';
 import ConditionBadge from '@/features/listings/components/condition-badge';
 import { formatPrice } from '@/features/listings/utils/format';
-import Favorite from '@/features/products/components/favorite';
-import ProductReviews from '@/features/products/components/product-reviews';
+import Favorite from '@/components/controls/favorite';
+import Reviews from '@/components/indicators/reviews';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
@@ -92,7 +92,7 @@ export default function ListingCard({ listing }: ListingCardProps) {
         <p className={styles.title}>{listing.title}</p>
         <div className={styles.priceSection}>
           <p className={styles.price}>{formatPrice(listing.price_cents)}</p>
-          <ProductReviews count={0} average={0} />
+          <Reviews count={0} average={0} />
         </div>
         {listing.location_state && (
           <p className={styles.location}>
