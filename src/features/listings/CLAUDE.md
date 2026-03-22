@@ -143,19 +143,19 @@ All listing API routes live in `src/app/api/listings/`:
 
 ## Components
 
-| Component           | Location                         | Purpose                                                                                                      |
-| ------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `PhotoManager`      | `components/photo-manager/`      | Multi-photo upload, drag-to-reorder, and delete UI. Used in create and edit wizards.                         |
-| `ConditionBadge`    | `components/condition-badge/`    | Color-coded pill with popover description. Props: `condition`, `size` (`sm`/`md`).                           |
-| `ConditionSelector` | `components/condition-selector/` | Vertical radio list for wizard. Props: `value`, `onChange`, optional `category` for accordion guidance.      |
-| `ConditionFilter`   | `components/condition-filter/`   | Multi-select checkbox group for search. Props: `selected`, `onChange`, optional `counts`.                    |
-| `CategorySelector`  | `components/category-selector/`  | Tile grid for selecting listing category. Props: `value`, `onChange`. `role="radiogroup"` with keyboard nav. |
-| `PhotoGallery`      | `components/photo-gallery/`      | Swiper carousel for listing detail. Props: `photos`, `title`, `onPhotoTap`. Handles 0, 1, and multi-photo states. ARIA carousel roles. |
+| Component           | Location                         | Purpose                                                                                                                                    |
+| ------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `PhotoManager`      | `components/photo-manager/`      | Multi-photo upload, drag-to-reorder, and delete UI. Used in create and edit wizards.                                                       |
+| `ConditionBadge`    | `components/condition-badge/`    | Color-coded pill with popover description. Props: `condition`, `size` (`sm`/`md`).                                                         |
+| `ConditionSelector` | `components/condition-selector/` | Vertical radio list for wizard. Props: `value`, `onChange`, optional `category` for accordion guidance.                                    |
+| `ConditionFilter`   | `components/condition-filter/`   | Multi-select checkbox group for search. Props: `selected`, `onChange`, optional `counts`.                                                  |
+| `CategorySelector`  | `components/category-selector/`  | Tile grid for selecting listing category. Props: `value`, `onChange`. `role="radiogroup"` with keyboard nav.                               |
+| `PhotoGallery`      | `components/photo-gallery/`      | Swiper carousel for listing detail. Props: `photos`, `title`, `onPhotoTap`. Handles 0, 1, and multi-photo states. ARIA carousel roles.     |
 | `PhotoLightbox`     | `components/photo-lightbox/`     | Full-screen photo viewer via portal. Props: `photos`, `initialIndex`, `isOpen`, `onClose`, `title`. Focus trap, scroll lock, Escape close. |
-| `SellerStrip`       | `components/seller-strip/`       | Seller info row: avatar (or initials fallback), name, "New seller" badge, "View shop" link. Props: `seller: SellerProfile`. |
-| `ExpandableSection` | `components/expandable-section/` | Two modes: accordion (chevron toggle, `grid-template-rows` animation) and text truncation (`-webkit-line-clamp` with "Read more"). |
-| `CreateWizard`      | `components/create-wizard/`      | 5-step listing creation wizard with auto-save, draft resume, and publish/save-draft actions. See below.      |
-| `WizardProgress`    | `components/create-wizard/`      | Horizontal step progress indicator. Props: `currentStep`, `totalSteps`, `shippingSkipped`.                   |
+| `SellerStrip`       | `components/seller-strip/`       | Seller info row: avatar (or initials fallback), name, "New seller" badge, "View shop" link. Props: `seller: SellerProfile`.                |
+| `ExpandableSection` | `components/expandable-section/` | Two modes: accordion (chevron toggle, `grid-template-rows` animation) and text truncation (`-webkit-line-clamp` with "Read more").         |
+| `CreateWizard`      | `components/create-wizard/`      | 5-step listing creation wizard with auto-save, draft resume, and publish/save-draft actions. See below.                                    |
+| `WizardProgress`    | `components/create-wizard/`      | Horizontal step progress indicator. Props: `currentStep`, `totalSteps`, `shippingSkipped`.                                                 |
 
 ## Create Wizard
 

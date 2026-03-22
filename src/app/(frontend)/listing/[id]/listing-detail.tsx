@@ -81,9 +81,7 @@ export default function ListingDetail({ listing, seller, currentUserId }: Props)
             <HiOutlineTruck className={styles.shippingIcon} aria-hidden="true" />
             <span
               className={
-                listing.shipping_paid_by === 'seller'
-                  ? styles.shippingFree
-                  : styles.shippingLabel
+                listing.shipping_paid_by === 'seller' ? styles.shippingFree : styles.shippingLabel
               }
             >
               {shippingLabel}
@@ -108,15 +106,16 @@ export default function ListingDetail({ listing, seller, currentUserId }: Props)
               <Button style="primary" fullWidth disabled ariaLabel="Buy Now — Coming Soon">
                 Buy Now
               </Button>
-              <Button style="secondary" fullWidth disabled outline ariaLabel="Make Offer — Coming Soon">
+              <Button
+                style="secondary"
+                fullWidth
+                disabled
+                outline
+                ariaLabel="Make Offer — Coming Soon"
+              >
                 Make Offer
               </Button>
-              <button
-                type="button"
-                className={styles.messageLink}
-                disabled
-                aria-disabled="true"
-              >
+              <button type="button" className={styles.messageLink} disabled aria-disabled="true">
                 Message Seller
               </button>
             </div>

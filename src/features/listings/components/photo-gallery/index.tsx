@@ -41,8 +41,14 @@ export default function PhotoGallery({ photos, title, onPhotoTap }: PhotoGallery
     return (
       <div className={styles.gallery}>
         <Favorite className={styles.favorite} />
-        <div className={styles.slide} onClick={() => onPhotoTap(0)} role="button" tabIndex={0}
-          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onPhotoTap(0); }}
+        <div
+          className={styles.slide}
+          onClick={() => onPhotoTap(0)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') onPhotoTap(0);
+          }}
           aria-label={`View ${title} photo full screen`}
         >
           <Image

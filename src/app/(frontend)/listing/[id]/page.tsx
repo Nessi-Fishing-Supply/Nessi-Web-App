@@ -23,10 +23,9 @@ export async function generateMetadata({
   const title = `${listing.title} — ${conditionLabel}`;
 
   const price = formatPrice(listing.price_cents);
-  const description =
-    listing.description
-      ? listing.description.slice(0, 160)
-      : `${listing.title} — ${price} on Nessi`;
+  const description = listing.description
+    ? listing.description.slice(0, 160)
+    : `${listing.title} — ${price} on Nessi`;
 
   const image = listing.cover_photo_url;
 
