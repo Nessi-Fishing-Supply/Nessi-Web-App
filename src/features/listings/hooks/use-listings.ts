@@ -1,0 +1,111 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  getListings,
+  getListingById,
+  getSellerListings,
+  getDrafts,
+  createListing,
+  createDraft,
+  updateListing,
+  deleteListing,
+  deleteDraft,
+  updateListingStatus,
+  incrementViewCount,
+} from '@/features/listings/services/listing';
+import type { ListingFilters } from '@/features/listings/services/listing';
+
+export function useListings(filters: ListingFilters = {}) {
+  return useQuery({
+    queryKey: ['listings', filters],
+    queryFn: () => getListings(filters),
+  });
+}
+
+export function useListing(id: string | undefined) {
+  return useQuery({
+    queryKey: ['listings', id],
+    queryFn: () => getListingById(id!),
+    enabled: !!id,
+  });
+}
+
+export function useSellerListings(status?: string) {
+  return useQuery({
+    queryKey: ['listings', 'seller', status],
+    queryFn: () => getSellerListings(status),
+  });
+}
+
+export function useDrafts() {
+  return useQuery({
+    queryKey: ['listings', 'drafts'],
+    queryFn: getDrafts,
+  });
+}
+
+export function useCreateListing() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: Record<string, unknown>) => createListing(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['listings'] });
+    },
+  });
+}
+
+export function useCreateDraft() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createDraft,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['listings'] });
+    },
+  });
+}
+
+export function useUpdateListing() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) =>
+      updateListing(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['listings'] });
+    },
+  });
+}
+
+export function useDeleteListing() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => deleteListing(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['listings'] });
+    },
+  });
+}
+
+export function useDeleteDraft() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => deleteDraft(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['listings'] });
+    },
+  });
+}
+
+export function useUpdateListingStatus() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, status }: { id: string; status: string }) => updateListingStatus(id, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['listings'] });
+    },
+  });
+}
+
+export function useIncrementViewCount() {
+  return useMutation({
+    mutationFn: (id: string) => incrementViewCount(id),
+  });
+}
