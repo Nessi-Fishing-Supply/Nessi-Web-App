@@ -56,6 +56,14 @@ export async function put<T>(url: string, body?: unknown): Promise<T> {
   });
 }
 
+export async function patch<T>(url: string, body?: unknown): Promise<T> {
+  return request<T>(url, {
+    method: 'PATCH',
+    headers: getHeaders(body),
+    body: body instanceof FormData ? body : body !== undefined ? JSON.stringify(body) : undefined,
+  });
+}
+
 export async function del<T>(url: string): Promise<T> {
   return request<T>(url, { method: 'DELETE', headers: getHeaders() });
 }
