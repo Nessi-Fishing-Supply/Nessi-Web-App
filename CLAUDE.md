@@ -265,6 +265,7 @@ Nessi uses a fleet of Claude Code skills and agents for autonomous feature devel
   - Audit mode: `/ui-design "audit: src/features/shops/components/"` — audits existing components
   - Stitch Build: `/ui-design "stitch: Shop Page - Elias Thorne"` — builds page/component from Stitch screen reference
   - Stitch Browse: `/ui-design "stitch:list"` — browse all Stitch screens to pick from
+- **`/ds-sync "{url}"`** — Sync a design system URL into the codebase: extracts tokens via Playwright, diffs against current SCSS foundation, interviews about naming/migration, writes implementation spec
 
 ### Tech Expert Skills (auto-trigger on file edits)
 
@@ -274,12 +275,12 @@ Nessi uses a fleet of Claude Code skills and agents for autonomous feature devel
 - **`/ask-scss`** — Styling, responsive, tokens (triggers on `*.module.scss`, `src/styles/**`)
 - **`/ask-state`** — Tanstack Query + Zustand (triggers on `*/hooks/*`, `*/stores/*`)
 
-### Agents (15 total — invoked by skills, not directly)
+### Agents (16 total — invoked by skills, not directly)
 
 | Layer     | Agents                                                                                                                                 |
 | --------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | Conductor | plan-architect, task-executor, phase-verifier, review-orchestrator, finding-resolver, debug-investigator, pr-creator, ticket-generator |
-| Design    | ux-researcher, marketplace-audit, ui-designer                                                                                          |
+| Design    | ux-researcher, marketplace-audit, ui-designer, ds-sync                                                                                 |
 | Testing   | test-author, ui-tester, a11y-auditor                                                                                                   |
 | Debugging | browser-debug                                                                                                                          |
 
