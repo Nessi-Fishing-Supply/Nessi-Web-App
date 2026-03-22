@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useId, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 
 import Button from '@/components/controls/button';
 import Modal from '@/components/layout/modal';
@@ -32,21 +32,19 @@ export default function QuickEditPrice({ listing, isOpen, onClose }: QuickEditPr
   const titleId = useId();
   const { showToast } = useToast();
   const updateListing = useUpdateListing();
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const [displayValue, setDisplayValue] = useState(() => dollarsToDisplay(listing.price_cents));
   const [feeCents, setFeeCents] = useState(listing.price_cents);
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Auto-focus on open
-  useEffect(() => {
-    if (isOpen) {
-      setDisplayValue(dollarsToDisplay(listing.price_cents));
-      setFeeCents(listing.price_cents);
-      requestAnimationFrame(() => inputRef.current?.focus());
+  // Reset and focus when modal opens — use a callback ref pattern
+  const focusCallback = useCallback((node: HTMLInputElement | null) => {
+    if (node && isOpen) {
+      requestAnimationFrame(() => node.focus());
     }
-  }, [isOpen, listing.price_cents]);
+  }, [isOpen]);
 
   useEffect(() => {
     return () => {
@@ -113,7 +111,10 @@ export default function QuickEditPrice({ listing, isOpen, onClose }: QuickEditPr
               $
             </span>
             <input
-              ref={inputRef}
+              ref={(node) => {
+                inputRef.current = node;
+                focusCallback(node);
+              }}
               id="quick-price"
               type="text"
               inputMode="decimal"

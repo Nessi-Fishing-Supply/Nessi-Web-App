@@ -2,7 +2,6 @@
 
 import { useId } from 'react';
 import { useRouter } from 'next/navigation';
-import { HiDotsVertical } from 'react-icons/hi';
 
 import Modal from '@/components/layout/modal';
 import type { ListingWithPhotos, ListingStatus } from '@/features/listings/types/listing';
