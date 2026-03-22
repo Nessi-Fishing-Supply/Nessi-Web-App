@@ -77,11 +77,7 @@ export default function ConditionBadge({ condition, size = 'sm' }: ConditionBadg
       </button>
 
       {isOpen && (
-        <span
-          id={popoverId}
-          role="tooltip"
-          className={`${styles.popover} ${styles[placement]}`}
-        >
+        <span id={popoverId} role="tooltip" className={`${styles.popover} ${styles[placement]}`}>
           <span className={styles.arrow} aria-hidden="true" />
           {tier.description}
         </span>
