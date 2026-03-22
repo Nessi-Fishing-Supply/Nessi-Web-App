@@ -17,7 +17,7 @@ interface ShippingFormValues {
   shippingPaidBy: 'buyer' | 'seller';
 }
 
-export default function ShippingStep() {
+export default function ShippingStep({ errors = {} }: { errors?: Record<string, string> }) {
   const weightOz = useCreateWizardStore.use.weightOz();
   const packageDimensions = useCreateWizardStore.use.packageDimensions();
   const shippingPaidBy = useCreateWizardStore.use.shippingPaidBy();
@@ -82,7 +82,9 @@ export default function ShippingStep() {
                   className={styles.numberInput}
                   aria-label="Weight in pounds"
                 />
-                <span className={styles.suffix} aria-hidden="true">lbs</span>
+                <span className={styles.suffix} aria-hidden="true">
+                  lbs
+                </span>
               </div>
               <div className={styles.inputWithSuffix}>
                 <input
@@ -96,9 +98,16 @@ export default function ShippingStep() {
                   className={styles.numberInput}
                   aria-label="Weight in ounces"
                 />
-                <span className={styles.suffix} aria-hidden="true">oz</span>
+                <span className={styles.suffix} aria-hidden="true">
+                  oz
+                </span>
               </div>
             </div>
+            {errors.weightOz && (
+              <p className={styles.error} role="alert">
+                {errors.weightOz}
+              </p>
+            )}
           </fieldset>
         </section>
 
@@ -118,7 +127,9 @@ export default function ShippingStep() {
                   aria-label="Package length in inches"
                 />
               </div>
-              <span className={styles.separator} aria-hidden="true">x</span>
+              <span className={styles.separator} aria-hidden="true">
+                x
+              </span>
               <div className={styles.inputWithSuffix}>
                 <input
                   {...register('dimWidth', { valueAsNumber: true, min: 0 })}
@@ -131,7 +142,9 @@ export default function ShippingStep() {
                   aria-label="Package width in inches"
                 />
               </div>
-              <span className={styles.separator} aria-hidden="true">x</span>
+              <span className={styles.separator} aria-hidden="true">
+                x
+              </span>
               <div className={styles.inputWithSuffix}>
                 <input
                   {...register('dimHeight', { valueAsNumber: true, min: 0 })}
@@ -144,7 +157,9 @@ export default function ShippingStep() {
                   aria-label="Package height in inches"
                 />
               </div>
-              <span className={styles.suffix} aria-hidden="true">in</span>
+              <span className={styles.suffix} aria-hidden="true">
+                in
+              </span>
             </div>
             <p className={styles.dimensionsLabels} aria-hidden="true">
               <span>Length</span>
@@ -153,14 +168,28 @@ export default function ShippingStep() {
               <span />
               <span>Height</span>
             </p>
+            {(errors['packageDimensions.length'] ||
+              errors['packageDimensions.width'] ||
+              errors['packageDimensions.height']) && (
+              <p className={styles.error} role="alert">
+                All dimensions are required
+              </p>
+            )}
           </fieldset>
         </section>
 
         <section className={styles.section}>
           <fieldset className={styles.fieldset}>
             <legend className={styles.heading}>Who pays for shipping?</legend>
-            <div className={styles.radioGroup} role="radiogroup" aria-label="Shipping payer" aria-required="true">
-              <label className={`${styles.radioOption} ${currentShippingPaidBy === 'buyer' ? styles.radioOptionSelected : ''}`}>
+            <div
+              className={styles.radioGroup}
+              role="radiogroup"
+              aria-label="Shipping payer"
+              aria-required="true"
+            >
+              <label
+                className={`${styles.radioOption} ${currentShippingPaidBy === 'buyer' ? styles.radioOptionSelected : ''}`}
+              >
                 <input
                   {...register('shippingPaidBy')}
                   type="radio"
@@ -170,7 +199,9 @@ export default function ShippingStep() {
                 />
                 <span className={styles.radioLabel}>Buyer pays shipping</span>
               </label>
-              <label className={`${styles.radioOption} ${currentShippingPaidBy === 'seller' ? styles.radioOptionSelected : ''}`}>
+              <label
+                className={`${styles.radioOption} ${currentShippingPaidBy === 'seller' ? styles.radioOptionSelected : ''}`}
+              >
                 <input
                   {...register('shippingPaidBy')}
                   type="radio"
@@ -181,16 +212,27 @@ export default function ShippingStep() {
                 <span className={styles.radioLabel}>I&apos;ll offer free shipping</span>
               </label>
             </div>
+            {errors.shippingPaidBy && (
+              <p className={styles.error} role="alert">
+                {errors.shippingPaidBy}
+              </p>
+            )}
           </fieldset>
         </section>
 
         <CollapsibleCard title="What box should I use?">
           <div className={styles.boxGuide}>
-            <p>Pick a box that fits your item snugly with a little room for padding on all sides.</p>
+            <p>
+              Pick a box that fits your item snugly with a little room for padding on all sides.
+            </p>
             <ul className={styles.boxTips}>
               <li>Use at least 2 inches of bubble wrap or packing peanuts around the item.</li>
-              <li>USPS Priority Mail boxes are free at any post office and work for most fishing gear.</li>
-              <li>Fishing rods: use a PVC tube or ship in the original rod case to prevent breakage.</li>
+              <li>
+                USPS Priority Mail boxes are free at any post office and work for most fishing gear.
+              </li>
+              <li>
+                Fishing rods: use a PVC tube or ship in the original rod case to prevent breakage.
+              </li>
               <li>Reels: wrap in foam or cloth and cushion inside a rigid box.</li>
               <li>Avoid oversized boxes — they increase shipping costs and can arrive damaged.</li>
             </ul>

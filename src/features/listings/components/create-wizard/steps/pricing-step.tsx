@@ -44,47 +44,40 @@ export default function PricingStep() {
     const raw = e.target.value;
     setDisplayValue(raw);
 
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
+    const cents = displayToCents(raw);
+    setField('priceCents', cents);
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
 
     debounceRef.current = setTimeout(() => {
-      const cents = displayToCents(raw);
       setFeeDisplay(cents);
 
       if (raw === '' || cents === 0) {
         setValidationError('Price is required');
-        setField('priceCents', 0);
-        return;
-      }
-      if (cents < MIN_CENTS) {
+      } else if (cents < MIN_CENTS) {
         setValidationError('Price must be at least $1.00');
       } else if (cents > MAX_CENTS) {
         setValidationError('Price must be at most $9,999.00');
       } else {
         setValidationError(null);
       }
-
-      setField('priceCents', cents);
     }, 200);
+  }
+
+  function handleBlur() {
+    const cents = displayToCents(displayValue);
+    if (cents > 0) {
+      setDisplayValue(dollarsToDisplay(cents));
+    }
   }
 
   function handleShippingChange(value: 'ship' | 'local_pickup') {
     setField('shippingPreference', value);
   }
 
-  // Sync if store value changes externally (e.g. navigating back)
-  useEffect(() => {
-    setDisplayValue(dollarsToDisplay(priceCents));
-    setFeeDisplay(priceCents);
-  }, [priceCents]);
-
-  // Cleanup debounce on unmount
   useEffect(() => {
     return () => {
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
+      if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, []);
 
@@ -108,7 +101,9 @@ export default function PricingStep() {
             <span className="sr-only"> (required)</span>
           </label>
 
-          <div className={`${styles.priceInputWrapper} ${validationError ? styles.inputError : ''}`}>
+          <div
+            className={`${styles.priceInputWrapper} ${validationError ? styles.inputError : ''}`}
+          >
             <span className={styles.currencyPrefix} aria-hidden="true">
               $
             </span>
@@ -119,6 +114,7 @@ export default function PricingStep() {
               className={styles.priceInput}
               value={displayValue}
               onChange={handlePriceChange}
+              onBlur={handleBlur}
               placeholder="0.00"
               aria-required="true"
               aria-invalid={validationError ? 'true' : 'false'}
@@ -166,11 +162,7 @@ export default function PricingStep() {
       <section className={styles.section}>
         <h2 className={styles.heading}>Shipping preference</h2>
 
-        <div
-          className={styles.shippingToggle}
-          role="group"
-          aria-label="Shipping preference"
-        >
+        <div className={styles.shippingToggle} role="group" aria-label="Shipping preference">
           <button
             type="button"
             className={`${styles.shippingOption} ${shippingPreference === 'ship' ? styles.shippingOptionSelected : ''}`}

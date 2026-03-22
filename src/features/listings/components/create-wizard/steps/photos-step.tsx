@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useId } from 'react';
+import { useEffect, useRef, useState, useId } from 'react';
 import { HiOutlineQuestionMarkCircle } from 'react-icons/hi2';
 
 import Modal from '@/components/layout/modal';
@@ -20,40 +20,38 @@ const PHOTO_GUIDANCE_TIPS = [
   'For rods and reels, photograph the grip, guides, and hardware up close.',
 ];
 
-const GUIDANCE_MODAL_TITLE_ID = 'photo-guidance-title';
-
 export default function PhotosStep() {
   const listingId = useCreateWizardStore.use.listingId();
   const photos = useCreateWizardStore.use.photos();
   const setField = useCreateWizardStore.use.setField();
 
   const [showGuidance, setShowGuidance] = useState(false);
-  const [creatingDraft, setCreatingDraft] = useState(false);
 
   const createDraft = useCreateDraft();
   const guidanceTitleId = useId();
+  const draftCreatedRef = useRef(false);
 
-  async function handlePhotosChange(updated: ListingPhoto[]) {
-    // If no listingId yet and photos are being added, create a draft first
-    if (!listingId && updated.length > 0 && !creatingDraft) {
-      setCreatingDraft(true);
-      try {
-        const draft = await createDraft.mutateAsync();
+  // Auto-create draft on mount so PhotoManager has a real listingId.
+  // Uses listingId from the React selector (not getState) so it
+  // re-runs after Zustand rehydrates from localStorage.
+  useEffect(() => {
+    if (listingId || draftCreatedRef.current) return;
+    draftCreatedRef.current = true;
+
+    createDraft
+      .mutateAsync()
+      .then((draft) => {
         setField('listingId', draft.id);
         setField('draftId', draft.id);
-      } catch {
-        setCreatingDraft(false);
-        return;
-      }
-      setCreatingDraft(false);
-    }
+      })
+      .catch(() => {
+        draftCreatedRef.current = false;
+      });
+  }, [listingId, createDraft, setField]);
 
+  function handlePhotosChange(updated: ListingPhoto[]) {
     setField('photos', updated);
   }
-
-  // PhotoManager requires a listingId — use a placeholder when draft hasn't been created yet.
-  // The actual upload in PhotoManager will use the real listingId once the draft is created.
-  const effectiveListingId = listingId ?? 'pending';
 
   return (
     <div className={styles.photosStep}>
@@ -75,19 +73,25 @@ export default function PhotosStep() {
         </p>
       )}
 
-      <PhotoManager
-        listingId={effectiveListingId}
-        photos={photos}
-        onPhotosChange={handlePhotosChange}
-        minPhotos={2}
-      />
+      {listingId ? (
+        <PhotoManager
+          listingId={listingId}
+          photos={photos}
+          onPhotosChange={handlePhotosChange}
+          minPhotos={2}
+        />
+      ) : (
+        <div className={styles.loadingPlaceholder}>
+          <p className={styles.loadingText}>Preparing upload...</p>
+        </div>
+      )}
 
       <Modal
         isOpen={showGuidance}
         onClose={() => setShowGuidance(false)}
-        ariaLabelledBy={guidanceTitleId ?? GUIDANCE_MODAL_TITLE_ID}
+        ariaLabelledBy={guidanceTitleId}
       >
-        <h3 id={guidanceTitleId ?? GUIDANCE_MODAL_TITLE_ID} className={styles.guidanceTitle}>
+        <h3 id={guidanceTitleId} className={styles.guidanceTitle}>
           Photo tips
         </h3>
         <ul className={styles.guidanceList}>

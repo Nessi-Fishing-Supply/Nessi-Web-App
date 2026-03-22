@@ -37,7 +37,7 @@ const defaults = {
   fishingHistory: '',
   priceCents: 0,
   shippingPreference: 'ship' as const,
-  shippingPaidBy: null,
+  shippingPaidBy: 'buyer' as const,
   weightOz: 0,
   packageDimensions: null,
   listingId: null,

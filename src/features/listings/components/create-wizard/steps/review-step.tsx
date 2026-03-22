@@ -29,9 +29,7 @@ export default function ReviewStep() {
   const coverPhoto = photos.find((p) => p.position === 0) ?? photos[0] ?? null;
   const coverUrl = coverPhoto?.thumbnail_url ?? coverPhoto?.image_url ?? null;
 
-  const conditionTier = condition
-    ? CONDITION_TIERS.find((t) => t.value === condition)
-    : null;
+  const conditionTier = condition ? CONDITION_TIERS.find((t) => t.value === condition) : null;
 
   const feeCents = calculateFee(priceCents);
   const netCents = calculateNet(priceCents);
@@ -69,9 +67,7 @@ export default function ReviewStep() {
         <div className={styles.previewContent}>
           <p className={styles.previewTitle}>{title || 'Untitled listing'}</p>
           <p className={styles.previewPrice}>{formatPrice(priceCents)}</p>
-          {conditionTier && (
-            <p className={styles.previewCondition}>{conditionTier.label}</p>
-          )}
+          {conditionTier && <p className={styles.previewCondition}>{conditionTier.label}</p>}
         </div>
       </div>
 
@@ -83,7 +79,9 @@ export default function ReviewStep() {
           {category && (
             <div className={styles.detailRow}>
               <dt className={styles.detailLabel}>Category</dt>
-              <dd className={styles.detailValue}>{getCategoryLabel(category as ListingCategory)}</dd>
+              <dd className={styles.detailValue}>
+                {getCategoryLabel(category as ListingCategory)}
+              </dd>
             </div>
           )}
 
@@ -99,9 +97,7 @@ export default function ReviewStep() {
               <dt className={styles.detailLabel}>Description</dt>
               <dd className={styles.detailValue}>
                 {displayDescription}
-                {isDescriptionTruncated && (
-                  <span className={styles.truncated}> (truncated)</span>
-                )}
+                {isDescriptionTruncated && <span className={styles.truncated}> (truncated)</span>}
               </dd>
             </div>
           )}
@@ -116,7 +112,7 @@ export default function ReviewStep() {
           <div className={styles.detailRow}>
             <dt className={styles.detailLabel}>Shipping</dt>
             <dd className={styles.detailValue}>
-              {shippingPreference === 'local_pickup' ? "Local pickup only" : "I'll ship"}
+              {shippingPreference === 'local_pickup' ? 'Local pickup only' : "I'll ship"}
             </dd>
           </div>
 
@@ -133,7 +129,8 @@ export default function ReviewStep() {
                 <div className={styles.detailRow}>
                   <dt className={styles.detailLabel}>Dimensions</dt>
                   <dd className={styles.detailValue}>
-                    {packageDimensions.length}&quot; × {packageDimensions.width}&quot; × {packageDimensions.height}&quot;
+                    {packageDimensions.length}&quot; × {packageDimensions.width}&quot; ×{' '}
+                    {packageDimensions.height}&quot;
                   </dd>
                 </div>
               )}
@@ -168,7 +165,6 @@ export default function ReviewStep() {
           </dl>
         </div>
       </div>
-
     </div>
   );
 }

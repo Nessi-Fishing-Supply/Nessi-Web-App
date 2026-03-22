@@ -9,6 +9,7 @@ import { useUpdateListing, useUpdateListingStatus } from '@/features/listings/ho
 import useCreateWizardStore from '@/features/listings/stores/create-wizard-store';
 import type { ListingWithPhotos } from '@/features/listings/types/listing';
 import { STEP_SCHEMAS } from '@/features/listings/validations/listing';
+import type { ValidationError } from 'yup';
 
 import CategoryConditionStep from './steps/category-condition-step';
 import DetailsStep from './steps/details-step';
@@ -34,7 +35,9 @@ const STEP_LABELS: Record<number, string> = {
   6: 'Review',
 };
 
-const STEP_COMPONENTS: Record<number, () => React.ReactElement> = {
+type StepComponent = React.ComponentType<{ errors?: Record<string, string> }>;
+
+const STEP_COMPONENTS: Record<number, StepComponent> = {
   1: PhotosStep,
   2: CategoryConditionStep,
   3: DetailsStep,
@@ -69,6 +72,7 @@ export default function CreateWizard({ initialDraft }: CreateWizardProps) {
   const packageDimensions = useCreateWizardStore.use.packageDimensions();
 
   const [validating, setValidating] = useState(false);
+  const [stepErrors, setStepErrors] = useState<Record<string, string>>({});
   const [publishing, setPublishing] = useState(false);
   const [savingDraft, setSavingDraft] = useState(false);
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
@@ -146,9 +150,17 @@ export default function CreateWizard({ initialDraft }: CreateWizardProps) {
     setValidating(true);
     try {
       await schema.validate(getStepData(), { abortEarly: false });
+      setStepErrors({});
       goForward(false);
-    } catch {
-      // Validation errors — step components handle display
+    } catch (err) {
+      const validationError = err as ValidationError;
+      const errors: Record<string, string> = {};
+      if (validationError.inner) {
+        validationError.inner.forEach((e) => {
+          if (e.path) errors[e.path] = e.message;
+        });
+      }
+      setStepErrors(errors);
     } finally {
       setValidating(false);
     }
@@ -158,15 +170,16 @@ export default function CreateWizard({ initialDraft }: CreateWizardProps) {
     const nextStep = skipShipping ? step + 2 : step + 1;
     window.history.pushState({ step: nextStep }, '');
     setDirection('forward');
+    setStepErrors({});
     setStep(nextStep);
   }
 
   function handleBack() {
     if (step <= 1) return;
-    // When on step 6 (review) with local pickup, go back to step 4 (pricing) skipping step 5
     const prevStep = step === 6 && isLocalPickup ? step - 2 : step - 1;
     window.history.pushState({ step: prevStep }, '');
     setDirection('backward');
+    setStepErrors({});
     setStep(prevStep);
   }
 
@@ -212,6 +225,19 @@ export default function CreateWizard({ initialDraft }: CreateWizardProps) {
     if (!listingId) return;
     setPublishing(true);
     try {
+      // Save all wizard data to the listing before publishing
+      await updateListing.mutateAsync({
+        id: listingId,
+        data: {
+          title,
+          description,
+          category,
+          condition,
+          price_cents: priceCents,
+          shipping_paid_by: shippingPreference === 'ship' ? (shippingPaidBy ?? 'buyer') : null,
+          weight_oz: shippingPreference === 'ship' ? weightOz : null,
+        },
+      });
       await updateStatus.mutateAsync({ id: listingId, status: 'active' });
       reset();
       showToast({
@@ -219,7 +245,7 @@ export default function CreateWizard({ initialDraft }: CreateWizardProps) {
         message: 'Listing published!',
         description: 'Your listing is now live on Nessi.',
       });
-      router.push(`/item/${listingId}`);
+      router.push(`/listing/${listingId}`);
     } catch {
       showToast({
         type: 'error',
@@ -228,16 +254,6 @@ export default function CreateWizard({ initialDraft }: CreateWizardProps) {
       });
       setPublishing(false);
     }
-  }
-
-  function handleSaveDraft() {
-    reset();
-    showToast({
-      type: 'success',
-      message: 'Draft saved',
-      description: 'You can continue editing from your listings dashboard.',
-    });
-    router.push('/dashboard/listings');
   }
 
   const ActiveStep = STEP_COMPONENTS[step] ?? PhotosStep;
@@ -320,7 +336,11 @@ export default function CreateWizard({ initialDraft }: CreateWizardProps) {
           <span className={styles.backPlaceholder} />
         )}
 
-        <WizardProgress currentStep={step} totalSteps={TOTAL_STEPS} shippingSkipped={isLocalPickup} />
+        <WizardProgress
+          currentStep={step}
+          totalSteps={TOTAL_STEPS}
+          shippingSkipped={isLocalPickup}
+        />
 
         <button
           type="button"
@@ -334,18 +354,11 @@ export default function CreateWizard({ initialDraft }: CreateWizardProps) {
       </header>
 
       <main className={styles.stepContainer}>
-        <h1
-          ref={stepHeadingRef}
-          className="sr-only"
-          tabIndex={-1}
-        >
+        <h1 ref={stepHeadingRef} className="sr-only" tabIndex={-1}>
           {STEP_LABELS[step] ?? `Step ${step}`}
         </h1>
-        <form
-          onSubmit={(e) => e.preventDefault()}
-          className={`${styles.stepForm} ${slideClass}`}
-        >
-          <ActiveStep />
+        <form onSubmit={(e) => e.preventDefault()} className={`${styles.stepForm} ${slideClass}`}>
+          <ActiveStep errors={stepErrors} />
         </form>
       </main>
 
@@ -365,8 +378,9 @@ export default function CreateWizard({ initialDraft }: CreateWizardProps) {
               style="secondary"
               fullWidth
               outline
-              onClick={handleSaveDraft}
-              disabled={publishing}
+              onClick={handleSaveDraftAndExit}
+              disabled={publishing || savingDraft}
+              loading={savingDraft}
             >
               Save as Draft
             </Button>

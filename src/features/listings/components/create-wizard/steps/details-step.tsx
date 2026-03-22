@@ -14,13 +14,11 @@ import styles from './details-step.module.scss';
 interface DetailsFormValues {
   title: string;
   description: string;
-  fishingHistory: string;
 }
 
 export default function DetailsStep() {
   const title = useCreateWizardStore.use.title();
   const description = useCreateWizardStore.use.description();
-  const fishingHistory = useCreateWizardStore.use.fishingHistory();
   const setField = useCreateWizardStore.use.setField();
 
   const methods = useForm<DetailsFormValues>({
@@ -29,14 +27,12 @@ export default function DetailsStep() {
     defaultValues: {
       title,
       description,
-      fishingHistory,
     },
   });
 
   const { watch } = methods;
   const titleValue = watch('title') ?? '';
   const descriptionValue = watch('description') ?? '';
-  const fishingHistoryValue = watch('fishingHistory') ?? '';
 
   useEffect(() => {
     const subscription = watch((values, { name }) => {
@@ -45,9 +41,6 @@ export default function DetailsStep() {
       }
       if (name === 'description' && values.description !== undefined) {
         setField('description', values.description);
-      }
-      if (name === 'fishingHistory' && values.fishingHistory !== undefined) {
-        setField('fishingHistory', values.fishingHistory ?? '');
       }
     });
     return () => subscription.unsubscribe();
@@ -80,18 +73,6 @@ export default function DetailsStep() {
             />
             <p className={styles.counter} aria-live="polite">
               {descriptionValue.length} / 2000
-            </p>
-          </div>
-
-          <div className={styles.fieldGroup}>
-            <Textarea
-              name="fishingHistory"
-              label="Fishing History (Optional)"
-              helperText="Share the story behind this gear."
-              placeholder="Where has this gear been? What fish has it caught?"
-            />
-            <p className={styles.counter} aria-live="polite">
-              {fishingHistoryValue.length} / 500
             </p>
           </div>
         </section>

@@ -18,7 +18,6 @@ export const detailsSchema = Yup.object().shape({
     .min(20, 'Description must be at least 20 characters')
     .max(2000, 'Description must be at most 2000 characters')
     .required('Description is required'),
-  fishingHistory: Yup.string().max(500, 'Fishing history must be at most 500 characters').optional(),
 });
 
 export const pricingSchema = Yup.object().shape({
@@ -32,11 +31,17 @@ export const pricingSchema = Yup.object().shape({
 });
 
 export const shippingSchema = Yup.object().shape({
-  weightOz: Yup.number().positive('Weight must be a positive number').required('Weight is required'),
+  weightOz: Yup.number()
+    .positive('Weight must be a positive number')
+    .required('Weight is required'),
   packageDimensions: Yup.object().shape({
-    length: Yup.number().positive('Length must be a positive number').required('Length is required'),
+    length: Yup.number()
+      .positive('Length must be a positive number')
+      .required('Length is required'),
     width: Yup.number().positive('Width must be a positive number').required('Width is required'),
-    height: Yup.number().positive('Height must be a positive number').required('Height is required'),
+    height: Yup.number()
+      .positive('Height must be a positive number')
+      .required('Height is required'),
   }),
   shippingPaidBy: Yup.string()
     .oneOf(['buyer', 'seller'], 'Shipping must be paid by buyer or seller')
