@@ -29,9 +29,9 @@ export default function SellerStrip({ seller }: SellerStripProps) {
             <Image
               src={seller.avatar_url}
               alt={displayName}
-              width={24}
-              height={24}
-              sizes="24px"
+              width={40}
+              height={40}
+              sizes="40px"
               style={{ objectFit: 'cover' }}
               className={styles.avatarImage}
             />
@@ -48,7 +48,7 @@ export default function SellerStrip({ seller }: SellerStripProps) {
           </span>
         )}
       </div>
-      <Link href={`/user/${seller.slug}`} className={styles.viewShop}>
+      <Link href={`/member/${seller.slug}`} className={styles.viewShop}>
         View shop
       </Link>
     </div>

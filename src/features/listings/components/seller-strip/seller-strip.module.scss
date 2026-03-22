@@ -14,15 +14,24 @@
   align-items: center;
   gap: var(--space-xs);
   min-width: 0;
+
+  @include breakpoint(md) {
+    gap: var(--space-sm);
+  }
 }
 
 .avatar {
   flex-shrink: 0;
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   overflow: hidden;
   position: relative;
+
+  @include breakpoint(md) {
+    width: 40px;
+    height: 40px;
+  }
 }
 
 .avatarImage {
@@ -41,14 +50,23 @@
   font-weight: 600;
   line-height: 1;
   border-radius: 50%;
+
+  @include breakpoint(md) {
+    font-size: var(--font-size-sm);
+  }
 }
 
 .name {
   font-size: var(--font-size-sm);
-  color: var(--color-gray-800);
+  font-weight: 600;
+  color: var(--color-dark);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  @include breakpoint(md) {
+    font-size: var(--font-size-base);
+  }
 }
 
 .newBadge {
