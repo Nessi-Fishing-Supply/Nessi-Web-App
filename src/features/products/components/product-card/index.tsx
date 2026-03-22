@@ -37,7 +37,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       : `$${parseFloat(product.price).toFixed(2)}`;
 
   const images: { url: string | null; alt: string }[] = isListing(product)
-    ? product.listing_photos.map((p) => ({ url: p.thumbnail_url || p.image_url, alt: product.title }))
+    ? product.listing_photos.map((p) => ({
+        url: p.thumbnail_url || p.image_url,
+        alt: product.title,
+      }))
     : product.product_images.map((p: { image_url: string | null }) => ({
         url: p.image_url,
         alt: product.title,

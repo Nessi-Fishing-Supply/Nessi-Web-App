@@ -54,9 +54,10 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: countError.message }, { status: 500 });
     }
 
-    let dataQuery = buildQuery(
-      supabase.from('listings').select('*, listing_photos(*)'),
-    ).range(offset, offset + limit - 1);
+    let dataQuery = buildQuery(supabase.from('listings').select('*, listing_photos(*)')).range(
+      offset,
+      offset + limit - 1,
+    );
 
     if (sort === 'price_asc') {
       dataQuery = dataQuery.order('price_cents', { ascending: true });

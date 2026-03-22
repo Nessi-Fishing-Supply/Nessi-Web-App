@@ -122,23 +122,23 @@ All listing API routes live in `src/app/api/listings/`:
 
 ## Hooks
 
-| Hook                       | Query Key                        | Purpose                                               |
-| -------------------------- | -------------------------------- | ----------------------------------------------------- |
-| `useListings(filters)`     | `['listings', filters]`          | Paginated listing search with filters                 |
-| `useListing(id)`           | `['listings', id]`               | Fetch listing by ID with photos                       |
-| `useSellerListings(status?)` | `['listings', 'seller', status]` | Fetch authenticated user's listings                   |
-| `useDrafts()`              | `['listings', 'drafts']`         | Fetch user's draft listings                           |
-| `useListingPhotos(listingId)` | `['listings', listingId, 'photos']` | Fetch ordered photos for a listing                 |
-| `useCreateListing()`       | mutation, invalidates `['listings']` | Create a new listing                              |
-| `useCreateDraft()`         | mutation, invalidates `['listings']` | Create an empty draft                             |
-| `useUpdateListing()`       | mutation, invalidates `['listings']` | Update listing fields                             |
-| `useDeleteListing()`       | mutation, invalidates `['listings']` | Soft-delete a listing                             |
-| `useDeleteDraft()`         | mutation, invalidates `['listings']` | Hard-delete a draft                               |
-| `useUpdateListingStatus()` | mutation, invalidates `['listings']` | Change listing status                             |
-| `useIncrementViewCount()`  | mutation (fire-and-forget)       | Increment view count                                  |
-| `useUploadListingPhoto()`  | mutation, invalidates listing photos key | Upload photo via `POST /api/listings/upload`    |
-| `useDeleteListingPhoto()`  | mutation, invalidates listing photos key | Delete photo via `DELETE /api/listings/upload/delete` |
-| `useReorderListingPhotos()` | mutation, invalidates listing photos key | Update position values after drag-to-reorder    |
+| Hook                          | Query Key                                | Purpose                                               |
+| ----------------------------- | ---------------------------------------- | ----------------------------------------------------- |
+| `useListings(filters)`        | `['listings', filters]`                  | Paginated listing search with filters                 |
+| `useListing(id)`              | `['listings', id]`                       | Fetch listing by ID with photos                       |
+| `useSellerListings(status?)`  | `['listings', 'seller', status]`         | Fetch authenticated user's listings                   |
+| `useDrafts()`                 | `['listings', 'drafts']`                 | Fetch user's draft listings                           |
+| `useListingPhotos(listingId)` | `['listings', listingId, 'photos']`      | Fetch ordered photos for a listing                    |
+| `useCreateListing()`          | mutation, invalidates `['listings']`     | Create a new listing                                  |
+| `useCreateDraft()`            | mutation, invalidates `['listings']`     | Create an empty draft                                 |
+| `useUpdateListing()`          | mutation, invalidates `['listings']`     | Update listing fields                                 |
+| `useDeleteListing()`          | mutation, invalidates `['listings']`     | Soft-delete a listing                                 |
+| `useDeleteDraft()`            | mutation, invalidates `['listings']`     | Hard-delete a draft                                   |
+| `useUpdateListingStatus()`    | mutation, invalidates `['listings']`     | Change listing status                                 |
+| `useIncrementViewCount()`     | mutation (fire-and-forget)               | Increment view count                                  |
+| `useUploadListingPhoto()`     | mutation, invalidates listing photos key | Upload photo via `POST /api/listings/upload`          |
+| `useDeleteListingPhoto()`     | mutation, invalidates listing photos key | Delete photo via `DELETE /api/listings/upload/delete` |
+| `useReorderListingPhotos()`   | mutation, invalidates listing photos key | Update position values after drag-to-reorder          |
 
 ## Components
 

@@ -65,8 +65,7 @@ export const deleteListing = async (id: string): Promise<{ success: boolean }> =
 
 export const deleteDraft = async (id: string): Promise<{ success: boolean }> => {
   const { activeContext } = useContextStore.getState();
-  const contextHeader =
-    activeContext.type === 'member' ? 'member' : `shop:${activeContext.shopId}`;
+  const contextHeader = activeContext.type === 'member' ? 'member' : `shop:${activeContext.shopId}`;
 
   const res = await fetch(`${BASE_URL}/drafts`, {
     method: 'DELETE',
@@ -92,10 +91,8 @@ export const deleteDraft = async (id: string): Promise<{ success: boolean }> => 
   return res.json();
 };
 
-export const updateListingStatus = async (
-  id: string,
-  status: string,
-): Promise<ListingWithPhotos> => patch<ListingWithPhotos>(`${BASE_URL}/${id}/status`, { status });
+export const updateListingStatus = async (id: string, status: string): Promise<ListingWithPhotos> =>
+  patch<ListingWithPhotos>(`${BASE_URL}/${id}/status`, { status });
 
 export const incrementViewCount = async (id: string): Promise<{ success: boolean }> =>
   post<{ success: boolean }>(`${BASE_URL}/${id}/view`);

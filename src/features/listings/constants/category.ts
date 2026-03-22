@@ -1,5 +1,12 @@
 import type { IconType } from 'react-icons';
-import { GiButterfly, GiFishingLure, GiFishingNet, GiFishingPole, GiSailboat, GiSpinningWheel } from 'react-icons/gi';
+import {
+  GiButterfly,
+  GiFishingLure,
+  GiFishingNet,
+  GiFishingPole,
+  GiSailboat,
+  GiSpinningWheel,
+} from 'react-icons/gi';
 import { HiOutlineChip, HiOutlineShoppingBag, HiOutlineTag } from 'react-icons/hi';
 import { TbToolsKitchen2 } from 'react-icons/tb';
 
