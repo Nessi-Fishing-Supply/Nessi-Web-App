@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { createClient } from '@/libs/supabase/server';
 import { createAdminClient } from '@/libs/supabase/admin';
 import { NextResponse } from 'next/server';
@@ -20,11 +18,26 @@ async function cleanupUserStorage(admin: ReturnType<typeof createAdminClient>, u
   // Delete avatar
   await admin.storage.from('avatars').remove([`${userId}.webp`]);
 
-  // Delete all product images (stored under {user_id}/ folder)
-  const { data: productImages } = await admin.storage.from('product-images').list(userId);
-  if (productImages && productImages.length > 0) {
-    const paths = productImages.map((file) => `${userId}/${file.name}`);
-    await admin.storage.from('product-images').remove(paths);
+  // Delete all listing photos (stored under listings/ folder in listing-images bucket)
+  const { data: listingPhotos } = await admin.storage.from('listing-images').list(userId);
+  if (listingPhotos && listingPhotos.length > 0) {
+    // Listing photos are nested: {user_id}/{listing_id}/{file}.webp
+    // We need to list subdirectories and remove recursively
+    for (const item of listingPhotos) {
+      if (item.id === null) {
+        // It's a folder (listing_id) — list its contents
+        const { data: photos } = await admin.storage
+          .from('listing-images')
+          .list(`${userId}/${item.name}`);
+        if (photos && photos.length > 0) {
+          const paths = photos.map((f) => `${userId}/${item.name}/${f.name}`);
+          await admin.storage.from('listing-images').remove(paths);
+        }
+      } else {
+        // It's a file directly under {user_id}/
+        await admin.storage.from('listing-images').remove([`${userId}/${item.name}`]);
+      }
+    }
   }
 
   // Delete shop-owned storage objects (best-effort per shop)
@@ -47,26 +60,31 @@ async function cleanupUserStorage(admin: ReturnType<typeof createAdminClient>, u
           }
         }
 
-        // Shop product images
-        const { data: shopProducts } = await admin
-          .from('products')
+        // Shop listing photos
+        const { data: shopListings } = await admin
+          .from('listings')
           .select('id')
           .eq('shop_id', shop.id);
 
-        if (shopProducts && shopProducts.length > 0) {
-          const productIds = shopProducts.map((p) => p.id);
-          const { data: shopProductImages } = await admin
-            .from('product_images')
-            .select('image_url')
-            .in('product_id', productIds);
+        if (shopListings && shopListings.length > 0) {
+          const listingIds = shopListings.map((l) => l.id);
+          const { data: shopPhotos } = await admin
+            .from('listing_photos')
+            .select('image_url, thumbnail_url')
+            .in('listing_id', listingIds);
 
-          if (shopProductImages && shopProductImages.length > 0) {
-            const imagePaths = shopProductImages
-              .map((img) => parseStoragePath('product-images', img.image_url))
+          if (shopPhotos && shopPhotos.length > 0) {
+            const imagePaths = shopPhotos
+              .flatMap((photo) => [
+                parseStoragePath('listing-images', photo.image_url),
+                photo.thumbnail_url
+                  ? parseStoragePath('listing-images', photo.thumbnail_url)
+                  : null,
+              ])
               .filter((path): path is string => path !== null);
 
             if (imagePaths.length > 0) {
-              await admin.storage.from('product-images').remove(imagePaths);
+              await admin.storage.from('listing-images').remove(imagePaths);
             }
           }
         }

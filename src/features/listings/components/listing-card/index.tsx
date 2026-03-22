@@ -1,45 +1,39 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 'use client';
 
 import React, { useEffect } from 'react';
-import styles from './product-card.module.scss';
+import styles from './listing-card.module.scss';
 import { useRouter } from 'next/navigation';
-import Pill from '@/components/indicators/pill';
-import { FaTruck, FaTag } from 'react-icons/fa';
-import Favorite from '@/features/products/components/favorite';
-import ProductReviews from '@/features/products/components/product-reviews';
+import ConditionBadge from '@/features/listings/components/condition-badge';
+import { formatPrice } from '@/features/listings/utils/format';
+import Favorite from '@/components/controls/favorite';
+import Reviews from '@/components/indicators/reviews';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import Image from 'next/image';
-import type { ProductWithImages } from '@/features/products/types/product';
+import type { ListingWithPhotos } from '@/features/listings/types/listing';
 
-interface ProductCardProps {
-  product: ProductWithImages;
+interface ListingCardProps {
+  listing: ListingWithPhotos;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+export default function ListingCard({ listing }: ListingCardProps) {
   const router = useRouter();
-  const price =
-    typeof product.price === 'number'
-      ? `$${product.price.toFixed(2)}`
-      : `$${parseFloat(product.price).toFixed(2)}`;
 
   const handleViewDetails = (e: React.MouseEvent) => {
     e.preventDefault();
-    router.push(`/item/${product.id}`);
+    router.push(`/item/${listing.id}`);
   };
 
   const handleMouseEnter = (e: React.MouseEvent) => {
-    const swiper = e.currentTarget.querySelector('.swiper__product-card');
+    const swiper = e.currentTarget.querySelector('.swiper__listing-card');
     swiper?.classList.add('swiper-hovered');
   };
 
   const handleMouseLeave = (e: React.MouseEvent) => {
-    const swiper = e.currentTarget.querySelector('.swiper__product-card');
+    const swiper = e.currentTarget.querySelector('.swiper__listing-card');
     swiper?.classList.remove('swiper-hovered');
   };
 
@@ -57,6 +51,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     };
   }, []);
 
+  const photos = listing.listing_photos ?? [];
+
   return (
     <a
       className={styles.card}
@@ -65,23 +61,23 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       onMouseLeave={handleMouseLeave}
     >
       <div className={styles.carousel}>
-        <Pill className={styles.pill} color="secondary">
-          In Stock
-        </Pill>
+        <span className={styles.conditionBadge}>
+          <ConditionBadge condition={listing.condition} size="sm" />
+        </span>
         <Favorite className={styles.favorite} />
         <Swiper
-          className="swiper__product-card"
+          className="swiper__listing-card"
           modules={[Navigation, Pagination]}
           navigation
           pagination={{ clickable: true }}
         >
-          {product.product_images.map((image, index) =>
-            image.image_url ? (
-              <SwiperSlide key={index}>
+          {photos.map((photo, index) =>
+            photo.thumbnail_url || photo.image_url ? (
+              <SwiperSlide key={photo.id || index}>
                 <div className={styles.slide}>
                   <Image
-                    src={image.image_url}
-                    alt={`${product.title} image ${index + 1}`}
+                    src={photo.thumbnail_url || photo.image_url}
+                    alt={`${listing.title} image ${index + 1}`}
                     fill
                     sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, 300px"
                     style={{ objectFit: 'cover' }}
@@ -93,24 +89,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </Swiper>
       </div>
       <div className={styles.contentWrapper}>
-        <p className={styles.title}>{product.title}</p>
+        <p className={styles.title}>{listing.title}</p>
         <div className={styles.priceSection}>
-          <p className={styles.price}>{price}</p>
-          <ProductReviews count={0} average={4.2} />
+          <p className={styles.price}>{formatPrice(listing.price_cents)}</p>
+          <Reviews count={0} average={0} />
         </div>
-        <div className={styles.badgeWrapper}>
-          <div className={styles.badge}>
-            <FaTag className={styles.tagIcon} />
-            <p>20% Off Sale</p>
-          </div>
-          <div className={styles.badge}>
-            <FaTruck className={styles.truckIcon} />
-            <p>Free Shipping</p>
-          </div>
-        </div>
+        {listing.location_state && (
+          <p className={styles.location}>
+            {listing.location_city ? `${listing.location_city}, ` : ''}
+            {listing.location_state}
+          </p>
+        )}
       </div>
     </a>
   );
-};
-
-export default ProductCard;
+}

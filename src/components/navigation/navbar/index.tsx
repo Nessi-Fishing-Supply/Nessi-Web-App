@@ -252,7 +252,7 @@ export default function Navbar() {
             </DropdownItem>
             <DropdownItem>
               <AppLink href="/dashboard/products" icon={<HiOutlineShoppingBag />}>
-                Products
+                Listings
               </AppLink>
             </DropdownItem>
             <DropdownItem>

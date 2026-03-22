@@ -72,7 +72,7 @@ export default function Dashboard() {
           {!memberLoading && member?.is_seller === true && (
             <div className={styles.sellerSection}>
               <h2 className={styles.sellerHeading}>Your listings</h2>
-              <AppLink href="/dashboard/products">Manage your product listings</AppLink>
+              <AppLink href="/dashboard/products">Manage your listings</AppLink>
             </div>
           )}
 
