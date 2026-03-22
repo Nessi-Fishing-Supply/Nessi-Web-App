@@ -4,17 +4,27 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import Button from '@/components/controls/button';
+import { useToast } from '@/components/indicators/toast/context';
 import { useAuth } from '@/features/auth/context';
-import { useSellerListings } from '@/features/listings/hooks/use-listings';
+import {
+  useSellerListings,
+  useUpdateListingStatus,
+  useDeleteListing,
+} from '@/features/listings/hooks/use-listings';
 import ListingRow from '@/features/listings/components/listing-row';
+import ListingActionsMenu from '@/features/listings/components/listing-actions-menu';
+import MarkSoldModal from '@/features/listings/components/mark-sold-modal';
+import DeleteListingModal from '@/features/listings/components/delete-listing-modal';
 import {
   DASHBOARD_STATUS_TABS,
   DASHBOARD_TAB_LABELS,
   type DashboardStatusTab,
 } from '@/features/listings/constants/status';
-import type { ListingWithPhotos, ListingStatus } from '@/features/listings/types/listing';
+import type { ListingWithPhotos } from '@/features/listings/types/listing';
 
 import styles from './listings-dashboard.module.scss';
+
+type ModalType = 'actions' | 'mark-sold' | 'delete' | null;
 
 function filterByTab(listings: ListingWithPhotos[], tab: DashboardStatusTab): ListingWithPhotos[] {
   if (tab === 'all') return listings.filter((l) => l.status !== 'deleted');
@@ -27,10 +37,15 @@ function getTabCount(listings: ListingWithPhotos[], tab: DashboardStatusTab): nu
 
 export default function ListingsDashboard() {
   const router = useRouter();
+  const { showToast } = useToast();
   const { isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState<DashboardStatusTab>('all');
+  const [openModal, setOpenModal] = useState<ModalType>(null);
+  const [targetListing, setTargetListing] = useState<ListingWithPhotos | null>(null);
 
   const { data: allListings = [], isLoading } = useSellerListings();
+  const updateStatus = useUpdateListingStatus();
+  const deleteListing = useDeleteListing();
 
   if (!isAuthenticated) {
     return <p>Please sign in to view your listings.</p>;
@@ -38,9 +53,67 @@ export default function ListingsDashboard() {
 
   const visibleListings = filterByTab(allListings, activeTab);
 
-  function handleActionsClick(listing: ListingWithPhotos) {
-    // Placeholder — will be wired in Phase 4
-    router.push(`/dashboard/listings/${listing.id}/edit`);
+  function openActions(listing: ListingWithPhotos) {
+    setTargetListing(listing);
+    setOpenModal('actions');
+  }
+
+  function closeModal() {
+    setOpenModal(null);
+    setTargetListing(null);
+  }
+
+  function handleDeactivate() {
+    if (!targetListing) return;
+    updateStatus.mutate(
+      { id: targetListing.id, status: 'archived' },
+      {
+        onSuccess: () =>
+          showToast({ type: 'success', message: 'Listing deactivated', description: 'Hidden from public search.' }),
+        onError: () =>
+          showToast({ type: 'error', message: 'Failed to deactivate', description: 'Please try again.' }),
+      },
+    );
+  }
+
+  function handleActivate() {
+    if (!targetListing) return;
+    updateStatus.mutate(
+      { id: targetListing.id, status: 'active' },
+      {
+        onSuccess: () =>
+          showToast({ type: 'success', message: 'Listing activated', description: 'Now visible to buyers.' }),
+        onError: () =>
+          showToast({ type: 'error', message: 'Failed to activate', description: 'Please try again.' }),
+      },
+    );
+  }
+
+  function handleMarkSold(soldPriceCents?: number) {
+    if (!targetListing) return;
+    updateStatus.mutate(
+      { id: targetListing.id, status: 'sold', sold_price_cents: soldPriceCents },
+      {
+        onSuccess: () => {
+          closeModal();
+          showToast({ type: 'success', message: 'Marked as sold', description: 'Congrats on the sale!' });
+        },
+        onError: () =>
+          showToast({ type: 'error', message: 'Failed to mark as sold', description: 'Please try again.' }),
+      },
+    );
+  }
+
+  function handleDelete() {
+    if (!targetListing) return;
+    deleteListing.mutate(targetListing.id, {
+      onSuccess: () => {
+        closeModal();
+        showToast({ type: 'success', message: 'Listing deleted', description: 'The listing has been removed.' });
+      },
+      onError: () =>
+        showToast({ type: 'error', message: 'Failed to delete', description: 'Please try again.' }),
+    });
   }
 
   return (
@@ -94,10 +167,43 @@ export default function ListingsDashboard() {
             <ListingRow
               key={listing.id}
               listing={listing}
-              onActionsClick={handleActionsClick}
+              onActionsClick={openActions}
             />
           ))}
         </div>
+      )}
+
+      {/* Action modals */}
+      {targetListing && openModal === 'actions' && (
+        <ListingActionsMenu
+          listing={targetListing}
+          isOpen
+          onClose={closeModal}
+          onMarkSold={() => setOpenModal('mark-sold')}
+          onDeactivate={handleDeactivate}
+          onActivate={handleActivate}
+          onDelete={() => setOpenModal('delete')}
+        />
+      )}
+
+      {targetListing && openModal === 'mark-sold' && (
+        <MarkSoldModal
+          listing={targetListing}
+          isOpen
+          onClose={closeModal}
+          onConfirm={handleMarkSold}
+          loading={updateStatus.isPending}
+        />
+      )}
+
+      {targetListing && openModal === 'delete' && (
+        <DeleteListingModal
+          listing={targetListing}
+          isOpen
+          onClose={closeModal}
+          onConfirm={handleDelete}
+          loading={deleteListing.isPending}
+        />
       )}
     </div>
   );
