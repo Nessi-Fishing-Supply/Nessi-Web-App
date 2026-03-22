@@ -5,9 +5,9 @@ import { useRouter } from 'next/navigation';
 
 import Button from '@/components/controls/button';
 import { useToast } from '@/components/indicators/toast/context';
-import { useUpdateListingStatus } from '@/features/listings/hooks/use-listings';
+import { useUpdateListing, useUpdateListingStatus } from '@/features/listings/hooks/use-listings';
 import useCreateWizardStore from '@/features/listings/stores/create-wizard-store';
-import type { Listing } from '@/features/listings/types/listing';
+import type { ListingWithPhotos } from '@/features/listings/types/listing';
 import { STEP_SCHEMAS } from '@/features/listings/validations/listing';
 
 import CategoryConditionStep from './steps/category-condition-step';
@@ -20,10 +20,19 @@ import WizardProgress from './wizard-progress';
 import styles from './create-wizard.module.scss';
 
 interface CreateWizardProps {
-  initialDraft?: Listing | null;
+  initialDraft?: ListingWithPhotos | null;
 }
 
 const TOTAL_STEPS = 6;
+
+const STEP_LABELS: Record<number, string> = {
+  1: 'Photos',
+  2: 'Category and Condition',
+  3: 'Details',
+  4: 'Pricing',
+  5: 'Shipping',
+  6: 'Review',
+};
 
 const STEP_COMPONENTS: Record<number, () => React.ReactElement> = {
   1: PhotosStep,
@@ -38,9 +47,11 @@ export default function CreateWizard({ initialDraft }: CreateWizardProps) {
   const router = useRouter();
   const { showToast } = useToast();
   const updateStatus = useUpdateListingStatus();
+  const updateListing = useUpdateListing();
 
   const step = useCreateWizardStore.use.step();
   const setStep = useCreateWizardStore.use.setStep();
+  const setField = useCreateWizardStore.use.setField();
   const listingId = useCreateWizardStore.use.listingId();
   const reset = useCreateWizardStore.use.reset();
 
@@ -59,8 +70,12 @@ export default function CreateWizard({ initialDraft }: CreateWizardProps) {
 
   const [validating, setValidating] = useState(false);
   const [publishing, setPublishing] = useState(false);
+  const [savingDraft, setSavingDraft] = useState(false);
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
   const [animating, setAnimating] = useState(false);
+  const [stepAnnouncement, setStepAnnouncement] = useState('');
+
+  const stepHeadingRef = useRef<HTMLHeadingElement>(null);
 
   const isReviewStep = step === TOTAL_STEPS;
 
@@ -84,8 +99,17 @@ export default function CreateWizard({ initialDraft }: CreateWizardProps) {
     if (step !== prevStepRef.current) {
       prevStepRef.current = step;
       setAnimating(true);
+      const label = STEP_LABELS[step] ?? `Step ${step}`;
+      setStepAnnouncement(`Step ${step} of ${TOTAL_STEPS}: ${label}`);
       const timer = setTimeout(() => setAnimating(false), 300);
       return () => clearTimeout(timer);
+    }
+  }, [step]);
+
+  // Focus management: move focus to step heading on navigation
+  useEffect(() => {
+    if (stepHeadingRef.current) {
+      stepHeadingRef.current.focus();
     }
   }, [step]);
 
@@ -146,8 +170,42 @@ export default function CreateWizard({ initialDraft }: CreateWizardProps) {
     setStep(prevStep);
   }
 
-  function handleSaveDraftAndExit() {
-    // Save logic wired in Task 4.3
+  async function handleSaveDraftAndExit() {
+    if (!listingId) {
+      reset();
+      router.push('/dashboard/listings');
+      return;
+    }
+
+    setSavingDraft(true);
+    try {
+      await updateListing.mutateAsync({
+        id: listingId,
+        data: {
+          category: category ?? undefined,
+          condition: condition ?? undefined,
+          title: title || undefined,
+          description: description || undefined,
+          price_cents: priceCents || undefined,
+          shipping_paid_by: shippingPaidBy ?? undefined,
+          weight_oz: weightOz || undefined,
+        },
+      });
+      reset();
+      showToast({
+        type: 'success',
+        message: 'Draft saved',
+        description: 'You can continue editing from your listings dashboard.',
+      });
+      router.push('/dashboard/listings');
+    } catch {
+      showToast({
+        type: 'error',
+        message: 'Save failed',
+        description: 'Something went wrong. Please try again.',
+      });
+      setSavingDraft(false);
+    }
   }
 
   async function handlePublish() {
@@ -190,11 +248,64 @@ export default function CreateWizard({ initialDraft }: CreateWizardProps) {
       : styles.slideRight
     : '';
 
-  // Suppress unused warning — initialDraft will be used in Task 4.2
-  void initialDraft;
+  const hydratedRef = useRef(false);
+  useEffect(() => {
+    if (hydratedRef.current || !initialDraft) return;
+    hydratedRef.current = true;
+
+    const draftPhotos = initialDraft.listing_photos ?? [];
+    const derivedShippingPreference =
+      initialDraft.shipping_paid_by != null ? 'ship' : ('local_pickup' as const);
+
+    setField('listingId', initialDraft.id);
+    setField('draftId', initialDraft.id);
+    setField('photos', draftPhotos);
+    setField('category', initialDraft.category);
+    setField('condition', initialDraft.condition);
+    setField('title', initialDraft.title ?? '');
+    setField('description', initialDraft.description ?? '');
+    setField('priceCents', initialDraft.price_cents ?? 0);
+    setField('shippingPreference', derivedShippingPreference);
+    const shippingPaidByValue = initialDraft.shipping_paid_by;
+    setField(
+      'shippingPaidBy',
+      shippingPaidByValue === 'buyer' || shippingPaidByValue === 'seller'
+        ? shippingPaidByValue
+        : null,
+    );
+    setField('weightOz', initialDraft.weight_oz ?? 0);
+
+    const draftTitle = initialDraft.title ?? '';
+    const draftDescription = initialDraft.description ?? '';
+    const draftPriceCents = initialDraft.price_cents ?? 0;
+    const draftWeightOz = initialDraft.weight_oz ?? 0;
+
+    let targetStep = 1;
+    if (draftPhotos.length >= 2) {
+      targetStep = 2;
+      if (initialDraft.category && initialDraft.condition) {
+        targetStep = 3;
+        if (draftTitle.length >= 10 && draftDescription.length >= 20) {
+          targetStep = 4;
+          if (draftPriceCents > 0) {
+            targetStep = 5;
+            if (derivedShippingPreference === 'local_pickup' || draftWeightOz > 0) {
+              targetStep = 6;
+            }
+          }
+        }
+      }
+    }
+
+    setStep(targetStep);
+  }, [initialDraft, setField, setStep]);
 
   return (
     <div className={styles.wizard}>
+      <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+        {stepAnnouncement}
+      </div>
+
       <header className={styles.header}>
         {step > 1 ? (
           <button
@@ -215,12 +326,21 @@ export default function CreateWizard({ initialDraft }: CreateWizardProps) {
           type="button"
           className={styles.saveDraftLink}
           onClick={handleSaveDraftAndExit}
+          disabled={savingDraft}
+          aria-busy={savingDraft}
         >
-          Save draft and exit
+          {savingDraft ? 'Saving…' : 'Save draft and exit'}
         </button>
       </header>
 
       <main className={styles.stepContainer}>
+        <h1
+          ref={stepHeadingRef}
+          className="sr-only"
+          tabIndex={-1}
+        >
+          {STEP_LABELS[step] ?? `Step ${step}`}
+        </h1>
         <form
           onSubmit={(e) => e.preventDefault()}
           className={`${styles.stepForm} ${slideClass}`}

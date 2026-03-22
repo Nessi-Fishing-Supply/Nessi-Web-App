@@ -68,114 +68,122 @@ export default function ShippingStep() {
     <FormProvider {...methods}>
       <div className={styles.step}>
         <section className={styles.section}>
-          <h2 className={styles.heading}>Package weight</h2>
-          <div className={styles.weightRow}>
-            <div className={styles.inputWithSuffix}>
-              <input
-                {...register('weightLbs', { valueAsNumber: true, min: 0 })}
-                id="weightLbs"
-                type="number"
-                inputMode="numeric"
-                min={0}
-                placeholder="0"
-                className={styles.numberInput}
-                aria-label="Weight in pounds"
-              />
-              <span className={styles.suffix} aria-hidden="true">lbs</span>
+          <fieldset className={styles.fieldset}>
+            <legend className={styles.heading}>Package weight</legend>
+            <div className={styles.weightRow}>
+              <div className={styles.inputWithSuffix}>
+                <input
+                  {...register('weightLbs', { valueAsNumber: true, min: 0 })}
+                  id="weightLbs"
+                  type="number"
+                  inputMode="numeric"
+                  min={0}
+                  placeholder="0"
+                  className={styles.numberInput}
+                  aria-label="Weight in pounds"
+                />
+                <span className={styles.suffix} aria-hidden="true">lbs</span>
+              </div>
+              <div className={styles.inputWithSuffix}>
+                <input
+                  {...register('weightOz', { valueAsNumber: true, min: 0, max: 15 })}
+                  id="weightOz"
+                  type="number"
+                  inputMode="numeric"
+                  min={0}
+                  max={15}
+                  placeholder="0"
+                  className={styles.numberInput}
+                  aria-label="Weight in ounces"
+                />
+                <span className={styles.suffix} aria-hidden="true">oz</span>
+              </div>
             </div>
-            <div className={styles.inputWithSuffix}>
-              <input
-                {...register('weightOz', { valueAsNumber: true, min: 0, max: 15 })}
-                id="weightOz"
-                type="number"
-                inputMode="numeric"
-                min={0}
-                max={15}
-                placeholder="0"
-                className={styles.numberInput}
-                aria-label="Weight in ounces"
-              />
-              <span className={styles.suffix} aria-hidden="true">oz</span>
-            </div>
-          </div>
+          </fieldset>
         </section>
 
         <section className={styles.section}>
-          <h2 className={styles.heading}>Package dimensions</h2>
-          <div className={styles.dimensionsRow}>
-            <div className={styles.inputWithSuffix}>
-              <input
-                {...register('dimLength', { valueAsNumber: true, min: 0 })}
-                id="dimLength"
-                type="number"
-                inputMode="decimal"
-                min={0}
-                placeholder="0"
-                className={styles.numberInput}
-                aria-label="Package length in inches"
-              />
+          <fieldset className={styles.fieldset}>
+            <legend className={styles.heading}>Package dimensions</legend>
+            <div className={styles.dimensionsRow}>
+              <div className={styles.inputWithSuffix}>
+                <input
+                  {...register('dimLength', { valueAsNumber: true, min: 0 })}
+                  id="dimLength"
+                  type="number"
+                  inputMode="decimal"
+                  min={0}
+                  placeholder="0"
+                  className={styles.numberInput}
+                  aria-label="Package length in inches"
+                />
+              </div>
+              <span className={styles.separator} aria-hidden="true">x</span>
+              <div className={styles.inputWithSuffix}>
+                <input
+                  {...register('dimWidth', { valueAsNumber: true, min: 0 })}
+                  id="dimWidth"
+                  type="number"
+                  inputMode="decimal"
+                  min={0}
+                  placeholder="0"
+                  className={styles.numberInput}
+                  aria-label="Package width in inches"
+                />
+              </div>
+              <span className={styles.separator} aria-hidden="true">x</span>
+              <div className={styles.inputWithSuffix}>
+                <input
+                  {...register('dimHeight', { valueAsNumber: true, min: 0 })}
+                  id="dimHeight"
+                  type="number"
+                  inputMode="decimal"
+                  min={0}
+                  placeholder="0"
+                  className={styles.numberInput}
+                  aria-label="Package height in inches"
+                />
+              </div>
+              <span className={styles.suffix} aria-hidden="true">in</span>
             </div>
-            <span className={styles.separator} aria-hidden="true">x</span>
-            <div className={styles.inputWithSuffix}>
-              <input
-                {...register('dimWidth', { valueAsNumber: true, min: 0 })}
-                id="dimWidth"
-                type="number"
-                inputMode="decimal"
-                min={0}
-                placeholder="0"
-                className={styles.numberInput}
-                aria-label="Package width in inches"
-              />
-            </div>
-            <span className={styles.separator} aria-hidden="true">x</span>
-            <div className={styles.inputWithSuffix}>
-              <input
-                {...register('dimHeight', { valueAsNumber: true, min: 0 })}
-                id="dimHeight"
-                type="number"
-                inputMode="decimal"
-                min={0}
-                placeholder="0"
-                className={styles.numberInput}
-                aria-label="Package height in inches"
-              />
-            </div>
-            <span className={styles.suffix} aria-hidden="true">in</span>
-          </div>
-          <p className={styles.dimensionsLabels} aria-hidden="true">
-            <span>Length</span>
-            <span />
-            <span>Width</span>
-            <span />
-            <span>Height</span>
-          </p>
+            <p className={styles.dimensionsLabels} aria-hidden="true">
+              <span>Length</span>
+              <span />
+              <span>Width</span>
+              <span />
+              <span>Height</span>
+            </p>
+          </fieldset>
         </section>
 
         <section className={styles.section}>
-          <h2 className={styles.heading}>Who pays for shipping?</h2>
-          <div className={styles.radioGroup} role="radiogroup" aria-label="Shipping payer">
-            <label className={`${styles.radioOption} ${currentShippingPaidBy === 'buyer' ? styles.radioOptionSelected : ''}`}>
-              <input
-                {...register('shippingPaidBy')}
-                type="radio"
-                value="buyer"
-                className={styles.radioInput}
-                onChange={() => setValue('shippingPaidBy', 'buyer', { shouldDirty: true })}
-              />
-              <span className={styles.radioLabel}>Buyer pays shipping</span>
-            </label>
-            <label className={`${styles.radioOption} ${currentShippingPaidBy === 'seller' ? styles.radioOptionSelected : ''}`}>
-              <input
-                {...register('shippingPaidBy')}
-                type="radio"
-                value="seller"
-                className={styles.radioInput}
-                onChange={() => setValue('shippingPaidBy', 'seller', { shouldDirty: true })}
-              />
-              <span className={styles.radioLabel}>I'll offer free shipping</span>
-            </label>
-          </div>
+          <fieldset className={styles.fieldset}>
+            <legend className={styles.heading}>Who pays for shipping?</legend>
+            <div className={styles.radioGroup} role="radiogroup" aria-label="Shipping payer" aria-required="true">
+              <label className={`${styles.radioOption} ${currentShippingPaidBy === 'buyer' ? styles.radioOptionSelected : ''}`}>
+                <input
+                  {...register('shippingPaidBy')}
+                  type="radio"
+                  value="buyer"
+                  className={styles.radioInput}
+                  aria-required="true"
+                  onChange={() => setValue('shippingPaidBy', 'buyer', { shouldDirty: true })}
+                />
+                <span className={styles.radioLabel}>Buyer pays shipping</span>
+              </label>
+              <label className={`${styles.radioOption} ${currentShippingPaidBy === 'seller' ? styles.radioOptionSelected : ''}`}>
+                <input
+                  {...register('shippingPaidBy')}
+                  type="radio"
+                  value="seller"
+                  className={styles.radioInput}
+                  aria-required="true"
+                  onChange={() => setValue('shippingPaidBy', 'seller', { shouldDirty: true })}
+                />
+                <span className={styles.radioLabel}>I'll offer free shipping</span>
+              </label>
+            </div>
+          </fieldset>
         </section>
 
         <CollapsibleCard title="What box should I use?">
