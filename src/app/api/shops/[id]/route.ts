@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { createClient } from '@/libs/supabase/server';
 import { createAdminClient } from '@/libs/supabase/admin';
 import { NextResponse } from 'next/server';
@@ -53,19 +51,22 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
       }
     }
 
-    // Shop product images
-    const { data: shopProducts } = await admin.from('products').select('id').eq('shop_id', shopId);
+    // Shop listing photos
+    const { data: shopListings } = await admin.from('listings').select('id').eq('shop_id', shopId);
 
-    if (shopProducts && shopProducts.length > 0) {
-      const productIds = shopProducts.map((p) => p.id);
-      const { data: productImages } = await admin
-        .from('product_images')
-        .select('image_url')
-        .in('product_id', productIds);
+    if (shopListings && shopListings.length > 0) {
+      const listingIds = shopListings.map((l) => l.id);
+      const { data: listingPhotos } = await admin
+        .from('listing_photos')
+        .select('image_url, thumbnail_url')
+        .in('listing_id', listingIds);
 
-      if (productImages && productImages.length > 0) {
-        const imagePaths = productImages
-          .map((img) => parseStoragePath('product-images', img.image_url))
+      if (listingPhotos && listingPhotos.length > 0) {
+        const imagePaths = listingPhotos
+          .flatMap((photo) => [
+            parseStoragePath('product-images', photo.image_url),
+            photo.thumbnail_url ? parseStoragePath('product-images', photo.thumbnail_url) : null,
+          ])
           .filter((path): path is string => path !== null);
 
         if (imagePaths.length > 0) {

@@ -92,7 +92,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
       <section className={styles.listings}>
         <h2 className={styles.sectionHeading}>Listings</h2>
         {listings.length > 0 ? (
-          <div className={styles.productGrid}>
+          <div className={styles.listingGrid}>
             {listings.map((listing) => (
               <ListingCard key={listing.id} listing={listing} />
             ))}

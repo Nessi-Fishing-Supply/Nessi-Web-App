@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { createClient } from '@/libs/supabase/server';
 import { NextResponse } from 'next/server';
 
@@ -21,15 +19,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'is_seller must be a boolean' }, { status: 400 });
     }
 
-    // When disabling seller mode, hide all member-owned products first
+    // When disabling seller mode, archive all member-owned active listings
     if (!is_seller) {
-      const { error: productsError } = await supabase
-        .from('products')
-        .update({ is_visible: false })
-        .eq('member_id', user.id);
+      const { error: listingsError } = await supabase
+        .from('listings')
+        .update({ status: 'archived' as const })
+        .eq('seller_id', user.id)
+        .eq('status', 'active')
+        .is('deleted_at', null);
 
-      if (productsError) {
-        return NextResponse.json({ error: productsError.message }, { status: 500 });
+      if (listingsError) {
+        return NextResponse.json({ error: listingsError.message }, { status: 500 });
       }
     }
 

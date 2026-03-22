@@ -50,7 +50,7 @@ export default function ShopDeletionSection({ shop }: ShopDeletionSectionProps) 
       <section className={styles.dangerZone}>
         <h2 className={styles.heading}>Delete Shop</h2>
         <p className={styles.description}>
-          Permanently delete this shop, all its products, and associated data. This action cannot be
+          Permanently delete this shop, all its listings, and associated data. This action cannot be
           undone.
         </p>
         <Button style="primary" onClick={() => setModalOpen(true)} ariaLabel="Delete shop">

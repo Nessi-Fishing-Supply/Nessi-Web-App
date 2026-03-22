@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { createClient } from '@/libs/supabase/server';
 import { NextResponse } from 'next/server';
 
@@ -15,10 +13,11 @@ export async function GET() {
     }
 
     const { count, error } = await supabase
-      .from('products')
+      .from('listings')
       .select('*', { count: 'exact', head: true })
-      .eq('member_id', user.id)
-      .eq('is_visible', true);
+      .eq('seller_id', user.id)
+      .eq('status', 'active')
+      .is('deleted_at', null);
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
