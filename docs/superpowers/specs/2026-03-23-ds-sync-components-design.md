@@ -12,39 +12,39 @@ The existing `ds-sync` skill handles design tokens (colors, typography, spacing,
 
 ## Decisions
 
-| Decision | Choice | Rationale |
-|---|---|---|
-| Approach | Separate agent + skill (not extending ds-sync) | Clean separation of concerns, no turn-limit risk, each agent stays focused |
-| Input | URL only (Playwright) | Consistent with ds-sync, no file-parsing code path |
-| Placement | Rules-based auto-sort, interview only for ambiguous | Faster, less interview fatigue |
-| Scaffold fidelity | Visual-faithful (real tokens, variants, states) | Leverages the full design spec, not just structure |
-| Data wiring | Live data where data layer exists, typed props where it doesn't | Avoids scaffolding data layers for features that don't have DB tables yet |
-| Barrel files | No per-component index.ts. Only append to existing category-level barrels (currently only `src/components/controls/index.ts` has one) | Matches existing codebase pattern |
-| Conditional classnames | Template literal string concatenation (e.g., `` `${styles.base} ${active ? styles.active : ''}` ``) | Matches existing codebase pattern — no `clsx` dependency |
-| Stitch | Remove entirely | No longer in use |
+| Decision               | Choice                                                                                                                                | Rationale                                                                  |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| Approach               | Separate agent + skill (not extending ds-sync)                                                                                        | Clean separation of concerns, no turn-limit risk, each agent stays focused |
+| Input                  | URL only (Playwright)                                                                                                                 | Consistent with ds-sync, no file-parsing code path                         |
+| Placement              | Rules-based auto-sort, interview only for ambiguous                                                                                   | Faster, less interview fatigue                                             |
+| Scaffold fidelity      | Visual-faithful (real tokens, variants, states)                                                                                       | Leverages the full design spec, not just structure                         |
+| Data wiring            | Live data where data layer exists, typed props where it doesn't                                                                       | Avoids scaffolding data layers for features that don't have DB tables yet  |
+| Barrel files           | No per-component index.ts. Only append to existing category-level barrels (currently only `src/components/controls/index.ts` has one) | Matches existing codebase pattern                                          |
+| Conditional classnames | Template literal string concatenation (e.g., `` `${styles.base} ${active ? styles.active : ''}` ``)                                   | Matches existing codebase pattern — no `clsx` dependency                   |
+| Stitch                 | Remove entirely                                                                                                                       | No longer in use                                                           |
 
 ## Placement Rules
 
 The agent auto-sorts components using these rules. Only components that don't match any rule are flagged during the interview.
 
-| Design System Category | Target Location | Rule |
-|---|---|---|
-| Atoms: Buttons, Pills, Forms, Dividers, Tooltips | `src/components/controls/` | Generic UI primitives — no domain knowledge |
-| Atoms: Date & Time, Location Chip | `src/components/indicators/` | Display-only data presentation |
-| Molecules: Avatars, Tabs, Pagination, Quantity Stepper, Search Input | `src/components/controls/` | Reusable across features |
-| Molecules: Rating Display, Inline Banner, Settings Row, Notification Row | `src/components/indicators/` | Status/info display |
-| Molecules: Page Header, Stepper & Progress | `src/components/layout/` | Structural/layout |
-| Molecules: Product Cards, Seller Card, Photo Upload, Shipping Rate Card, Category Tile, Watchlist Toggle | `src/features/listings/components/` | Listing domain |
-| Molecules: Messaging | `src/features/messaging/components/` | Messaging domain |
-| Molecules: Filter Panel | `src/features/search/components/` | Search domain |
-| Molecules: Order Timeline | `src/features/orders/components/` | Orders domain |
-| Trust & Identity: all (Fishing Identity Tag, Verification Badge, Trust Stat Row, Offer UI) | `src/features/members/components/` | Member/trust domain |
-| Dashboard: all (KPI Stat Tile, Listing Performance Row, Quick Action Card, Sparkline, Shop Upgrade Prompt) | `src/features/dashboard/components/` | Dashboard domain |
-| Unique/Editorial: all (Shop Highlight, Maker Story Block, Featured Listing Card, Species Browse Row, Social Proof Strip, Price Drop Alert, Recently Sold Ticker) | `src/features/editorial/components/` | Editorial/discovery domain |
-| Organisms: Modals, Overlays | `src/components/layout/` | Global structural |
-| Feedback: Loading States, Empty States, Error States, Toasts | `src/components/indicators/` | Global feedback |
-| Navigation: Navigation System | `src/components/navigation/` | Global nav |
-| Patterns: Voice & Tone | `docs/design/{version}/voice-and-tone.md` | Documentation only, not a component |
+| Design System Category                                                                                                                                           | Target Location                           | Rule                                        |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- | ------------------------------------------- |
+| Atoms: Buttons, Pills, Forms, Dividers, Tooltips                                                                                                                 | `src/components/controls/`                | Generic UI primitives — no domain knowledge |
+| Atoms: Date & Time, Location Chip                                                                                                                                | `src/components/indicators/`              | Display-only data presentation              |
+| Molecules: Avatars, Tabs, Pagination, Quantity Stepper, Search Input                                                                                             | `src/components/controls/`                | Reusable across features                    |
+| Molecules: Rating Display, Inline Banner, Settings Row, Notification Row                                                                                         | `src/components/indicators/`              | Status/info display                         |
+| Molecules: Page Header, Stepper & Progress                                                                                                                       | `src/components/layout/`                  | Structural/layout                           |
+| Molecules: Product Cards, Seller Card, Photo Upload, Shipping Rate Card, Category Tile, Watchlist Toggle                                                         | `src/features/listings/components/`       | Listing domain                              |
+| Molecules: Messaging                                                                                                                                             | `src/features/messaging/components/`      | Messaging domain                            |
+| Molecules: Filter Panel                                                                                                                                          | `src/features/search/components/`         | Search domain                               |
+| Molecules: Order Timeline                                                                                                                                        | `src/features/orders/components/`         | Orders domain                               |
+| Trust & Identity: all (Fishing Identity Tag, Verification Badge, Trust Stat Row, Offer UI)                                                                       | `src/features/members/components/`        | Member/trust domain                         |
+| Dashboard: all (KPI Stat Tile, Listing Performance Row, Quick Action Card, Sparkline, Shop Upgrade Prompt)                                                       | `src/features/dashboard/components/`      | Dashboard domain                            |
+| Unique/Editorial: all (Shop Highlight, Maker Story Block, Featured Listing Card, Species Browse Row, Social Proof Strip, Price Drop Alert, Recently Sold Ticker) | `src/features/editorial/components/`      | Editorial/discovery domain                  |
+| Organisms: Modals, Overlays                                                                                                                                      | `src/components/layout/`                  | Global structural                           |
+| Feedback: Loading States, Empty States, Error States, Toasts                                                                                                     | `src/components/indicators/`              | Global feedback                             |
+| Navigation: Navigation System                                                                                                                                    | `src/components/navigation/`              | Global nav                                  |
+| Patterns: Voice & Tone                                                                                                                                           | `docs/design/{version}/voice-and-tone.md` | Documentation only, not a component         |
 
 **Ambiguity threshold:** If a component doesn't match any rule (e.g., a new category appears in a future design system update), it gets flagged during the interview.
 
@@ -101,6 +101,7 @@ The agent auto-sorts components using these rules. Only components that don't ma
 **Location:** `.claude/agents/ds-sync-components/AGENT.md`
 
 **Configuration:**
+
 - Model: opus
 - Tools: Read, Write, Edit, Bash, Grep, Glob + Playwright (`mcp__plugin_playwright_playwright__*`)
 - Max turns: 100 (extraction + codebase analysis + scaffold generation for ~50 components requires significant turn budget)
@@ -126,6 +127,7 @@ The agent auto-sorts components using these rules. Only components that don't ma
 ### Phase 2: Derive Props & Types
 
 For each component, derive a TypeScript props interface from the extraction:
+
 - Variant unions from visual variants
 - State booleans (isDisabled, isLoading, etc.)
 - Content slots (children, title, description, image, etc.)
@@ -148,15 +150,16 @@ Sort each component to its target location using the placement rules table. Flag
 
 ### Phase 5: Write Extraction Documents
 
-| Output | Purpose |
-|---|---|
-| `docs/design/{version}/components/extraction.md` | Full extraction — anatomy, variants, states, tokens, a11y per component, grouped by atomic level |
-| `docs/design/{version}/components/placement.md` | Placement decisions — component, target location, rule applied, any ambiguity flags |
-| `docs/design/{version}/components/data-mapping.md` | Which components get live data wiring vs. typed props, with specific imports noted |
-| `docs/design/{version}/components/screenshots/` | Screenshots of each section |
-| `docs/design/{version}/components/metadata.json` | Component counts, categories, existing-vs-new breakdown (schema below) |
+| Output                                             | Purpose                                                                                          |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `docs/design/{version}/components/extraction.md`   | Full extraction — anatomy, variants, states, tokens, a11y per component, grouped by atomic level |
+| `docs/design/{version}/components/placement.md`    | Placement decisions — component, target location, rule applied, any ambiguity flags              |
+| `docs/design/{version}/components/data-mapping.md` | Which components get live data wiring vs. typed props, with specific imports noted               |
+| `docs/design/{version}/components/screenshots/`    | Screenshots of each section                                                                      |
+| `docs/design/{version}/components/metadata.json`   | Component counts, categories, existing-vs-new breakdown (schema below)                           |
 
 **metadata.json schema:**
+
 ```json
 {
   "url": "https://...",
@@ -186,15 +189,17 @@ Sort each component to its target location using the placement rules table. Flag
 For each approved component, generate:
 
 **`index.tsx`:**
+
 - TypeScript props interface derived from extraction
 - Functional component with variant/state handling
 - Token-based className logic using template literal concatenation (matching existing codebase pattern, no `clsx`)
 - `next/image` for image slots (with `sizes`, `alt`, `fill` per project standards)
 - Live data imports where hook/service exists, typed props where it doesn't
-- Accessibility attributes (aria-*, role, keyboard handlers)
+- Accessibility attributes (aria-\*, role, keyboard handlers)
 - Mobile-first structure
 
 **`component-name.module.scss`:**
+
 - Imports from `src/styles/variables/` (token files)
 - Responsive mixins via `@include breakpoint()` — mobile-first
 - Flat class names (no BEM, CSS Modules handle scoping)
@@ -213,11 +218,11 @@ For each approved component, generate:
 
 Each phase produces durable output. If the agent runs out of turns or fails mid-run:
 
-| Completed through | State | Recovery |
-|---|---|---|
-| Phase 5 | Extraction docs exist, no scaffolds | Re-run agent with `--scaffold-only` flag, skip extraction |
-| Phase 6 (partial) | Some components scaffolded, others not | Agent checks which directories already exist and skips them |
-| Phase 7 | Scaffolds exist but barrels/docs not updated | Manual fixup or re-run Phase 7 only |
+| Completed through | State                                        | Recovery                                                    |
+| ----------------- | -------------------------------------------- | ----------------------------------------------------------- |
+| Phase 5           | Extraction docs exist, no scaffolds          | Re-run agent with `--scaffold-only` flag, skip extraction   |
+| Phase 6 (partial) | Some components scaffolded, others not       | Agent checks which directories already exist and skips them |
+| Phase 7           | Scaffolds exist but barrels/docs not updated | Manual fixup or re-run Phase 7 only                         |
 
 The extraction documents serve as the checkpoint — they contain everything needed to generate scaffolds without re-navigating the URL.
 
@@ -225,14 +230,14 @@ The extraction documents serve as the checkpoint — they contain everything nee
 
 Remove all Stitch references from the codebase:
 
-| File | Change |
-|---|---|
-| `.mcp.json` | Remove the `stitch` server entry entirely. If no other servers remain, delete the file or leave `{ "mcpServers": {} }` |
-| `CLAUDE.md` | Remove: MCP Servers table + `stitch` row, Shell Environment `STITCH_API_KEY` section, `/ui-design "stitch:..."` examples from AI Development Fleet, Stitch reference in `/ds-sync` description |
-| `README.md` | Remove any Stitch references |
-| `.claude/skills/ui-design/SKILL.md` | Remove Stitch Build mode, Stitch Browse mode, `stitch:` argument handling, all Stitch-related steps. Update description to remove "Stitch screen references" |
-| `.claude/agents/ui-designer/AGENT.md` | Remove `mcp__stitch__*` from allowedTools, remove all Stitch-related instructions |
-| `.claude/skills/ds-sync/SKILL.md` | Update directory structure docs — remove "Scraped Stitch design system reference" comment on line 39. The `component-showcase-reference.html` file remains (it's the design system HTML, not a Stitch artifact) but its description should say "Design system reference HTML" instead |
+| File                                  | Change                                                                                                                                                                                                                                                                                |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.mcp.json`                           | Remove the `stitch` server entry entirely. If no other servers remain, delete the file or leave `{ "mcpServers": {} }`                                                                                                                                                                |
+| `CLAUDE.md`                           | Remove: MCP Servers table + `stitch` row, Shell Environment `STITCH_API_KEY` section, `/ui-design "stitch:..."` examples from AI Development Fleet, Stitch reference in `/ds-sync` description                                                                                        |
+| `README.md`                           | Remove any Stitch references                                                                                                                                                                                                                                                          |
+| `.claude/skills/ui-design/SKILL.md`   | Remove Stitch Build mode, Stitch Browse mode, `stitch:` argument handling, all Stitch-related steps. Update description to remove "Stitch screen references"                                                                                                                          |
+| `.claude/agents/ui-designer/AGENT.md` | Remove `mcp__stitch__*` from allowedTools, remove all Stitch-related instructions                                                                                                                                                                                                     |
+| `.claude/skills/ds-sync/SKILL.md`     | Update directory structure docs — remove "Scraped Stitch design system reference" comment on line 39. The `component-showcase-reference.html` file remains (it's the design system HTML, not a Stitch artifact) but its description should say "Design system reference HTML" instead |
 
 ## What This Does NOT Include
 

@@ -16,27 +16,28 @@
 
 ### New Files
 
-| File | Responsibility |
-|---|---|
+| File                                         | Responsibility                                               |
+| -------------------------------------------- | ------------------------------------------------------------ |
 | `.claude/agents/ds-sync-components/AGENT.md` | Agent definition — extraction, analysis, scaffold generation |
-| `.claude/skills/ds-sync-components/SKILL.md` | Skill definition — orchestration, interview, approval flow |
+| `.claude/skills/ds-sync-components/SKILL.md` | Skill definition — orchestration, interview, approval flow   |
 
 ### Modified Files
 
-| File | Change |
-|---|---|
-| `.mcp.json` | Remove `stitch` server entry |
-| `CLAUDE.md` | Remove Stitch references, add ds-sync-components to agent/skill tables |
-| `README.md` | Remove Stitch references (MCP table, shell env, setup instructions) |
-| `.claude/skills/ui-design/SKILL.md` | Remove Stitch Build mode entirely, update description |
+| File                                  | Change                                                                                  |
+| ------------------------------------- | --------------------------------------------------------------------------------------- |
+| `.mcp.json`                           | Remove `stitch` server entry                                                            |
+| `CLAUDE.md`                           | Remove Stitch references, add ds-sync-components to agent/skill tables                  |
+| `README.md`                           | Remove Stitch references (MCP table, shell env, setup instructions)                     |
+| `.claude/skills/ui-design/SKILL.md`   | Remove Stitch Build mode entirely, update description                                   |
 | `.claude/agents/ui-designer/AGENT.md` | Remove `mcp__stitch__*` from allowedTools, remove Stitch Build mode, update description |
-| `.claude/skills/ds-sync/SKILL.md` | Update "Scraped Stitch design system reference" to "Design system reference HTML" |
+| `.claude/skills/ds-sync/SKILL.md`     | Update "Scraped Stitch design system reference" to "Design system reference HTML"       |
 
 ---
 
 ## Task 1: Remove Stitch from `.mcp.json`
 
 **Files:**
+
 - Modify: `.mcp.json`
 
 - [ ] **Step 1: Remove the stitch server entry**
@@ -61,6 +62,7 @@ git commit -m "chore: remove Stitch MCP server — no longer in use"
 ## Task 2: Remove Stitch from `CLAUDE.md`
 
 **Files:**
+
 - Modify: `CLAUDE.md`
 
 - [ ] **Step 1: Read the current file**
@@ -69,7 +71,7 @@ Read `CLAUDE.md` fully to locate all Stitch references.
 
 - [ ] **Step 2: Remove Shell Environment section**
 
-Remove the `### Shell Environment (\`.zshrc\`)` section that exports `STITCH_API_KEY`. This includes the heading, the description paragraph, the code block, and the "These are referenced via..." note.
+Remove the `### Shell Environment (\`.zshrc\`)`section that exports`STITCH_API_KEY`. This includes the heading, the description paragraph, the code block, and the "These are referenced via..." note.
 
 - [ ] **Step 3: Remove MCP Servers section**
 
@@ -78,6 +80,7 @@ Remove the entire `## MCP Servers` section — the heading, the description para
 - [ ] **Step 4: Clean up ui-design references**
 
 In the AI Development Fleet section, find the `/ui-design` entry. Remove the Stitch Build and Stitch Browse bullet points:
+
 - `- Stitch Build: /ui-design "stitch: Shop Page - Elias Thorne" — builds page/component from Stitch screen reference`
 - `- Stitch Browse: /ui-design "stitch:list" — browse all Stitch screens to pick from`
 
@@ -88,11 +91,13 @@ Verify the `/ds-sync` entry in CLAUDE.md does not contain Stitch references. (Cu
 - [ ] **Step 6: Add ds-sync-components to the fleet**
 
 In the AI Development Fleet > Development Tools section, add:
+
 ```
 - **`/ds-sync-components "{url}"`** — Extract atomic design components from a design system URL and scaffold React + SCSS files with smart placement
 ```
 
 In the Agents table, update the Design layer to include `ds-sync-components`:
+
 ```
 | Design    | ux-researcher, marketplace-audit, ui-designer, ds-sync, ds-sync-components |
 ```
@@ -115,6 +120,7 @@ git commit -m "docs: remove Stitch references, add ds-sync-components to CLAUDE.
 ## Task 3: Remove Stitch from `README.md`
 
 **Files:**
+
 - Modify: `README.md`
 
 - [ ] **Step 1: Read the current file**
@@ -143,6 +149,7 @@ git commit -m "docs: remove Stitch references from README"
 ## Task 4: Remove Stitch from ui-design skill
 
 **Files:**
+
 - Modify: `.claude/skills/ui-design/SKILL.md`
 
 - [ ] **Step 1: Read the current file**
@@ -152,18 +159,21 @@ Read `.claude/skills/ui-design/SKILL.md` fully.
 - [ ] **Step 2: Update frontmatter**
 
 Change the `description` to remove "Stitch screen references":
+
 ```yaml
 description: Design new components or audit existing ones — tokens, mobile-first, accessibility, pattern consistency
 ```
 
 Change the `argument-hint` to remove stitch option:
+
 ```yaml
-argument-hint: "[component spec or file path to audit]"
+argument-hint: '[component spec or file path to audit]'
 ```
 
 - [ ] **Step 3: Update intro paragraph**
 
 Change the opening line to:
+
 ```
 Design new Nessi components or audit existing ones against the design system.
 ```
@@ -171,6 +181,7 @@ Design new Nessi components or audit existing ones against the design system.
 - [ ] **Step 4: Remove Stitch Build mode from Step 1 (Detect Mode)**
 
 Remove the Stitch Build mode bullet from the mode detection list:
+
 ```
 - **Stitch Build mode** — argument starts with `stitch:` or `stitch ` (e.g., ...)
 ```
@@ -201,6 +212,7 @@ git commit -m "refactor: remove Stitch Build mode from ui-design skill"
 ## Task 5: Remove Stitch from ui-designer agent
 
 **Files:**
+
 - Modify: `.claude/agents/ui-designer/AGENT.md`
 
 - [ ] **Step 1: Read the current file**
@@ -210,6 +222,7 @@ Read `.claude/agents/ui-designer/AGENT.md` fully.
 - [ ] **Step 2: Update frontmatter**
 
 Change `description` to remove "Stitch screen references":
+
 ```yaml
 description: Designs new Nessi components or audits existing ones — brand tokens, mobile-first, accessibility
 ```
@@ -238,15 +251,19 @@ git commit -m "refactor: remove Stitch Build mode from ui-designer agent"
 ## Task 6: Update ds-sync skill reference
 
 **Files:**
+
 - Modify: `.claude/skills/ds-sync/SKILL.md`
 
 - [ ] **Step 1: Update the Stitch reference**
 
 On line 39, change:
+
 ```
 └── component-showcase-reference.html  # Scraped Stitch design system reference
 ```
+
 to:
+
 ```
 └── component-showcase-reference.html  # Design system reference HTML
 ```
@@ -263,6 +280,7 @@ git commit -m "docs: update ds-sync reference — remove Stitch mention"
 ## Task 7: Create ds-sync-components agent
 
 **Files:**
+
 - Create: `.claude/agents/ds-sync-components/AGENT.md`
 
 - [ ] **Step 1: Write the agent file**
@@ -270,6 +288,7 @@ git commit -m "docs: update ds-sync reference — remove Stitch mention"
 Create `.claude/agents/ds-sync-components/AGENT.md` with the full agent definition. The agent must include:
 
 **Frontmatter:**
+
 ```yaml
 ---
 name: ds-sync-components
@@ -335,6 +354,7 @@ git commit -m "feat: create ds-sync-components agent for atomic design extractio
 ## Task 8: Create ds-sync-components skill
 
 **Files:**
+
 - Create: `.claude/skills/ds-sync-components/SKILL.md`
 
 - [ ] **Step 1: Write the skill file**
@@ -342,12 +362,13 @@ git commit -m "feat: create ds-sync-components agent for atomic design extractio
 Create `.claude/skills/ds-sync-components/SKILL.md` with the full skill definition. The skill must include:
 
 **Frontmatter:**
+
 ```yaml
 ---
 name: ds-sync-components
 description: Use when syncing atomic design components from a design system URL into the codebase — extracts component specs, scaffolds React + SCSS files with smart placement
 user-invocable: true
-argument-hint: "{design-system-url}"
+argument-hint: '{design-system-url}'
 ---
 ```
 
@@ -390,6 +411,7 @@ git commit -m "feat: create ds-sync-components skill for component sync orchestr
 ## Task 9: Final verification
 
 **Files:**
+
 - None modified (verification only)
 
 - [ ] **Step 1: Grep for remaining Stitch references**
@@ -428,6 +450,7 @@ These should pass (we only changed Markdown and JSON files, no TypeScript).
 - [ ] **Step 5: Commit any final fixes**
 
 If any fixes were needed:
+
 ```bash
 git add -A
 git commit -m "chore: final cleanup — verify Stitch removal and new skill/agent files"
