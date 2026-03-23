@@ -48,6 +48,9 @@ export {
 // Guest Cart Hook
 export { useGuestCart } from './hooks/use-guest-cart';
 
+// Components
+export { default as AddToCartButton } from './components/add-to-cart-button';
+
 // Cart Query Hooks
 export {
   useCart,

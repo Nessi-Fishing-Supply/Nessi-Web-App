@@ -135,6 +135,22 @@
   font-size: var(--font-size-700);
 }
 
+// Shop context notice
+.shopContextNotice {
+  padding: var(--spacing-400);
+  background-color: var(--color-neutral-50);
+  border: 1px solid var(--color-neutral-200);
+  border-radius: var(--radius-300);
+  text-align: center;
+  margin-bottom: var(--spacing-600);
+}
+
+.shopContextText {
+  font-size: var(--font-size-500);
+  color: var(--color-neutral-500);
+  font-weight: 500;
+}
+
 // Action buttons
 .actionButtons {
   display: flex;

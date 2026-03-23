@@ -9,10 +9,12 @@ import SellerStrip from '@/features/listings/components/seller-strip';
 import ExpandableSection from '@/features/listings/components/expandable-section';
 import ConditionBadge from '@/features/listings/components/condition-badge';
 import Button from '@/components/controls/button';
+import AddToCartButton from '@/features/cart/components/add-to-cart-button';
 import { formatPrice } from '@/features/shared/utils/format';
 import { CONDITION_TIERS } from '@/features/listings/constants/condition';
 import { getCategoryLabel } from '@/features/listings/constants/category';
 import { useIncrementViewCount } from '@/features/listings/hooks/use-listings';
+import useContextStore from '@/features/context/stores/context-store';
 import type { ListingWithPhotos, SellerIdentity } from '@/features/listings/types/listing';
 import styles from './listing-detail.module.scss';
 
@@ -32,9 +34,16 @@ export default function ListingDetail({ listing, seller, currentUserId }: Props)
     incrementView(listing.id);
   }, [listing.id, incrementView]);
 
+  const activeContext = useContextStore.use.activeContext();
+  const isShopContext = activeContext.type === 'shop';
+
   const photos = listing.listing_photos ?? [];
   const isSold = listing.status === 'sold';
-  const isOwnListing = currentUserId === listing.seller_id;
+  // Context-aware ownership: in shop context, only show "Edit" for that shop's listings.
+  // In member context, only show "Edit" for member-owned listings (shop_id is null).
+  const isOwnListing = isShopContext
+    ? listing.shop_id === activeContext.shopId
+    : currentUserId === listing.seller_id && !listing.shop_id;
   const conditionTier = CONDITION_TIERS.find((t) => t.value === listing.condition);
 
   function handlePhotoTap(index: number) {
@@ -101,11 +110,24 @@ export default function ListingDetail({ listing, seller, currentUserId }: Props)
                 </Button>
               </Link>
             </div>
+          ) : isShopContext ? (
+            <div className={styles.shopContextNotice}>
+              <span className={styles.shopContextText}>
+                Switch to your member account to purchase
+              </span>
+            </div>
           ) : (
             <div className={styles.actionButtons}>
               <Button style="primary" fullWidth disabled ariaLabel="Buy Now — Coming Soon">
                 Buy Now
               </Button>
+              <AddToCartButton
+                listingId={listing.id}
+                priceCents={listing.price_cents}
+                currentUserId={currentUserId}
+                sellerId={listing.seller_id}
+                fullWidth
+              />
               <Button
                 style="secondary"
                 fullWidth
@@ -198,13 +220,17 @@ export default function ListingDetail({ listing, seller, currentUserId }: Props)
         </div>
       </div>
 
-      {/* Sticky Buy Now bar — mobile only */}
-      {!isSold && !isOwnListing && (
+      {/* Sticky Buy Now bar — mobile only, hidden in shop context */}
+      {!isSold && !isOwnListing && !isShopContext && (
         <div className={styles.stickyBar}>
           <div className={styles.stickyPrice}>{formatPrice(listing.price_cents)}</div>
-          <Button style="primary" disabled ariaLabel="Buy Now — Coming Soon">
-            Buy Now
-          </Button>
+          <AddToCartButton
+            listingId={listing.id}
+            priceCents={listing.price_cents}
+            currentUserId={currentUserId}
+            sellerId={listing.seller_id}
+            fullWidth={false}
+          />
         </div>
       )}
 
