@@ -29,6 +29,5 @@ export const validateCart = async (): Promise<CartValidationResult> =>
 export const refreshExpiry = async (cartItemId: string): Promise<CartItem> =>
   patch<CartItem>(`${BASE_URL}/${cartItemId}/expiry`);
 
-export const mergeGuestCart = async (
-  items: GuestCartItem[],
-): Promise<{ merged: number }> => post<{ merged: number }>(`${BASE_URL}/merge`, { items });
+export const mergeGuestCart = async (items: GuestCartItem[]): Promise<{ merged: number }> =>
+  post<{ merged: number }>(`${BASE_URL}/merge`, { items });

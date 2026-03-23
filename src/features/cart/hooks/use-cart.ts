@@ -47,10 +47,7 @@ export function useAddToCart() {
       await queryClient.cancelQueries({ queryKey: ['cart', user?.id] });
       await queryClient.cancelQueries({ queryKey: ['cart-count', user?.id] });
 
-      const previousCount = queryClient.getQueryData<{ count: number }>([
-        'cart-count',
-        user?.id,
-      ]);
+      const previousCount = queryClient.getQueryData<{ count: number }>(['cart-count', user?.id]);
 
       queryClient.setQueryData<{ count: number }>(['cart-count', user?.id], (old) => ({
         count: (old?.count ?? 0) + 1,
@@ -81,10 +78,7 @@ export function useRemoveFromCart() {
       await queryClient.cancelQueries({ queryKey: ['cart-count', user?.id] });
 
       const previousCart = queryClient.getQueryData<CartItemWithListing[]>(['cart', user?.id]);
-      const previousCount = queryClient.getQueryData<{ count: number }>([
-        'cart-count',
-        user?.id,
-      ]);
+      const previousCount = queryClient.getQueryData<{ count: number }>(['cart-count', user?.id]);
 
       queryClient.setQueryData<CartItemWithListing[]>(['cart', user?.id], (old) =>
         old?.filter((item) => item.id !== cartItemId),
@@ -122,10 +116,7 @@ export function useClearCart() {
       await queryClient.cancelQueries({ queryKey: ['cart-count', user?.id] });
 
       const previousCart = queryClient.getQueryData<CartItemWithListing[]>(['cart', user?.id]);
-      const previousCount = queryClient.getQueryData<{ count: number }>([
-        'cart-count',
-        user?.id,
-      ]);
+      const previousCount = queryClient.getQueryData<{ count: number }>(['cart-count', user?.id]);
 
       queryClient.setQueryData<CartItemWithListing[]>(['cart', user?.id], []);
       queryClient.setQueryData<{ count: number }>(['cart-count', user?.id], { count: 0 });
