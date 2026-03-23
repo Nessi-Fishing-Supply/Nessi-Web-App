@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { getCategoryBySlug } from '@/features/listings/config/categories';
 import CategoryBrowse from './category-browse';
@@ -29,5 +30,9 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
     notFound();
   }
 
-  return <CategoryBrowse slug={category.slug} label={category.label} />;
+  return (
+    <Suspense>
+      <CategoryBrowse slug={category.slug} label={category.label} />
+    </Suspense>
+  );
 }

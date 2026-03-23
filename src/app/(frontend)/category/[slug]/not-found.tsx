@@ -1,35 +1,14 @@
 import Link from 'next/link';
+import styles from './not-found.module.scss';
 
 export default function NotFound() {
   return (
-    <div
-      style={{
-        maxWidth: '600px',
-        margin: '0 auto',
-        padding: 'var(--space-3xl) var(--space-sm)',
-        textAlign: 'center',
-      }}
-    >
-      <h1 style={{ fontSize: 'var(--font-size-2xl)', marginBottom: 'var(--space-sm)' }}>
-        Category Not Found
-      </h1>
-      <p
-        style={{
-          color: 'var(--color-gray-600)',
-          fontSize: 'var(--font-size-base)',
-          marginBottom: 'var(--space-md)',
-        }}
-      >
+    <div className={styles.container}>
+      <h1 className={styles.title}>Category Not Found</h1>
+      <p className={styles.description}>
         The category you&apos;re looking for doesn&apos;t exist or has been removed.
       </p>
-      <Link
-        href="/"
-        style={{
-          color: 'var(--color-primary-600)',
-          fontSize: 'var(--font-size-base)',
-          textDecoration: 'none',
-        }}
-      >
+      <Link href="/" className={styles.link}>
         Back to home
       </Link>
     </div>

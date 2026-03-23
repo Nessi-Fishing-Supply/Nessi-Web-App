@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 
+import ListingGrid from '../listing-grid';
 import ListingSkeleton from '../listing-skeleton';
 import styles from './infinite-scroll.module.scss';
 
@@ -60,9 +61,13 @@ export default function InfiniteScroll({
   }, []);
 
   return (
-    <div className={styles.container}>
+    <div>
       {children}
-      {isLoading && <ListingSkeleton count={4} />}
+      {isLoading && (
+        <ListingGrid>
+          <ListingSkeleton count={4} />
+        </ListingGrid>
+      )}
       {!hasMore && !isLoading && (
         <p className={styles.endMessage} role="status">
           {endMessage}
