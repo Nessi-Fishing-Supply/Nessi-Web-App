@@ -14,6 +14,7 @@ import { formatPrice } from '@/features/shared/utils/format';
 import { CONDITION_TIERS } from '@/features/listings/constants/condition';
 import { getCategoryLabel } from '@/features/listings/constants/category';
 import { useIncrementViewCount } from '@/features/listings/hooks/use-listings';
+import useContextStore from '@/features/context/stores/context-store';
 import type { ListingWithPhotos, SellerIdentity } from '@/features/listings/types/listing';
 import styles from './listing-detail.module.scss';
 
@@ -32,6 +33,9 @@ export default function ListingDetail({ listing, seller, currentUserId }: Props)
   useEffect(() => {
     incrementView(listing.id);
   }, [listing.id, incrementView]);
+
+  const activeContext = useContextStore.use.activeContext();
+  const isShopContext = activeContext.type === 'shop';
 
   const photos = listing.listing_photos ?? [];
   const isSold = listing.status === 'sold';
@@ -101,6 +105,12 @@ export default function ListingDetail({ listing, seller, currentUserId }: Props)
                   Edit listing
                 </Button>
               </Link>
+            </div>
+          ) : isShopContext ? (
+            <div className={styles.shopContextNotice}>
+              <span className={styles.shopContextText}>
+                Switch to your member account to purchase
+              </span>
             </div>
           ) : (
             <div className={styles.actionButtons}>
@@ -206,8 +216,8 @@ export default function ListingDetail({ listing, seller, currentUserId }: Props)
         </div>
       </div>
 
-      {/* Sticky Buy Now bar — mobile only */}
-      {!isSold && !isOwnListing && (
+      {/* Sticky Buy Now bar — mobile only, hidden in shop context */}
+      {!isSold && !isOwnListing && !isShopContext && (
         <div className={styles.stickyBar}>
           <div className={styles.stickyPrice}>{formatPrice(listing.price_cents)}</div>
           <AddToCartButton

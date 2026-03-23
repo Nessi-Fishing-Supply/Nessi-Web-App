@@ -362,7 +362,9 @@ export default function Navbar() {
           )
         )}
 
-        <HiOutlineShoppingBag className={styles.icon} aria-hidden="true" />
+        {mounted && !isShopContext && (
+          <HiOutlineShoppingBag className={styles.icon} aria-hidden="true" />
+        )}
       </div>
 
       <div className={styles.categories}>

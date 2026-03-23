@@ -6,6 +6,7 @@ import { useAuth } from '@/features/auth/context';
 import { useToast } from '@/components/indicators/toast/context';
 import { useAddToCart, useCart } from '@/features/cart/hooks/use-cart';
 import { useGuestCart } from '@/features/cart/hooks/use-guest-cart';
+import useContextStore from '@/features/context/stores/context-store';
 import type { CartItemWithListing } from '@/features/cart/types/cart';
 
 import styles from './add-to-cart-button.module.scss';
@@ -30,6 +31,12 @@ export default function AddToCartButton({
   const addToCart = useAddToCart();
   const cartQuery = useCart();
   const guestCart = useGuestCart();
+  const activeContext = useContextStore.use.activeContext();
+
+  // Shops cannot purchase — hide button in shop context
+  if (activeContext.type === 'shop') {
+    return null;
+  }
 
   if (currentUserId && currentUserId === sellerId) {
     return null;
