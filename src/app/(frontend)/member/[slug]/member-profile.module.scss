@@ -22,7 +22,7 @@
   position: relative;
   width: 120px;
   height: 120px;
-  border-radius: var(--radius-2xl);
+  border-radius: var(--radius-800);
   overflow: hidden;
   margin-bottom: var(--spacing-300);
   background-color: var(--color-neutral-300);
@@ -96,7 +96,7 @@
   margin-bottom: var(--spacing-700);
   padding: var(--spacing-600);
   background-color: var(--color-neutral-200);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-300);
 
   @include breakpoint(md) {
     gap: var(--spacing-700);

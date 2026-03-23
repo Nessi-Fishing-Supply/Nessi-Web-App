@@ -76,7 +76,7 @@
   color: var(--color-primary-500);
   background-color: var(--color-neutral-100);
   padding: var(--spacing-50) var(--spacing-100);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-100);
   white-space: nowrap;
 }
 
@@ -90,7 +90,7 @@
   color: var(--color-neutral-600);
   background-color: var(--color-neutral-200);
   padding: var(--spacing-50) var(--spacing-100);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-100);
   white-space: nowrap;
 
   svg {
@@ -115,6 +115,6 @@
   &:focus-visible {
     outline: 2px solid var(--color-primary-500);
     outline-offset: 2px;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-100);
   }
 }

@@ -38,7 +38,7 @@
 
   /* ── Nav items ── */
   li {
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-300);
     transition: var(--transition-color);
 
     &:hover {
@@ -56,7 +56,7 @@
       text-decoration: none;
       font-size: var(--font-size-sm);
       font-weight: 500;
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-300);
       transition: var(--transition-color);
       min-height: 44px;
 

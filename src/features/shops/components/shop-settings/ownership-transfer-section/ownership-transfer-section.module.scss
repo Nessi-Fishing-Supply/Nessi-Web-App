@@ -2,7 +2,7 @@
 
 .card {
   background: var(--color-white);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-300);
   box-shadow: var(--shadow-sm);
   padding: var(--spacing-300) var(--spacing-400);
 
@@ -48,7 +48,7 @@
   padding: var(--spacing-200) var(--spacing-400);
   font-size: var(--font-size-base);
   border: 1.5px solid var(--color-neutral-400);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-300);
   background: var(--color-white);
   color: var(--color-neutral-900);
   flex: 1;
@@ -99,7 +99,7 @@
   padding: var(--spacing-200) var(--spacing-400);
   font-size: var(--font-size-base);
   border: 1.5px solid var(--color-neutral-400);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-300);
   background: var(--color-white);
   color: var(--color-neutral-900);
   box-sizing: border-box;

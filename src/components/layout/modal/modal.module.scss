@@ -12,7 +12,7 @@
   position: relative;
   background: var(--color-white);
   padding: var(--spacing-600);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-600);
   max-width: 384px;
   width: 100%;
   box-shadow: var(--shadow-modal);
@@ -34,7 +34,7 @@
   padding: 0;
   border: 0;
   cursor: pointer;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-100);
 
   &:hover {
     color: var(--color-neutral-900);

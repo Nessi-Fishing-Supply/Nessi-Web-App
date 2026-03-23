@@ -27,7 +27,7 @@
   padding: var(--spacing-200) var(--spacing-300);
   background: none;
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-100);
   font-size: var(--font-size-base);
   font-weight: 500;
   color: var(--color-neutral-900);
@@ -41,7 +41,7 @@
   &:focus-visible {
     outline: 2px solid var(--color-primary-500);
     outline-offset: -2px;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-100);
   }
 }
 

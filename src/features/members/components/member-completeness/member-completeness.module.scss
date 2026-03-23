@@ -12,13 +12,13 @@
   width: 100%;
   padding: var(--spacing-400);
   background: var(--color-white);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-300);
   border: 1px solid var(--color-neutral-200);
   box-shadow: 0 1px 3px rgb(0 0 0 / 4%);
 
   @include breakpoint(md) {
     padding: var(--spacing-600);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-600);
   }
 }
 
@@ -52,7 +52,7 @@
   width: 100%;
   height: var(--spacing-300);
   background-color: var(--color-neutral-200);
-  border-radius: var(--radius-2xl);
+  border-radius: var(--radius-800);
   overflow: hidden;
   position: relative;
 
@@ -63,7 +63,7 @@
 
 .fill {
   height: 100%;
-  border-radius: var(--radius-2xl);
+  border-radius: var(--radius-800);
   background: linear-gradient(
     90deg,
     var(--color-primary-700) 0%,

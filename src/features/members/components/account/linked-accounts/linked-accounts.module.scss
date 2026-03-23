@@ -11,7 +11,7 @@
   justify-content: space-between;
   gap: var(--spacing-300);
   padding: var(--spacing-200);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-300);
   transition: var(--transition-color);
 
   &:hover {
@@ -31,7 +31,7 @@
   justify-content: center;
   width: var(--spacing-900);
   height: var(--spacing-900);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-600);
   background: linear-gradient(135deg, var(--color-neutral-100) 0%, var(--color-surface-300) 100%);
   font-size: var(--font-size-xl);
   color: var(--color-neutral-600);

@@ -17,7 +17,7 @@
 
 .previewCard {
   border: 1px solid var(--color-neutral-200);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-600);
   overflow: hidden;
   background-color: var(--color-white);
   max-width: 280px;
@@ -81,7 +81,7 @@
 
 .summary {
   border: 1px solid var(--color-neutral-200);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-600);
   background-color: var(--color-white);
   overflow: hidden;
 }

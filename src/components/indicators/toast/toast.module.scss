@@ -17,7 +17,7 @@
   pointer-events: auto;
   width: 100%;
   max-width: 420px;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-600);
   padding: var(--spacing-300) var(--spacing-600);
   display: flex;
   align-items: flex-start;
@@ -120,7 +120,7 @@
   &:focus-visible {
     outline: 2px solid var(--color-primary-500);
     outline-offset: 2px;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-100);
   }
 }
 

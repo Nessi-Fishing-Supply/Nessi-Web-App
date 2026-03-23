@@ -26,7 +26,7 @@
   gap: var(--spacing-200);
   padding: var(--spacing-600);
   border: 2px dashed var(--color-neutral-400);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-300);
   cursor: pointer;
   transition:
     border-color var(--transition-color),
@@ -66,7 +66,7 @@
 .thumbnail {
   position: relative;
   aspect-ratio: 1;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-100);
   overflow: hidden;
   background-color: var(--color-neutral-100);
 }
@@ -155,7 +155,7 @@
   background-color: rgb(0 0 0 / 50%);
   color: var(--color-white);
   cursor: pointer;
-  border-radius: 0 var(--radius-sm) 0 var(--radius-sm);
+  border-radius: 0 var(--radius-100) 0 var(--radius-100);
   font-size: var(--font-size-md);
   opacity: 0;
   transition: opacity var(--transition-color);
@@ -187,7 +187,7 @@
   gap: var(--spacing-100);
   aspect-ratio: 1;
   border: 2px dashed var(--color-neutral-400);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-100);
   cursor: pointer;
   background: none;
   color: var(--color-neutral-500);
@@ -230,7 +230,7 @@
   width: 100%;
   padding: var(--spacing-300) var(--spacing-400);
   border: 1px solid var(--color-neutral-300);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-300);
   background: none;
   cursor: pointer;
   font-size: var(--font-size-base);

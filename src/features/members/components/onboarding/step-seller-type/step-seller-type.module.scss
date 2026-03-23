@@ -34,7 +34,7 @@
   &:focus-visible {
     outline: 2px solid var(--color-primary-500);
     outline-offset: 2px;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-100);
   }
 }
 
@@ -82,7 +82,7 @@
   gap: var(--spacing-200);
   padding: var(--spacing-700) var(--spacing-400);
   border: 2px solid var(--color-neutral-300);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-600);
   background: var(--color-white);
   cursor: pointer;
   transition:

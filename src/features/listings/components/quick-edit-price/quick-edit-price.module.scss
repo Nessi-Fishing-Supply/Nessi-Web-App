@@ -27,7 +27,7 @@
   display: flex;
   align-items: center;
   border: 1px solid var(--color-neutral-400);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-100);
   overflow: hidden;
 
   &:focus-within {
@@ -62,7 +62,7 @@
   gap: var(--spacing-100);
   padding: var(--spacing-300);
   background-color: var(--color-neutral-100);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-100);
 }
 
 .feeRow {
@@ -96,7 +96,7 @@
   margin: 0;
   padding: var(--spacing-200) var(--spacing-300);
   background-color: color-mix(in srgb, var(--color-warning-500) 10%, transparent);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-100);
   font-size: var(--font-size-sm);
   color: var(--color-neutral-700);
 }

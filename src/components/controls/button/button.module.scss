@@ -4,7 +4,7 @@
   justify-content: center;
   border-width: 2px;
   border-style: solid;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-300);
   gap: var(--spacing-200);
   padding: var(--spacing-300) var(--spacing-600);
   font-size: var(--font-size-base);
@@ -40,7 +40,7 @@
 
   // Set border radius
   &.round {
-    border-radius: var(--radius-2xl);
+    border-radius: var(--radius-800);
   }
 
   // Set margin bottom {

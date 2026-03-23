@@ -5,7 +5,7 @@
   gap: var(--spacing-400);
   width: 100%;
   padding: var(--spacing-300);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-600);
   box-shadow: 0 0 0 0 transparent;
   cursor: pointer;
   transition: var(--transition-basic);
@@ -21,7 +21,7 @@
   position: relative;
   width: 100%;
   height: 224px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-300);
   overflow: hidden;
 
   /* stylelint-disable selector-pseudo-class-no-unknown */

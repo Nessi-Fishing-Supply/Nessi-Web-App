@@ -10,7 +10,7 @@
   @include breakpoint(lg) {
     padding-bottom: 0;
     height: 520px;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-300);
   }
 
   /* stylelint-disable selector-pseudo-class-no-unknown */
@@ -45,7 +45,7 @@
     font-size: var(--font-size-xs);
     font-weight: 600;
     padding: var(--spacing-100) var(--spacing-200);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-100);
     pointer-events: none;
   }
 
