@@ -5,13 +5,18 @@ import RegisterForm from '../index';
 
 vi.mock('@/features/auth/services/auth', () => ({
   register: vi.fn(),
+  verifyOtp: vi.fn(),
+  resendVerification: vi.fn(),
 }));
 
 vi.mock('@/libs/supabase/client', () => ({
   createClient: vi.fn(),
 }));
 
-import { register as registerMock } from '@/features/auth/services/auth';
+import {
+  register as registerMock,
+  verifyOtp as verifyOtpMock,
+} from '@/features/auth/services/auth';
 
 const fillAndSubmitForm = async () => {
   await act(async () => {
@@ -101,6 +106,56 @@ describe('RegisterForm', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Network error')).toBeInTheDocument();
+    });
+  });
+
+  it('transitions to OTP step after successful registration', async () => {
+    vi.mocked(registerMock).mockResolvedValueOnce({ message: 'Registration successful' });
+
+    render(<RegisterForm onSwitchToLogin={vi.fn()} />);
+    await fillAndSubmitForm();
+
+    await waitFor(() => {
+      expect(screen.getByText(/we sent a 6-digit code/i)).toBeInTheDocument();
+    });
+  });
+
+  it('displays the registered email in OTP step', async () => {
+    vi.mocked(registerMock).mockResolvedValueOnce({ message: 'Registration successful' });
+
+    render(<RegisterForm onSwitchToLogin={vi.fn()} />);
+    await fillAndSubmitForm();
+
+    await waitFor(() => {
+      expect(screen.getByText('jane@example.com')).toBeInTheDocument();
+    });
+  });
+
+  it('calls onSuccess after OTP verification succeeds', async () => {
+    vi.mocked(registerMock).mockResolvedValueOnce({ message: 'Registration successful' });
+    vi.mocked(verifyOtpMock).mockResolvedValueOnce({ user: { id: 'user-123' } });
+
+    const onSuccess = vi.fn();
+    render(<RegisterForm onSuccess={onSuccess} onSwitchToLogin={vi.fn()} />);
+    await fillAndSubmitForm();
+
+    await waitFor(() => {
+      expect(screen.getByText(/we sent a 6-digit code/i)).toBeInTheDocument();
+    });
+
+    // Enter 6 digits into the OTP inputs
+    const digitInputs = screen.getAllByRole('textbox', { name: /verification code digit/i });
+    await act(async () => {
+      digitInputs.forEach((input, index) => {
+        fireEvent.change(input, { target: { value: String(index + 1) } });
+      });
+    });
+
+    await waitFor(() => {
+      expect(onSuccess).toHaveBeenCalledWith({
+        message: 'Verification successful',
+        email: 'jane@example.com',
+      });
     });
   });
 });

@@ -1,15 +1,16 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { registerSchema } from '@/features/auth/validations/auth';
 import { RegisterData } from '@/features/auth/types/auth';
 import { useFormState } from '@/features/shared/hooks/use-form-state';
 import { Input, Button, Checkbox } from '@/components/controls';
-import { register as registerUser } from '@/features/auth/services/auth';
+import { register as registerUser, resendVerification } from '@/features/auth/services/auth';
 import Grid from '@/components/layout/grid';
 import { AuthFormProps, RegisterFormData, AuthFormResponse } from '@/features/auth/types/forms';
+import OtpInput from '@/features/auth/components/otp-input';
 import styles from './registration-form.module.scss';
 
 interface RegisterFormProps extends AuthFormProps<RegisterFormData, AuthFormResponse> {
@@ -17,6 +18,8 @@ interface RegisterFormProps extends AuthFormProps<RegisterFormData, AuthFormResp
 }
 
 const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onError, onSwitchToLogin }) => {
+  const [step, setStep] = useState<'form' | 'otp'>('form');
+  const [registeredEmail, setRegisteredEmail] = useState('');
   const { isLoading, error, setLoading, setError } = useFormState();
 
   const methods = useForm<RegisterData>({
@@ -27,8 +30,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onError, onSwitc
   const handleSubmit = async (data: RegisterFormData) => {
     setLoading(true);
     try {
-      const response = await registerUser(data);
-      if (onSuccess) onSuccess({ ...response, email: data.email });
+      await registerUser(data);
+      setRegisteredEmail(data.email);
+      setStep('otp');
     } catch (error: unknown) {
       if (error instanceof Error) {
         if (error.message === 'DUPLICATE_EMAIL') {
@@ -44,6 +48,26 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onError, onSwitc
       setLoading(false);
     }
   };
+
+  const handleOtpSuccess = () => {
+    if (onSuccess) onSuccess({ message: 'Verification successful', email: registeredEmail });
+  };
+
+  const handleResend = () => resendVerification({ email: registeredEmail });
+
+  if (step === 'otp') {
+    return (
+      <div>
+        <p>We sent a 6-digit code to your email address.</p>
+        <OtpInput
+          email={registeredEmail}
+          type="signup"
+          onSuccess={handleOtpSuccess}
+          onResend={handleResend}
+        />
+      </div>
+    );
+  }
 
   return (
     <FormProvider {...methods}>
