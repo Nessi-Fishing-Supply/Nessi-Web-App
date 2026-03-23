@@ -5,7 +5,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
-  background-color: var(--color-cream);
+  background-color: var(--color-surface-100);
 }
 
 // Header: back link | progress | save draft
@@ -13,16 +13,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-xs);
-  padding: var(--space-sm) var(--space-base);
+  gap: var(--spacing-200);
+  padding: var(--spacing-300) var(--spacing-400);
   background-color: var(--color-white);
-  border-bottom: 1px solid var(--color-gray-100);
+  border-bottom: 1px solid var(--color-neutral-200);
   position: sticky;
   top: 0;
   z-index: 10;
 
   @include breakpoint(md) {
-    padding: var(--space-sm) var(--space-lg);
+    padding: var(--spacing-300) var(--spacing-700);
   }
 }
 
@@ -31,10 +31,10 @@
   flex-shrink: 0;
   background: none;
   border: none;
-  padding: var(--space-2xs) 0;
-  font-size: var(--font-size-sm);
+  padding: var(--spacing-100) 0;
+  font-size: var(--font-size-500);
   font-weight: 500;
-  color: var(--color-gray-600);
+  color: var(--color-neutral-600);
   cursor: pointer;
   min-height: 44px;
   min-width: 44px;
@@ -42,14 +42,14 @@
 
   &:hover,
   &:focus-visible {
-    color: var(--color-primary);
+    color: var(--color-primary-500);
     text-decoration: underline;
   }
 
   &:focus-visible {
-    outline: 2px solid var(--color-primary);
+    outline: 2px solid var(--color-primary-500);
     outline-offset: 2px;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-100);
   }
 }
 
@@ -64,10 +64,10 @@
   flex-shrink: 0;
   background: none;
   border: none;
-  padding: var(--space-2xs) 0;
-  font-size: var(--font-size-sm);
+  padding: var(--spacing-100) 0;
+  font-size: var(--font-size-500);
   font-weight: 500;
-  color: var(--color-gray-600);
+  color: var(--color-neutral-600);
   cursor: pointer;
   min-height: 44px;
   min-width: 44px;
@@ -76,29 +76,29 @@
 
   &:hover,
   &:focus-visible {
-    color: var(--color-primary);
+    color: var(--color-primary-500);
     text-decoration: underline;
   }
 
   &:focus-visible {
-    outline: 2px solid var(--color-primary);
+    outline: 2px solid var(--color-primary-500);
     outline-offset: 2px;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-100);
   }
 }
 
 // Step content area — fills available space, padded above fixed footer
 .stepContainer {
   flex: 1;
-  padding: var(--space-md) var(--space-base);
+  padding: var(--spacing-600) var(--spacing-400);
 
   // Reserve space for fixed footer (48px button + padding)
-  padding-bottom: calc(48px + var(--space-lg) + var(--space-md));
+  padding-bottom: calc(48px + var(--spacing-700) + var(--spacing-600));
   overflow-y: auto;
 
   @include breakpoint(md) {
-    padding: var(--space-lg) var(--space-lg);
-    padding-bottom: calc(48px + var(--space-xl));
+    padding: var(--spacing-700) var(--spacing-700);
+    padding-bottom: calc(48px + var(--spacing-800));
     max-width: 680px;
     margin: 0 auto;
     width: 100%;
@@ -154,9 +154,9 @@
   bottom: 0;
   left: 0;
   right: 0;
-  padding: var(--space-sm) var(--space-base);
+  padding: var(--spacing-300) var(--spacing-400);
   background-color: var(--color-white);
-  border-top: 1px solid var(--color-gray-100);
+  border-top: 1px solid var(--color-neutral-200);
   z-index: 10;
 
   // Button is 48px tall — enforced via Button's internal styles
@@ -167,11 +167,11 @@
 
   @include breakpoint(md) {
     position: static;
-    padding: var(--space-sm) var(--space-lg);
+    padding: var(--spacing-300) var(--spacing-700);
     max-width: 680px;
-    margin: 0 auto var(--space-md);
+    margin: 0 auto var(--spacing-600);
     border-top: none;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-300);
 
     > * {
       width: auto;
@@ -183,12 +183,12 @@
 .reviewActions {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: var(--spacing-200);
   width: 100%;
 
   @include breakpoint(md) {
     flex-direction: row-reverse;
-    gap: var(--space-sm);
+    gap: var(--spacing-300);
     width: auto;
   }
 }
@@ -209,15 +209,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-md);
+  gap: var(--spacing-600);
   text-align: center;
 }
 
 .savingSpinner {
   width: 40px;
   height: 40px;
-  border: 3px solid var(--color-gray-200);
-  border-top-color: var(--color-primary);
+  border: 3px solid var(--color-neutral-300);
+  border-top-color: var(--color-primary-500);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -229,9 +229,9 @@
 }
 
 .savingText {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-700);
   font-weight: 500;
-  color: var(--color-dark);
+  color: var(--color-neutral-900);
   margin: 0;
 }
 

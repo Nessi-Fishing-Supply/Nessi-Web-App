@@ -1,16 +1,16 @@
 .wrapper {
-  margin-bottom: var(--space-base);
+  margin-bottom: var(--spacing-400);
   display: flex;
   flex-direction: column;
 }
 
 .label {
-  margin-bottom: var(--space-xs);
-  font-size: var(--font-size-base);
-  color: var(--color-dark);
+  margin-bottom: var(--spacing-200);
+  font-size: var(--font-size-700);
+  color: var(--color-neutral-900);
 
   > span {
-    color: var(--color-error);
+    color: var(--color-error-500);
   }
 }
 
@@ -18,32 +18,32 @@
   position: relative;
   display: flex;
   align-items: center;
-  border: 1px solid var(--color-dark);
-  border-radius: var(--radius-md);
-  padding: var(--space-sm) var(--space-base);
+  border: 1px solid var(--color-neutral-900);
+  border-radius: var(--radius-300);
+  padding: var(--spacing-300) var(--spacing-400);
   transition: border-color 0.2s ease;
 
   &:hover {
-    border-color: var(--color-primary--light);
+    border-color: var(--color-primary-400);
   }
 
   &.focused {
-    border-color: var(--color-primary--light);
-    outline: 2px solid var(--color-primary);
+    border-color: var(--color-primary-400);
+    outline: 2px solid var(--color-primary-500);
     outline-offset: 0;
   }
 
   &.error {
-    border-color: var(--color-error);
+    border-color: var(--color-error-500);
   }
 
   &.success {
-    border-color: var(--color-success);
+    border-color: var(--color-success-500);
   }
 
   &.disabled {
-    background-color: var(--color-gray-300);
-    border-color: var(--color-gray-300);
+    background-color: var(--color-neutral-400);
+    border-color: var(--color-neutral-400);
   }
 }
 
@@ -52,28 +52,28 @@
   border: none;
   background: transparent;
   outline: none;
-  font-size: var(--font-size-base);
-  color: var(--color-dark);
+  font-size: var(--font-size-700);
+  color: var(--color-neutral-900);
 
   &::placeholder {
-    color: var(--color-gray-600);
+    color: var(--color-neutral-600);
   }
 
   &:disabled {
-    color: var(--color-gray-300);
+    color: var(--color-neutral-400);
   }
 }
 
 .icon {
   position: absolute;
-  right: var(--space-base);
+  right: var(--spacing-400);
   display: flex;
   align-items: center;
-  color: var(--color-dark);
+  color: var(--color-neutral-900);
   cursor: pointer;
 
   &:hover {
-    color: var(--color-primary);
+    color: var(--color-primary-500);
   }
 
   &:disabled {
@@ -82,15 +82,15 @@
 }
 
 .helperText {
-  margin-top: var(--space-2xs);
-  font-size: var(--font-size-sm);
-  color: var(--color-dark);
+  margin-top: var(--spacing-100);
+  font-size: var(--font-size-500);
+  color: var(--color-neutral-900);
 }
 
 .errorText {
-  margin-top: var(--space-2xs);
-  font-size: var(--font-size-sm);
-  color: var(--color-error);
+  margin-top: var(--spacing-100);
+  font-size: var(--font-size-500);
+  color: var(--color-error-500);
 }
 
 // Password Specific Styles
@@ -100,20 +100,20 @@
   padding: 0;
   display: flex;
   align-items: center;
-  margin-left: var(--space-xs);
+  margin-left: var(--spacing-200);
   cursor: pointer;
 
   > svg {
-    width: var(--space-base);
-    height: var(--space-base);
-    color: var(--color-primary);
+    width: var(--spacing-400);
+    height: var(--spacing-400);
+    color: var(--color-primary-500);
   }
 }
 
 .passwordStrengthBar {
   width: 100%;
-  margin-top: var(--space-xs);
-  border-radius: var(--radius-sm);
+  margin-top: var(--spacing-200);
+  border-radius: var(--radius-100);
   position: relative;
 
   &::before {
@@ -122,41 +122,41 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: var(--space-sm);
-    background-color: var(--color-gray-200);
-    border-radius: var(--radius-sm);
+    height: var(--spacing-300);
+    background-color: var(--color-neutral-300);
+    border-radius: var(--radius-100);
     z-index: 1;
   }
 }
 
 .passwordStrengthProgress {
-  height: var(--space-sm);
-  border-radius: var(--radius-sm);
+  height: var(--spacing-300);
+  border-radius: var(--radius-100);
   position: relative;
   z-index: 2;
   transition: all 0.25s ease-in-out;
 
   &.weak {
-    background-color: var(--color-error);
+    background-color: var(--color-error-500);
   }
 
   &.fair {
-    background-color: var(--color-warning);
+    background-color: var(--color-warning-500);
   }
 
   &.good {
-    background-color: var(--color-success);
+    background-color: var(--color-success-500);
   }
 
   &.strong {
-    background-color: var(--color-success);
+    background-color: var(--color-success-500);
   }
 }
 
 .passwordStrengthText {
-  margin-top: var(--space-xs);
-  font-size: var(--font-size-xs);
-  color: var(--color-gray-500);
+  margin-top: var(--spacing-200);
+  font-size: var(--font-size-200);
+  color: var(--color-neutral-500);
 }
 
 .passwordRequirements {
@@ -168,10 +168,10 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-500);
 
     svg {
-      color: var(--color-success);
+      color: var(--color-success-500);
     }
   }
 }

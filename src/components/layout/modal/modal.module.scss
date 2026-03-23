@@ -11,22 +11,22 @@
 .modalContent {
   position: relative;
   background: var(--color-white);
-  padding: var(--space-md);
-  border-radius: var(--radius-lg);
+  padding: var(--spacing-600);
+  border-radius: var(--radius-600);
   max-width: 384px;
   width: 100%;
-  box-shadow: var(--shadow-modal);
+  box-shadow: var(--shadow-500);
 }
 
 .closeButton {
   position: absolute;
-  top: var(--space-sm);
-  right: var(--space-sm);
-  width: var(--space-lg);
-  height: var(--space-lg);
+  top: var(--spacing-300);
+  right: var(--spacing-300);
+  width: var(--spacing-700);
+  height: var(--spacing-700);
   min-width: 44px;
   min-height: 44px;
-  color: var(--color-gray-600);
+  color: var(--color-neutral-600);
   background: transparent;
   display: flex;
   align-items: center;
@@ -34,20 +34,20 @@
   padding: 0;
   border: 0;
   cursor: pointer;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-100);
 
   &:hover {
-    color: var(--color-dark);
-    background-color: var(--color-gray-100);
+    color: var(--color-neutral-900);
+    background-color: var(--color-neutral-200);
   }
 
   &:focus-visible {
-    outline: 2px solid var(--color-primary);
+    outline: 2px solid var(--color-primary-500);
     outline-offset: 2px;
   }
 
   > svg {
-    width: var(--space-md);
-    height: var(--space-md);
+    width: var(--spacing-600);
+    height: var(--spacing-600);
   }
 }

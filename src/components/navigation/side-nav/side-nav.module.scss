@@ -15,15 +15,15 @@
     flex-direction: column;
     width: 64px;
     min-height: 100vh;
-    background: var(--color-cream);
-    border-right: 1px solid var(--color-off-white);
-    padding: var(--space-md) var(--space-xs);
+    background: var(--color-surface-100);
+    border-right: 1px solid var(--color-surface-300);
+    padding: var(--spacing-600) var(--spacing-200);
     flex-shrink: 0;
   }
 
   @include breakpoint(lg) {
     width: 240px;
-    padding: var(--space-md) var(--space-sm);
+    padding: var(--spacing-600) var(--spacing-300);
   }
 
   /* ── List reset ── */
@@ -33,16 +33,16 @@
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: var(--space-2xs);
+    gap: var(--spacing-100);
   }
 
   /* ── Nav items ── */
   li {
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-300);
     transition: var(--transition-color);
 
     &:hover {
-      background: var(--color-light);
+      background: var(--color-surface-100);
     }
 
     /* Target the anchor/link inside each li —
@@ -50,13 +50,13 @@
     a {
       display: flex;
       align-items: center;
-      gap: var(--space-sm);
-      padding: var(--space-sm);
-      color: var(--color-gray-700) !important;
+      gap: var(--spacing-300);
+      padding: var(--spacing-300);
+      color: var(--color-neutral-700) !important;
       text-decoration: none;
-      font-size: var(--font-size-sm);
+      font-size: var(--font-size-500);
       font-weight: 500;
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-300);
       transition: var(--transition-color);
       min-height: 44px;
 
@@ -66,15 +66,15 @@
 
       @include breakpoint(lg) {
         justify-content: flex-start;
-        padding: var(--space-sm) var(--space-base);
+        padding: var(--spacing-300) var(--spacing-400);
       }
 
       &:hover {
-        color: var(--color-primary) !important;
+        color: var(--color-primary-500) !important;
       }
 
       &:focus-visible {
-        outline: 2px solid var(--color-primary);
+        outline: 2px solid var(--color-primary-500);
         outline-offset: 2px;
       }
     }
@@ -84,10 +84,10 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: var(--space-md);
-      height: var(--space-md);
+      width: var(--spacing-600);
+      height: var(--spacing-600);
       flex-shrink: 0;
-      color: var(--color-primary);
+      color: var(--color-primary-500);
 
       svg {
         width: 100%;
@@ -106,6 +106,6 @@
   }
 
   @include breakpoint(lg) {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-500);
   }
 }

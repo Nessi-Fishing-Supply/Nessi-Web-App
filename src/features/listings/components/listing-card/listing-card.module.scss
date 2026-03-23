@@ -2,10 +2,10 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: var(--space-base);
+  gap: var(--spacing-400);
   width: 100%;
-  padding: var(--space-sm);
-  border-radius: var(--radius-lg);
+  padding: var(--spacing-300);
+  border-radius: var(--radius-600);
   box-shadow: 0 0 0 0 transparent;
   cursor: pointer;
   transition: var(--transition-basic);
@@ -13,7 +13,7 @@
   &:hover,
   &:focus,
   &:active {
-    box-shadow: var(--shadow-modal);
+    box-shadow: var(--shadow-500);
   }
 }
 
@@ -21,7 +21,7 @@
   position: relative;
   width: 100%;
   height: 224px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-300);
   overflow: hidden;
 
   /* stylelint-disable selector-pseudo-class-no-unknown */
@@ -34,15 +34,15 @@
 
   .conditionBadge {
     position: absolute;
-    top: var(--space-xs);
-    left: var(--space-xs);
+    top: var(--spacing-200);
+    left: var(--spacing-200);
     z-index: 20;
   }
 
   .favorite {
     position: absolute;
-    top: var(--space-xs);
-    right: var(--space-xs);
+    top: var(--spacing-200);
+    right: var(--spacing-200);
     z-index: 20;
   }
 
@@ -56,7 +56,7 @@
 .contentWrapper {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: var(--spacing-200);
 
   .title {
     font-weight: 700;
@@ -76,14 +76,14 @@
 
     .price {
       font-weight: 700;
-      font-size: var(--font-size-md);
+      font-size: var(--font-size-800);
       margin: 0;
     }
   }
 
   .location {
-    font-size: var(--font-size-xs);
-    color: var(--color-gray-500);
+    font-size: var(--font-size-200);
+    color: var(--color-neutral-500);
     margin: 0;
   }
 }

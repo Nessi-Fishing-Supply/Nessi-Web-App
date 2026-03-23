@@ -7,23 +7,23 @@
 .page {
   width: 100%;
   min-height: 100vh;
-  background: var(--color-cream);
+  background: var(--color-surface-100);
 }
 
 /* ── Clean hero with orange accent line ── */
 .hero {
   position: relative;
   width: 100%;
-  padding: var(--space-lg) var(--space-base);
-  background: var(--color-cream);
-  border-bottom: 3px solid var(--color-secondary);
+  padding: var(--spacing-700) var(--spacing-400);
+  background: var(--color-surface-100);
+  border-bottom: 3px solid var(--color-accent-500);
 
   @include breakpoint(md) {
-    padding: var(--space-xl) var(--space-lg);
+    padding: var(--spacing-800) var(--spacing-700);
   }
 
   @include breakpoint(lg) {
-    padding: var(--space-xl) var(--space-2xl);
+    padding: var(--spacing-800) var(--spacing-900);
   }
 }
 
@@ -31,42 +31,42 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-md);
+  gap: var(--spacing-600);
 }
 
 .heroText {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2xs);
+  gap: var(--spacing-100);
 }
 
 .heroTitle {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-1000);
   font-weight: 800;
-  color: var(--color-primary);
+  color: var(--color-primary-500);
   margin: 0;
   letter-spacing: -0.02em;
 
   @include breakpoint(md) {
-    font-size: var(--font-size-2xl);
+    font-size: var(--font-size-1100);
   }
 }
 
 .heroSubtitle {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   font-weight: 500;
-  color: var(--color-gray-500);
+  color: var(--color-neutral-500);
   margin: 0;
 }
 
 .viewProfile {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-3xs);
+  gap: var(--spacing-50);
   color: var(--color-primary-600);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   text-decoration: none;
-  margin-top: var(--space-xs);
+  margin-top: var(--spacing-200);
 
   &:hover {
     text-decoration: underline;
@@ -76,11 +76,11 @@
 .heroIcon {
   display: inline-flex;
   align-items: center;
-  color: var(--color-off-white);
-  font-size: var(--font-size-3xl);
+  color: var(--color-surface-300);
+  font-size: var(--font-size-1300);
 
   @include breakpoint(md) {
-    font-size: var(--font-size-4xl);
+    font-size: var(--font-size-1400);
   }
 
   animation: swim 10s linear infinite;
@@ -209,23 +209,23 @@
 /* ── Two-column layout ── */
 .layout {
   width: 100%;
-  padding: var(--space-base);
+  padding: var(--spacing-400);
 
   @include breakpoint(md) {
-    padding: var(--space-md);
+    padding: var(--spacing-600);
   }
 
   @include breakpoint(lg) {
     display: grid;
     grid-template-columns: 380px 1fr;
-    gap: var(--space-md);
-    padding: var(--space-lg) var(--space-lg);
+    gap: var(--spacing-600);
+    padding: var(--spacing-700) var(--spacing-700);
   }
 
   @include breakpoint(xl) {
     grid-template-columns: 420px 1fr;
-    gap: var(--space-lg);
-    padding: var(--space-lg) var(--space-2xl);
+    gap: var(--spacing-700);
+    padding: var(--spacing-700) var(--spacing-900);
   }
 }
 
@@ -233,21 +233,21 @@
 .sidebar {
   display: flex;
   flex-direction: column;
-  gap: var(--space-base);
-  margin-bottom: var(--space-md);
+  gap: var(--spacing-400);
+  margin-bottom: var(--spacing-600);
 
   @include breakpoint(lg) {
     position: sticky;
-    top: var(--space-md);
+    top: var(--spacing-600);
     margin-bottom: 0;
     align-self: start;
   }
 }
 
 .profileCard {
-  background: var(--color-cream);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-gray-100);
+  background: var(--color-surface-100);
+  border-radius: var(--radius-600);
+  border: 1px solid var(--color-neutral-200);
   overflow: hidden;
   box-shadow: 0 1px 3px rgb(0 0 0 / 5%);
 }
@@ -260,13 +260,13 @@
 .sidebarFooter {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: var(--spacing-200);
 }
 
 .footerActions {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--spacing-300);
 
   button:first-child {
     width: 50%;
@@ -276,8 +276,8 @@
 .deleteLink {
   background: none;
   border: none;
-  padding: var(--space-xs) var(--space-sm);
-  font-size: var(--font-size-base);
+  padding: var(--spacing-200) var(--spacing-300);
+  font-size: var(--font-size-700);
   font-weight: 600;
   color: var(--color-error-700);
   cursor: pointer;
@@ -285,14 +285,14 @@
   min-height: 44px;
 
   &:hover {
-    color: var(--color-error-900);
+    color: var(--color-error-700);
     text-decoration: underline;
   }
 
   &:focus-visible {
     outline: 2px solid var(--color-error-700);
     outline-offset: 2px;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-100);
   }
 }
 
@@ -312,16 +312,16 @@
 }
 
 .dangerPanelOpen .dangerPanelInner {
-  padding: var(--space-base);
-  background: var(--color-error-50);
+  padding: var(--spacing-400);
+  background: var(--color-error-100);
   border: 1px solid var(--color-error-200);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-300);
 }
 
 .dangerText {
-  color: var(--color-gray-700);
-  font-size: var(--font-size-sm);
-  margin: 0 0 var(--space-base);
+  color: var(--color-neutral-700);
+  font-size: var(--font-size-500);
+  margin: 0 0 var(--spacing-400);
   line-height: 1.6;
 }
 
@@ -329,7 +329,7 @@
 .main {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: var(--spacing-600);
   min-width: 0;
   max-width: 720px;
 }
@@ -337,10 +337,10 @@
 .sections {
   display: flex;
   flex-direction: column;
-  gap: var(--space-base);
+  gap: var(--spacing-400);
 
   @include breakpoint(md) {
-    gap: var(--space-md);
+    gap: var(--spacing-600);
   }
 }
 
@@ -351,16 +351,16 @@
 /* ── Delete Modal ── */
 .deleteModal {
   > h2 {
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-900);
     font-weight: 800;
-    color: var(--color-tertiary);
-    margin-bottom: var(--space-sm);
+    color: var(--color-destructive-500);
+    margin-bottom: var(--spacing-300);
   }
 
   > p {
-    color: var(--color-gray-600);
-    font-size: var(--font-size-sm);
-    margin-bottom: var(--space-md);
+    color: var(--color-neutral-600);
+    font-size: var(--font-size-500);
+    margin-bottom: var(--spacing-600);
     line-height: 1.6;
   }
 }
@@ -368,41 +368,41 @@
 .deleteActions {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: var(--spacing-200);
 
   @include breakpoint(sm) {
     flex-direction: row;
-    gap: var(--space-sm);
+    gap: var(--spacing-300);
     justify-content: flex-end;
   }
 }
 
 .shopWarning {
   > p {
-    color: var(--color-gray-600);
-    font-size: var(--font-size-sm);
-    margin-bottom: var(--space-sm);
+    color: var(--color-neutral-600);
+    font-size: var(--font-size-500);
+    margin-bottom: var(--spacing-300);
   }
 }
 
 .shopWarningHeading {
   color: var(--color-warning-700);
-  font-size: var(--font-size-lg);
-  margin-bottom: var(--space-sm);
+  font-size: var(--font-size-900);
+  margin-bottom: var(--spacing-300);
 }
 
 .shopList {
   list-style: none;
   padding: 0;
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--spacing-600);
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: var(--spacing-200);
 }
 
 .shopLink {
   color: var(--color-primary-600);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   text-decoration: none;
 
   &:hover {

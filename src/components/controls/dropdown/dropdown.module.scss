@@ -13,17 +13,17 @@
   cursor: pointer;
 
   svg {
-    width: var(--space-lg);
-    height: var(--space-lg);
+    width: var(--spacing-700);
+    height: var(--spacing-700);
   }
 }
 
 .menu {
   display: block;
   position: absolute;
-  top: var(--space-2xl);
+  top: var(--spacing-900);
   background-color: var(--color-white);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-300);
   min-width: 200px;
   box-shadow: 0 8px 16px 0 rgb(0 0 0 / 20%);
   z-index: 1;
@@ -38,34 +38,34 @@
 
 .dropdownItem {
   cursor: pointer;
-  padding: var(--space-sm) var(--space-base) 0 var(--space-base);
+  padding: var(--spacing-300) var(--spacing-400) 0 var(--spacing-400);
 
   &:last-child {
-    margin-bottom: var(--space-sm);
+    margin-bottom: var(--spacing-300);
   }
 }
 
 .dropdownTitle {
-  border-top: solid 1px var(--color-gray-100);
+  border-top: solid 1px var(--color-neutral-200);
 
   > p {
-    padding: var(--space-sm) var(--space-base) 0 var(--space-base);
+    padding: var(--spacing-300) var(--spacing-400) 0 var(--spacing-400);
     text-transform: uppercase;
     font-weight: 700;
-    font-size: var(--font-size-sm);
-    color: var(--color-gray-600);
+    font-size: var(--font-size-500);
+    color: var(--color-neutral-600);
   }
 }
 
 .dropdownDivider {
-  border-top: solid 1px var(--color-gray-100);
-  margin: var(--space-xs) 0;
+  border-top: solid 1px var(--color-neutral-200);
+  margin: var(--spacing-200) 0;
   list-style: none;
 }
 
 .dropdownItemNoClick {
   cursor: default;
-  color: var(--color-dark);
+  color: var(--color-neutral-900);
   margin: 0;
-  padding: var(--space-sm) var(--space-base);
+  padding: var(--spacing-300) var(--spacing-400);
 }

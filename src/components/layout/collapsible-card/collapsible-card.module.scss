@@ -2,8 +2,8 @@
 
 .card {
   background: var(--color-white);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-300);
+  border: 1px solid var(--color-neutral-200);
   overflow: hidden;
   box-shadow: 0 1px 3px rgb(0 0 0 / 4%);
 }
@@ -13,39 +13,39 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: var(--space-base) var(--space-base);
+  padding: var(--spacing-400) var(--spacing-400);
   background: none;
   border: none;
   cursor: pointer;
   text-align: left;
-  gap: var(--space-xs);
+  gap: var(--spacing-200);
 
   @include breakpoint(md) {
-    padding: var(--space-base) var(--space-md);
+    padding: var(--spacing-400) var(--spacing-600);
   }
 
   &:hover {
-    background: var(--color-light);
+    background: var(--color-surface-100);
   }
 
   &:focus-visible {
-    outline: 2px solid var(--color-primary);
+    outline: 2px solid var(--color-primary-500);
     outline-offset: -2px;
   }
 }
 
 .title {
-  font-family: var(--font-family-primary);
-  font-size: var(--font-size-md);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-800);
   font-weight: 600;
-  color: var(--color-primary);
+  color: var(--color-primary-500);
 }
 
 .chevron {
   display: flex;
   align-items: center;
-  font-size: var(--font-size-lg);
-  color: var(--color-secondary);
+  font-size: var(--font-size-900);
+  color: var(--color-accent-500);
   flex-shrink: 0;
   transition: transform 0.25s ease;
 }
@@ -69,9 +69,9 @@
 }
 
 .contentExpanded .contentInner {
-  padding: 0 var(--space-base) var(--space-sm);
+  padding: 0 var(--spacing-400) var(--spacing-300);
 
   @include breakpoint(md) {
-    padding: 0 var(--space-md) var(--space-base);
+    padding: 0 var(--spacing-600) var(--spacing-400);
   }
 }

@@ -3,10 +3,10 @@
 .page {
   max-width: 800px;
   margin: 0 auto;
-  padding: var(--space-md) var(--space-sm);
+  padding: var(--spacing-600) var(--spacing-300);
 
   @include breakpoint(md) {
-    padding: var(--space-xl) var(--space-md);
+    padding: var(--spacing-800) var(--spacing-600);
   }
 }
 
@@ -15,17 +15,17 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--spacing-700);
 }
 
 .avatarContainer {
   position: relative;
   width: 120px;
   height: 120px;
-  border-radius: var(--radius-2xl);
+  border-radius: var(--radius-800);
   overflow: hidden;
-  margin-bottom: var(--space-sm);
-  background-color: var(--color-gray-200);
+  margin-bottom: var(--spacing-300);
+  background-color: var(--color-neutral-300);
 
   @include breakpoint(md) {
     width: 160px;
@@ -41,65 +41,65 @@
   justify-content: center;
   background-color: var(--color-primary-500);
   color: white;
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-1100);
   font-weight: 600;
 
   @include breakpoint(md) {
-    font-size: var(--font-size-3xl);
+    font-size: var(--font-size-1300);
   }
 }
 
 .displayName {
-  font-size: var(--font-size-xl);
-  margin-bottom: var(--space-3xs);
+  font-size: var(--font-size-1000);
+  margin-bottom: var(--spacing-50);
 
   @include breakpoint(md) {
-    font-size: var(--font-size-2xl);
+    font-size: var(--font-size-1100);
   }
 }
 
 .handle {
-  color: var(--color-gray-500);
-  font-size: var(--font-size-sm);
-  margin-bottom: var(--space-3xs);
+  color: var(--color-neutral-500);
+  font-size: var(--font-size-500);
+  margin-bottom: var(--spacing-50);
 }
 
 .memberSince {
-  color: var(--color-gray-500);
-  font-size: var(--font-size-sm);
+  color: var(--color-neutral-500);
+  font-size: var(--font-size-500);
 }
 
 .preferences {
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--spacing-700);
 
   > h2 {
-    font-size: var(--font-size-md);
-    margin-bottom: var(--space-sm);
+    font-size: var(--font-size-800);
+    margin-bottom: var(--spacing-300);
   }
 }
 
 .pills {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-xs);
-  margin-bottom: var(--space-xs);
+  gap: var(--spacing-200);
+  margin-bottom: var(--spacing-200);
 }
 
 .homeState {
-  color: var(--color-gray-600);
-  font-size: var(--font-size-sm);
+  color: var(--color-neutral-600);
+  font-size: var(--font-size-500);
 }
 
 .stats {
   display: flex;
-  gap: var(--space-md);
-  margin-bottom: var(--space-lg);
-  padding: var(--space-md);
-  background-color: var(--color-gray-100);
-  border-radius: var(--radius-md);
+  gap: var(--spacing-600);
+  margin-bottom: var(--spacing-700);
+  padding: var(--spacing-600);
+  background-color: var(--color-neutral-200);
+  border-radius: var(--radius-300);
 
   @include breakpoint(md) {
-    gap: var(--space-lg);
+    gap: var(--spacing-700);
   }
 }
 
@@ -110,30 +110,30 @@
 }
 
 .statValue {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-900);
   font-weight: 600;
 
   @include breakpoint(md) {
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-1000);
   }
 }
 
 .statLabel {
-  color: var(--color-gray-500);
-  font-size: var(--font-size-xs);
+  color: var(--color-neutral-500);
+  font-size: var(--font-size-200);
 }
 
 .listings {
   > h2 {
-    font-size: var(--font-size-md);
-    margin-bottom: var(--space-sm);
+    font-size: var(--font-size-800);
+    margin-bottom: var(--spacing-300);
   }
 }
 
 .listingGrid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--space-sm);
+  gap: var(--spacing-300);
 
   @include breakpoint(md) {
     grid-template-columns: repeat(2, 1fr);
@@ -145,8 +145,8 @@
 }
 
 .emptyState {
-  color: var(--color-gray-500);
-  font-size: var(--font-size-sm);
+  color: var(--color-neutral-500);
+  font-size: var(--font-size-500);
   text-align: center;
-  padding: var(--space-xl) 0;
+  padding: var(--spacing-800) 0;
 }

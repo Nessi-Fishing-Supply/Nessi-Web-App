@@ -4,28 +4,28 @@
   justify-content: center;
   border: none;
   background-color: var(--color-white);
-  border-radius: var(--radius-sm);
-  width: var(--space-md);
-  height: var(--space-md);
+  border-radius: var(--radius-100);
+  width: var(--spacing-600);
+  height: var(--spacing-600);
   transition: var(--transition-basic);
   cursor: pointer;
 
   &:hover {
-    box-shadow: var(--shadow-modal);
+    box-shadow: var(--shadow-500);
     transform: scale(1.1);
 
     > svg {
-      color: var(--color-primary);
+      color: var(--color-primary-500);
     }
   }
 
   > svg {
-    color: var(--color-dark);
-    width: var(--space-base);
-    height: var(--space-base);
+    color: var(--color-neutral-900);
+    width: var(--spacing-400);
+    height: var(--spacing-400);
 
     &.filled {
-      color: var(--color-primary);
+      color: var(--color-primary-500);
     }
   }
 }

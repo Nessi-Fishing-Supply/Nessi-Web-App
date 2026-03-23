@@ -11,7 +11,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: var(--color-cream);
+  background: var(--color-surface-100);
 
   @include breakpoint(md) {
     flex-direction: row;
@@ -30,32 +30,32 @@
 
 .page {
   max-width: 720px;
-  padding: var(--space-md) var(--space-sm);
+  padding: var(--spacing-600) var(--spacing-300);
 
   @include breakpoint(md) {
-    padding: var(--space-lg) var(--space-md);
+    padding: var(--spacing-700) var(--spacing-600);
   }
 }
 
 .header {
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--spacing-700);
 }
 
 .title {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-1000);
 }
 
 .contextHint {
-  color: var(--color-gray-500);
-  font-size: var(--font-size-sm);
-  margin-top: var(--space-3xs);
+  color: var(--color-neutral-500);
+  font-size: var(--font-size-500);
+  margin-top: var(--spacing-50);
 }
 
 .ctaGrid {
   display: flex;
   flex-direction: column;
-  gap: var(--space-base);
-  margin-bottom: var(--space-lg);
+  gap: var(--spacing-400);
+  margin-bottom: var(--spacing-700);
 
   @include breakpoint(md) {
     flex-direction: row;
@@ -65,18 +65,18 @@
 .sellerSection {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
-  margin-bottom: var(--space-lg);
+  gap: var(--spacing-200);
+  margin-bottom: var(--spacing-700);
 }
 
 .sellerHeading {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-900);
   font-weight: 600;
   margin: 0;
 }
 
 .shopPlaceholder {
-  font-size: var(--font-size-base);
-  color: var(--color-gray-600);
-  margin-bottom: var(--space-lg);
+  font-size: var(--font-size-700);
+  color: var(--color-neutral-600);
+  margin-bottom: var(--spacing-700);
 }

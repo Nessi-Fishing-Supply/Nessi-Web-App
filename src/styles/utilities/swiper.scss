@@ -48,11 +48,11 @@
     position: absolute;
     top: 50%;
     transform: translateY(43%);
-    width: var(--space-md);
-    height: var(--space-md);
+    width: var(--spacing-600);
+    height: var(--spacing-600);
     background-color: var(--color-white);
-    border-radius: var(--radius-2xl);
-    box-shadow: var(--shadow-modal);
+    border-radius: var(--radius-800);
+    box-shadow: var(--shadow-500);
     opacity: 0;
     transition: var(--transition-basic);
 
@@ -61,47 +61,47 @@
     }
 
     &::after {
-      font-size: var(--font-size-xs);
-      color: var(--color-dark);
+      font-size: var(--font-size-200);
+      color: var(--color-neutral-900);
       margin-top: 1px;
     }
   }
 
   .swiper-button-prev {
-    left: var(--space-xs);
+    left: var(--spacing-200);
 
     &::after {
-      margin-right: var(--space-3xs);
+      margin-right: var(--spacing-50);
     }
   }
 
   .swiper-button-next {
-    right: var(--space-xs);
+    right: var(--spacing-200);
 
     &::after {
-      margin-left: var(--space-3xs);
+      margin-left: var(--spacing-50);
     }
   }
 
   .swiper-pagination {
     display: flex;
     align-items: center;
-    gap: var(--space-2xs);
+    gap: var(--spacing-100);
     width: fit-content !important;
     position: absolute;
-    bottom: var(--space-xs) !important;
+    bottom: var(--spacing-200) !important;
     left: 50% !important;
     transform: translateX(-50%);
     background-color: rgb(255 255 255 / 50%);
-    padding: var(--space-2xs) var(--space-xs);
-    border-radius: var(--radius-2xl);
+    padding: var(--spacing-100) var(--spacing-200);
+    border-radius: var(--radius-800);
     opacity: 0;
     transition: var(--transition-basic);
 
     .swiper-pagination-bullet {
-      width: var(--space-2xs);
-      height: var(--space-2xs);
-      background: var(--color-gray-500);
+      width: var(--spacing-100);
+      height: var(--spacing-100);
+      background: var(--color-neutral-500);
       margin: 0 !important;
       opacity: 1;
 
@@ -138,12 +138,12 @@
     height: 44px;
     color: var(--color-white);
     background: rgb(0 0 0 / 40%);
-    border-radius: var(--radius-2xl);
+    border-radius: var(--radius-800);
     transition: var(--transition-basic);
     display: none;
 
     &::after {
-      font-size: var(--font-size-sm);
+      font-size: var(--font-size-500);
     }
 
     &:hover {
@@ -186,11 +186,11 @@
     position: absolute;
     top: 50%;
     transform: translateY(43%);
-    width: var(--space-md);
-    height: var(--space-md);
+    width: var(--spacing-600);
+    height: var(--spacing-600);
     background-color: var(--color-white);
-    border-radius: var(--radius-2xl);
-    box-shadow: var(--shadow-modal);
+    border-radius: var(--radius-800);
+    box-shadow: var(--shadow-500);
     opacity: 0;
     transition: var(--transition-basic);
     display: none;
@@ -200,8 +200,8 @@
     }
 
     &::after {
-      font-size: var(--font-size-xs);
-      color: var(--color-dark);
+      font-size: var(--font-size-200);
+      color: var(--color-neutral-900);
       margin-top: 1px;
     }
 
@@ -211,18 +211,18 @@
   }
 
   .swiper-button-prev {
-    left: var(--space-xs);
+    left: var(--spacing-200);
 
     &::after {
-      margin-right: var(--space-3xs);
+      margin-right: var(--spacing-50);
     }
   }
 
   .swiper-button-next {
-    right: var(--space-xs);
+    right: var(--spacing-200);
 
     &::after {
-      margin-left: var(--space-3xs);
+      margin-left: var(--spacing-50);
     }
   }
 
@@ -242,22 +242,22 @@
   .swiper-pagination {
     display: flex;
     align-items: center;
-    gap: var(--space-2xs);
+    gap: var(--spacing-100);
     width: fit-content !important;
     position: absolute;
-    bottom: var(--space-xs) !important;
+    bottom: var(--spacing-200) !important;
     left: 50% !important;
     transform: translateX(-50%);
     background-color: rgb(255 255 255 / 50%);
-    padding: var(--space-2xs) var(--space-xs);
-    border-radius: var(--radius-2xl);
+    padding: var(--spacing-100) var(--spacing-200);
+    border-radius: var(--radius-800);
     opacity: 1;
     transition: var(--transition-basic);
 
     .swiper-pagination-bullet {
-      width: var(--space-2xs);
-      height: var(--space-2xs);
-      background: var(--color-gray-500);
+      width: var(--spacing-100);
+      height: var(--spacing-100);
+      background: var(--color-neutral-500);
       margin: 0 !important;
       opacity: 1;
 

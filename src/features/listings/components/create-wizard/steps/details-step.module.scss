@@ -3,19 +3,19 @@
 .step {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xl);
+  gap: var(--spacing-800);
 }
 
 .section {
   display: flex;
   flex-direction: column;
-  gap: var(--space-base);
+  gap: var(--spacing-400);
 }
 
 .heading {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-900);
   font-weight: 600;
-  color: var(--color-gray-900);
+  color: var(--color-neutral-900);
   margin: 0;
 }
 
@@ -25,8 +25,8 @@
 }
 
 .counter {
-  margin-top: var(--space-2xs);
-  font-size: var(--font-size-sm);
-  color: var(--color-gray-500);
+  margin-top: var(--spacing-100);
+  font-size: var(--font-size-500);
+  color: var(--color-neutral-500);
   text-align: right;
 }

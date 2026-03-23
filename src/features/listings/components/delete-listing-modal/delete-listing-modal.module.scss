@@ -1,31 +1,31 @@
 .content {
   display: flex;
   flex-direction: column;
-  gap: var(--space-base);
+  gap: var(--spacing-400);
 }
 
 .title {
   margin: 0;
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-900);
   font-weight: 700;
-  color: var(--color-dark);
+  color: var(--color-neutral-900);
 }
 
 .listingTitle {
   margin: 0;
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-700);
   font-weight: 500;
-  color: var(--color-dark);
+  color: var(--color-neutral-900);
 }
 
 .warning {
   margin: 0;
-  font-size: var(--font-size-sm);
-  color: var(--color-gray-500);
+  font-size: var(--font-size-500);
+  color: var(--color-neutral-500);
 }
 
 .actions {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: var(--spacing-200);
 }
