@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { HiOutlineShoppingCart } from 'react-icons/hi';
+import { HiOutlineShoppingCart, HiOutlineX } from 'react-icons/hi';
 import { useAuth } from '@/features/auth/context';
 import { useCart, useRemoveFromCart, useClearCart, useValidateCart } from '@/features/cart/hooks/use-cart';
 import { useGuestCart } from '@/features/cart/hooks/use-guest-cart';
@@ -68,18 +68,52 @@ export default function CartPage() {
   const { mutate: validateCart, data: validationResult } = useValidateCart();
   const guestCart = useGuestCart();
 
+  const [staleBannerItems, setStaleBannerItems] = useState<NonNullable<typeof validationResult>['removed']>([]);
+  const [showStaleBanner, setShowStaleBanner] = useState(false);
+
   useEffect(() => {
     if (isAuthenticated && user) {
-      validateCart(undefined);
+      validateCart(undefined, {
+        onSuccess: (result) => {
+          if (result.removed.length > 0) {
+            setStaleBannerItems(result.removed);
+            setShowStaleBanner(true);
+            result.removed.forEach((removedItem) => {
+              removeFromCart(removedItem.item.id);
+            });
+          }
+        },
+      });
     }
-  }, [isAuthenticated, user, validateCart]);
+  }, [isAuthenticated, user, validateCart, removeFromCart]);
 
   if (authLoading || (isAuthenticated && cartLoading)) {
     return (
       <div className={styles.page}>
-        <div className={styles.loading} aria-live="polite" aria-busy="true">
-          Loading your cart…
+        <div className={styles.skeletonTitle} aria-hidden="true" />
+        <div className={styles.layout}>
+          <div className={styles.itemsColumn}>
+            <div className={styles.skeletonGroup}>
+              <div className={styles.skeletonSellerHeader}>
+                <div className={styles.skeletonAvatar} />
+                <div className={styles.skeletonSellerName} />
+              </div>
+              <div className={styles.skeletonCard} />
+              <div className={styles.skeletonCard} />
+            </div>
+            <div className={styles.skeletonGroup}>
+              <div className={styles.skeletonSellerHeader}>
+                <div className={styles.skeletonAvatar} />
+                <div className={styles.skeletonSellerName} />
+              </div>
+              <div className={styles.skeletonCard} />
+            </div>
+          </div>
+          <div className={styles.summaryColumn}>
+            <div className={styles.skeletonSummary} />
+          </div>
         </div>
+        <span className="sr-only" role="status" aria-live="polite">Loading your cart</span>
       </div>
     );
   }
@@ -162,18 +196,34 @@ export default function CartPage() {
 
   const groups = groupCartBySeller(cartItems);
   const subtotalCents = cartItems.reduce((sum, item) => sum + item.listing.price_cents, 0);
-  const removedItems = validationResult?.removed ?? [];
 
   return (
     <div className={styles.page}>
       <h1 className={styles.pageTitle}>Your Cart</h1>
 
-      {removedItems.length > 0 && (
-        <div className={styles.staleBanner} role="alert">
-          <p>
-            {removedItems.length} {removedItems.length === 1 ? 'item has' : 'items have'} been
-            removed from your cart because they are no longer available.
-          </p>
+      {showStaleBanner && staleBannerItems.length > 0 && (
+        <div className={styles.staleBanner} role="status" aria-live="polite">
+          <div className={styles.staleBannerContent}>
+            <p>
+              <strong>{staleBannerItems.length} {staleBannerItems.length === 1 ? 'item was' : 'items were'} removed</strong>
+              {' '}because {staleBannerItems.length === 1 ? 'it is' : 'they are'} no longer available.
+            </p>
+            <ul className={styles.staleBannerReasons}>
+              {staleBannerItems.map((removed, i) => (
+                <li key={i}>
+                  {removed.item.listing.title} — {removed.reason === 'sold' ? 'Sold' : removed.reason === 'deactivated' ? 'Deactivated by seller' : 'No longer available'}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <button
+            type="button"
+            className={styles.staleBannerDismiss}
+            onClick={() => setShowStaleBanner(false)}
+            aria-label="Dismiss notification"
+          >
+            <HiOutlineX aria-hidden="true" />
+          </button>
         </div>
       )}
 
@@ -203,6 +253,18 @@ export default function CartPage() {
             onClearCart={() => clearCart()}
             isClearing={isClearing}
           />
+        </div>
+      </div>
+
+      <div className={styles.stickyBar}>
+        <div className={styles.stickyBarContent}>
+          <div className={styles.stickyBarPrice}>
+            <span className={styles.stickyBarLabel}>Subtotal</span>
+            <span className={styles.stickyBarValue}>{formatPrice(subtotalCents)}</span>
+          </div>
+          <Button style="primary" disabled>
+            Checkout
+          </Button>
         </div>
       </div>
     </div>
