@@ -126,6 +126,17 @@ export async function DELETE() {
       console.error('Storage cleanup error (non-blocking):', storageError);
     }
 
+    // Soft-delete all member's listings before deleting the user
+    try {
+      await admin
+        .from('listings')
+        .update({ deleted_at: new Date().toISOString(), status: 'deleted' as const })
+        .eq('seller_id', user.id)
+        .is('deleted_at', null);
+    } catch (listingError) {
+      console.error('Listing cleanup error (non-blocking):', listingError);
+    }
+
     // Release the member's slug before deleting the user (best-effort, belt-and-suspenders
     // alongside the handle_member_deletion() DB trigger)
     try {
