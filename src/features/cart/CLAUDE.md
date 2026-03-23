@@ -15,15 +15,15 @@ The cart provides authenticated users with a persistent shopping cart backed by 
 
 ### cart_items table
 
-| Column       | Type         | Notes                                          |
-| ------------ | ------------ | ---------------------------------------------- |
-| id           | uuid         | Primary key                                    |
-| user_id      | uuid         | FK → members.id (ON DELETE CASCADE)            |
-| listing_id   | uuid         | FK → listings.id (ON DELETE CASCADE)           |
-| price_at_add | integer      | Snapshot of listing price in cents at add time  |
+| Column       | Type         | Notes                                             |
+| ------------ | ------------ | ------------------------------------------------- |
+| id           | uuid         | Primary key                                       |
+| user_id      | uuid         | FK → members.id (ON DELETE CASCADE)               |
+| listing_id   | uuid         | FK → listings.id (ON DELETE CASCADE)              |
+| price_at_add | integer      | Snapshot of listing price in cents at add time    |
 | added_from   | text \| null | Source context (e.g., "listing_detail", "search") |
-| added_at     | timestamptz  | Default NOW()                                  |
-| expires_at   | timestamptz  | Default NOW() + 30 days                        |
+| added_at     | timestamptz  | Default NOW()                                     |
+| expires_at   | timestamptz  | Default NOW() + 30 days                           |
 
 **Constraints:** UNIQUE(user_id, listing_id) — one item per listing per user.
 

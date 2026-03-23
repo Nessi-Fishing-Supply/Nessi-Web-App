@@ -1,5 +1,9 @@
 import { get, post, del, patch } from '@/libs/fetch';
-import type { CartItem, CartItemWithListing, CartValidationResult } from '@/features/cart/types/cart';
+import type {
+  CartItem,
+  CartItemWithListing,
+  CartValidationResult,
+} from '@/features/cart/types/cart';
 
 const BASE_URL = '/api/cart';
 
@@ -9,10 +13,7 @@ export const getCart = async (): Promise<CartItemWithListing[]> =>
 export const getCartCount = async (): Promise<{ count: number }> =>
   get<{ count: number }>(`${BASE_URL}/count`);
 
-export const addToCart = async (
-  listingId: string,
-  addedFrom?: string,
-): Promise<CartItem> =>
+export const addToCart = async (listingId: string, addedFrom?: string): Promise<CartItem> =>
   post<CartItem>(BASE_URL, { listingId, addedFrom });
 
 export const removeFromCart = async (cartItemId: string): Promise<{ success: boolean }> =>

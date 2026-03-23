@@ -1,5 +1,10 @@
 import { createClient } from '@/libs/supabase/server';
-import type { CartItem, CartItemWithListing, CartValidationResult, GuestCartItem } from '@/features/cart/types/cart';
+import type {
+  CartItem,
+  CartItemWithListing,
+  CartValidationResult,
+  GuestCartItem,
+} from '@/features/cart/types/cart';
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MAX_CART_SIZE = 25;
