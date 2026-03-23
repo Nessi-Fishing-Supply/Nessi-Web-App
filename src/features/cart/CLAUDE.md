@@ -129,6 +129,7 @@ The guest cart enables unauthenticated users to add items to a localStorage-back
 **Props:** `item: CartItemWithListing`, `onRemove: (cartItemId: string) => void`, `isRemoving?: boolean`
 
 **Features:**
+
 - Price change notice: old price struck through + "Price changed" warning pill when `price_at_add !== listing.price_cents`
 - Remove button: `aria-label="Remove {title} from cart"`, 44x44px minimum tap target (WCAG)
 - All images via `next/image` with `sizes="80px"`
@@ -142,6 +143,7 @@ The guest cart enables unauthenticated users to add items to a localStorage-back
 ### Cart Page
 
 `src/app/(frontend)/cart/` — Full cart page at `/cart`:
+
 - **page.tsx** — Server component with `{ title: 'Your Cart' }` metadata
 - **cart-page.tsx** — Client component orchestrating all cart states:
   - Loading: skeleton placeholders matching cart layout
