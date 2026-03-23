@@ -15,6 +15,7 @@
 ## File Structure
 
 ### Files to Rewrite (variable foundations)
+
 - `src/styles/variables/colors.scss` — All color tokens
 - `src/styles/variables/typography.scss` — Font families, sizes, weights, line-heights, letter-spacing
 - `src/styles/variables/spacing.scss` — Spacing scale
@@ -23,15 +24,18 @@
 - `src/styles/variables/animations.scss` — Duration/easing tokens + composite aliases + keyframes
 
 ### Files to Create
+
 - `src/styles/variables/z-index.scss` — Z-index scale
 - `src/styles/variables/heights.scss` — Component height tokens
 
 ### Files to Update
+
 - `src/styles/mixins/breakpoints.scss` — Add xs, change sm/xl values
 - `src/styles/globals.scss` — Import new variable files
 - `src/app/(frontend)/layout.tsx` — Swap Inter for DM Sans + DM Serif Display
 
 ### Files to Bulk-Migrate (~90 SCSS modules)
+
 - Every `*.module.scss` file that references old token names
 
 ---
@@ -41,6 +45,7 @@
 ### Task 1: Rewrite `colors.scss`
 
 **Files:**
+
 - Rewrite: `src/styles/variables/colors.scss`
 
 - [ ] **Step 1: Replace the entire file contents**
@@ -51,86 +56,86 @@
 ////////////////////
 :root {
   // Primary (Green)
-  --color-primary-100: #D6E9E4;
-  --color-primary-200: #9ECABB;
-  --color-primary-300: #6BAD99;
-  --color-primary-400: #3D8C75;
-  --color-primary-500: #1E4A40;
+  --color-primary-100: #d6e9e4;
+  --color-primary-200: #9ecabb;
+  --color-primary-300: #6bad99;
+  --color-primary-400: #3d8c75;
+  --color-primary-500: #1e4a40;
   --color-primary-600: #163831;
-  --color-primary-700: #0E2822;
+  --color-primary-700: #0e2822;
   --color-primary-800: #081812;
-  --color-primary-900: #030C09;
+  --color-primary-900: #030c09;
 
   // Accent (Orange)
-  --color-accent-100: #FBE9D9;
-  --color-accent-200: #F5C8A0;
-  --color-accent-300: #EEA86B;
-  --color-accent-400: #E89048;
-  --color-accent-500: #E27739;
-  --color-accent-600: #CC6830;
-  --color-accent-700: #B55A28;
-  --color-accent-800: #8A4018;
-  --color-accent-900: #5C2A0C;
+  --color-accent-100: #fbe9d9;
+  --color-accent-200: #f5c8a0;
+  --color-accent-300: #eea86b;
+  --color-accent-400: #e89048;
+  --color-accent-500: #e27739;
+  --color-accent-600: #cc6830;
+  --color-accent-700: #b55a28;
+  --color-accent-800: #8a4018;
+  --color-accent-900: #5c2a0c;
 
   // Surface (Sand)
-  --color-surface-100: #FAF7F2;
-  --color-surface-200: #F5EDDF;
-  --color-surface-300: #EDE0CB;
-  --color-surface-400: #E3D1B4;
-  --color-surface-500: #D9CCBA;
-  --color-surface-600: #C4B49E;
-  --color-surface-700: #A89278;
-  --color-surface-800: #7A6E62;
-  --color-surface-900: #4A3F35;
+  --color-surface-100: #faf7f2;
+  --color-surface-200: #f5eddf;
+  --color-surface-300: #ede0cb;
+  --color-surface-400: #e3d1b4;
+  --color-surface-500: #d9ccba;
+  --color-surface-600: #c4b49e;
+  --color-surface-700: #a89278;
+  --color-surface-800: #7a6e62;
+  --color-surface-900: #4a3f35;
 
   // Destructive (Maroon)
-  --color-destructive-100: #F5D0D0;
-  --color-destructive-200: #E8A0A0;
-  --color-destructive-300: #D47070;
-  --color-destructive-400: #B84040;
-  --color-destructive-500: #681A19;
+  --color-destructive-100: #f5d0d0;
+  --color-destructive-200: #e8a0a0;
+  --color-destructive-300: #d47070;
+  --color-destructive-400: #b84040;
+  --color-destructive-500: #681a19;
   --color-destructive-600: #551414;
-  --color-destructive-700: #410F0F;
-  --color-destructive-800: #2A0909;
+  --color-destructive-700: #410f0f;
+  --color-destructive-800: #2a0909;
   --color-destructive-900: #150404;
 
   // Neutral (Text & UI)
-  --color-neutral-100: #F8F8F7;
-  --color-neutral-200: #EFEFED;
-  --color-neutral-300: #E0DFDC;
-  --color-neutral-400: #C8C6C1;
-  --color-neutral-500: #A09D97;
-  --color-neutral-600: #78756F;
-  --color-neutral-700: #524F4A;
-  --color-neutral-800: #2E2C28;
-  --color-neutral-900: #1C1C1C;
+  --color-neutral-100: #f8f8f7;
+  --color-neutral-200: #efefed;
+  --color-neutral-300: #e0dfdc;
+  --color-neutral-400: #c8c6c1;
+  --color-neutral-500: #a09d97;
+  --color-neutral-600: #78756f;
+  --color-neutral-700: #524f4a;
+  --color-neutral-800: #2e2c28;
+  --color-neutral-900: #1c1c1c;
 
   // White
-  --color-white: #FFFFFF;
+  --color-white: #ffffff;
 
   // Success
-  --color-success-100: #D4EDDA;
-  --color-success-200: #A8D9BC;
-  --color-success-500: #1A6B43;
-  --color-success-700: #0F4028;
+  --color-success-100: #d4edda;
+  --color-success-200: #a8d9bc;
+  --color-success-500: #1a6b43;
+  --color-success-700: #0f4028;
 
   // Warning
-  --color-warning-100: #FEF3DC;
-  --color-warning-200: #F5D08A;
-  --color-warning-500: #B86E0A;
-  --color-warning-700: #7A4706;
+  --color-warning-100: #fef3dc;
+  --color-warning-200: #f5d08a;
+  --color-warning-500: #b86e0a;
+  --color-warning-700: #7a4706;
 
   // Error
-  --color-error-100: #FDE8E8;
-  --color-error-200: #F5B5B5;
-  --color-error-500: #B91C1C;
-  --color-error-700: #7A1010;
+  --color-error-100: #fde8e8;
+  --color-error-200: #f5b5b5;
+  --color-error-500: #b91c1c;
+  --color-error-700: #7a1010;
 
   // Info
-  --color-info-100: #D6E9E4;
-  --color-info-200: #9ECABB;
-  --color-info-500: #1E4A40;
-  --color-info-700: #0E2822;
+  --color-info-100: #d6e9e4;
+  --color-info-200: #9ecabb;
+  --color-info-500: #1e4a40;
+  --color-info-700: #0e2822;
 
   // Surfaces
   --surface-page: var(--color-surface-300);
@@ -158,6 +163,7 @@ git commit -m "refactor(tokens): rewrite colors.scss to v1 design system"
 ### Task 2: Rewrite `typography.scss`
 
 **Files:**
+
 - Rewrite: `src/styles/variables/typography.scss`
 
 - [ ] **Step 1: Replace the entire file contents**
@@ -235,6 +241,7 @@ git commit -m "refactor(tokens): rewrite typography.scss to v1 design system"
 ### Task 3: Rewrite `spacing.scss`
 
 **Files:**
+
 - Rewrite: `src/styles/variables/spacing.scss`
 
 - [ ] **Step 1: Replace the entire file contents**
@@ -277,6 +284,7 @@ git commit -m "refactor(tokens): rewrite spacing.scss to v1 design system"
 ### Task 4: Rewrite `radius.scss`
 
 **Files:**
+
 - Rewrite: `src/styles/variables/radius.scss`
 
 - [ ] **Step 1: Replace the entire file contents**
@@ -310,6 +318,7 @@ git commit -m "refactor(tokens): rewrite radius.scss to v1 design system"
 ### Task 5: Rewrite `shadows.scss`
 
 **Files:**
+
 - Rewrite: `src/styles/variables/shadows.scss`
 
 - [ ] **Step 1: Replace the entire file contents**
@@ -345,6 +354,7 @@ git commit -m "refactor(tokens): rewrite shadows.scss to v1 design system (fixes
 ### Task 6: Rewrite `animations.scss`
 
 **Files:**
+
 - Rewrite: `src/styles/variables/animations.scss`
 
 - [ ] **Step 1: Replace the entire file contents**
@@ -371,7 +381,8 @@ git commit -m "refactor(tokens): rewrite shadows.scss to v1 design system (fixes
   --transition-basic: all var(--duration-200) var(--easing-out);
   --transition-smooth: all var(--duration-300) var(--easing-out);
   --transition-bounce: all var(--duration-400) var(--easing-spring);
-  --transition-color: color var(--duration-200) var(--easing-out),
+  --transition-color:
+    color var(--duration-200) var(--easing-out),
     background-color var(--duration-200) var(--easing-out),
     border-color var(--duration-200) var(--easing-out);
 }
@@ -407,6 +418,7 @@ git commit -m "refactor(tokens): rewrite animations.scss with duration/easing to
 ### Task 7: Create `z-index.scss`
 
 **Files:**
+
 - Create: `src/styles/variables/z-index.scss`
 
 - [ ] **Step 1: Create the file**
@@ -443,6 +455,7 @@ git commit -m "feat(tokens): add z-index.scss with v1 design system scale"
 ### Task 8: Create `heights.scss`
 
 **Files:**
+
 - Create: `src/styles/variables/heights.scss`
 
 - [ ] **Step 1: Create the file**
@@ -478,11 +491,13 @@ git commit -m "feat(tokens): add heights.scss with v1 component height tokens"
 ### Task 9: Update `breakpoints.scss`
 
 **Files:**
+
 - Modify: `src/styles/mixins/breakpoints.scss:6-11`
 
 - [ ] **Step 1: Replace the `$breakpoints` map**
 
 Change:
+
 ```scss
 $breakpoints: (
   sm: 480px,
@@ -493,6 +508,7 @@ $breakpoints: (
 ```
 
 To:
+
 ```scss
 $breakpoints: (
   xs: 320px,
@@ -515,17 +531,20 @@ git commit -m "refactor(tokens): update breakpoints to v1 (xs:320, sm:375, xl:12
 ### Task 10: Update `globals.scss` imports
 
 **Files:**
+
 - Modify: `src/styles/globals.scss:9-14`
 
 - [ ] **Step 1: Add imports for new variable files**
 
 After the existing variable imports, add:
+
 ```scss
 @use 'variables/z-index' as *;
 @use 'variables/heights' as *;
 ```
 
 The full Variables block should be:
+
 ```scss
 // Variables
 @use 'variables/animations' as *;
@@ -550,20 +569,25 @@ git commit -m "refactor(tokens): import z-index and heights in globals.scss"
 ### Task 11: Swap font config in layout.tsx
 
 **Files:**
+
 - Modify: `src/app/(frontend)/layout.tsx`
 
 - [ ] **Step 1: Replace Inter import and config with DM Sans + DM Serif Display**
 
 Change:
+
 ```tsx
 import { Inter } from 'next/font/google';
 ```
+
 To:
+
 ```tsx
 import { DM_Sans, DM_Serif_Display } from 'next/font/google';
 ```
 
 Change the font initialization:
+
 ```tsx
 const inter = Inter({
   subsets: ['latin'],
@@ -571,7 +595,9 @@ const inter = Inter({
   variable: '--font-inter',
 });
 ```
+
 To:
+
 ```tsx
 const dmSans = DM_Sans({
   subsets: ['latin'],
@@ -589,10 +615,13 @@ const dmSerif = DM_Serif_Display({
 ```
 
 Change the body className:
+
 ```tsx
 <body className={inter.className}>
 ```
+
 To:
+
 ```tsx
 <body className={`${dmSans.className} ${dmSerif.variable}`}>
 ```
@@ -617,11 +646,12 @@ git commit -m "refactor(tokens): swap Inter for DM Sans + DM Serif Display"
 
 This phase does a systematic find-replace across all component SCSS files. Each sub-task handles one token category to keep diffs reviewable.
 
-**Important:** The `src/styles/variables/` files were already rewritten in Phase 1. Phase 2 updates all *consumers* of those tokens.
+**Important:** The `src/styles/variables/` files were already rewritten in Phase 1. Phase 2 updates all _consumers_ of those tokens.
 
 ### Task 12: Migrate color tokens across all SCSS files
 
 **Files:**
+
 - Modify: ~82 `*.module.scss` files + `src/styles/utilities/*.scss`
 
 - [ ] **Step 1: Run bulk replacements for color tokens**
@@ -629,6 +659,7 @@ This phase does a systematic find-replace across all component SCSS files. Each 
 Execute these replacements in order. Use your editor's project-wide find-replace on `*.scss` files (excluding `src/styles/variables/colors.scss` which was already rewritten).
 
 **Brand colors (exact token replacements):**
+
 ```
 --color-primary--light  →  --color-primary-400
 --color-primary--dark   →  --color-primary-700
@@ -642,6 +673,7 @@ Execute these replacements in order. Use your editor's project-wide find-replace
 ```
 
 **Named neutrals:**
+
 ```
 --color-off-white)  →  --color-surface-300)
 --color-light)      →  --color-surface-100)
@@ -651,6 +683,7 @@ Execute these replacements in order. Use your editor's project-wide find-replace
 ```
 
 **Grayscale → Neutral (map by shade proximity):**
+
 ```
 --color-gray-50)   →  --color-neutral-100)
 --color-gray-100)  →  --color-neutral-200)
@@ -665,6 +698,7 @@ Execute these replacements in order. Use your editor's project-wide find-replace
 ```
 
 **Semantic colors:**
+
 ```
 --color-success-50)   →  --color-success-100)
 --color-success-400)  →  --color-success-200)
@@ -698,6 +732,7 @@ git commit -m "refactor(tokens): migrate all color token references to v1 naming
 ### Task 13: Migrate spacing tokens across all SCSS files
 
 **Files:**
+
 - Modify: ~60+ `*.module.scss` files
 
 - [ ] **Step 1: Run bulk replacements for spacing tokens**
@@ -735,6 +770,7 @@ git commit -m "refactor(tokens): migrate all spacing token references to v1 nami
 ### Task 14: Migrate radius tokens across all SCSS files
 
 **Files:**
+
 - Modify: ~30+ `*.module.scss` files
 
 - [ ] **Step 1: Run bulk replacements for radius tokens**
@@ -765,6 +801,7 @@ git commit -m "refactor(tokens): migrate all radius token references to v1 namin
 ### Task 15: Migrate shadow tokens across all SCSS files
 
 **Files:**
+
 - Modify: ~20+ `*.module.scss` files
 
 - [ ] **Step 1: Run bulk replacements for shadow tokens**
@@ -797,6 +834,7 @@ git commit -m "refactor(tokens): migrate all shadow token references to v1 namin
 ### Task 16: Migrate typography tokens across all SCSS files
 
 **Files:**
+
 - Modify: ~30+ `*.module.scss` files + `src/styles/utilities/typography.scss`
 
 - [ ] **Step 1: Run bulk replacements for font-size tokens**
@@ -814,11 +852,13 @@ git commit -m "refactor(tokens): migrate all shadow token references to v1 namin
 ```
 
 **Font family:**
+
 ```
 --font-family-primary)  →  --font-family-sans)
 ```
 
 **Remove any remaining references to:**
+
 ```
 --font-size-base  (if used as a variable in calcs)
 --font-scale-ratio (should not exist outside typography.scss)
@@ -842,6 +882,7 @@ git commit -m "refactor(tokens): migrate all typography token references to v1 n
 ### Task 17: Migrate animation tokens (if any non-composite references exist)
 
 **Files:**
+
 - Modify: Any `*.module.scss` files using `--transition-*` tokens
 
 - [ ] **Step 1: Check for any direct references to old animation tokens that were removed**
@@ -865,6 +906,7 @@ git commit -m "refactor(tokens): migrate animation token references"
 ### Task 18: Migrate old tokens in TSX inline styles
 
 **Files:**
+
 - Modify: `src/app/(frontend)/not-found.tsx`
 - Modify: `src/app/(frontend)/loading.tsx`
 - Modify: `src/app/(frontend)/error.tsx`
@@ -881,6 +923,7 @@ Run: `grep -r '--space-\|--font-size-xs\|--font-size-sm\|--font-size-base\|--fon
 - [ ] **Step 2: Apply the same migration maps from Tasks 12-16 to all TSX files found**
 
 Key replacements for known files:
+
 ```
 --space-xl      →  --spacing-800
 --space-3xl     →  --spacing-1000
@@ -960,6 +1003,7 @@ Compare `docs/design/v1/screenshots/showcase-before.png` with `showcase-after.pn
 - [ ] **Step 5: Spot-check key pages**
 
 Visit these pages and verify they render correctly:
+
 - http://localhost:3000 (home)
 - http://localhost:3000/dev/components (showcase)
 - Any listing detail page (if accessible in dev)
@@ -976,6 +1020,7 @@ git commit -m "docs: add post-migration component showcase screenshot"
 ### Task 21: Update component showcase page token names
 
 **Files:**
+
 - Modify: `src/app/(frontend)/dev/components/page.tsx`
 - Modify: `src/app/(frontend)/dev/components/components.module.scss`
 
@@ -984,6 +1029,7 @@ The dev showcase page hardcodes token names in its data arrays and uses `var(--c
 - [ ] **Step 1: Update `COLOR_GROUPS` data to use new token names in labels**
 
 The hex values are already correct (they match the DS). Update group names to reflect new naming:
+
 - "Green — Brand Primary" → "Primary"
 - "Orange — Brand Accent" → "Accent"
 - "Sand — App Background & Surfaces" → "Surface"
@@ -993,6 +1039,7 @@ The hex values are already correct (they match the DS). Update group names to re
 - [ ] **Step 2: Update SCSS custom properties**
 
 Replace all `var(--c-*)` references in `components.module.scss` with the actual new token names:
+
 ```
 var(--c-bg)      →  var(--surface-page)
 var(--c-fill)    →  var(--color-surface-200)
@@ -1004,6 +1051,7 @@ var(--c-text-2)  →  var(--color-surface-800)
 - [ ] **Step 3: Update Interactive State Mapping table to use new token names**
 
 In the `INTERACTIVE_STATES` data array, replace:
+
 ```
 --color-green-500  →  --color-primary-500
 --color-green-600  →  --color-primary-600

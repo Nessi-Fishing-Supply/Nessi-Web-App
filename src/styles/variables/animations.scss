@@ -19,7 +19,8 @@
   --transition-basic: all var(--duration-200) var(--easing-out);
   --transition-smooth: all var(--duration-300) var(--easing-out);
   --transition-bounce: all var(--duration-400) var(--easing-spring);
-  --transition-color: color var(--duration-200) var(--easing-out),
+  --transition-color:
+    color var(--duration-200) var(--easing-out),
     background-color var(--duration-200) var(--easing-out),
     border-color var(--duration-200) var(--easing-out);
 }

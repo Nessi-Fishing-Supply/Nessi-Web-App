@@ -21,62 +21,62 @@ Pattern: `--{category}-{role}-{scale}` or `--{category}-{scale}`
 ```scss
 :root {
   // Primary (Green)
-  --color-primary-100: #D6E9E4;
-  --color-primary-200: #9ECABB;
-  --color-primary-300: #6BAD99;
-  --color-primary-400: #3D8C75;
-  --color-primary-500: #1E4A40;
+  --color-primary-100: #d6e9e4;
+  --color-primary-200: #9ecabb;
+  --color-primary-300: #6bad99;
+  --color-primary-400: #3d8c75;
+  --color-primary-500: #1e4a40;
   --color-primary-600: #163831;
-  --color-primary-700: #0E2822;
+  --color-primary-700: #0e2822;
   --color-primary-800: #081812;
-  --color-primary-900: #030C09;
+  --color-primary-900: #030c09;
 
   // Accent (Orange)
-  --color-accent-100: #FBE9D9;
-  --color-accent-200: #F5C8A0;
-  --color-accent-300: #EEA86B;
-  --color-accent-400: #E89048;
-  --color-accent-500: #E27739;
-  --color-accent-600: #CC6830;
-  --color-accent-700: #B55A28;
-  --color-accent-800: #8A4018;
-  --color-accent-900: #5C2A0C;
+  --color-accent-100: #fbe9d9;
+  --color-accent-200: #f5c8a0;
+  --color-accent-300: #eea86b;
+  --color-accent-400: #e89048;
+  --color-accent-500: #e27739;
+  --color-accent-600: #cc6830;
+  --color-accent-700: #b55a28;
+  --color-accent-800: #8a4018;
+  --color-accent-900: #5c2a0c;
 
   // Surface (Sand)
-  --color-surface-100: #FAF7F2;
-  --color-surface-200: #F5EDDF;
-  --color-surface-300: #EDE0CB;
-  --color-surface-400: #E3D1B4;
-  --color-surface-500: #D9CCBA;
-  --color-surface-600: #C4B49E;
-  --color-surface-700: #A89278;
-  --color-surface-800: #7A6E62;
-  --color-surface-900: #4A3F35;
+  --color-surface-100: #faf7f2;
+  --color-surface-200: #f5eddf;
+  --color-surface-300: #ede0cb;
+  --color-surface-400: #e3d1b4;
+  --color-surface-500: #d9ccba;
+  --color-surface-600: #c4b49e;
+  --color-surface-700: #a89278;
+  --color-surface-800: #7a6e62;
+  --color-surface-900: #4a3f35;
 
   // Destructive (Maroon)
-  --color-destructive-100: #F5D0D0;
-  --color-destructive-200: #E8A0A0;
-  --color-destructive-300: #D47070;
-  --color-destructive-400: #B84040;
-  --color-destructive-500: #681A19;
+  --color-destructive-100: #f5d0d0;
+  --color-destructive-200: #e8a0a0;
+  --color-destructive-300: #d47070;
+  --color-destructive-400: #b84040;
+  --color-destructive-500: #681a19;
   --color-destructive-600: #551414;
-  --color-destructive-700: #410F0F;
-  --color-destructive-800: #2A0909;
+  --color-destructive-700: #410f0f;
+  --color-destructive-800: #2a0909;
   --color-destructive-900: #150404;
 
   // Neutral (Text & UI)
-  --color-neutral-100: #F8F8F7;
-  --color-neutral-200: #EFEFED;
-  --color-neutral-300: #E0DFDC;
-  --color-neutral-400: #C8C6C1;
-  --color-neutral-500: #A09D97;
-  --color-neutral-600: #78756F;
-  --color-neutral-700: #524F4A;
-  --color-neutral-800: #2E2C28;
-  --color-neutral-900: #1C1C1C;
+  --color-neutral-100: #f8f8f7;
+  --color-neutral-200: #efefed;
+  --color-neutral-300: #e0dfdc;
+  --color-neutral-400: #c8c6c1;
+  --color-neutral-500: #a09d97;
+  --color-neutral-600: #78756f;
+  --color-neutral-700: #524f4a;
+  --color-neutral-800: #2e2c28;
+  --color-neutral-900: #1c1c1c;
 
   // White (kept)
-  --color-white: #FFFFFF;
+  --color-white: #ffffff;
 }
 ```
 
@@ -85,28 +85,28 @@ Pattern: `--{category}-{role}-{scale}` or `--{category}-{scale}`
 ```scss
 :root {
   // Success
-  --color-success-100: #D4EDDA;
-  --color-success-200: #A8D9BC;
-  --color-success-500: #1A6B43;
-  --color-success-700: #0F4028;
+  --color-success-100: #d4edda;
+  --color-success-200: #a8d9bc;
+  --color-success-500: #1a6b43;
+  --color-success-700: #0f4028;
 
   // Warning
-  --color-warning-100: #FEF3DC;
-  --color-warning-200: #F5D08A;
-  --color-warning-500: #B86E0A;
-  --color-warning-700: #7A4706;
+  --color-warning-100: #fef3dc;
+  --color-warning-200: #f5d08a;
+  --color-warning-500: #b86e0a;
+  --color-warning-700: #7a4706;
 
   // Error
-  --color-error-100: #FDE8E8;
-  --color-error-200: #F5B5B5;
-  --color-error-500: #B91C1C;
-  --color-error-700: #7A1010;
+  --color-error-100: #fde8e8;
+  --color-error-200: #f5b5b5;
+  --color-error-500: #b91c1c;
+  --color-error-700: #7a1010;
 
   // Info
-  --color-info-100: #D6E9E4;
-  --color-info-200: #9ECABB;
-  --color-info-500: #1E4A40;
-  --color-info-700: #0E2822;
+  --color-info-100: #d6e9e4;
+  --color-info-200: #9ecabb;
+  --color-info-500: #1e4a40;
+  --color-info-700: #0e2822;
 }
 ```
 
@@ -124,47 +124,47 @@ Pattern: `--{category}-{role}-{scale}` or `--{category}-{scale}`
 
 ### 1d. Token Migration Map — Colors
 
-| Old Token | New Token | Notes |
-|-----------|-----------|-------|
-| `--color-primary` | `--color-primary-500` | Same value (#1E4A40) |
-| `--color-primary--light` | `--color-primary-400` | Value changes: #2f7464 → #3D8C75 |
-| `--color-primary--dark` | `--color-primary-700` | Value changes: #122b25 → #0E2822 |
-| `--color-secondary` | `--color-accent-500` | Same value (#E27739) |
-| `--color-secondary--light` | `--color-accent-300` | Value changes: #ea9d71 → #EEA86B |
-| `--color-secondary--dark` | `--color-accent-600` | Value changes: #c35a1d → #CC6830 |
-| `--color-tertiary` | `--color-destructive-500` | Same value (#681A19) |
-| `--color-tertiary--light` | `--color-destructive-400` | Value changes: #942624 → #B84040 |
-| `--color-tertiary--dark` | `--color-destructive-600` | Value changes: #521514 → #551414 |
-| `--color-off-white` | `--color-surface-300` | Same value (#EDE0CB) |
-| `--color-light` | `--color-surface-100` | Value changes: #fff9f0 → #FAF7F2 |
-| `--color-cream` | Remove | No equivalent; use `--color-surface-100` or `--color-white` |
-| `--color-dark` | `--color-neutral-900` | Value changes: #252422 → #1C1C1C |
-| `--color-black` | Remove | Use `--color-neutral-900` |
-| `--color-gray-50` | `--color-neutral-100` | Value changes: #f2f2f2 → #F8F8F7 (warm) |
-| `--color-gray-100` | `--color-neutral-200` | Value changes: #e6e6e6 → #EFEFED (warm) |
-| `--color-gray-200` | `--color-neutral-300` | Value changes: #ccc → #E0DFDC (warm) |
-| `--color-gray-300` | `--color-neutral-400` | Value changes: #b3b3b3 → #C8C6C1 (warm) |
-| `--color-gray-400` | `--color-neutral-500` | Value changes: #999 → #A09D97 (warm) |
-| `--color-gray-500` | `--color-neutral-500` | Value changes: #808080 → #A09D97 (warm) |
-| `--color-gray-600` | `--color-neutral-600` | Value changes: #666 → #78756F (warm) |
-| `--color-gray-700` | `--color-neutral-700` | Value changes: #4d4d4d → #524F4A (warm) |
-| `--color-gray-800` | `--color-neutral-800` | Value changes: #333 → #2E2C28 (warm) |
-| `--color-gray-900` | `--color-neutral-900` | Value changes: #1a1a1a → #1C1C1C (warm) |
-| `--color-success-500` | `--color-success-500` | Value changes: #22c55e → #1A6B43 |
-| `--color-success-200` | `--color-success-200` | Value changes: #bbf7d0 → #A8D9BC |
-| `--color-success-700` | `--color-success-700` | Value changes: #15803d → #0F4028 |
-| `--color-success-50` | `--color-success-100` | Renamed + value changes |
-| `--color-success-900` | Remove | No 900 in DS |
-| `--color-success-400` | Remove | No 400 in DS |
-| `--color-success` | `--color-success-500` | Shorthand removed |
-| `--color-error-500` | `--color-error-500` | Value changes: #ef4444 → #B91C1C |
-| `--color-error-200` | `--color-error-200` | Value changes: #fecaca → #F5B5B5 |
-| `--color-error-700` | `--color-error-700` | Value changes: #b91c1c → #7A1010 |
-| `--color-error-50` | `--color-error-100` | Renamed + value changes |
-| `--color-error-900` | Remove | No 900 in DS |
-| `--color-error` | `--color-error-500` | Shorthand removed |
-| `--color-warning` | `--color-warning-500` | Value changes: #f80 → #B86E0A |
-| `--color-white` | `--color-white` | Unchanged |
+| Old Token                  | New Token                 | Notes                                                       |
+| -------------------------- | ------------------------- | ----------------------------------------------------------- |
+| `--color-primary`          | `--color-primary-500`     | Same value (#1E4A40)                                        |
+| `--color-primary--light`   | `--color-primary-400`     | Value changes: #2f7464 → #3D8C75                            |
+| `--color-primary--dark`    | `--color-primary-700`     | Value changes: #122b25 → #0E2822                            |
+| `--color-secondary`        | `--color-accent-500`      | Same value (#E27739)                                        |
+| `--color-secondary--light` | `--color-accent-300`      | Value changes: #ea9d71 → #EEA86B                            |
+| `--color-secondary--dark`  | `--color-accent-600`      | Value changes: #c35a1d → #CC6830                            |
+| `--color-tertiary`         | `--color-destructive-500` | Same value (#681A19)                                        |
+| `--color-tertiary--light`  | `--color-destructive-400` | Value changes: #942624 → #B84040                            |
+| `--color-tertiary--dark`   | `--color-destructive-600` | Value changes: #521514 → #551414                            |
+| `--color-off-white`        | `--color-surface-300`     | Same value (#EDE0CB)                                        |
+| `--color-light`            | `--color-surface-100`     | Value changes: #fff9f0 → #FAF7F2                            |
+| `--color-cream`            | Remove                    | No equivalent; use `--color-surface-100` or `--color-white` |
+| `--color-dark`             | `--color-neutral-900`     | Value changes: #252422 → #1C1C1C                            |
+| `--color-black`            | Remove                    | Use `--color-neutral-900`                                   |
+| `--color-gray-50`          | `--color-neutral-100`     | Value changes: #f2f2f2 → #F8F8F7 (warm)                     |
+| `--color-gray-100`         | `--color-neutral-200`     | Value changes: #e6e6e6 → #EFEFED (warm)                     |
+| `--color-gray-200`         | `--color-neutral-300`     | Value changes: #ccc → #E0DFDC (warm)                        |
+| `--color-gray-300`         | `--color-neutral-400`     | Value changes: #b3b3b3 → #C8C6C1 (warm)                     |
+| `--color-gray-400`         | `--color-neutral-500`     | Value changes: #999 → #A09D97 (warm)                        |
+| `--color-gray-500`         | `--color-neutral-500`     | Value changes: #808080 → #A09D97 (warm)                     |
+| `--color-gray-600`         | `--color-neutral-600`     | Value changes: #666 → #78756F (warm)                        |
+| `--color-gray-700`         | `--color-neutral-700`     | Value changes: #4d4d4d → #524F4A (warm)                     |
+| `--color-gray-800`         | `--color-neutral-800`     | Value changes: #333 → #2E2C28 (warm)                        |
+| `--color-gray-900`         | `--color-neutral-900`     | Value changes: #1a1a1a → #1C1C1C (warm)                     |
+| `--color-success-500`      | `--color-success-500`     | Value changes: #22c55e → #1A6B43                            |
+| `--color-success-200`      | `--color-success-200`     | Value changes: #bbf7d0 → #A8D9BC                            |
+| `--color-success-700`      | `--color-success-700`     | Value changes: #15803d → #0F4028                            |
+| `--color-success-50`       | `--color-success-100`     | Renamed + value changes                                     |
+| `--color-success-900`      | Remove                    | No 900 in DS                                                |
+| `--color-success-400`      | Remove                    | No 400 in DS                                                |
+| `--color-success`          | `--color-success-500`     | Shorthand removed                                           |
+| `--color-error-500`        | `--color-error-500`       | Value changes: #ef4444 → #B91C1C                            |
+| `--color-error-200`        | `--color-error-200`       | Value changes: #fecaca → #F5B5B5                            |
+| `--color-error-700`        | `--color-error-700`       | Value changes: #b91c1c → #7A1010                            |
+| `--color-error-50`         | `--color-error-100`       | Renamed + value changes                                     |
+| `--color-error-900`        | Remove                    | No 900 in DS                                                |
+| `--color-error`            | `--color-error-500`       | Shorthand removed                                           |
+| `--color-warning`          | `--color-warning-500`     | Value changes: #f80 → #B86E0A                               |
+| `--color-white`            | `--color-white`           | Unchanged                                                   |
 
 ---
 
@@ -196,10 +196,10 @@ Replaces `--font-family-primary: var(--font-inter)`. Update `next/font` config t
   --font-size-900: 20px;
   --font-size-1000: 22px;
   --font-size-1100: 24px;
-  --font-size-1200: 24px;  // scales to 28px at md
-  --font-size-1300: 28px;  // scales to 32px at md
-  --font-size-1400: 32px;  // scales to 40px at md
-  --font-size-1500: 40px;  // scales to 48px at md
+  --font-size-1200: 24px; // scales to 28px at md
+  --font-size-1300: 28px; // scales to 32px at md
+  --font-size-1400: 32px; // scales to 40px at md
+  --font-size-1500: 40px; // scales to 48px at md
 }
 
 @media (min-width: 768px) {
@@ -250,20 +250,20 @@ Replaces `--font-family-primary: var(--font-inter)`. Update `next/font` config t
 
 ### 2f. Token Migration Map — Typography
 
-| Old Token | New Token | Notes |
-|-----------|-----------|-------|
-| `--font-family-primary` | `--font-family-sans` | Inter → DM Sans |
-| (none) | `--font-family-serif` | New — DM Serif Display |
-| `--font-size-base` | Remove | Use explicit size tokens |
-| `--font-scale-ratio` | Remove | Modular scale removed |
-| `--font-size-xs` | `--font-size-200` (10px) | Was calc-based |
-| `--font-size-sm` | `--font-size-500` (13px) | Was calc-based |
-| `--font-size-md` | `--font-size-800` (17px) | Was calc-based |
-| `--font-size-lg` | `--font-size-900` (20px) | Was calc-based |
-| `--font-size-xl` | `--font-size-1000` (22px) | Was calc-based |
-| `--font-size-2xl` | `--font-size-1100` (24px) | Was calc-based |
-| `--font-size-3xl` | `--font-size-1300` (32px) | Was calc-based |
-| `--font-size-4xl` | `--font-size-1400` (40px) | Was calc-based |
+| Old Token               | New Token                 | Notes                    |
+| ----------------------- | ------------------------- | ------------------------ |
+| `--font-family-primary` | `--font-family-sans`      | Inter → DM Sans          |
+| (none)                  | `--font-family-serif`     | New — DM Serif Display   |
+| `--font-size-base`      | Remove                    | Use explicit size tokens |
+| `--font-scale-ratio`    | Remove                    | Modular scale removed    |
+| `--font-size-xs`        | `--font-size-200` (10px)  | Was calc-based           |
+| `--font-size-sm`        | `--font-size-500` (13px)  | Was calc-based           |
+| `--font-size-md`        | `--font-size-800` (17px)  | Was calc-based           |
+| `--font-size-lg`        | `--font-size-900` (20px)  | Was calc-based           |
+| `--font-size-xl`        | `--font-size-1000` (22px) | Was calc-based           |
+| `--font-size-2xl`       | `--font-size-1100` (24px) | Was calc-based           |
+| `--font-size-3xl`       | `--font-size-1300` (32px) | Was calc-based           |
+| `--font-size-4xl`       | `--font-size-1400` (40px) | Was calc-based           |
 
 ---
 
@@ -271,18 +271,18 @@ Replaces `--font-family-primary: var(--font-inter)`. Update `next/font` config t
 
 ```scss
 :root {
-  --spacing-50: 2px;     // Extra (kept from codebase)
+  --spacing-50: 2px; // Extra (kept from codebase)
   --spacing-100: 4px;
   --spacing-200: 8px;
   --spacing-300: 12px;
   --spacing-400: 16px;
-  --spacing-500: 20px;   // New
+  --spacing-500: 20px; // New
   --spacing-600: 24px;
   --spacing-700: 32px;
   --spacing-800: 40px;
   --spacing-900: 48px;
   --spacing-1000: 64px;
-  --spacing-1100: 80px;  // Extra (kept from codebase)
+  --spacing-1100: 80px; // Extra (kept from codebase)
   --spacing-1200: 160px; // Extra (kept from codebase)
 
   // Page margins
@@ -294,20 +294,20 @@ Replaces `--font-family-primary: var(--font-inter)`. Update `next/font` config t
 
 ### Token Migration Map — Spacing
 
-| Old Token | New Token | Notes |
-|-----------|-----------|-------|
-| `--space-3xs` | `--spacing-50` | 2px (kept as extra) |
-| `--space-2xs` | `--spacing-100` | 4px |
-| `--space-xs` | `--spacing-200` | 8px |
-| `--space-sm` | `--spacing-300` | 12px |
-| `--space-base` | `--spacing-400` | 16px |
-| `--space-md` | `--spacing-600` | 24px |
-| `--space-lg` | `--spacing-700` | 32px |
-| `--space-xl` | `--spacing-800` | 40px |
-| `--space-2xl` | `--spacing-900` | 48px |
-| `--space-3xl` | `--spacing-1000` | 64px |
-| `--space-4xl` | `--spacing-1100` | 80px (kept as extra) |
-| `--space-5xl` | `--spacing-1200` | 160px (kept as extra) |
+| Old Token      | New Token        | Notes                 |
+| -------------- | ---------------- | --------------------- |
+| `--space-3xs`  | `--spacing-50`   | 2px (kept as extra)   |
+| `--space-2xs`  | `--spacing-100`  | 4px                   |
+| `--space-xs`   | `--spacing-200`  | 8px                   |
+| `--space-sm`   | `--spacing-300`  | 12px                  |
+| `--space-base` | `--spacing-400`  | 16px                  |
+| `--space-md`   | `--spacing-600`  | 24px                  |
+| `--space-lg`   | `--spacing-700`  | 32px                  |
+| `--space-xl`   | `--spacing-800`  | 40px                  |
+| `--space-2xl`  | `--spacing-900`  | 48px                  |
+| `--space-3xl`  | `--spacing-1000` | 64px                  |
+| `--space-4xl`  | `--spacing-1100` | 80px (kept as extra)  |
+| `--space-5xl`  | `--spacing-1200` | 160px (kept as extra) |
 
 ---
 
@@ -316,26 +316,26 @@ Replaces `--font-family-primary: var(--font-inter)`. Update `next/font` config t
 ```scss
 :root {
   --radius-100: 4px;
-  --radius-200: 6px;     // New
+  --radius-200: 6px; // New
   --radius-300: 8px;
-  --radius-400: 10px;    // New
-  --radius-500: 12px;    // New
+  --radius-400: 10px; // New
+  --radius-500: 12px; // New
   --radius-600: 16px;
   --radius-700: 24px;
-  --radius-800: 999px;   // New — pill
-  --radius-circle: 50%;  // New — avatar/FAB
+  --radius-800: 999px; // New — pill
+  --radius-circle: 50%; // New — avatar/FAB
 }
 ```
 
 ### Token Migration Map — Radius
 
-| Old Token | New Token | Notes |
-|-----------|-----------|-------|
-| `--radius-sm` | `--radius-100` | 4px |
-| `--radius-md` | `--radius-300` | 8px |
-| `--radius-lg` | `--radius-600` | 16px |
-| `--radius-xl` | `--radius-700` | 24px |
-| `--radius-2xl` | Remove | 40px dropped |
+| Old Token      | New Token      | Notes        |
+| -------------- | -------------- | ------------ |
+| `--radius-sm`  | `--radius-100` | 4px          |
+| `--radius-md`  | `--radius-300` | 8px          |
+| `--radius-lg`  | `--radius-600` | 16px         |
+| `--radius-xl`  | `--radius-700` | 24px         |
+| `--radius-2xl` | Remove         | 40px dropped |
 
 ---
 
@@ -345,7 +345,7 @@ Replaces `--font-family-primary: var(--font-inter)`. Update `next/font` config t
 :root {
   --shadow-100: 0 1px 2px rgba(0, 0, 0, 0.06);
   --shadow-200: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-300: 0 4px 16px rgba(0, 0, 0, 0.10), 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-300: 0 4px 16px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
   --shadow-400: 0 8px 32px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
   --shadow-500: 0 16px 48px rgba(0, 0, 0, 0.15), 0 8px 16px rgba(0, 0, 0, 0.06);
   --shadow-sell: 0 4px 12px rgba(226, 119, 57, 0.45);
@@ -359,15 +359,15 @@ Note: DS uses `--shadow-focus-green` / `--shadow-focus-orange` but we rename to 
 
 ### Token Migration Map — Shadows
 
-| Old Token | New Token | Notes |
-|-----------|-----------|-------|
-| `--shadow-xs` | `--shadow-100` | Value changes |
-| `--shadow-sm` | `--shadow-200` | Value changes |
-| `--shadow-base` | `--shadow-300` | Value changes |
-| `--shadow-md` | `--shadow-400` | Value changes |
-| `--shadow-lg` | `--shadow-400` | Was broken; remap to 400 |
-| `--shadow-xl` | `--shadow-500` | Was broken; value changes |
-| `--shadow-modal` | `--shadow-500` | Removed; use 500 |
+| Old Token        | New Token      | Notes                     |
+| ---------------- | -------------- | ------------------------- |
+| `--shadow-xs`    | `--shadow-100` | Value changes             |
+| `--shadow-sm`    | `--shadow-200` | Value changes             |
+| `--shadow-base`  | `--shadow-300` | Value changes             |
+| `--shadow-md`    | `--shadow-400` | Value changes             |
+| `--shadow-lg`    | `--shadow-400` | Was broken; remap to 400  |
+| `--shadow-xl`    | `--shadow-500` | Was broken; value changes |
+| `--shadow-modal` | `--shadow-500` | Removed; use 500          |
 
 ---
 
@@ -394,20 +394,21 @@ Note: DS uses `--shadow-focus-green` / `--shadow-focus-orange` but we rename to 
   --transition-basic: all var(--duration-200) var(--easing-out);
   --transition-smooth: all var(--duration-300) var(--easing-out);
   --transition-bounce: all var(--duration-400) var(--easing-spring);
-  --transition-color: color var(--duration-200) var(--easing-out),
-                      background-color var(--duration-200) var(--easing-out),
-                      border-color var(--duration-200) var(--easing-out);
+  --transition-color:
+    color var(--duration-200) var(--easing-out),
+    background-color var(--duration-200) var(--easing-out),
+    border-color var(--duration-200) var(--easing-out);
 }
 ```
 
 ### Token Migration Map — Motion
 
-| Old Token | New Token | Notes |
-|-----------|-----------|-------|
-| `--transition-basic` | `--transition-basic` | Rebuilt from new tokens |
+| Old Token             | New Token             | Notes                   |
+| --------------------- | --------------------- | ----------------------- |
+| `--transition-basic`  | `--transition-basic`  | Rebuilt from new tokens |
 | `--transition-smooth` | `--transition-smooth` | Rebuilt from new tokens |
 | `--transition-bounce` | `--transition-bounce` | Rebuilt from new tokens |
-| `--transition-color` | `--transition-color` | Rebuilt from new tokens |
+| `--transition-color`  | `--transition-color`  | Rebuilt from new tokens |
 
 ---
 
@@ -439,10 +440,11 @@ Numeric scale only. No semantic aliases.
 ```scss
 $breakpoints: (
   xs: 320px,
-  sm: 375px,   // Changed from 480px
+  sm: 375px,
+  // Changed from 480px
   md: 768px,
   lg: 1024px,
-  xl: 1280px,  // Changed from 1200px
+  xl: 1280px, // Changed from 1200px
 );
 ```
 
@@ -470,21 +472,21 @@ $breakpoints: (
 
 ## File Change List
 
-| File | Action |
-|------|--------|
-| `src/styles/variables/colors.scss` | **Rewrite** — Replace all tokens with new palettes |
-| `src/styles/variables/typography.scss` | **Rewrite** — Replace modular scale with fixed sizes |
-| `src/styles/variables/spacing.scss` | **Rewrite** — Rename all tokens |
-| `src/styles/variables/radius.scss` | **Rewrite** — Rename all tokens |
-| `src/styles/variables/shadows.scss` | **Rewrite** — Replace all values (fixes bug) |
-| `src/styles/variables/animations.scss` | **Rewrite** — Add duration/easing + rebuild composites |
-| `src/styles/mixins/breakpoints.scss` | **Update** — Add xs, change sm to 375px, xl to 1280px |
-| (new) `src/styles/variables/z-index.scss` | **Create** — Z-index scale |
-| (new) `src/styles/variables/heights.scss` | **Create** — Component height tokens |
-| `src/styles/globals.scss` | **Update** — Import new variable files |
-| `src/app/layout.tsx` (or font config) | **Update** — Swap Inter for DM Sans + DM Serif Display |
-| **All `*.module.scss` files** | **Update** — Replace old token names with new names |
-| **All component files using old tokens** | **Update** — Find & replace per migration maps |
+| File                                      | Action                                                 |
+| ----------------------------------------- | ------------------------------------------------------ |
+| `src/styles/variables/colors.scss`        | **Rewrite** — Replace all tokens with new palettes     |
+| `src/styles/variables/typography.scss`    | **Rewrite** — Replace modular scale with fixed sizes   |
+| `src/styles/variables/spacing.scss`       | **Rewrite** — Rename all tokens                        |
+| `src/styles/variables/radius.scss`        | **Rewrite** — Rename all tokens                        |
+| `src/styles/variables/shadows.scss`       | **Rewrite** — Replace all values (fixes bug)           |
+| `src/styles/variables/animations.scss`    | **Rewrite** — Add duration/easing + rebuild composites |
+| `src/styles/mixins/breakpoints.scss`      | **Update** — Add xs, change sm to 375px, xl to 1280px  |
+| (new) `src/styles/variables/z-index.scss` | **Create** — Z-index scale                             |
+| (new) `src/styles/variables/heights.scss` | **Create** — Component height tokens                   |
+| `src/styles/globals.scss`                 | **Update** — Import new variable files                 |
+| `src/app/layout.tsx` (or font config)     | **Update** — Swap Inter for DM Sans + DM Serif Display |
+| **All `*.module.scss` files**             | **Update** — Replace old token names with new names    |
+| **All component files using old tokens**  | **Update** — Find & replace per migration maps         |
 
 ---
 

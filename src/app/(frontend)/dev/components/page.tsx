@@ -14,7 +14,12 @@ import Toggle from '@/components/controls/toggle';
 import PillSelector from '@/components/controls/pill-selector';
 import Favorite from '@/components/controls/favorite';
 import InlineEdit from '@/components/controls/inline-edit';
-import { Dropdown, DropdownItem, DropdownTitle, DropdownDivider } from '@/components/controls/dropdown';
+import {
+  Dropdown,
+  DropdownItem,
+  DropdownTitle,
+  DropdownDivider,
+} from '@/components/controls/dropdown';
 
 // ── Indicators ───────────────────────────────────────────────────
 import Pill from '@/components/indicators/pill';
@@ -233,15 +238,47 @@ const INTERACTIVE_STATES: {
   shared?: string;
   notes: string;
 }[] = [
-  { state: 'Default', green: '--color-green-500', orange: '--color-orange-500', notes: 'Resting state' },
-  { state: 'Hover', green: '--color-green-600', orange: '--color-orange-600', notes: 'cursor:pointer' },
-  { state: 'Active/Pressed', green: '--color-green-700', orange: '--color-orange-700', notes: 'scale(0.98)' },
-  { state: 'Focus', green: '--shadow-focus-green', orange: '--shadow-focus-orange', notes: 'outline:none + box-shadow' },
-  { state: 'Disabled', shared: 'opacity:0.38, cursor:not-allowed', notes: 'Never change color, use opacity' },
+  {
+    state: 'Default',
+    green: '--color-green-500',
+    orange: '--color-orange-500',
+    notes: 'Resting state',
+  },
+  {
+    state: 'Hover',
+    green: '--color-green-600',
+    orange: '--color-orange-600',
+    notes: 'cursor:pointer',
+  },
+  {
+    state: 'Active/Pressed',
+    green: '--color-green-700',
+    orange: '--color-orange-700',
+    notes: 'scale(0.98)',
+  },
+  {
+    state: 'Focus',
+    green: '--shadow-focus-green',
+    orange: '--shadow-focus-orange',
+    notes: 'outline:none + box-shadow',
+  },
+  {
+    state: 'Disabled',
+    shared: 'opacity:0.38, cursor:not-allowed',
+    notes: 'Never change color, use opacity',
+  },
   { state: 'Loading', shared: 'opacity:0.7, cursor:wait', notes: 'Spinner replaces label' },
-  { state: 'Error', shared: '--color-error-500 border + --shadow-focus-error', notes: 'Inputs only' },
+  {
+    state: 'Error',
+    shared: '--color-error-500 border + --shadow-focus-error',
+    notes: 'Inputs only',
+  },
   { state: 'Success', shared: '--color-success-500 border', notes: 'Inputs: valid state' },
-  { state: 'Selected', shared: '--color-green-500 border (2px) + --color-green-100 bg', notes: 'Cards, options, pills' },
+  {
+    state: 'Selected',
+    shared: '--color-green-500 border (2px) + --color-green-100 bg',
+    notes: 'Cards, options, pills',
+  },
 ];
 
 // ═══════════════════════════════════════════════════════════════════
@@ -249,18 +286,73 @@ const INTERACTIVE_STATES: {
 // ═══════════════════════════════════════════════════════════════════
 
 const TYPE_SCALE = [
-  { size: '48px', preview: 'Just Listed', spec: 'DM Serif Display w:400 lh:1.2', use: 'Hero editorial' },
-  { size: '32px', preview: 'Condition', spec: 'DM Serif Display w:400 lh:1.25', use: 'Section titles' },
+  {
+    size: '48px',
+    preview: 'Just Listed',
+    spec: 'DM Serif Display w:400 lh:1.2',
+    use: 'Hero editorial',
+  },
+  {
+    size: '32px',
+    preview: 'Condition',
+    spec: 'DM Serif Display w:400 lh:1.25',
+    use: 'Section titles',
+  },
   { size: '28px', preview: '$140', spec: 'DM Sans Bold w:700 lh:1.25', use: 'Listing price' },
-  { size: '22px', preview: 'Shimano Stradic FL 2500', spec: 'DM Sans SemiBold w:600 lh:1.25', use: 'Listing detail title' },
-  { size: '17px', preview: "Caleb's Gear Lab", spec: 'DM Sans SemiBold w:600 lh:1.35', use: 'Shop name, modal title' },
-  { size: '15px', preview: 'Used one season of light bass fishing.', spec: 'DM Sans Regular w:400 lh:1.5', use: 'Body copy, inputs' },
-  { size: '14px', preview: 'Minor cosmetic scuff on the underside.', spec: 'DM Sans Regular w:400 lh:1.65', use: 'Long-form copy' },
-  { size: '13px', preview: 'Ships from Tennessee, USA', spec: 'DM Sans Regular w:400 lh:1.5', use: 'Metadata, helper text' },
-  { size: '12px', preview: 'LISTING TITLE', spec: 'DM Sans SemiBold Uppercase ls:+0.05em', use: 'Form labels, eyebrows' },
-  { size: '11px', preview: 'RiverGuide Crafts · Ships from FL', spec: 'DM Sans Regular w:400 lh:1.5', use: 'Card seller line' },
-  { size: '10px', preview: 'GEAR RATIO', spec: 'DM Sans SemiBold Uppercase ls:+0.07em', use: 'Spec keys, tab labels' },
-  { size: '9px', preview: 'VERY GOOD', spec: 'DM Sans Medium Uppercase ls:+0.05em', use: 'Condition badges' },
+  {
+    size: '22px',
+    preview: 'Shimano Stradic FL 2500',
+    spec: 'DM Sans SemiBold w:600 lh:1.25',
+    use: 'Listing detail title',
+  },
+  {
+    size: '17px',
+    preview: "Caleb's Gear Lab",
+    spec: 'DM Sans SemiBold w:600 lh:1.35',
+    use: 'Shop name, modal title',
+  },
+  {
+    size: '15px',
+    preview: 'Used one season of light bass fishing.',
+    spec: 'DM Sans Regular w:400 lh:1.5',
+    use: 'Body copy, inputs',
+  },
+  {
+    size: '14px',
+    preview: 'Minor cosmetic scuff on the underside.',
+    spec: 'DM Sans Regular w:400 lh:1.65',
+    use: 'Long-form copy',
+  },
+  {
+    size: '13px',
+    preview: 'Ships from Tennessee, USA',
+    spec: 'DM Sans Regular w:400 lh:1.5',
+    use: 'Metadata, helper text',
+  },
+  {
+    size: '12px',
+    preview: 'LISTING TITLE',
+    spec: 'DM Sans SemiBold Uppercase ls:+0.05em',
+    use: 'Form labels, eyebrows',
+  },
+  {
+    size: '11px',
+    preview: 'RiverGuide Crafts · Ships from FL',
+    spec: 'DM Sans Regular w:400 lh:1.5',
+    use: 'Card seller line',
+  },
+  {
+    size: '10px',
+    preview: 'GEAR RATIO',
+    spec: 'DM Sans SemiBold Uppercase ls:+0.07em',
+    use: 'Spec keys, tab labels',
+  },
+  {
+    size: '9px',
+    preview: 'VERY GOOD',
+    spec: 'DM Sans Medium Uppercase ls:+0.05em',
+    use: 'Condition badges',
+  },
 ];
 
 // ═══════════════════════════════════════════════════════════════════
@@ -313,9 +405,21 @@ const MOTION_DURATIONS = [
 ];
 
 const MOTION_EASINGS = [
-  { token: '--ease-out', value: 'cubic-bezier(0.16, 1, 0.3, 1)', use: 'Default UI. Fast start, smooth finish.' },
-  { token: '--ease-in', value: 'cubic-bezier(0.4, 0, 1, 1)', use: 'Exit/dismissal only. Starts slow, accelerates.' },
-  { token: '--ease-spring', value: 'cubic-bezier(0.34, 1.56, 0.64, 1)', use: 'Micro-interactions with overshoot.' },
+  {
+    token: '--ease-out',
+    value: 'cubic-bezier(0.16, 1, 0.3, 1)',
+    use: 'Default UI. Fast start, smooth finish.',
+  },
+  {
+    token: '--ease-in',
+    value: 'cubic-bezier(0.4, 0, 1, 1)',
+    use: 'Exit/dismissal only. Starts slow, accelerates.',
+  },
+  {
+    token: '--ease-spring',
+    value: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+    use: 'Micro-interactions with overshoot.',
+  },
   { token: 'ease-linear', value: 'linear', use: 'Progress bars, spinners. Mechanical.' },
 ];
 
@@ -521,8 +625,7 @@ export default function ComponentShowcase() {
                         className={styles.semanticSwatch}
                         style={{
                           background: shade.hex,
-                          borderColor:
-                            shade.label === '100' ? semantic.border : 'transparent',
+                          borderColor: shade.label === '100' ? semantic.border : 'transparent',
                         }}
                       />
                     ))}
@@ -575,8 +678,9 @@ export default function ComponentShowcase() {
           <div className={styles.sectionCategory}>Foundation</div>
           <h2 className={styles.sectionTitle}>Typography</h2>
           <p className={styles.sectionDesc}>
-            Two fonts. <strong>DM Sans</strong> for all functional UI. <strong>DM Serif Display</strong>{' '}
-            for editorial moments only. If you are unsure, it&apos;s DM Sans.
+            Two fonts. <strong>DM Sans</strong> for all functional UI.{' '}
+            <strong>DM Serif Display</strong> for editorial moments only. If you are unsure,
+            it&apos;s DM Sans.
           </p>
 
           <div className={styles.subsection}>
@@ -787,8 +891,12 @@ export default function ComponentShowcase() {
             <h3 className={styles.subsectionTitle}>Secondary</h3>
             <div className={styles.buttonRow}>
               <Button style="secondary">Secondary</Button>
-              <Button style="secondary" disabled>Disabled</Button>
-              <Button style="secondary" loading>Loading</Button>
+              <Button style="secondary" disabled>
+                Disabled
+              </Button>
+              <Button style="secondary" loading>
+                Loading
+              </Button>
             </div>
           </div>
 
@@ -796,8 +904,12 @@ export default function ComponentShowcase() {
             <h3 className={styles.subsectionTitle}>Danger</h3>
             <div className={styles.buttonRow}>
               <Button style="danger">Delete</Button>
-              <Button style="danger" disabled>Disabled</Button>
-              <Button style="danger" loading>Deleting</Button>
+              <Button style="danger" disabled>
+                Disabled
+              </Button>
+              <Button style="danger" loading>
+                Deleting
+              </Button>
             </div>
           </div>
 
@@ -805,8 +917,12 @@ export default function ComponentShowcase() {
             <h3 className={styles.subsectionTitle}>Dark</h3>
             <div className={styles.buttonRow}>
               <Button style="dark">Dark</Button>
-              <Button style="dark" outline>Dark Outline</Button>
-              <Button style="dark" disabled>Disabled</Button>
+              <Button style="dark" outline>
+                Dark Outline
+              </Button>
+              <Button style="dark" disabled>
+                Disabled
+              </Button>
             </div>
           </div>
 
@@ -814,8 +930,12 @@ export default function ComponentShowcase() {
             <h3 className={styles.subsectionTitle}>Light</h3>
             <div className={styles.darkSurface}>
               <Button style="light">Light</Button>
-              <Button style="light" outline>Light Outline</Button>
-              <Button style="light" disabled>Disabled</Button>
+              <Button style="light" outline>
+                Light Outline
+              </Button>
+              <Button style="light" disabled>
+                Disabled
+              </Button>
             </div>
           </div>
 
@@ -823,16 +943,24 @@ export default function ComponentShowcase() {
             <h3 className={styles.subsectionTitle}>Outline Variants</h3>
             <div className={styles.buttonRow}>
               <Button outline>Primary Outline</Button>
-              <Button style="secondary" outline>Secondary Outline</Button>
-              <Button style="danger" outline>Danger Outline</Button>
+              <Button style="secondary" outline>
+                Secondary Outline
+              </Button>
+              <Button style="danger" outline>
+                Danger Outline
+              </Button>
             </div>
           </div>
 
           <div className={styles.subsection}>
             <h3 className={styles.subsectionTitle}>Full Width</h3>
             <div style={{ maxWidth: 320 }}>
-              <Button fullWidth marginBottom>Buy Now — full width</Button>
-              <Button style="secondary" fullWidth>Make Offer</Button>
+              <Button fullWidth marginBottom>
+                Buy Now — full width
+              </Button>
+              <Button style="secondary" fullWidth>
+                Make Offer
+              </Button>
             </div>
           </div>
 
@@ -840,7 +968,9 @@ export default function ComponentShowcase() {
             <h3 className={styles.subsectionTitle}>Round</h3>
             <div className={styles.buttonRow}>
               <Button round>Round Primary</Button>
-              <Button style="secondary" round>Round Secondary</Button>
+              <Button style="secondary" round>
+                Round Secondary
+              </Button>
             </div>
           </div>
         </section>
@@ -852,8 +982,8 @@ export default function ComponentShowcase() {
           <div className={styles.sectionCategory}>Controls</div>
           <h2 className={styles.sectionTitle}>Form Elements</h2>
           <p className={styles.sectionDesc}>
-            48px height, <code>--c-fill</code> background, 1px <code>--c-border</code>, 10px
-            radius. Validation on blur. Focus: green border + white bg + shadow ring.
+            48px height, <code>--c-fill</code> background, 1px <code>--c-border</code>, 10px radius.
+            Validation on blur. Focus: green border + white bg + shadow ring.
           </p>
 
           <FormDemo />
@@ -870,19 +1000,40 @@ export default function ComponentShowcase() {
             <h3 className={styles.subsectionTitle}>Toggle Switch</h3>
             <div className={styles.toggleRow}>
               <div className={styles.toggleItem}>
-                <Toggle id="toggle-a" checked={toggleA} onChange={setToggleA} ariaLabel="Offers enabled" />
+                <Toggle
+                  id="toggle-a"
+                  checked={toggleA}
+                  onChange={setToggleA}
+                  ariaLabel="Offers enabled"
+                />
                 <span className={styles.toggleLabel}>Offers enabled</span>
               </div>
               <div className={styles.toggleItem}>
-                <Toggle id="toggle-b" checked={toggleB} onChange={setToggleB} ariaLabel="Free shipping" />
+                <Toggle
+                  id="toggle-b"
+                  checked={toggleB}
+                  onChange={setToggleB}
+                  ariaLabel="Free shipping"
+                />
                 <span className={styles.toggleLabel}>Free shipping</span>
               </div>
               <div className={styles.toggleItem}>
-                <Toggle id="toggle-c" checked={toggleC} onChange={setToggleC} ariaLabel="Price drop alerts" />
+                <Toggle
+                  id="toggle-c"
+                  checked={toggleC}
+                  onChange={setToggleC}
+                  ariaLabel="Price drop alerts"
+                />
                 <span className={styles.toggleLabel}>Price drop alerts</span>
               </div>
               <div className={styles.toggleItem}>
-                <Toggle id="toggle-disabled" checked={false} onChange={() => {}} disabled ariaLabel="Disabled toggle" />
+                <Toggle
+                  id="toggle-disabled"
+                  checked={false}
+                  onChange={() => {}}
+                  disabled
+                  ariaLabel="Disabled toggle"
+                />
                 <span className={styles.toggleLabel}>Disabled</span>
               </div>
             </div>
@@ -1043,7 +1194,12 @@ export default function ComponentShowcase() {
           </p>
 
           <div className={styles.buttonRow} style={{ marginBottom: 16 }}>
-            <Button onClick={() => { setToastSuccess(true); setToastError(true); }}>
+            <Button
+              onClick={() => {
+                setToastSuccess(true);
+                setToastError(true);
+              }}
+            >
               Show Toasts
             </Button>
           </div>
@@ -1107,11 +1263,26 @@ export default function ComponentShowcase() {
             <CollapsibleCard title="Specs & Details" defaultExpanded>
               <table className={styles.tokenTable}>
                 <tbody>
-                  <tr><td>Gear Ratio</td><td>6.0:1</td></tr>
-                  <tr><td>Weight</td><td>7.9 oz</td></tr>
-                  <tr><td>Max Drag</td><td>20 lb</td></tr>
-                  <tr><td>Line Cap</td><td>8/170 (Mono)</td></tr>
-                  <tr><td>Ball Bearings</td><td>6+1</td></tr>
+                  <tr>
+                    <td>Gear Ratio</td>
+                    <td>6.0:1</td>
+                  </tr>
+                  <tr>
+                    <td>Weight</td>
+                    <td>7.9 oz</td>
+                  </tr>
+                  <tr>
+                    <td>Max Drag</td>
+                    <td>20 lb</td>
+                  </tr>
+                  <tr>
+                    <td>Line Cap</td>
+                    <td>8/170 (Mono)</td>
+                  </tr>
+                  <tr>
+                    <td>Ball Bearings</td>
+                    <td>6+1</td>
+                  </tr>
                 </tbody>
               </table>
             </CollapsibleCard>
@@ -1154,11 +1325,11 @@ export default function ComponentShowcase() {
               <ExpandableSection title="Description" maxCollapsedLines={3}>
                 <p style={{ fontSize: 14, color: 'var(--c-text)' }}>
                   Used one season of light bass fishing on Lake Okeechobee. Mechanically flawless —
-                  drag is silky smooth, bail snaps clean, no line roller issues. Minor cosmetic scuff
-                  on the underside of the body from setting it on a dock — purely cosmetic and does
-                  not affect function at all. Comes with the original box and spare spool. Great reel
-                  for anyone who wants a Stradic without paying full retail. I&apos;m upgrading to the
-                  Stella so this one needs a new home.
+                  drag is silky smooth, bail snaps clean, no line roller issues. Minor cosmetic
+                  scuff on the underside of the body from setting it on a dock — purely cosmetic and
+                  does not affect function at all. Comes with the original box and spare spool.
+                  Great reel for anyone who wants a Stradic without paying full retail. I&apos;m
+                  upgrading to the Stella so this one needs a new home.
                 </p>
               </ExpandableSection>
             </div>
@@ -1171,9 +1342,7 @@ export default function ComponentShowcase() {
         <section id="dividers" className={styles.section}>
           <div className={styles.sectionCategory}>Layout</div>
           <h2 className={styles.sectionTitle}>Dividers</h2>
-          <p className={styles.sectionDesc}>
-            Horizontal divider with centered text label.
-          </p>
+          <p className={styles.sectionDesc}>Horizontal divider with centered text label.</p>
 
           <div style={{ maxWidth: 480 }}>
             <Divider text="or" />
