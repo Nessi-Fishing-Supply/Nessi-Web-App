@@ -7,10 +7,11 @@ The cart provides authenticated users with a persistent shopping cart backed by 
 ## Architecture
 
 - **types/cart.ts** — Database-derived types: `CartItem`, `CartItemInsert`, `CartItemWithListing`, `GuestCartItem`, `CartValidationResult`
-- **services/cart.ts** — Client-side service functions calling API routes via `@/libs/fetch` helpers (`getCart`, `getCartCount`, `addToCart`, `removeFromCart`, `clearCart`, `validateCart`, `refreshExpiry`)
+- **services/cart.ts** — Client-side service functions calling API routes via `@/libs/fetch` helpers (`getCart`, `getCartCount`, `addToCart`, `removeFromCart`, `clearCart`, `validateCart`, `refreshExpiry`, `mergeGuestCart`)
 - **services/cart-server.ts** — Server-side Supabase queries with validation logic: `getCartServer`, `getCartCountServer`, `addToCartServer`, `removeFromCartServer`, `clearCartServer`, `validateCartServer`, `mergeGuestCartServer`, `refreshExpiryServer`
 - **utils/guest-cart.ts** — Pure localStorage utility functions for guest cart: `getGuestCart`, `getGuestCartCount`, `addToGuestCart` (returns `'added' | 'full' | 'duplicate'`), `removeFromGuestCart`, `clearGuestCart`, `isInGuestCart`, plus `subscribe` for `useSyncExternalStore` integration (listens to `storage` events filtered by key + custom `nessi_cart_change` event)
 - **hooks/use-guest-cart.ts** — `useGuestCart()` React hook using `useSyncExternalStore` for hydration-safe localStorage access. Returns `{ items, count, add, remove, clear, isInCart }`. SSR-safe (empty cart on server). Cross-tab sync via `storage` event, same-tab reactivity via custom event.
+- **hooks/use-cart.ts** — Tanstack Query hooks for authenticated cart data fetching and mutations with optimistic updates. See Hooks table below.
 
 ## Database Schema
 
@@ -47,6 +48,24 @@ Server-side validation enforced in `addToCartServer` and `mergeGuestCartServer`:
 - **Guest merge** — `mergeGuestCartServer` treats all guest data as untrusted: validates UUID format, re-fetches listings from DB, ignores guest-provided prices, skips invalid/own/duplicate items, and respects the 25-item cap.
 - **Server client** — Uses `@/libs/supabase/server` (not admin client), matching the listings service pattern.
 - **Client services** — Thin `@/libs/fetch` wrappers calling future `/api/cart/*` routes. No direct Supabase usage on client.
+
+## Hooks
+
+| Hook | Query Key | Purpose | Optimistic |
+| ---- | --------- | ------- | ---------- |
+| `useCart()` | `['cart', userId]` | Full cart with listing + seller data | — |
+| `useCartCount()` | `['cart-count', userId]` | Lightweight count for badge | — |
+| `useAddToCart()` | mutation, invalidates both keys | Add item to cart | Yes — increments count, rollback on error |
+| `useRemoveFromCart()` | mutation, invalidates both keys | Remove item from cart | Yes — filters item from cache, decrements count, rollback on error |
+| `useClearCart()` | mutation, invalidates both keys | Clear entire cart | Yes — sets empty cart and zero count, rollback on error |
+| `useValidateCart()` | mutation (no invalidation) | Pre-checkout validation | No — server is source of truth |
+| `useMergeGuestCart()` | mutation, invalidates both keys | Merge guest cart on login | No — calls `clearGuestCart()` on success |
+| `useRefreshExpiry()` | mutation, invalidates cart key | Reset item expiry timer | No |
+| `useCartBadgeCount()` | wrapper (no own key) | Unified badge count for auth + guest | — returns DB count when auth'd, guest count when not |
+
+**Query key convention:** Both `['cart', userId]` and `['cart-count', userId]` are user-scoped. All mutations that modify cart contents invalidate both keys in `onSettled`.
+
+**`useCartBadgeCount` pattern:** Calls `useCartCount()` and `useGuestCart()` unconditionally (both always invoked, gated by `enabled` flags) to avoid conditional hook calls (rules of hooks). Returns `0` while auth is loading.
 
 ## Guest Cart
 
