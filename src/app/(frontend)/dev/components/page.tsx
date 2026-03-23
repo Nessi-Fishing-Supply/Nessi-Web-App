@@ -149,11 +149,7 @@ function FormDemo() {
       <form onSubmit={(e) => e.preventDefault()}>
         <div className={styles.formGrid}>
           <div className={styles.formItem}>
-            <Input
-              name="title"
-              label="Item title"
-              placeholder="e.g. Shimano Stradic FL 2500…"
-            />
+            <Input name="title" label="Item title" placeholder="e.g. Shimano Stradic FL 2500…" />
           </div>
           <div className={styles.formItem}>
             <Input name="price" label="Asking price" placeholder="$0.00" />
@@ -168,11 +164,7 @@ function FormDemo() {
 // Color Swatch Row
 // ═══════════════════════════════════════════════════════════════════
 
-function ColorRow({
-  colors,
-}: {
-  colors: { name: string; hex: string; desc?: string }[];
-}) {
+function ColorRow({ colors }: { colors: { name: string; hex: string; desc?: string }[] }) {
   return (
     <div className={styles.colorRow}>
       {colors.map((c) => (
@@ -212,12 +204,7 @@ export default function ComponentShowcase() {
   const mounted = useIsMounted();
 
   const tabItems: TabItem[] = useMemo(
-    () => [
-      { label: 'Details' },
-      { label: 'Specs' },
-      { label: 'Shipping' },
-      { label: 'Seller' },
-    ],
+    () => [{ label: 'Details' }, { label: 'Specs' }, { label: 'Shipping' }, { label: 'Seller' }],
     [],
   );
 
@@ -386,10 +373,7 @@ export default function ComponentShowcase() {
             <div className={styles.typeFont}>DM Sans 700</div>
             <div className={styles.typeUse}>24px · price / heading</div>
           </div>
-          <div
-            className={styles.typePreview}
-            style={{ fontSize: '24px', fontWeight: 700 }}
-          >
+          <div className={styles.typePreview} style={{ fontSize: '24px', fontWeight: 700 }}>
             $140.00
           </div>
         </div>
@@ -399,10 +383,7 @@ export default function ComponentShowcase() {
             <div className={styles.typeFont}>DM Sans 500</div>
             <div className={styles.typeUse}>15px · product title</div>
           </div>
-          <div
-            className={styles.typePreview}
-            style={{ fontSize: '15px', fontWeight: 500 }}
-          >
+          <div className={styles.typePreview} style={{ fontSize: '15px', fontWeight: 500 }}>
             Shimano Stradic FL 2500
           </div>
         </div>
@@ -412,10 +393,7 @@ export default function ComponentShowcase() {
             <div className={styles.typeFont}>DM Sans 400</div>
             <div className={styles.typeUse}>14px · body</div>
           </div>
-          <div
-            className={styles.typePreview}
-            style={{ fontSize: '14px', fontWeight: 400 }}
-          >
+          <div className={styles.typePreview} style={{ fontSize: '14px', fontWeight: 400 }}>
             Ships from Nashville, TN · Usually ships in 1 business day.
           </div>
         </div>
@@ -514,14 +492,38 @@ export default function ComponentShowcase() {
                 <div className={styles.topNavGreen}>
                   <span className={styles.topNavBrand}>Nessi</span>
                   <div className={styles.topNavIcons}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8" stroke="white" strokeWidth="2" /><path d="M21 21l-4.35-4.35" stroke="white" strokeWidth="2" strokeLinecap="round" /></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <circle cx="11" cy="11" r="8" stroke="white" strokeWidth="2" />
+                      <path
+                        d="M21 21l-4.35-4.35"
+                        stroke="white"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                      />
+                    </svg>
                     <span className={styles.topNavNotifDot}>
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="white" strokeWidth="2" strokeLinecap="round" /><circle cx="12" cy="7" r="4" stroke="white" strokeWidth="2" /></svg>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path
+                          d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"
+                          stroke="white"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                        />
+                        <circle cx="12" cy="7" r="4" stroke="white" strokeWidth="2" />
+                      </svg>
                     </span>
                   </div>
                 </div>
                 <div className={styles.topNavSearch}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" /><path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" />
+                    <path
+                      d="M21 21l-4.35-4.35"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
                   <span>Search gear, brands, sellers…</span>
                 </div>
               </div>
@@ -537,22 +539,90 @@ export default function ComponentShowcase() {
                 </div>
                 <div className={styles.bottomNavBar}>
                   <div className={`${styles.bottomNavItem} ${styles.bottomNavItemActive}`}>
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
                     <span>Home</span>
                   </div>
                   <div className={styles.bottomNavItem}>
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" stroke="currentColor" strokeWidth="2" rx="1" /><rect x="14" y="3" width="7" height="7" stroke="currentColor" strokeWidth="2" rx="1" /><rect x="3" y="14" width="7" height="7" stroke="currentColor" strokeWidth="2" rx="1" /><rect x="14" y="14" width="7" height="7" stroke="currentColor" strokeWidth="2" rx="1" /></svg>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                      <rect
+                        x="3"
+                        y="3"
+                        width="7"
+                        height="7"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        rx="1"
+                      />
+                      <rect
+                        x="14"
+                        y="3"
+                        width="7"
+                        height="7"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        rx="1"
+                      />
+                      <rect
+                        x="3"
+                        y="14"
+                        width="7"
+                        height="7"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        rx="1"
+                      />
+                      <rect
+                        x="14"
+                        y="14"
+                        width="7"
+                        height="7"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        rx="1"
+                      />
+                    </svg>
                     <span>Browse</span>
                   </div>
                   <div className={styles.bottomNavSell}>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="white" strokeWidth="2.5" strokeLinecap="round" /></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M12 5v14M5 12h14"
+                        stroke="white"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                      />
+                    </svg>
                   </div>
                   <div className={styles.bottomNavItem}>
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
                     <span>Inbox</span>
                   </div>
                   <div className={styles.bottomNavItem}>
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
                     <span>Saved</span>
                   </div>
                 </div>
@@ -628,14 +698,8 @@ export default function ComponentShowcase() {
         <div className={styles.componentCard}>
           <div className={styles.componentCardLabel}>Status Banners</div>
           <div className={styles.bannerStack}>
-            <InlineBanner
-              variant="success"
-              title="Identity verified — you can now sell on Nessi"
-            />
-            <InlineBanner
-              variant="warning"
-              title="Price dropped! Was $160 → now $140"
-            />
+            <InlineBanner variant="success" title="Identity verified — you can now sell on Nessi" />
+            <InlineBanner variant="warning" title="Price dropped! Was $160 → now $140" />
             <InlineBanner variant="error" title="Payment could not be processed" />
           </div>
         </div>
@@ -714,11 +778,7 @@ export default function ComponentShowcase() {
           <div className={styles.componentCardLabel}>Date, Location & Badges</div>
           <div className={styles.componentRow}>
             <DateTimeDisplay date={DEMO_NOW.toISOString()} format="relative" />
-            <DateTimeDisplay
-              date={DEMO_TOMORROW.toISOString()}
-              format="countdown"
-              urgent
-            />
+            <DateTimeDisplay date={DEMO_TOMORROW.toISOString()} format="countdown" urgent />
             <LocationChip location="Nashville, TN" variant="pill" />
             <LocationChip location="Local Pickup" variant="pickup" />
             <MemberBadge name="Early Adopter" icon="🎣" earned />
@@ -744,7 +804,12 @@ export default function ComponentShowcase() {
             isRead
           />
           <div style={{ marginTop: '16px' }}>
-            <SettingsRow label="Push Notifications" type="toggle" checked={settingsToggle} onChange={setSettingsToggle} />
+            <SettingsRow
+              label="Push Notifications"
+              type="toggle"
+              checked={settingsToggle}
+              onChange={setSettingsToggle}
+            />
             <SettingsRow label="Account Settings" type="nav" onClick={() => {}} />
             <SettingsRow label="Member since" type="display" value="March 2024" />
           </div>
@@ -752,7 +817,9 @@ export default function ComponentShowcase() {
 
         {/* Layout Components */}
         <div className={styles.componentCard}>
-          <div className={styles.componentCardLabel}>Layout: Page Header, Progress & Bottom Sheet</div>
+          <div className={styles.componentCardLabel}>
+            Layout: Page Header, Progress & Bottom Sheet
+          </div>
           <PageHeader title="Listing Details" onBack={() => {}} />
           <div style={{ marginTop: '16px' }}>
             <ProgressBar value={3} max={5} label="Listing Progress" showPercentage />
@@ -762,25 +829,31 @@ export default function ComponentShowcase() {
               Open Bottom Sheet
             </Button>
           </div>
-          {mounted && <BottomSheet title="Shipping Options" isOpen={sheetOpen} onClose={() => setSheetOpen(false)}>
-            <ShippingRateCard
-              carrier="USPS"
-              service="Priority Mail"
-              price={895}
-              eta="2-3 days"
-              isSelected
-              isFree={false}
-            />
-            <div style={{ marginTop: '8px' }}>
+          {mounted && (
+            <BottomSheet
+              title="Shipping Options"
+              isOpen={sheetOpen}
+              onClose={() => setSheetOpen(false)}
+            >
               <ShippingRateCard
-                carrier="UPS"
-                service="Ground"
-                price={1250}
-                eta="5-7 days"
-                isSelected={false}
+                carrier="USPS"
+                service="Priority Mail"
+                price={895}
+                eta="2-3 days"
+                isSelected
+                isFree={false}
               />
-            </div>
-          </BottomSheet>}
+              <div style={{ marginTop: '8px' }}>
+                <ShippingRateCard
+                  carrier="UPS"
+                  service="Ground"
+                  price={1250}
+                  eta="5-7 days"
+                  isSelected={false}
+                />
+              </div>
+            </BottomSheet>
+          )}
         </div>
 
         {/* Error States */}
@@ -816,7 +889,10 @@ export default function ComponentShowcase() {
             <div className={styles.componentCardLabel}>Product Cards</div>
             <div className={styles.productCardGrid}>
               <div className={styles.miniProductCard}>
-                <div className={styles.miniCardImage} style={{ background: 'var(--color-primary-100)' }}>
+                <div
+                  className={styles.miniCardImage}
+                  style={{ background: 'var(--color-primary-100)' }}
+                >
                   <span className={styles.miniCardEmoji}>🎣</span>
                   <div
                     className={styles.miniCardBadge}
@@ -836,7 +912,10 @@ export default function ComponentShowcase() {
               </div>
 
               <div className={styles.miniProductCard}>
-                <div className={styles.miniCardImage} style={{ background: 'var(--color-surface-400)' }}>
+                <div
+                  className={styles.miniCardImage}
+                  style={{ background: 'var(--color-surface-400)' }}
+                >
                   <span className={styles.miniCardEmoji}>🧰</span>
                   <div
                     className={styles.miniCardBadge}
@@ -854,7 +933,10 @@ export default function ComponentShowcase() {
               </div>
 
               <div className={styles.miniProductCard}>
-                <div className={styles.miniCardImage} style={{ background: 'var(--color-primary-100)' }}>
+                <div
+                  className={styles.miniCardImage}
+                  style={{ background: 'var(--color-primary-100)' }}
+                >
                   <span className={styles.miniCardEmoji}>🪝</span>
                   <div
                     className={styles.miniCardBadge}
@@ -977,9 +1059,21 @@ export default function ComponentShowcase() {
           <div>
             <div className={styles.componentCardLabel}>Category Tiles</div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
-              <CategoryTile name="Reels" image="/images/placeholder-reel.jpg" href="/search?cat=reels" />
-              <CategoryTile name="Rods" image="/images/placeholder-rod.jpg" href="/search?cat=rods" />
-              <CategoryTile name="Lures" image="/images/placeholder-lure.jpg" href="/search?cat=lures" />
+              <CategoryTile
+                name="Reels"
+                image="/images/placeholder-reel.jpg"
+                href="/search?cat=reels"
+              />
+              <CategoryTile
+                name="Rods"
+                image="/images/placeholder-rod.jpg"
+                href="/search?cat=rods"
+              />
+              <CategoryTile
+                name="Lures"
+                image="/images/placeholder-lure.jpg"
+                href="/search?cat=lures"
+              />
             </div>
           </div>
         </div>
@@ -990,9 +1084,27 @@ export default function ComponentShowcase() {
           <div className={styles.commerceGrid}>
             <MessageThread
               messages={[
-                { id: '1', senderId: 'other', content: 'Hey, is this still available?', timestamp: DEMO_2H_AGO, type: 'text' },
-                { id: '2', senderId: 'me', content: 'Yes! It\'s in great shape.', timestamp: DEMO_1H_AGO, type: 'text' },
-                { id: '3', senderId: 'other', content: 'Would you take $120?', timestamp: DEMO_30M_AGO, type: 'text' },
+                {
+                  id: '1',
+                  senderId: 'other',
+                  content: 'Hey, is this still available?',
+                  timestamp: DEMO_2H_AGO,
+                  type: 'text',
+                },
+                {
+                  id: '2',
+                  senderId: 'me',
+                  content: "Yes! It's in great shape.",
+                  timestamp: DEMO_1H_AGO,
+                  type: 'text',
+                },
+                {
+                  id: '3',
+                  senderId: 'other',
+                  content: 'Would you take $120?',
+                  timestamp: DEMO_30M_AGO,
+                  type: 'text',
+                },
               ]}
               currentUserId="me"
             />
@@ -1015,7 +1127,11 @@ export default function ComponentShowcase() {
             steps={[
               { label: 'Order Placed', timestamp: new Date('2026-03-20T10:00:00Z') },
               { label: 'Payment Confirmed', timestamp: new Date('2026-03-20T10:05:00Z') },
-              { label: 'Shipped', description: 'USPS Priority Mail', timestamp: new Date('2026-03-21T14:00:00Z') },
+              {
+                label: 'Shipped',
+                description: 'USPS Priority Mail',
+                timestamp: new Date('2026-03-21T14:00:00Z'),
+              },
               { label: 'Delivered' },
             ]}
             currentStep={2}
@@ -1031,7 +1147,10 @@ export default function ComponentShowcase() {
           <div className={styles.sectionNumber} style={{ color: 'rgba(255,255,255,0.4)' }}>
             05 — Editorial
           </div>
-          <h2 className={styles.sectionTitle} style={{ color: 'white', fontFamily: 'var(--font-family-serif)' }}>
+          <h2
+            className={styles.sectionTitle}
+            style={{ color: 'white', fontFamily: 'var(--font-family-serif)' }}
+          >
             The Maker Layer
           </h2>
           <p className={styles.sectionDesc} style={{ color: 'rgba(255,255,255,0.6)' }}>
@@ -1049,15 +1168,15 @@ export default function ComponentShowcase() {
             <li className={styles.editorialListItem}>
               <span className={styles.editorialListNum}>01</span>
               <span className={styles.editorialListText}>
-                <strong>Maker Story Block</strong> — Serif headline, pull quote, narrative paragraph.
-                Sanctioned serif moment.
+                <strong>Maker Story Block</strong> — Serif headline, pull quote, narrative
+                paragraph. Sanctioned serif moment.
               </span>
             </li>
             <li className={styles.editorialListItem}>
               <span className={styles.editorialListNum}>02</span>
               <span className={styles.editorialListText}>
-                <strong>Shop Highlight</strong> — Full-bleed hero image with overlay gradient, fishing
-                identity tags, 3-item preview grid.
+                <strong>Shop Highlight</strong> — Full-bleed hero image with overlay gradient,
+                fishing identity tags, 3-item preview grid.
               </span>
             </li>
             <li className={styles.editorialListItem}>
@@ -1131,9 +1250,24 @@ export default function ComponentShowcase() {
         <div style={{ marginTop: '24px' }}>
           <RecentlySoldTicker
             sales={[
-              { title: 'Shimano Stradic FL 2500', price: 14000, thumbnail: '/images/placeholder-reel.jpg', timeAgo: '2 min ago' },
-              { title: 'G. Loomis NRX+ 7\'3"', price: 32000, thumbnail: '/images/placeholder-rod.jpg', timeAgo: '8 min ago' },
-              { title: 'Rapala X-Rap (6-pack)', price: 4200, thumbnail: '/images/placeholder-lure.jpg', timeAgo: '15 min ago' },
+              {
+                title: 'Shimano Stradic FL 2500',
+                price: 14000,
+                thumbnail: '/images/placeholder-reel.jpg',
+                timeAgo: '2 min ago',
+              },
+              {
+                title: 'G. Loomis NRX+ 7\'3"',
+                price: 32000,
+                thumbnail: '/images/placeholder-rod.jpg',
+                timeAgo: '8 min ago',
+              },
+              {
+                title: 'Rapala X-Rap (6-pack)',
+                price: 4200,
+                thumbnail: '/images/placeholder-lure.jpg',
+                timeAgo: '15 min ago',
+              },
             ]}
           />
         </div>
@@ -1287,8 +1421,8 @@ export default function ComponentShowcase() {
             <h4>No raw white surfaces</h4>
             <p>
               Every surface uses a token: <code>--surface-page</code>, <code>--surface-raised</code>
-              , <code>--surface-overlay</code>, <code>--surface-sunken</code>. The toggle knob is the
-              one deliberate exception.
+              , <code>--surface-overlay</code>, <code>--surface-sunken</code>. The toggle knob is
+              the one deliberate exception.
             </p>
           </div>
           <div className={styles.principleItem}>
@@ -1337,9 +1471,7 @@ export default function ComponentShowcase() {
         </p>
       </section>
 
-      <footer className={styles.footerVersion}>
-        Nessi Design System v2.1 · March 2026
-      </footer>
+      <footer className={styles.footerVersion}>Nessi Design System v2.1 · March 2026</footer>
     </div>
   );
 }
