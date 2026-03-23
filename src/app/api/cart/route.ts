@@ -49,6 +49,13 @@ export async function POST(req: Request) {
 
     const { listingId, addedFrom } = await req.json();
 
+    if (!listingId || typeof listingId !== 'string') {
+      return NextResponse.json(
+        { error: 'listingId is required' },
+        { status: 400, headers: AUTH_CACHE_HEADERS },
+      );
+    }
+
     const item = await addToCartServer(user.id, listingId, 0, addedFrom);
 
     return NextResponse.json(item, { headers: AUTH_CACHE_HEADERS });
