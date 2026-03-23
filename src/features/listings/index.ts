@@ -1,5 +1,5 @@
 // Utils
-export { formatPrice, calculateFee, calculateNet } from './utils/format';
+export { formatPrice, calculateFee, calculateNet } from '@/features/shared/utils/format';
 
 // Constants
 export type { ConditionTier } from './constants/condition';

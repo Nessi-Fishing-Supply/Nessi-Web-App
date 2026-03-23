@@ -11,7 +11,7 @@ Listings are the core marketplace entities in Nessi — individual items posted 
 - **types/search.ts** — Search types: `SearchFilters` (URL param-driven filter state), `AutocompleteSuggestion`, `SearchSuggestion`
 - **constants/condition.ts** — `CONDITION_TIERS` (6-tier array with labels, descriptions, WCAG AA colors), `CATEGORY_PHOTO_GUIDANCE` (per-category photo tips), `ConditionTier` type
 - **constants/category.ts** — `LISTING_CATEGORIES` (10 categories with labels and react-icons), `getCategoryLabel()`, `getCategoryIcon()`
-- **utils/format.ts** — `formatPrice(cents)` → "$29.99", `calculateFee(cents)` → marketplace fee in cents (flat $0.99 under $15, 6% above), `calculateNet(cents)` → price minus fee
+- **`@/features/shared/utils/format.ts`** — `formatPrice(cents)`, `calculateFee(cents)`, `calculateNet(cents)` — shared currency formatters (not listing-specific, lives in shared)
 - **services/listing.ts** — Client-side service functions calling API routes via `@/libs/fetch` helpers (`getListings`, `getListingById`, `createListing`, `updateListing`, `deleteListing`, `updateListingStatus`, etc.)
 - **services/listing-photo.ts** — Photo upload/delete services calling API routes
 - **services/listing-server.ts** — Server-side Supabase queries: `getListingByIdServer`, `getListingWithSellerServer` (listing + seller profile), `getListingsByMemberServer`, `getListingsByShopServer`, `getActiveListingsServer`
