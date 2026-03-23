@@ -14,6 +14,7 @@ Listings are the core marketplace entities in Nessi — individual items posted 
 - **services/listing.ts** — Client-side service functions calling API routes via `@/libs/fetch` helpers (`getListings`, `getListingById`, `createListing`, `updateListing`, `deleteListing`, `updateListingStatus`, etc.)
 - **services/listing-photo.ts** — Photo upload/delete services calling API routes
 - **services/listing-server.ts** — Server-side Supabase queries: `getListingByIdServer`, `getListingWithSellerServer` (listing + seller profile), `getListingsByMemberServer`, `getListingsByShopServer`, `getActiveListingsServer`
+- **config/categories.ts** — Category SEO config with `getCategoryBySlug()`, `CATEGORY_MAP`, `VALID_CATEGORY_SLUGS`
 - **hooks/use-listings.ts** — Tanstack Query hooks for listing data fetching and mutations
 - **hooks/use-listing-photos.ts** — Tanstack Query hooks for photo upload and delete
 - **components/photo-manager/** — Multi-photo upload, reorder, and delete UI for listing creation and editing
@@ -139,8 +140,9 @@ All listing API routes live in `src/app/api/listings/`:
 | `useDeleteDraft()`            | mutation, invalidates `['listings']`     | Hard-delete a draft                                   |
 | `useUpdateListingStatus()`    | mutation, invalidates `['listings']`     | Change listing status                                 |
 | `useIncrementViewCount()`     | mutation (fire-and-forget)               | Increment view count                                  |
-| `useUploadListingPhoto()`     | mutation, invalidates listing photos key | Upload photo via `POST /api/listings/upload`          |
-| `useDeleteListingPhoto()`     | mutation, invalidates listing photos key | Delete photo via `DELETE /api/listings/upload/delete` |
+| `useUploadListingPhoto()`     | mutation, invalidates listing photos key              | Upload photo via `POST /api/listings/upload`          |
+| `useDeleteListingPhoto()`     | mutation, invalidates listing photos key              | Delete photo via `DELETE /api/listings/upload/delete` |
+| `useListingsInfinite(params)` | `['listings', 'infinite', { category, sort }]`        | Infinite scroll listing feed with cursor-based pagination |
 
 ## Components
 
@@ -163,6 +165,11 @@ All listing API routes live in `src/app/api/listings/`:
 | `MarkSoldModal`      | `components/mark-sold-modal/`      | Confirmation modal with optional sale price input. Calls `useUpdateListingStatus` with `sold` status.                                      |
 | `DeleteListingModal` | `components/delete-listing-modal/` | Delete confirmation dialog with danger button. Calls `useDeleteListing` (soft delete).                                                     |
 | `QuickEditPrice`     | `components/quick-edit-price/`     | Compact price editor (Modal). Auto-focused input, live fee calculator, watcher notice. Patches only `price_cents`.                         |
+| `ListingGrid`        | `components/listing-grid/`         | Responsive grid of listing cards. Props: `listings`, `isLoading`. Used on category browse and search pages.                                |
+| `ListingSkeleton`    | `components/listing-skeleton/`     | Placeholder card matching ListingGrid item dimensions. Rendered while listings are loading.                                                |
+| `InfiniteScroll`     | `components/infinite-scroll/`      | Intersection Observer sentinel that triggers `onLoadMore` when scrolled into view. Props: `onLoadMore`, `hasMore`, `isLoading`.            |
+| `SortSelect`         | `components/sort-select/`          | Dropdown for choosing listing sort order (e.g., newest, price asc/desc). Props: `value`, `onChange`.                                      |
+| `EmptyState`         | `components/empty-state/`          | Zero-result state with icon, heading, and optional CTA. Used when a category or search returns no listings.                                |
 
 ## Create Wizard
 
@@ -195,6 +202,7 @@ The listing creation wizard at `/dashboard/listings/new` is a 5-step flow plus r
 | `/dashboard/listings/[id]/edit` | Edit wizard for existing listings (ticket #7)                                                    |
 | `/dashboard/listings`           | Listing management dashboard (seller's active/draft/archived listings)                           |
 | `/listing/[id]`                 | Public listing detail page — server-rendered with SEO metadata                                   |
+| `/category/[slug]`              | Category browse page with infinite scroll and sort controls                                      |
 
 ## Key Patterns
 

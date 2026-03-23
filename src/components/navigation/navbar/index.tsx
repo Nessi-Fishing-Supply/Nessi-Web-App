@@ -31,6 +31,9 @@ import {
 // Assets
 import LogoFull from '@/assets/logos/logo_full.svg';
 
+// Listings
+import { LISTING_CATEGORIES } from '@/features/listings/constants/category';
+
 // Auth & Toast
 import { useAuth } from '@/features/auth/context';
 import { logout } from '@/features/auth/services/auth';
@@ -269,21 +272,10 @@ export default function Navbar() {
       </div>
 
       <div className={styles.categories}>
-        {[
-          'Rods',
-          'Reels',
-          'Combos',
-          'Baits',
-          'Lures',
-          'Tackle',
-          'Line',
-          'Storage',
-          'Apparel',
-          'Bargain Bin',
-        ].map((category) => (
-          <span key={category} className={styles.categoryLink} role="link" aria-disabled="true">
-            {category}
-          </span>
+        {LISTING_CATEGORIES.map((category) => (
+          <Link key={category.value} href={`/category/${category.value}`} className={styles.categoryLink}>
+            {category.label}
+          </Link>
         ))}
       </div>
 
