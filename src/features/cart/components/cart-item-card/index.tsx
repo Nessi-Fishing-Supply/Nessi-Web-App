@@ -20,8 +20,7 @@ interface CartItemCardProps {
 export default function CartItemCard({ item, onRemove, isRemoving = false }: CartItemCardProps) {
   const { listing } = item;
 
-  const thumbnailUrl =
-    listing.cover_photo_url ?? listing.listing_photos[0]?.image_url ?? null;
+  const thumbnailUrl = listing.cover_photo_url ?? listing.listing_photos[0]?.image_url ?? null;
 
   const hasPriceChanged = item.price_at_add !== listing.price_cents;
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { HiOutlineShoppingCart, HiOutlineX } from 'react-icons/hi';
@@ -80,9 +80,11 @@ export default function CartPage() {
 
   const [staleBannerItems, setStaleBannerItems] = useState<CartValidationResult['removed']>([]);
   const [showStaleBanner, setShowStaleBanner] = useState(false);
+  const hasValidated = useRef(false);
 
   useEffect(() => {
-    if (isAuthenticated && user) {
+    if (isAuthenticated && user && !hasValidated.current) {
+      hasValidated.current = true;
       validateCart(undefined, {
         onSuccess: (result) => {
           if (result.removed.length > 0) {
@@ -228,7 +230,7 @@ export default function CartPage() {
             <ul className={styles.staleBannerReasons}>
               {staleBannerItems.map((removed, i) => (
                 <li key={i}>
-                  {removed.item.listing.title} —{' '}
+                  {removed.item.listing?.title ?? 'Unknown item'} —{' '}
                   {removed.reason === 'sold'
                     ? 'Sold'
                     : removed.reason === 'deactivated'
@@ -251,21 +253,27 @@ export default function CartPage() {
 
       <div className={styles.layout}>
         <div className={styles.itemsColumn}>
-          {groups.map((group, index) => (
-            <section key={index} className={styles.sellerGroup}>
-              <SellerHeader seller={group.seller} />
-              <div className={styles.sellerItems}>
-                {group.items.map((item) => (
-                  <CartItemCard
-                    key={item.id}
-                    item={item}
-                    onRemove={(cartItemId) => removeFromCart(cartItemId)}
-                    isRemoving={isRemoving && removingId === item.id}
-                  />
-                ))}
-              </div>
-            </section>
-          ))}
+          {groups.map((group) => {
+            const groupKey =
+              group.seller?.type === 'shop'
+                ? `shop:${group.seller.slug}`
+                : `member:${group.seller?.slug ?? 'unknown'}`;
+            return (
+              <section key={groupKey} className={styles.sellerGroup}>
+                <SellerHeader seller={group.seller} />
+                <div className={styles.sellerItems}>
+                  {group.items.map((item) => (
+                    <CartItemCard
+                      key={item.id}
+                      item={item}
+                      onRemove={(cartItemId) => removeFromCart(cartItemId)}
+                      isRemoving={isRemoving && removingId === item.id}
+                    />
+                  ))}
+                </div>
+              </section>
+            );
+          })}
         </div>
 
         <div className={styles.summaryColumn}>
