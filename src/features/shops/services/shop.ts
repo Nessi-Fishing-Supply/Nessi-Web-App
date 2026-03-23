@@ -82,15 +82,25 @@ export async function getShopsByMember(memberId: string): Promise<Shop[]> {
   return data;
 }
 
-export async function createShop(data: ShopInsert): Promise<Shop> {
-  const supabase = createClient();
-  const { data: created, error } = await supabase.from('shops').insert(data).select().single();
+export async function createShop(data: {
+  shopName: string;
+  slug: string;
+  description?: string | null;
+  ownerId: string;
+}): Promise<Shop> {
+  const response = await fetch('/api/shops', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
 
-  if (error) {
-    throw new Error(`Failed to create shop: ${error.message}`);
+  if (!response.ok) {
+    const body = await response.json();
+    throw new Error(body.error || 'Failed to create shop');
   }
 
-  return created;
+  const body = await response.json();
+  return body.shop;
 }
 
 export async function updateShop(id: string, data: ShopUpdate): Promise<Shop> {
