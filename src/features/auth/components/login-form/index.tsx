@@ -9,24 +9,15 @@ import { LoginData } from '@/features/auth/types/auth';
 import { useFormState } from '@/features/shared/hooks/use-form-state';
 import { Input, Button } from '@/components/controls';
 import { login } from '@/features/auth/services/auth';
-import { checkOnboardingComplete } from '@/features/auth/services/onboarding';
 import { AuthFormProps, LoginFormData } from '@/features/auth/types/forms';
-import { HiCheck, HiExclamation } from 'react-icons/hi';
+import { HiExclamation } from 'react-icons/hi';
 import styles from './login-form.module.scss';
 
 interface LoginFormProps extends AuthFormProps<LoginFormData> {
-  banner?: { type: 'verified' } | null;
   onClose?: () => void;
-  onResendVerification?: () => void;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({
-  onSuccess,
-  onError,
-  onClose,
-  onResendVerification,
-  banner,
-}) => {
+const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError, onClose }) => {
   const { isLoading, error, setLoading, setError } = useFormState();
   const router = useRouter();
 
@@ -46,11 +37,6 @@ const LoginForm: React.FC<LoginFormProps> = ({
       });
 
       setError(null);
-      const { isComplete } = await checkOnboardingComplete();
-      if (!isComplete) {
-        window.location.href = '/onboarding';
-        return;
-      }
       onSuccess?.call(null, data);
     } catch (error) {
       const err = error as Error;
@@ -61,29 +47,14 @@ const LoginForm: React.FC<LoginFormProps> = ({
     }
   };
 
-  const handleForgotPassword = () => {
+  const handleResetPassword = () => {
     onClose?.();
-    router.push('/auth/forgot-password');
+    router.push('/auth/reset-password');
   };
 
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(handleSubmit)} className="authForm">
-        {banner?.type === 'verified' && (
-          <div
-            className={`${styles.banner} ${styles.bannerSuccess}`}
-            role="status"
-            aria-live="polite"
-          >
-            <div className={`${styles.bannerIcon} ${styles.bannerIconSuccess}`}>
-              <HiCheck aria-hidden="true" />
-            </div>
-            <p className={`${styles.bannerText} ${styles.bannerTextSuccess}`}>
-              Email verified! Sign in to get started.
-            </p>
-          </div>
-        )}
-
         {error && !isUnverifiedError && (
           <div className="errorMessage" role="alert">
             {error}
@@ -103,11 +74,23 @@ const LoginForm: React.FC<LoginFormProps> = ({
               <p className={`${styles.bannerText} ${styles.bannerTextError}`}>
                 Your email hasn&apos;t been verified yet.
               </p>
-              {onResendVerification && (
-                <button type="button" onClick={onResendVerification} className={styles.resendLink}>
-                  Resend verification email
-                </button>
-              )}
+              <button
+                type="button"
+                className={styles.resendLink}
+                onClick={async () => {
+                  const email = methods.getValues('email');
+                  if (!email) return;
+                  try {
+                    const { resendVerification } = await import('@/features/auth/services/auth');
+                    await resendVerification({ email });
+                    setError('Verification code sent! Check your inbox.');
+                  } catch {
+                    setError('Failed to resend. Please try again.');
+                  }
+                }}
+              >
+                Resend verification code
+              </button>
             </div>
           </div>
         )}
@@ -123,8 +106,8 @@ const LoginForm: React.FC<LoginFormProps> = ({
         <Button type="submit" fullWidth marginBottom loading={isLoading}>
           Submit
         </Button>
-        <button type="button" onClick={handleForgotPassword} className={styles.forgotLink}>
-          Forgot your password?
+        <button type="button" onClick={handleResetPassword} className={styles.forgotLink}>
+          Reset your password
         </button>
       </form>
     </FormProvider>

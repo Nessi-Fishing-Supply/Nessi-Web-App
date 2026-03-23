@@ -8,11 +8,6 @@
   gap: var(--space-xs);
 }
 
-.bannerSuccess {
-  background: var(--color-success-50);
-  border: 1px solid var(--color-success-200);
-}
-
 .bannerError {
   background: var(--color-error-50);
   border: 1px solid var(--color-error-200);
@@ -30,10 +25,6 @@
   font-size: var(--font-size-2xs);
 }
 
-.bannerIconSuccess {
-  background: var(--color-success-500);
-}
-
 .bannerIconError {
   background: var(--color-error-500);
 }
@@ -42,10 +33,6 @@
   margin: 0;
   font-size: var(--font-size-xs);
   font-weight: 500;
-}
-
-.bannerTextSuccess {
-  color: var(--color-success-900);
 }
 
 .bannerTextError {
