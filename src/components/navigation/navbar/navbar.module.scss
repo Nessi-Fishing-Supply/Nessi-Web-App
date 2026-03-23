@@ -1,3 +1,5 @@
+@use '@/styles/mixins/breakpoints' as *;
+
 .container {
   display: flex;
   align-items: center;
@@ -27,6 +29,11 @@
 .form {
   position: relative;
   flex-grow: 1;
+  display: none;
+
+  @include breakpoint(md) {
+    display: block;
+  }
 
   input {
     width: 100%;
@@ -58,6 +65,28 @@
     width: var(--spacing-600);
     height: var(--spacing-600);
     color: var(--color-primary-500);
+  }
+}
+
+.mobileSearchButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+
+  > svg {
+    width: var(--space-lg);
+    height: var(--space-lg);
+    color: var(--color-primary);
+  }
+
+  @include breakpoint(md) {
+    display: none;
   }
 }
 
