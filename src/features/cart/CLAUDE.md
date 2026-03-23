@@ -42,7 +42,7 @@ Server-side validation enforced in `addToCartServer` and `mergeGuestCartServer`:
 ## Key Patterns
 
 - **Price snapshot** — `price_at_add` captures the listing price at add time. `validateCartServer` compares this against current `listing.price_cents` to detect price changes.
-- **Cart validation** — `validateCartServer` categorizes items into `valid`, `removed` (with reason: sold/deleted/expired/deactivated), and `priceChanged` (with old/new prices). Called before checkout.
+- **Cart validation** — `validateCartServer` categorizes items into `valid`, `removed` (with reason: sold/deleted/expired/deactivated), and `priceChanged` (with old/new prices). Called before checkout. The three arrays are mutually exclusive — `priceChanged` items are still purchasable but require user acknowledgment. Downstream consumers (checkout) should treat `valid + priceChanged` (after acknowledgment) as the purchasable set. The `'expired'` reason exists for forward-compatibility; expired items are currently hard-deleted by the DB cleanup trigger before they reach validation.
 - **Guest merge** — `mergeGuestCartServer` treats all guest data as untrusted: validates UUID format, re-fetches listings from DB, ignores guest-provided prices, skips invalid/own/duplicate items, and respects the 25-item cap.
 - **Server client** — Uses `@/libs/supabase/server` (not admin client), matching the listings service pattern.
 - **Client services** — Thin `@/libs/fetch` wrappers calling future `/api/cart/*` routes. No direct Supabase usage on client.
