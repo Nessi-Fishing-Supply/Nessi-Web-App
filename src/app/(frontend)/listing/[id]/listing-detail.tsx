@@ -215,6 +215,7 @@ export default function ListingDetail({ listing, seller, currentUserId }: Props)
             priceCents={listing.price_cents}
             currentUserId={currentUserId}
             sellerId={listing.seller_id}
+            fullWidth={false}
           />
         </div>
       )}

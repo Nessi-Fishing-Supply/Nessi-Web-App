@@ -3,7 +3,7 @@
   "issue": 128,
   "title": "Add to Cart button on listing detail page",
   "branch": "feat/128/add-to-cart-button-listing-detail",
-  "status": "implementing",
+  "status": "complete",
   "phase": {
     "current": 2,
     "total": 2,
@@ -13,7 +13,7 @@
       "remaining": []
     }
   },
-  "health": { "build": "pass", "lint": "unknown", "tests": "unknown" },
+  "health": { "build": "pass", "lint": "pass", "tests": "pass" },
   "failureCount": { "currentTask": 0 },
-  "timestamps": { "started": "2026-03-23T00:00:00Z", "lastActivity": "2026-03-23T00:03:00Z" }
+  "timestamps": { "started": "2026-03-23T00:00:00Z", "lastActivity": "2026-03-23T00:05:00Z" }
 }

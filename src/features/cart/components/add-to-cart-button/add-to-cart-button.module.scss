@@ -4,13 +4,13 @@
   width: 100%;
 
   button {
-    min-height: 44px;
+    min-height: var(--min-touch-target);
   }
 }
 
 .wrapperAuto {
   button {
-    min-height: 44px;
+    min-height: var(--min-touch-target);
   }
 }
 
@@ -18,7 +18,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 44px;
+  min-height: var(--min-touch-target);
   padding: var(--spacing-300) var(--spacing-600);
   border-radius: var(--radius-300);
   border: 2px solid var(--color-neutral-400);
