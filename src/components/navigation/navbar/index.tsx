@@ -125,13 +125,15 @@ export default function Navbar() {
     ? (activeShop.shop_name?.[0] ?? '').toUpperCase()
     : `${(firstName?.[0] ?? '').toUpperCase()}${(lastName?.[0] ?? '').toUpperCase()}`;
 
+  const showOnboardingBanner = isAuthenticated && !!member && !member.onboarding_completed_at;
+
   // Filter shops available for switching (exclude current shop context)
   const switchableShops = shops?.filter((shop) => shop.id !== activeShopId) ?? [];
   const hasShops = (shops?.length ?? 0) > 0;
 
   return (
     <nav>
-      <NotificationBar />
+      <NotificationBar showOnboardingBanner={showOnboardingBanner} />
       <div className={styles.container}>
         <Link href="/" aria-label="Nessi — Home">
           <LogoFull className={styles.logo} aria-hidden="true" />
