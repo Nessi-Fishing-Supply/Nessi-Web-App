@@ -9,7 +9,7 @@ export interface ListingFilters {
   search?: string;
   minPrice?: number;
   maxPrice?: number;
-  sort?: 'newest' | 'price_asc' | 'price_desc';
+  sort?: 'newest' | 'price_asc' | 'price_desc' | 'watched';
   page?: number;
   limit?: number;
 }

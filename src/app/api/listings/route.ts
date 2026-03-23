@@ -89,6 +89,8 @@ export async function GET(req: Request) {
       dataQuery = dataQuery.order('price_cents', { ascending: true });
     } else if (sort === 'price_desc') {
       dataQuery = dataQuery.order('price_cents', { ascending: false });
+    } else if (sort === 'watched') {
+      dataQuery = dataQuery.order('watcher_count', { ascending: false });
     } else {
       dataQuery = dataQuery.order('created_at', { ascending: false });
     }

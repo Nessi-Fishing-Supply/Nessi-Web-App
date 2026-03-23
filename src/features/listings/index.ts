@@ -61,6 +61,7 @@ export {
   useUpdateListingStatus,
   useIncrementViewCount,
 } from './hooks/use-listings';
+export { useListingsInfinite } from './hooks/use-listings-infinite';
 
 // Server Services
 export {
@@ -84,6 +85,10 @@ export {
   STEP_SCHEMAS,
 } from './validations/listing';
 
+// Config
+export { CATEGORY_MAP, VALID_CATEGORY_SLUGS, getCategoryBySlug } from './config/categories';
+export type { CategoryConfig } from './config/categories';
+
 // Components
 export { default as ListingCard } from './components/listing-card';
 export { default as PhotoManager } from './components/photo-manager';
@@ -95,3 +100,8 @@ export { default as PhotoGallery } from './components/photo-gallery';
 export { default as PhotoLightbox } from './components/photo-lightbox';
 export { default as SellerStrip } from './components/seller-strip';
 export { default as ExpandableSection } from './components/expandable-section';
+export { default as ListingGrid } from './components/listing-grid';
+export { default as ListingSkeleton } from './components/listing-skeleton';
+export { default as InfiniteScroll } from './components/infinite-scroll';
+export { default as SortSelect } from './components/sort-select';
+export { default as EmptyState } from './components/empty-state';
