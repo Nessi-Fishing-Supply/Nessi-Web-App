@@ -81,7 +81,11 @@ export function useSearchFilters() {
     } else if (Array.isArray(value)) {
       next.set(key, value.join(','));
     } else if (typeof value === 'boolean') {
-      next.set(key, value ? 'true' : 'false');
+      if (value) {
+        next.set(key, 'true');
+      } else {
+        next.delete(key);
+      }
     } else {
       next.set(key, String(value));
     }
