@@ -42,7 +42,7 @@
     z-index: 20;
     background-color: rgb(0 0 0 / 55%);
     color: var(--color-white);
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size-200);
     font-weight: 600;
     padding: var(--spacing-100) var(--spacing-200);
     border-radius: var(--radius-100);
@@ -68,12 +68,12 @@
   }
 
   .emptyIcon {
-    font-size: var(--font-size-3xl);
+    font-size: var(--font-size-1300);
     color: var(--color-neutral-400);
   }
 
   .emptyText {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-500);
     color: var(--color-neutral-500);
   }
 }

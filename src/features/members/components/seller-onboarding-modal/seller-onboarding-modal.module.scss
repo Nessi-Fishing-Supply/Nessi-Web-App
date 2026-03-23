@@ -7,7 +7,7 @@
 }
 
 .heading {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-1000);
   font-weight: 800;
   color: var(--color-neutral-900);
   margin: 0;
@@ -15,7 +15,7 @@
   padding-right: var(--spacing-700);
 
   @include breakpoint(md) {
-    font-size: var(--font-size-3xl);
+    font-size: var(--font-size-1300);
   }
 }
 
@@ -26,7 +26,7 @@
 }
 
 .bodyText {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   color: var(--color-neutral-500);
   line-height: 1.6;
   margin: 0;
@@ -49,7 +49,7 @@
 }
 
 .termsLabel {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   color: var(--color-neutral-900);
   line-height: 1.5;
   cursor: pointer;
@@ -64,7 +64,7 @@
   border: none;
   padding: 0;
   color: var(--color-primary-500);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   cursor: pointer;
   min-height: 44px;
   display: inline-flex;
@@ -127,7 +127,7 @@
 }
 
 .cardIcon {
-  font-size: var(--font-size-3xl);
+  font-size: var(--font-size-1300);
   color: var(--color-primary-500);
   display: flex;
   align-items: center;
@@ -135,13 +135,13 @@
 }
 
 .cardTitle {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-700);
   font-weight: 700;
   color: var(--color-neutral-900);
 }
 
 .cardDescription {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   color: var(--color-neutral-500);
   line-height: 1.4;
 }

@@ -95,7 +95,7 @@
   border-radius: 50%;
   background-color: var(--color-primary-500);
   color: var(--color-white);
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-200);
   font-weight: 700;
   line-height: 1;
 }
@@ -147,7 +147,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   color: var(--color-neutral-900);
   text-align: left;
 
@@ -193,6 +193,6 @@
 
   > h2 {
     margin-bottom: 0;
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-900);
   }
 }

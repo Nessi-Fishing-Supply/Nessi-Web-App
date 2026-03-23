@@ -20,7 +20,7 @@
 
 .label {
   display: block;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   font-weight: 600;
   color: var(--color-neutral-800);
 }
@@ -39,7 +39,7 @@
   width: 100%;
   min-height: 44px;
   padding: var(--spacing-200) var(--spacing-400);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-700);
   color: var(--color-neutral-900);
   background: var(--color-white);
   border: 1.5px solid var(--color-neutral-400);
@@ -67,7 +67,7 @@
 .textarea {
   width: 100%;
   padding: var(--spacing-200) var(--spacing-400);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-700);
   font-family: inherit;
   color: var(--color-neutral-900);
   background: var(--color-white);
@@ -116,7 +116,7 @@
   right: var(--spacing-400);
   display: flex;
   align-items: center;
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-900);
   pointer-events: none;
 }
 
@@ -129,13 +129,13 @@
 }
 
 .errorText {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   color: var(--color-error-500);
   margin: 0;
 }
 
 .slugPreview {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   color: var(--color-neutral-500);
   margin: 0;
 }
@@ -147,7 +147,7 @@
   border: 1px solid var(--color-neutral-300);
 
   p {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-500);
     color: var(--color-neutral-500);
     margin: 0;
     line-height: 1.5;

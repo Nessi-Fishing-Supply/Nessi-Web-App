@@ -60,7 +60,7 @@
 }
 
 .number {
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-200);
   font-weight: 600;
   color: var(--color-neutral-500);
   line-height: 1;
@@ -81,7 +81,7 @@
 .label {
   display: none;
   margin-top: var(--spacing-100);
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-200);
   color: var(--color-neutral-500);
   text-align: center;
   white-space: nowrap;

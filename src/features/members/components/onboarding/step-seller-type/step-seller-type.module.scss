@@ -20,7 +20,7 @@
   border: none;
   padding: 0;
   color: var(--color-primary-500);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   cursor: pointer;
   min-height: 44px;
   display: inline-flex;
@@ -44,19 +44,19 @@
 }
 
 .stepTitle {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-1000);
   font-weight: 800;
   color: var(--color-neutral-900);
   margin: 0;
   letter-spacing: -0.02em;
 
   @include breakpoint(md) {
-    font-size: var(--font-size-2xl);
+    font-size: var(--font-size-1100);
   }
 }
 
 .stepSubtitle {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   color: var(--color-neutral-500);
   margin: var(--spacing-100) 0 0;
   line-height: 1.5;
@@ -109,7 +109,7 @@
 }
 
 .cardIcon {
-  font-size: var(--font-size-3xl);
+  font-size: var(--font-size-1300);
   color: var(--color-primary-500);
   display: flex;
   align-items: center;
@@ -117,19 +117,19 @@
 }
 
 .cardTitle {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-700);
   font-weight: 700;
   color: var(--color-neutral-900);
 }
 
 .cardDescription {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   color: var(--color-neutral-500);
   line-height: 1.4;
 }
 
 .cardNote {
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-200);
   color: var(--color-accent-500);
   font-weight: 600;
   margin-top: var(--spacing-100);

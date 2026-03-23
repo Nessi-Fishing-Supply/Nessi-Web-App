@@ -30,7 +30,7 @@
 }
 
 .label {
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-200);
   font-weight: 700;
   color: var(--color-primary-500);
   text-transform: uppercase;
@@ -38,13 +38,13 @@
 }
 
 .percentage {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-900);
   font-weight: 800;
   color: var(--color-primary-500);
   letter-spacing: -0.02em;
 
   @include breakpoint(md) {
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-1000);
   }
 }
 

@@ -42,12 +42,12 @@
 }
 
 .title {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-1000);
 }
 
 .contextHint {
   color: var(--color-neutral-500);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   margin-top: var(--spacing-50);
 }
 
@@ -70,13 +70,13 @@
 }
 
 .sellerHeading {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-900);
   font-weight: 600;
   margin: 0;
 }
 
 .shopPlaceholder {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-700);
   color: var(--color-neutral-600);
   margin-bottom: var(--spacing-700);
 }

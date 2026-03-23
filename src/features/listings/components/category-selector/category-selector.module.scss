@@ -59,7 +59,7 @@
 }
 
 .icon {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-1000);
   color: var(--color-neutral-700);
 
   .tileSelected & {
@@ -68,7 +68,7 @@
 }
 
 .label {
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-200);
   font-weight: 500;
   color: var(--color-neutral-700);
   text-align: center;

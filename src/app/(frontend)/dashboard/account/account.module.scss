@@ -41,19 +41,19 @@
 }
 
 .heroTitle {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-1000);
   font-weight: 800;
   color: var(--color-primary-500);
   margin: 0;
   letter-spacing: -0.02em;
 
   @include breakpoint(md) {
-    font-size: var(--font-size-2xl);
+    font-size: var(--font-size-1100);
   }
 }
 
 .heroSubtitle {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   font-weight: 500;
   color: var(--color-neutral-500);
   margin: 0;
@@ -64,7 +64,7 @@
   align-items: center;
   gap: var(--spacing-50);
   color: var(--color-primary-600);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   text-decoration: none;
   margin-top: var(--spacing-200);
 
@@ -77,10 +77,10 @@
   display: inline-flex;
   align-items: center;
   color: var(--color-surface-300);
-  font-size: var(--font-size-3xl);
+  font-size: var(--font-size-1300);
 
   @include breakpoint(md) {
-    font-size: var(--font-size-4xl);
+    font-size: var(--font-size-1400);
   }
 
   animation: swim 10s linear infinite;
@@ -277,7 +277,7 @@
   background: none;
   border: none;
   padding: var(--spacing-200) var(--spacing-300);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-700);
   font-weight: 600;
   color: var(--color-error-700);
   cursor: pointer;
@@ -320,7 +320,7 @@
 
 .dangerText {
   color: var(--color-neutral-700);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   margin: 0 0 var(--spacing-400);
   line-height: 1.6;
 }
@@ -351,7 +351,7 @@
 /* ── Delete Modal ── */
 .deleteModal {
   > h2 {
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-900);
     font-weight: 800;
     color: var(--color-destructive-500);
     margin-bottom: var(--spacing-300);
@@ -359,7 +359,7 @@
 
   > p {
     color: var(--color-neutral-600);
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-500);
     margin-bottom: var(--spacing-600);
     line-height: 1.6;
   }
@@ -380,14 +380,14 @@
 .shopWarning {
   > p {
     color: var(--color-neutral-600);
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-500);
     margin-bottom: var(--spacing-300);
   }
 }
 
 .shopWarningHeading {
   color: var(--color-warning-700);
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-900);
   margin-bottom: var(--spacing-300);
 }
 
@@ -402,7 +402,7 @@
 
 .shopLink {
   color: var(--color-primary-600);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   text-decoration: none;
 
   &:hover {

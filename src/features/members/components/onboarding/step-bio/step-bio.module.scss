@@ -16,7 +16,7 @@
   background: none;
   border: none;
   padding: 0;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   color: var(--color-neutral-600);
   text-decoration: underline;
   cursor: pointer;
@@ -38,19 +38,19 @@
 }
 
 .stepTitle {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-1000);
   font-weight: 800;
   color: var(--color-neutral-900);
   margin: 0;
   letter-spacing: -0.02em;
 
   @include breakpoint(md) {
-    font-size: var(--font-size-2xl);
+    font-size: var(--font-size-1100);
   }
 }
 
 .stepSubtitle {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   color: var(--color-neutral-500);
   margin: var(--spacing-100) 0 0;
   line-height: 1.5;
@@ -63,7 +63,7 @@
 }
 
 .label {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-700);
   font-weight: 500;
   color: var(--color-neutral-900);
 }
@@ -74,7 +74,7 @@
   padding: var(--spacing-300) var(--spacing-400);
   border: 1px solid var(--color-neutral-900);
   border-radius: var(--radius-300);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-700);
   color: var(--color-neutral-900);
   background: transparent;
   resize: vertical;
@@ -103,7 +103,7 @@
 
 .charCounter {
   align-self: flex-end;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   color: var(--color-neutral-500);
 }
 
@@ -122,7 +122,7 @@
   background: none;
   border: none;
   padding: 0;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   color: var(--color-neutral-600);
   cursor: pointer;
   text-decoration: none;

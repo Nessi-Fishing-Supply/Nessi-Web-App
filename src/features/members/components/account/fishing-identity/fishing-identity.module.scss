@@ -43,7 +43,7 @@
 }
 
 .sectionLabel {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   font-weight: 700;
   color: var(--color-primary-500);
   text-transform: uppercase;
@@ -61,8 +61,8 @@
   border-radius: var(--radius-300);
   background: var(--color-white);
   color: var(--color-neutral-900);
-  font-family: var(--font-family-primary);
-  font-size: var(--font-size-base);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-700);
   cursor: pointer;
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%234d4d4d' d='M1.41 0L6 4.58 10.59 0 12 1.41l-6 6-6-6z'/%3E%3C/svg%3E");

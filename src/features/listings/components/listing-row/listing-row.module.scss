@@ -56,7 +56,7 @@
 
 .title {
   margin: 0;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   font-weight: 600;
   color: var(--color-neutral-900);
   white-space: nowrap;
@@ -64,12 +64,12 @@
   text-overflow: ellipsis;
 
   @include breakpoint(md) {
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-700);
   }
 }
 
 .titleLink {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   font-weight: 600;
   color: var(--color-neutral-900);
   text-decoration: none;
@@ -89,7 +89,7 @@
   }
 
   @include breakpoint(md) {
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-700);
   }
 }
 
@@ -101,12 +101,12 @@
 }
 
 .stat {
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-200);
   color: var(--color-neutral-500);
 }
 
 .draftLink {
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-200);
   font-weight: 500;
   color: var(--color-primary-500);
   text-decoration: none;
@@ -138,7 +138,7 @@
 }
 
 .price {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-700);
   font-weight: 700;
   color: var(--color-neutral-900);
   background: none;
@@ -147,7 +147,7 @@
   cursor: default;
 
   @include breakpoint(md) {
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-900);
   }
 }
 
@@ -178,7 +178,7 @@
   border: none;
   border-radius: var(--radius-100);
   cursor: pointer;
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-1000);
   color: var(--color-neutral-500);
   letter-spacing: 1px;
 

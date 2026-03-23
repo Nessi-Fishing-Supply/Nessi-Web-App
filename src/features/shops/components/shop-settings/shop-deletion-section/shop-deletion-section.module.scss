@@ -8,32 +8,32 @@
 
 .heading {
   color: var(--color-error-700);
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-800);
   margin-bottom: var(--spacing-200);
 }
 
 .description {
   color: var(--color-neutral-600);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   margin-bottom: var(--spacing-400);
   max-width: 480px;
 }
 
 .modalContent {
   > h2 {
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-900);
     margin-bottom: var(--spacing-300);
   }
 
   > p {
     color: var(--color-neutral-600);
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-500);
     margin-bottom: var(--spacing-300);
   }
 }
 
 .confirmHint {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   color: var(--color-neutral-500);
   margin: 0 0 var(--spacing-200);
 }
@@ -42,7 +42,7 @@
   width: 100%;
   min-height: 44px;
   padding: var(--spacing-200) var(--spacing-400);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-700);
   border: 1.5px solid var(--color-neutral-400);
   border-radius: var(--radius-300);
   margin-bottom: var(--spacing-600);

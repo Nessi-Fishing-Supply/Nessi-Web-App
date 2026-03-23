@@ -6,7 +6,7 @@
 
 .label {
   margin-bottom: var(--spacing-200);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-700);
   color: var(--color-neutral-900);
 
   > span {
@@ -52,7 +52,7 @@
   border: none;
   background: transparent;
   outline: none;
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-700);
   color: var(--color-neutral-900);
 
   &::placeholder {
@@ -83,13 +83,13 @@
 
 .helperText {
   margin-top: var(--spacing-100);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   color: var(--color-neutral-900);
 }
 
 .errorText {
   margin-top: var(--spacing-100);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   color: var(--color-error-500);
 }
 
@@ -155,7 +155,7 @@
 
 .passwordStrengthText {
   margin-top: var(--spacing-200);
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-200);
   color: var(--color-neutral-500);
 }
 
@@ -168,7 +168,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-500);
 
     svg {
       color: var(--color-success-500);

@@ -14,7 +14,7 @@
 }
 
 .title {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-900);
   font-weight: 600;
   color: var(--color-neutral-900);
   margin: 0;
@@ -50,7 +50,7 @@
 }
 
 .minPhotosHint {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   color: var(--color-neutral-500);
   margin: 0;
 }
@@ -67,13 +67,13 @@
 }
 
 .loadingText {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   color: var(--color-neutral-500);
   margin: 0;
 }
 
 .guidanceTitle {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-700);
   font-weight: 600;
   color: var(--color-neutral-900);
   margin: 0 0 var(--spacing-300);
@@ -89,7 +89,7 @@
 }
 
 .guidanceTip {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   color: var(--color-neutral-700);
   padding-left: var(--spacing-300);
   position: relative;

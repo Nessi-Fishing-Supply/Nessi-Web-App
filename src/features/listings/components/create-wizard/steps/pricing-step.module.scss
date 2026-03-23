@@ -13,7 +13,7 @@
 }
 
 .heading {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-900);
   font-weight: 600;
   color: var(--color-neutral-900);
   margin: 0;
@@ -21,7 +21,7 @@
 
 .label {
   display: block;
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-700);
   font-weight: 500;
   color: var(--color-neutral-800);
   margin-bottom: var(--spacing-200);
@@ -61,7 +61,7 @@
 
 .currencyPrefix {
   padding: var(--spacing-300) var(--spacing-200) var(--spacing-300) var(--spacing-400);
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-1100);
   font-weight: 600;
   color: var(--color-neutral-500);
   line-height: 1;
@@ -73,7 +73,7 @@
   border: none;
   outline: none;
   padding: var(--spacing-300) var(--spacing-400) var(--spacing-300) var(--spacing-100);
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-1100);
   font-weight: 600;
   color: var(--color-neutral-900);
   background: transparent;
@@ -87,7 +87,7 @@
 
 .errorText {
   margin-top: var(--spacing-100);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   color: var(--color-error-500);
 }
 
@@ -115,18 +115,18 @@
 }
 
 .feeLabel {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-700);
   color: var(--color-neutral-600);
 }
 
 .feeValue {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-700);
   font-weight: 500;
   color: var(--color-neutral-800);
 }
 
 .feeValueNet {
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-800);
   font-weight: 700;
   color: var(--color-primary-500);
 }
@@ -142,7 +142,7 @@
 }
 
 .feeComparisonLabel {
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-200);
   font-weight: 600;
   color: var(--color-neutral-500);
   text-transform: uppercase;
@@ -151,12 +151,12 @@
 }
 
 .feeComparisonItem {
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-200);
   color: var(--color-neutral-500);
 }
 
 .feeComparisonDot {
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-200);
   color: var(--color-neutral-400);
 }
 
@@ -205,13 +205,13 @@
 }
 
 .shippingOptionTitle {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-700);
   font-weight: 600;
   color: var(--color-neutral-900);
 }
 
 .shippingOptionDescription {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   color: var(--color-neutral-500);
   line-height: 1.4;
 }

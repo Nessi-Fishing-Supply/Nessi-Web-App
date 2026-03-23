@@ -45,7 +45,7 @@
   align-items: center;
   justify-content: center;
   margin-top: var(--spacing-50);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   color: var(--color-white);
 }
 
@@ -64,7 +64,7 @@
 
 .message {
   margin: 0 0 var(--spacing-50);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   font-weight: 600;
 }
 
@@ -78,7 +78,7 @@
 
 .description {
   margin: 0;
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-200);
   line-height: 1.4;
 }
 
@@ -92,7 +92,7 @@
 
 .subtitle {
   margin: var(--spacing-100) 0 0;
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-200);
 }
 
 .subtitleSuccess {
@@ -109,7 +109,7 @@
   cursor: pointer;
   padding: var(--spacing-100);
   color: var(--color-neutral-600);
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-800);
   line-height: 1;
   flex-shrink: 0;
 

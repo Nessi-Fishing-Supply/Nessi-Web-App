@@ -56,7 +56,7 @@
 }
 
 .quantityBadge {
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-200);
   color: var(--color-neutral-600);
   background-color: var(--color-neutral-100);
   padding: var(--spacing-50) var(--spacing-200);
@@ -66,14 +66,14 @@
 
 // Title
 .title {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-900);
   font-weight: 600;
   color: var(--color-neutral-900);
   margin: 0 0 var(--spacing-200);
   line-height: 1.3;
 
   @include breakpoint(md) {
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-1000);
   }
 }
 
@@ -83,12 +83,12 @@
 }
 
 .price {
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-1100);
   font-weight: 700;
   color: var(--color-neutral-900);
 
   @include breakpoint(md) {
-    font-size: var(--font-size-3xl);
+    font-size: var(--font-size-1300);
   }
 }
 
@@ -104,17 +104,17 @@
 
 .shippingIcon {
   flex-shrink: 0;
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-800);
   color: var(--color-neutral-500);
 }
 
 .shippingLabel {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   color: var(--color-neutral-600);
 }
 
 .shippingFree {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   color: var(--color-success-500);
   font-weight: 600;
 }
@@ -132,7 +132,7 @@
 .soldText {
   font-weight: 600;
   color: var(--color-neutral-600);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-700);
 }
 
 // Action buttons
@@ -145,7 +145,7 @@
 
 .messageLink {
   text-align: center;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   font-weight: 500;
   color: var(--color-neutral-500);
   cursor: not-allowed;
@@ -176,25 +176,25 @@
 }
 
 .sectionTitle {
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-800);
   font-weight: 700;
   color: var(--color-neutral-900);
   margin: 0 0 var(--spacing-300);
 
   @include breakpoint(md) {
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-900);
   }
 }
 
 .descriptionText {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   color: var(--color-neutral-700);
   line-height: 1.6;
   margin: 0;
   white-space: pre-line;
 
   @include breakpoint(md) {
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-700);
   }
 }
 
@@ -208,7 +208,7 @@
   display: flex;
   padding: var(--spacing-200) 0;
   border-bottom: 1px solid var(--color-neutral-100);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
 
   &:last-child {
     border-bottom: none;
@@ -236,7 +236,7 @@
   align-items: center;
   gap: var(--spacing-100);
   color: var(--color-neutral-500);
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-200);
   cursor: pointer;
   background: none;
   border: none;
@@ -276,7 +276,7 @@
 }
 
 .stickyPrice {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-900);
   font-weight: 700;
   color: var(--color-neutral-900);
   white-space: nowrap;

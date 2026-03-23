@@ -35,8 +35,8 @@
 }
 
 .title {
-  font-family: var(--font-family-primary);
-  font-size: var(--font-size-md);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-800);
   font-weight: 600;
   color: var(--color-primary-500);
 }
@@ -44,7 +44,7 @@
 .chevron {
   display: flex;
   align-items: center;
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-900);
   color: var(--color-accent-500);
   flex-shrink: 0;
   transition: transform 0.25s ease;

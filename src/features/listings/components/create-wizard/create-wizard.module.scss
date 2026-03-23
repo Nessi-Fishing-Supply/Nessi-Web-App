@@ -32,7 +32,7 @@
   background: none;
   border: none;
   padding: var(--spacing-100) 0;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   font-weight: 500;
   color: var(--color-neutral-600);
   cursor: pointer;
@@ -65,7 +65,7 @@
   background: none;
   border: none;
   padding: var(--spacing-100) 0;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-500);
   font-weight: 500;
   color: var(--color-neutral-600);
   cursor: pointer;
@@ -229,7 +229,7 @@
 }
 
 .savingText {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-700);
   font-weight: 500;
   color: var(--color-neutral-900);
   margin: 0;
