@@ -55,19 +55,17 @@ beforeEach(() => {
   );
 });
 
-describe('proxy — /auth/forgot-password', () => {
-  it('redirects authenticated user to /', async () => {
+describe('proxy — /auth/reset-password', () => {
+  it('does not redirect authenticated user (needed for recovery flow)', async () => {
     mockGetUser({ id: 'user-1' });
-    const request = makeRequest('/auth/forgot-password');
+    const request = makeRequest('/auth/reset-password');
     await proxy(request);
-    expect(NextResponse.redirect).toHaveBeenCalledOnce();
-    const redirectArg = vi.mocked(NextResponse.redirect).mock.calls[0][0] as URL;
-    expect(redirectArg.pathname).toBe('/');
+    expect(NextResponse.redirect).not.toHaveBeenCalled();
   });
 
   it('does not redirect unauthenticated user', async () => {
     mockGetUser(null);
-    const request = makeRequest('/auth/forgot-password');
+    const request = makeRequest('/auth/reset-password');
     await proxy(request);
     expect(NextResponse.redirect).not.toHaveBeenCalled();
   });

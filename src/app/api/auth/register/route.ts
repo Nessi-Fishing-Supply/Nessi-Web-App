@@ -21,7 +21,6 @@ export async function POST(req: Request) {
       password,
       options: {
         data: { firstName, lastName },
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/callback?type=signup`,
       },
     });
 

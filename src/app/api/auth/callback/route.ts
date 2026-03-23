@@ -37,7 +37,7 @@ export async function GET(request: Request) {
     }
 
     if (type === 'recovery') {
-      return NextResponse.redirect(`${origin}/auth/callback?status=recovery`, { headers });
+      return NextResponse.redirect(`${origin}/auth/reset-password`, { headers });
     }
     return NextResponse.redirect(`${origin}/?verified=true`, { headers });
   }
@@ -53,7 +53,7 @@ export async function GET(request: Request) {
     }
 
     if (type === 'recovery') {
-      return NextResponse.redirect(`${origin}/auth/callback?status=recovery`, { headers });
+      return NextResponse.redirect(`${origin}/auth/reset-password`, { headers });
     }
     if (type === 'signup') {
       return NextResponse.redirect(`${origin}/?verified=true`, { headers });
