@@ -34,7 +34,7 @@ export function useGuestCart() {
   const items = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   const add = useCallback((item: GuestCartItem) => {
-    addToGuestCart(item);
+    return addToGuestCart(item);
   }, []);
 
   const remove = useCallback((listingId: string) => {

@@ -33,12 +33,15 @@ export function isInGuestCart(listingId: string): boolean {
   return readStorage().some((item) => item.listingId === listingId);
 }
 
-export function addToGuestCart(item: GuestCartItem): void {
-  if (typeof window === 'undefined') return;
+export type AddToGuestCartResult = 'added' | 'full' | 'duplicate';
+
+export function addToGuestCart(item: GuestCartItem): AddToGuestCartResult {
+  if (typeof window === 'undefined') return 'added';
   const items = readStorage();
-  if (items.length >= MAX_GUEST_CART_ITEMS) return;
-  if (items.some((i) => i.listingId === item.listingId)) return;
+  if (items.length >= MAX_GUEST_CART_ITEMS) return 'full';
+  if (items.some((i) => i.listingId === item.listingId)) return 'duplicate';
   writeStorage([...items, item]);
+  return 'added';
 }
 
 export function removeFromGuestCart(listingId: string): void {
@@ -54,10 +57,13 @@ export function clearGuestCart(): void {
 
 export function subscribe(callback: () => void): () => void {
   if (typeof window === 'undefined') return () => {};
-  window.addEventListener('storage', callback);
+  const storageHandler = (e: StorageEvent) => {
+    if (e.key === STORAGE_KEY || e.key === null) callback();
+  };
+  window.addEventListener('storage', storageHandler);
   window.addEventListener(CUSTOM_EVENT, callback);
   return () => {
-    window.removeEventListener('storage', callback);
+    window.removeEventListener('storage', storageHandler);
     window.removeEventListener(CUSTOM_EVENT, callback);
   };
 }

@@ -71,33 +71,37 @@ describe('isInGuestCart', () => {
 });
 
 describe('addToGuestCart', () => {
-  it('adds item to empty cart', () => {
+  it('adds item to empty cart and returns "added"', () => {
     const item = makeItem('listing-1');
-    addToGuestCart(item);
+    const result = addToGuestCart(item);
+    expect(result).toBe('added');
     expect(getGuestCart()).toEqual([item]);
   });
 
-  it('adds item to existing cart', () => {
+  it('adds item to existing cart and returns "added"', () => {
     const first = makeItem('listing-1');
     const second = makeItem('listing-2');
     addToGuestCart(first);
-    addToGuestCart(second);
+    const result = addToGuestCart(second);
+    expect(result).toBe('added');
     expect(getGuestCart()).toHaveLength(2);
     expect(getGuestCart()[1]).toEqual(second);
   });
 
-  it('enforces 25-item cap and silently returns when full', () => {
+  it('enforces 25-item cap and returns "full"', () => {
     const items = Array.from({ length: MAX_GUEST_CART_ITEMS }, (_, i) => makeItem(`listing-${i}`));
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-    addToGuestCart(makeItem('listing-overflow'));
+    const result = addToGuestCart(makeItem('listing-overflow'));
+    expect(result).toBe('full');
     expect(getGuestCartCount()).toBe(MAX_GUEST_CART_ITEMS);
     expect(isInGuestCart('listing-overflow')).toBe(false);
   });
 
-  it('prevents duplicate listingId and silently returns', () => {
+  it('prevents duplicate listingId and returns "duplicate"', () => {
     const item = makeItem('listing-1');
     addToGuestCart(item);
-    addToGuestCart(makeItem('listing-1', { priceAtAdd: 9999 }));
+    const result = addToGuestCart(makeItem('listing-1', { priceAtAdd: 9999 }));
+    expect(result).toBe('duplicate');
     const cart = getGuestCart();
     expect(cart).toHaveLength(1);
     expect(cart[0].priceAtAdd).toBe(1000);
@@ -170,11 +174,27 @@ describe('subscribe', () => {
     unsubscribe();
   });
 
-  it('calls callback on storage event', () => {
+  it('calls callback on storage event for nessi_cart key', () => {
     const callback = vi.fn();
     const unsubscribe = subscribe(callback);
-    window.dispatchEvent(new StorageEvent('storage'));
+    window.dispatchEvent(new StorageEvent('storage', { key: STORAGE_KEY }));
     expect(callback).toHaveBeenCalledTimes(1);
+    unsubscribe();
+  });
+
+  it('calls callback on storage event with null key (localStorage.clear())', () => {
+    const callback = vi.fn();
+    const unsubscribe = subscribe(callback);
+    window.dispatchEvent(new StorageEvent('storage', { key: null }));
+    expect(callback).toHaveBeenCalledTimes(1);
+    unsubscribe();
+  });
+
+  it('ignores storage events for other keys', () => {
+    const callback = vi.fn();
+    const unsubscribe = subscribe(callback);
+    window.dispatchEvent(new StorageEvent('storage', { key: 'other_key' }));
+    expect(callback).not.toHaveBeenCalled();
     unsubscribe();
   });
 
@@ -183,7 +203,7 @@ describe('subscribe', () => {
     const unsubscribe = subscribe(callback);
     unsubscribe();
     window.dispatchEvent(new CustomEvent('nessi_cart_change'));
-    window.dispatchEvent(new StorageEvent('storage'));
+    window.dispatchEvent(new StorageEvent('storage', { key: STORAGE_KEY }));
     expect(callback).not.toHaveBeenCalled();
   });
 

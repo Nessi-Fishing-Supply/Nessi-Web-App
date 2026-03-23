@@ -31,6 +31,7 @@ export {
 } from './services/cart-server';
 
 // Guest Cart Utils
+export type { AddToGuestCartResult } from './utils/guest-cart';
 export {
   getGuestCart,
   getGuestCartCount,
