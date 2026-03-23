@@ -19,7 +19,7 @@ const ErrorState: React.FC<ErrorStateProps> = ({
 }) => {
   if (variant === 'inline') {
     return (
-      <span className={`${styles.inline} ${className ?? ''}`} role="alert" aria-live="polite">
+      <span className={`${styles.inline} ${className ?? ''}`} role="alert" aria-live="assertive">
         <HiXCircle className={styles.inlineIcon} aria-hidden="true" />
         <span>{message}</span>
       </span>
