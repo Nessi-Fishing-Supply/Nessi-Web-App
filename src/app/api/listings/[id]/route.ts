@@ -31,6 +31,17 @@ export async function GET(_: Request, context: { params: Promise<{ id: string }>
       return NextResponse.json({ error: 'Listing not found' }, { status: 404 });
     }
 
+    // Don't expose draft/archived/deleted listings to non-owners
+    if (listing.status !== 'active' && listing.status !== 'sold') {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user || listing.seller_id !== user.id) {
+        return NextResponse.json({ error: 'Listing not found' }, { status: 404 });
+      }
+    }
+
     return NextResponse.json(listing);
   } catch (error) {
     console.error('Error fetching listing:', error);
@@ -68,7 +79,42 @@ export async function PUT(req: Request, context: { params: Promise<{ id: string 
 
     const body = await req.json();
 
-    const { error: updateError } = await supabase.from('listings').update(body).eq('id', id);
+    // Whitelist: only allow fields that sellers can modify
+    const ALLOWED_FIELDS = [
+      'title',
+      'description',
+      'price_cents',
+      'category',
+      'condition',
+      'brand',
+      'model',
+      'quantity',
+      'weight_oz',
+      'shipping_paid_by',
+      'shipping_price_cents',
+      'cover_photo_url',
+      'location_city',
+      'location_state',
+      'is_visible',
+      'length_inches',
+      'width_inches',
+      'height_inches',
+    ] as const;
+
+    const filteredBody = Object.fromEntries(
+      Object.entries(body).filter(([key]) =>
+        (ALLOWED_FIELDS as readonly string[]).includes(key)
+      )
+    );
+
+    if (Object.keys(filteredBody).length === 0) {
+      return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 });
+    }
+
+    const { error: updateError } = await supabase
+      .from('listings')
+      .update(filteredBody)
+      .eq('id', id);
 
     if (updateError) {
       return NextResponse.json({ error: updateError.message }, { status: 500 });
