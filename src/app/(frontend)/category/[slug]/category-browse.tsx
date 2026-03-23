@@ -20,8 +20,11 @@ export default function CategoryBrowse({ slug, label }: CategoryBrowseProps) {
   const router = useRouter();
   const sort = searchParams.get('sort') || 'newest';
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
-    useListingsInfinite({ category: slug, sort, limit: 24 });
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useListingsInfinite({
+    category: slug,
+    sort,
+    limit: 24,
+  });
 
   const listings = data?.pages.flatMap((page) => page.listings) ?? [];
 

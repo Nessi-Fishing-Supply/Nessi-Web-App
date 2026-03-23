@@ -126,23 +126,23 @@ All listing API routes live in `src/app/api/listings/`:
 
 ## Hooks
 
-| Hook                          | Query Key                                | Purpose                                               |
-| ----------------------------- | ---------------------------------------- | ----------------------------------------------------- |
-| `useListings(filters)`        | `['listings', filters]`                  | Paginated listing search with filters                 |
-| `useListing(id)`              | `['listings', id]`                       | Fetch listing by ID with photos                       |
-| `useSellerListings(status?)`  | `['listings', 'seller', status]`         | Fetch authenticated user's listings                   |
-| `useDrafts()`                 | `['listings', 'drafts']`                 | Fetch user's draft listings                           |
-| `useListingPhotos(listingId)` | `['listings', listingId, 'photos']`      | Fetch ordered photos for a listing                    |
-| `useCreateListing()`          | mutation, invalidates `['listings']`     | Create a new listing                                  |
-| `useCreateDraft()`            | mutation, invalidates `['listings']`     | Create an empty draft                                 |
-| `useUpdateListing()`          | mutation, invalidates `['listings']`     | Update listing fields                                 |
-| `useDeleteListing()`          | mutation, invalidates `['listings']`     | Soft-delete a listing                                 |
-| `useDeleteDraft()`            | mutation, invalidates `['listings']`     | Hard-delete a draft                                   |
-| `useUpdateListingStatus()`    | mutation, invalidates `['listings']`     | Change listing status                                 |
-| `useIncrementViewCount()`     | mutation (fire-and-forget)               | Increment view count                                  |
-| `useUploadListingPhoto()`     | mutation, invalidates listing photos key              | Upload photo via `POST /api/listings/upload`          |
-| `useDeleteListingPhoto()`     | mutation, invalidates listing photos key              | Delete photo via `DELETE /api/listings/upload/delete` |
-| `useListingsInfinite(params)` | `['listings', 'infinite', { category, sort }]`        | Infinite scroll listing feed with cursor-based pagination |
+| Hook                          | Query Key                                      | Purpose                                                   |
+| ----------------------------- | ---------------------------------------------- | --------------------------------------------------------- |
+| `useListings(filters)`        | `['listings', filters]`                        | Paginated listing search with filters                     |
+| `useListing(id)`              | `['listings', id]`                             | Fetch listing by ID with photos                           |
+| `useSellerListings(status?)`  | `['listings', 'seller', status]`               | Fetch authenticated user's listings                       |
+| `useDrafts()`                 | `['listings', 'drafts']`                       | Fetch user's draft listings                               |
+| `useListingPhotos(listingId)` | `['listings', listingId, 'photos']`            | Fetch ordered photos for a listing                        |
+| `useCreateListing()`          | mutation, invalidates `['listings']`           | Create a new listing                                      |
+| `useCreateDraft()`            | mutation, invalidates `['listings']`           | Create an empty draft                                     |
+| `useUpdateListing()`          | mutation, invalidates `['listings']`           | Update listing fields                                     |
+| `useDeleteListing()`          | mutation, invalidates `['listings']`           | Soft-delete a listing                                     |
+| `useDeleteDraft()`            | mutation, invalidates `['listings']`           | Hard-delete a draft                                       |
+| `useUpdateListingStatus()`    | mutation, invalidates `['listings']`           | Change listing status                                     |
+| `useIncrementViewCount()`     | mutation (fire-and-forget)                     | Increment view count                                      |
+| `useUploadListingPhoto()`     | mutation, invalidates listing photos key       | Upload photo via `POST /api/listings/upload`              |
+| `useDeleteListingPhoto()`     | mutation, invalidates listing photos key       | Delete photo via `DELETE /api/listings/upload/delete`     |
+| `useListingsInfinite(params)` | `['listings', 'infinite', { category, sort }]` | Infinite scroll listing feed with cursor-based pagination |
 
 ## Components
 
@@ -168,7 +168,7 @@ All listing API routes live in `src/app/api/listings/`:
 | `ListingGrid`        | `components/listing-grid/`         | Responsive grid of listing cards. Props: `listings`, `isLoading`. Used on category browse and search pages.                                |
 | `ListingSkeleton`    | `components/listing-skeleton/`     | Placeholder card matching ListingGrid item dimensions. Rendered while listings are loading.                                                |
 | `InfiniteScroll`     | `components/infinite-scroll/`      | Intersection Observer sentinel that triggers `onLoadMore` when scrolled into view. Props: `onLoadMore`, `hasMore`, `isLoading`.            |
-| `SortSelect`         | `components/sort-select/`          | Dropdown for choosing listing sort order (e.g., newest, price asc/desc). Props: `value`, `onChange`.                                      |
+| `SortSelect`         | `components/sort-select/`          | Dropdown for choosing listing sort order (e.g., newest, price asc/desc). Props: `value`, `onChange`.                                       |
 | `EmptyState`         | `components/empty-state/`          | Zero-result state with icon, heading, and optional CTA. Used when a category or search returns no listings.                                |
 
 ## Create Wizard

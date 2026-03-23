@@ -273,7 +273,11 @@ export default function Navbar() {
 
       <div className={styles.categories}>
         {LISTING_CATEGORIES.map((category) => (
-          <Link key={category.value} href={`/category/${category.value}`} className={styles.categoryLink}>
+          <Link
+            key={category.value}
+            href={`/category/${category.value}`}
+            className={styles.categoryLink}
+          >
             {category.label}
           </Link>
         ))}
