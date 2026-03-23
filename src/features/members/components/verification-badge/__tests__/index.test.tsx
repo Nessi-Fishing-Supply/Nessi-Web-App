@@ -18,19 +18,19 @@ describe('VerificationBadge', () => {
     const { container, rerender } = render(
       <VerificationBadge type="seller" label="Trusted Seller" variant="success" />,
     );
-    expect(container.firstChild?.['className']).toMatch(/success/);
+    expect((container.firstChild as HTMLElement)?.className).toMatch(/success/);
 
     rerender(<VerificationBadge type="angler" label="Tournament Angler" variant="orange" />);
-    expect(container.firstChild?.['className']).toMatch(/orange/);
+    expect((container.firstChild as HTMLElement)?.className).toMatch(/orange/);
 
     rerender(<VerificationBadge type="maker" label="Verified Maker" variant="maroon" />);
-    expect(container.firstChild?.['className']).toMatch(/maroon/);
+    expect((container.firstChild as HTMLElement)?.className).toMatch(/maroon/);
 
     rerender(<VerificationBadge type="neutral" label="Member" variant="neutral" />);
-    expect(container.firstChild?.['className']).toMatch(/neutral/);
+    expect((container.firstChild as HTMLElement)?.className).toMatch(/neutral/);
 
     rerender(<VerificationBadge type="green" label="Pro Seller" variant="green" />);
-    expect(container.firstChild?.['className']).toMatch(/green/);
+    expect((container.firstChild as HTMLElement)?.className).toMatch(/green/);
   });
 
   it('renders icon when provided', () => {
@@ -55,14 +55,21 @@ describe('VerificationBadge', () => {
   });
 
   it('sets data-type attribute from type prop', () => {
-    render(<VerificationBadge type="tournament-angler" label="Tournament Angler" variant="orange" />);
+    render(
+      <VerificationBadge type="tournament-angler" label="Tournament Angler" variant="orange" />,
+    );
     const badge = screen.getByText('Tournament Angler').closest('span');
     expect(badge?.closest('[data-type="tournament-angler"]')).toBeInTheDocument();
   });
 
   it('applies custom className when provided', () => {
     const { container } = render(
-      <VerificationBadge type="seller" label="Trusted Seller" variant="success" className="custom-class" />,
+      <VerificationBadge
+        type="seller"
+        label="Trusted Seller"
+        variant="success"
+        className="custom-class"
+      />,
     );
     expect(container.firstChild).toHaveClass('custom-class');
   });

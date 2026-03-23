@@ -52,7 +52,7 @@
   padding: var(--spacing-300) var(--spacing-400);
   font-size: var(--font-size-600);
   line-height: var(--line-height-300);
-  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .bubbleReceived {
