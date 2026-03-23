@@ -50,6 +50,10 @@ export { useGuestCart } from './hooks/use-guest-cart';
 
 // Components
 export { default as AddToCartButton } from './components/add-to-cart-button';
+export { default as CartIcon } from './components/cart-icon';
+
+// Cart Merge Hook
+export { useCartMerge } from './hooks/use-cart-merge';
 
 // Cart Query Hooks
 export {
