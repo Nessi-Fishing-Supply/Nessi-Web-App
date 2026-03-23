@@ -28,10 +28,16 @@ export type {
   ListingPhotoUpdate,
   UploadResult,
 } from './types/listing-photo';
+export type { SearchFilters, AutocompleteSuggestion, SearchSuggestion } from './types/search';
 
 // Services
 export { uploadListingPhoto, deleteListingPhoto } from './services/listing-photo';
 export type { ListingFilters, PaginatedListings } from './services/listing';
+export {
+  searchListings,
+  getAutocompleteSuggestions,
+  trackSearchSuggestion,
+} from './services/search';
 export {
   getListings,
   getListingById,
@@ -62,6 +68,10 @@ export {
   useIncrementViewCount,
 } from './hooks/use-listings';
 export { useListingsInfinite } from './hooks/use-listings-infinite';
+export { useSearchListingsInfinite, useTrackSearchSuggestion } from './hooks/use-search';
+export { useAutocomplete } from './hooks/use-autocomplete';
+export { useDebouncedValue } from './hooks/use-debounced-value';
+export { useSearchFilters } from './hooks/use-search-filters';
 
 // Server Services
 export {
@@ -88,6 +98,9 @@ export {
 // Config
 export { CATEGORY_MAP, VALID_CATEGORY_SLUGS, getCategoryBySlug } from './config/categories';
 export type { CategoryConfig } from './config/categories';
+export { SPECIES_LIST } from './config/species';
+export type { Species } from './config/species';
+export { US_STATES } from './config/us-states';
 
 // Components
 export { default as ListingCard } from './components/listing-card';
