@@ -44,15 +44,15 @@
 - `inquiry_count` — SCHEMA-ONLY, KEEP (messaging not built)
 - `weight_oz`, `shipping_paid_by`, `shipping_price_cents` — ACTIVE
 - `published_at`, `sold_at` — ACTIVE (auto-set on status transitions)
-- `watcher_count` — READ-ONLY (displayed but never written) — **FIX needed**
+- `watcher_count` — DEFERRED (displayed but never written) — placeholder for future favorites/watchlist feature. Display handles zero gracefully.
 - `member_id` vs `seller_id` — Both needed: `seller_id` = auth user (authorization), `member_id` = member identity context (null when selling under a shop)
 
 ### Enums
 
 | Enum | Issue | Tag |
 |------|-------|-----|
-| `listing_status` | `reserved` value unreachable — zero transitions in state machine | NOTE — decide: implement or remove |
-| `shipping_paid_by` | `split` value blocked by validation — form only allows buyer/seller | NOTE — decide: implement or remove |
+| `listing_status` | `reserved` value unreachable — removed from app code (state machine, labels, UI). Retained in DB enum for future checkout/reservation feature. | RESOLVED |
+| `shipping_paid_by` | `split` value blocked by validation — form only allows buyer/seller. Kept in DB enum for future shipping options expansion. | RESOLVED |
 | `listing_category` | Photo guidance has keys `lures_hard`/`lures_soft` that don't match `lures` enum | FIX |
 | `listing_condition` | All 6 values fully integrated | PASS |
 
@@ -342,9 +342,9 @@ No `vercel.json` exists — no Vercel Firewall/WAF rules configured.
 ### Medium
 
 10. **[LISTING]** Lures photo guidance mismatch (`lures_hard`/`lures_soft` keys don't match `lures` category)
-11. **[LISTING]** `watcher_count` displayed but never written
-12. **[SCHEMA]** `reserved` listing status — decide: implement or remove from enum
-13. **[SCHEMA]** `split` shipping — decide: implement or remove from enum
+11. **[LISTING]** `watcher_count` displayed but never written — DEFERRED: placeholder for future favorites/watchlist feature. Display handles zero gracefully.
+12. **[SCHEMA]** `reserved` listing status — RESOLVED: removed from app code (state machine, labels, UI). DB enum value retained for potential future checkout/reservation feature.
+13. **[SCHEMA]** `split` shipping — RESOLVED: kept in DB enum for future shipping options expansion. Current form supports buyer/seller; split and free shipping will be added in a dedicated shipping feature.
 
 ### Low
 
