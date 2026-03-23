@@ -61,6 +61,7 @@ export {
   useUpdateListingStatus,
   useIncrementViewCount,
 } from './hooks/use-listings';
+export { useListingsInfinite } from './hooks/use-listings-infinite';
 
 // Server Services
 export {
