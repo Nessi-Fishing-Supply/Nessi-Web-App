@@ -87,5 +87,12 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
     return NextResponse.json({ error: deleteError.message }, { status: 500 });
   }
 
+  // Release the shop's slug so it can be reused
+  try {
+    await admin.from('slugs').delete().eq('entity_type', 'shop').eq('entity_id', shopId);
+  } catch (slugError) {
+    console.error('Shop slug cleanup error (non-blocking):', slugError);
+  }
+
   return NextResponse.json({ success: true });
 }
