@@ -65,7 +65,7 @@ Server-side validation enforced in `addToCartServer` and `mergeGuestCartServer`:
 
 **Query key convention:** Both `['cart', userId]` and `['cart-count', userId]` are user-scoped. All mutations that modify cart contents invalidate both keys in `onSettled`.
 
-**`useCartBadgeCount` pattern:** Calls `useCartCount()` and `useGuestCart()` unconditionally (both always invoked, gated by `enabled` flags) to avoid conditional hook calls (rules of hooks). Returns `0` while auth is loading.
+**`useCartBadgeCount` pattern:** Calls `useCartCount()` and `useGuestCart()` unconditionally to satisfy rules of hooks. `useCartCount` is gated by `enabled: !!userId`; `useGuestCart` is always active but its value is only used for guest users. Returns `0` while auth is loading.
 
 ## Guest Cart
 
