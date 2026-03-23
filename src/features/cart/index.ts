@@ -16,6 +16,7 @@ export {
   clearCart,
   validateCart,
   refreshExpiry,
+  mergeGuestCart,
 } from './services/cart';
 
 // Server Services
@@ -46,3 +47,16 @@ export {
 
 // Guest Cart Hook
 export { useGuestCart } from './hooks/use-guest-cart';
+
+// Cart Query Hooks
+export {
+  useCart,
+  useCartCount,
+  useAddToCart,
+  useRemoveFromCart,
+  useClearCart,
+  useValidateCart,
+  useMergeGuestCart,
+  useRefreshExpiry,
+  useCartBadgeCount,
+} from './hooks/use-cart';
