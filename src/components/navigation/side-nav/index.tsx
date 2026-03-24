@@ -23,8 +23,8 @@ const SideNav = () => {
 
   const activeContext = useContextStore.use.activeContext();
   const { user } = useAuth();
-  const { data: shops } = useShopsByMember(user?.id ?? '', !!user);
-  const hasShops = (shops?.length ?? 0) > 0;
+  const { data: shops, isLoading: shopsLoading } = useShopsByMember(user?.id ?? '', !!user);
+  const hasShops = shopsLoading || (shops?.length ?? 0) > 0;
 
   const isShopContext = mounted && activeContext.type === 'shop';
 

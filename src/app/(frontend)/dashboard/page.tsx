@@ -30,8 +30,8 @@ export default function Dashboard() {
   const activeContext = useContextStore.use.activeContext();
   const shopId = activeContext.type === 'shop' ? activeContext.shopId : '';
   const { data: shop } = useShop(shopId, activeContext.type === 'shop');
-  const { data: memberShops } = useShopsByMember(user?.id ?? '', !!user);
-  const hasShops = (memberShops?.length ?? 0) > 0;
+  const { data: memberShops, isLoading: shopsLoading } = useShopsByMember(user?.id ?? '', !!user);
+  const hasShops = shopsLoading || (memberShops?.length ?? 0) > 0;
 
   const handleModalComplete = (path: 'free' | 'shop') => {
     setIsSellerModalOpen(false);
