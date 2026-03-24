@@ -1,12 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { changeEmailSchema } from '@/features/auth/validations/auth';
 import { useFormState } from '@/features/shared/hooks/use-form-state';
 import { Input, Button } from '@/components/controls';
-import { changeEmail, checkEmailAvailable, resendEmailChangeCode } from '@/features/auth/services/auth';
+import {
+  changeEmail,
+  checkEmailAvailable,
+  resendEmailChangeCode,
+} from '@/features/auth/services/auth';
 import OtpInput from '@/features/auth/components/otp-input';
 import styles from './change-email-form.module.scss';
 
@@ -68,16 +72,18 @@ export default function ChangeEmailForm({ currentEmail, onSuccess }: ChangeEmail
   };
 
   const handleResend = async () => {
-    await resendEmailChangeCode({ newEmail });
+    try {
+      await resendEmailChangeCode({ newEmail });
+    } catch {
+      // OtpInput handles resend cooldown UI; user can retry after cooldown
+    }
   };
 
   if (step === 'otp') {
     return (
       <div className={styles.container}>
         <h2 className={styles.heading}>Verify your new email</h2>
-        <p className={styles.description}>
-          We sent a 6-digit code to your new email address.
-        </p>
+        <p className={styles.description}>We sent a 6-digit code to your new email address.</p>
         <OtpInput
           email={newEmail}
           type="email_change"
@@ -98,7 +104,7 @@ export default function ChangeEmailForm({ currentEmail, onSuccess }: ChangeEmail
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(handleSubmit)} className="authForm">
           {error && (
-            <div role="alert" className="errorMessage">
+            <div role="alert" aria-live="assertive" className="errorMessage">
               {error}
             </div>
           )}
