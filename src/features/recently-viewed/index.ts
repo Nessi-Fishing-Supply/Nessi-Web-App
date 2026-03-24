@@ -1,5 +1,5 @@
 // Types
-export type { RecentlyViewedItem } from './types/recently-viewed';
+export type { RecentlyViewedItem, RecentlyViewedListingItem } from './types/recently-viewed';
 
 // Utils
 export {
