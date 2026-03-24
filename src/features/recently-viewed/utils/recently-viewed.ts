@@ -17,6 +17,7 @@ function readStorage(): RecentlyViewedItem[] {
 }
 
 function writeStorage(items: RecentlyViewedItem[]): void {
+  if (typeof window === 'undefined') return;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   window.dispatchEvent(new CustomEvent(CUSTOM_EVENT));
 }

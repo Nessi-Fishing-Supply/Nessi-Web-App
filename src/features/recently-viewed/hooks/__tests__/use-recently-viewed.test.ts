@@ -39,6 +39,7 @@ describe('useRecentlyViewed', () => {
     expect(result.current.items).toHaveLength(2);
     expect(result.current.items[0].listingId).toBe('listing-1');
     expect(result.current.items[1].listingId).toBe('listing-2');
+    expect(result.current.items[0].viewedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
   });
 
   it('clear empties the list', () => {

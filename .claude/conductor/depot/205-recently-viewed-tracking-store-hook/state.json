@@ -3,7 +3,7 @@
   "issue": 205,
   "title": "feat(recommendations): #154.1 — recently viewed tracking store and hook",
   "branch": "feat/205/recently-viewed-tracking-store-hook",
-  "status": "implementing",
+  "status": "pr_open",
   "phase": {
     "current": 3,
     "total": 3,
@@ -23,6 +23,8 @@
   },
   "timestamps": {
     "started": "2026-03-24T00:00:00Z",
-    "lastActivity": "2026-03-24T00:00:00Z"
+    "lastActivity": "2026-03-24T00:00:00Z",
+    "completedAt": "2026-03-24T01:00:00Z",
+    "pruneAfter": "2026-05-23T01:00:00Z"
   }
 }
