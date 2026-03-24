@@ -1,4 +1,5 @@
 import { createClient } from '@/libs/supabase/server';
+import { createAdminClient } from '@/libs/supabase/admin';
 import { AUTH_CACHE_HEADERS } from '@/libs/api-headers';
 import { NextResponse } from 'next/server';
 import sharp from 'sharp';
@@ -78,10 +79,11 @@ export async function POST(req: Request) {
       .webp({ quality: 85 })
       .toBuffer();
 
-    const fileName = `shop-hero-${shopId}.webp`;
+    const admin = createAdminClient();
+    const fileName = `shops/${shopId}/hero-banner.webp`;
 
-    const { error: uploadError } = await supabase.storage
-      .from('avatars')
+    const { error: uploadError } = await admin.storage
+      .from('profile-assets')
       .upload(fileName, resized, {
         contentType: 'image/webp',
         upsert: true,
@@ -96,7 +98,7 @@ export async function POST(req: Request) {
 
     const {
       data: { publicUrl },
-    } = supabase.storage.from('avatars').getPublicUrl(fileName);
+    } = admin.storage.from('profile-assets').getPublicUrl(fileName);
 
     const { error: updateError } = await supabase
       .from('shops')

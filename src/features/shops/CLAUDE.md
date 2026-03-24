@@ -81,8 +81,9 @@ Shops are business entities in Nessi's C2C marketplace, separate from member ide
 - Accepts `file` (image) + `shopId` in `multipart/form-data`
 - Validates MIME type (`image/jpeg`, `image/png`, `image/webp`, `image/gif`), 5MB limit
 - Processes with `sharp`: resizes to 200x200, converts to WebP at 80% quality
-- Stores at `avatars/shop-{shopId}.webp` in the `avatars` bucket
-- Returns `{ avatarUrl: string }`
+- Uses admin client for storage upload (bypasses RLS; ownership verified in handler)
+- Stores at `shops/{shopId}/avatar.webp` in the `profile-assets` bucket
+- Returns `{ url: string }`
 
 ## Hero Banner Upload API
 
@@ -92,7 +93,8 @@ Shops are business entities in Nessi's C2C marketplace, separate from member ide
 - Accepts `file` (image) + `shopId` in `multipart/form-data`
 - Validates MIME type (`image/jpeg`, `image/png`, `image/webp`, `image/gif`), 5MB limit
 - Processes with `sharp`: resizes to max 1200x400 (fit inside, no upscale), converts to WebP at 85% quality
-- Stores at `avatars/shop-hero-{shopId}.webp` in the `avatars` bucket
+- Uses admin client for storage upload (bypasses RLS; ownership verified in handler)
+- Stores at `shops/{shopId}/hero-banner.webp` in the `profile-assets` bucket
 - Returns `{ url: string }`
 
 ## Shop Deletion API
@@ -102,8 +104,7 @@ Shops are business entities in Nessi's C2C marketplace, separate from member ide
 - Requires authenticated session + shop owner verification (`owner_id === user.id`)
 - Returns 401 (no session), 403 (not owner), 404 (not found or already soft-deleted)
 - Performs best-effort storage cleanup before soft delete:
-  - Removes shop avatar at `avatars/shop-{shopId}.webp`
-  - Parses `hero_banner_url` (if non-null) and removes from `avatars` bucket
+  - Removes shop assets at `shops/{shopId}/avatar.webp` and hero banner from `profile-assets` bucket
   - Queries shop-owned products → `product_images`, removes files from `listing-images` bucket
 - Storage cleanup failures are caught and logged but do not block the soft delete
 - Soft-deletes the shop row (`deleted_at = now()`) using the admin client
