@@ -135,11 +135,11 @@ Shops are business entities in Nessi's C2C marketplace, separate from member ide
 
 Shop member roles are stored in the `shop_roles` table with a FK from `shop_members.role_id`. Three system roles are seeded with deterministic UUIDs:
 
-| Role | UUID | Permissions |
-|------|------|-------------|
-| Owner | `11111111-1111-1111-1111-111111111101` | Full access to all 6 domains |
-| Manager | `11111111-1111-1111-1111-111111111102` | Full on listings/pricing/orders/messaging, view on shop_settings, none on members |
-| Contributor | `11111111-1111-1111-1111-111111111103` | Full on listings only |
+| Role        | UUID                                   | Permissions                                                                       |
+| ----------- | -------------------------------------- | --------------------------------------------------------------------------------- |
+| Owner       | `11111111-1111-1111-1111-111111111101` | Full access to all 6 domains                                                      |
+| Manager     | `11111111-1111-1111-1111-111111111102` | Full on listings/pricing/orders/messaging, view on shop_settings, none on members |
+| Contributor | `11111111-1111-1111-1111-111111111103` | Full on listings only                                                             |
 
 Use `SYSTEM_ROLE_IDS` from `types/shop.ts` to reference these UUIDs in application code — never hardcode the UUID strings directly.
 
