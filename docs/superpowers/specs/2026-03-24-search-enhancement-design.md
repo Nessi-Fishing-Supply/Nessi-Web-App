@@ -10,15 +10,15 @@ Enhance the existing search experience with recent searches, category quick-brow
 
 ## Design Decisions
 
-| Decision | Choice | Rationale |
-|----------|--------|-----------|
-| Live search results in dropdown | **No** | Reverb, Etsy, eBay don't do it. Performance concern at scale. Redundant with /search page. |
-| Search bar style | **Pill-shaped with orange search button** | Modern, clean, prominent CTA. Matches brand accent. |
-| Autocomplete threshold | **2 chars** (down from 3) | Better responsiveness without performance cost (autocomplete is lightweight) |
-| Desktop filter layout | **Etsy-style: top filter bar + toggle sidebar** | More grid space by default (4 cols). Familiar pattern. Sidebar animates in, content resizes. |
-| Mobile filter layout | **Full-screen takeover** (not bottom sheet) | Matches Etsy mobile pattern. More room for filter groups. Sticky "Show results" footer. |
-| On-focus dropdown content | **Recent searches + category chips** | Helps discovery and repeat searches. Standard marketplace pattern. |
-| Suggestion select behavior | **Navigate to /search** (unchanged) | Standard pattern. No fill-input-only behavior. |
+| Decision                        | Choice                                          | Rationale                                                                                    |
+| ------------------------------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| Live search results in dropdown | **No**                                          | Reverb, Etsy, eBay don't do it. Performance concern at scale. Redundant with /search page.   |
+| Search bar style                | **Pill-shaped with orange search button**       | Modern, clean, prominent CTA. Matches brand accent.                                          |
+| Autocomplete threshold          | **2 chars** (down from 3)                       | Better responsiveness without performance cost (autocomplete is lightweight)                 |
+| Desktop filter layout           | **Etsy-style: top filter bar + toggle sidebar** | More grid space by default (4 cols). Familiar pattern. Sidebar animates in, content resizes. |
+| Mobile filter layout            | **Full-screen takeover** (not bottom sheet)     | Matches Etsy mobile pattern. More room for filter groups. Sticky "Show results" footer.      |
+| On-focus dropdown content       | **Recent searches + category chips**            | Helps discovery and repeat searches. Standard marketplace pattern.                           |
+| Suggestion select behavior      | **Navigate to /search** (unchanged)             | Standard pattern. No fill-input-only behavior.                                               |
 
 ## Scope
 
@@ -44,6 +44,7 @@ Enhance the existing search experience with recent searches, category quick-brow
 ### 1. Data Layer
 
 #### `useRecentSearches` Hook
+
 **File:** `src/features/listings/hooks/use-recent-searches.ts`
 
 ```
@@ -62,6 +63,7 @@ Returns: {
 - Unit tests required
 
 #### Autocomplete Threshold Change
+
 - `src/features/listings/hooks/use-autocomplete.ts`: change `>= 3` to `>= 2`
 - `src/app/api/listings/autocomplete/route.ts`: change `< 3` to `< 2`
 - `src/components/navigation/navbar/index.tsx`: change `searchQuery.length >= 3` to `>= 2` (line 82 guard)
@@ -76,6 +78,7 @@ Returns: {
 Current state: plain bordered input with primary-colored placeholder, search icon button inside. Autocomplete renders as a flat unstyled list below.
 
 New design:
+
 - **Pill-shaped** container with `border-radius: var(--radius-700)`, dark border (`--color-neutral-800`)
 - **Search icon** on the left inside the input
 - **Clear button** (X) appears when query is non-empty
@@ -93,6 +96,7 @@ Extracted from navbar to keep it manageable. Controlled component receiving all 
 **States:**
 
 **A) On focus, empty query:**
+
 ```
 ┌─────────────────────────────────┐
 │ Recent Searches                 │
@@ -114,6 +118,7 @@ Extracted from navbar to keep it manageable. Controlled component receiving all 
 - Clicking category chip → navigate to `/search?category={value}` (intentionally different from navbar category bar which uses `/category/{slug}` — the dropdown is a search shortcut, the navbar is browse)
 
 **B) Query >= 2 chars:**
+
 ```
 ┌─────────────────────────────────┐
 │ Suggestions                     │
@@ -133,6 +138,7 @@ Extracted from navbar to keep it manageable. Controlled component receiving all 
 - Categories section stays visible below suggestions
 
 **Dropdown styling:**
+
 - White background, subtle shadow via `--shadow-md` token (or define one if missing)
 - `border-radius: 0 0 var(--radius-500) var(--radius-500)` (rounds bottom, flat top connects to search bar)
 - Max height ~400px via spacing tokens, `overflow-y: auto`
@@ -142,6 +148,7 @@ Extracted from navbar to keep it manageable. Controlled component receiving all 
 **Note:** Category chips use `react-icons` components from `LISTING_CATEGORIES` (via `getCategoryIcon()`), not emoji. Wireframe emojis above are placeholders.
 
 **Interactions:**
+
 - `onMouseDown` with `preventDefault()` on interactive elements to prevent input blur (existing pattern from Autocomplete)
 - Submitting form → navigate to `/search?q={query}`, add to recent searches, close dropdown
 
@@ -152,13 +159,16 @@ Extracted from navbar to keep it manageable. Controlled component receiving all 
 Preserve the existing shell (portal, focus trap, scroll lock, ARIA dialog, Escape key). Add on-focus content below the input:
 
 **On focus, empty query:**
+
 - Recent searches list (clock icon, term, X remove button, "Clear all" link)
 - Category chips row (horizontal scroll, pill-shaped with icon + label)
 
 **Query >= 2 chars:**
+
 - Autocomplete suggestions (existing, threshold lowered to 2)
 
 **Behavioral changes:**
+
 - Selecting a suggestion → navigate to `/search?q={term}`, add to recent searches, close overlay
 - Selecting a category chip → navigate to `/search?category={value}`, close overlay
 - Submitting → navigate to `/search?q={query}`, add to recent searches, close overlay
@@ -174,6 +184,7 @@ Current: permanent 240px sidebar rail (at lg+) + content area. Grid columns dete
 New: full-width content with toggle sidebar. When sidebar closed, grid gets an extra column. When open, grid loses a column.
 
 **Default state (filters hidden):**
+
 ```
 ┌──────────────────────────────────────────────────┐
 │ [⊞ Show filters] [Rods ✕] [New ✕] [Free Ship.]  │ Sort: Most relevant ▾ │
@@ -189,6 +200,7 @@ New: full-width content with toggle sidebar. When sidebar closed, grid gets an e
 ```
 
 **Filters visible (sidebar open):**
+
 ```
 ┌──────────────────────────────────────────────────────────┐
 │         [⊞ Hide filters] [Rods ✕] [New ✕]  Sort: Most relevant ▾ │
@@ -233,6 +245,7 @@ New: full-width content with toggle sidebar. When sidebar closed, grid gets an e
 #### Mobile Layout (< lg)
 
 **Default:**
+
 ```
 ┌──────────────────────────┐
 │ [⊞] [Rods ✕]  Most relevant ▾ │
@@ -248,6 +261,7 @@ New: full-width content with toggle sidebar. When sidebar closed, grid gets an e
 ```
 
 **Filters open (full-screen takeover):**
+
 ```
 ┌──────────────────────────┐
 │ Filters           Reset  │
@@ -283,30 +297,30 @@ New: full-width content with toggle sidebar. When sidebar closed, grid gets an e
 
 ### 6. Component Changes Summary
 
-| Action | File | Change |
-|--------|------|--------|
-| Create | `src/features/listings/hooks/use-recent-searches.ts` | New hook |
-| Create | `src/features/listings/hooks/__tests__/use-recent-searches.test.ts` | Unit tests |
-| Create | `src/features/listings/components/desktop-search-dropdown/index.tsx` | New component |
-| Create | `src/features/listings/components/desktop-search-dropdown/desktop-search-dropdown.module.scss` | New styles |
-| Create | `src/features/listings/components/search-quick-categories/index.tsx` | Category chips component |
-| Create | `src/features/listings/components/search-quick-categories/search-quick-categories.module.scss` | Styles |
-| Create | `src/features/listings/components/recent-searches/index.tsx` | Recent searches list component |
-| Create | `src/features/listings/components/recent-searches/recent-searches.module.scss` | Styles |
-| Modify | `src/features/listings/hooks/use-autocomplete.ts` | `>= 3` → `>= 2` |
-| Modify | `src/app/api/listings/autocomplete/route.ts` | `< 3` → `< 2` |
-| Modify | `src/components/navigation/navbar/index.tsx` | Search bar redesign, integrate dropdown |
-| Modify | `src/components/navigation/navbar/navbar.module.scss` | Pill-shaped search bar styles |
-| Modify | `src/features/listings/components/search-overlay/index.tsx` | Add on-focus content |
-| Modify | `src/features/listings/components/search-overlay/search-overlay.module.scss` | Styles for new sections |
-| Modify | `src/app/(frontend)/search/search-results.tsx` | Filter bar + toggle sidebar layout |
-| Modify | `src/app/(frontend)/search/search-results.module.scss` | New layout styles |
-| Modify | `src/features/listings/components/filter-panel/index.tsx` | Animated sidebar + full-screen mobile |
-| Modify | `src/features/listings/components/filter-panel/filter-panel.module.scss` | Sidebar animation, mobile full-screen |
-| Modify | `src/features/listings/components/filter-chips/filter-chips.module.scss` | Polish chip styling |
-| Modify | `src/features/listings/components/autocomplete/autocomplete.module.scss` | Section headers, icons, polish |
-| Modify | `src/features/listings/hooks/use-search-filters.ts` | Exclude `sort` from `activeFilterCount` |
-| Modify | `src/features/listings/CLAUDE.md` | Document new hooks and components |
+| Action | File                                                                                           | Change                                  |
+| ------ | ---------------------------------------------------------------------------------------------- | --------------------------------------- |
+| Create | `src/features/listings/hooks/use-recent-searches.ts`                                           | New hook                                |
+| Create | `src/features/listings/hooks/__tests__/use-recent-searches.test.ts`                            | Unit tests                              |
+| Create | `src/features/listings/components/desktop-search-dropdown/index.tsx`                           | New component                           |
+| Create | `src/features/listings/components/desktop-search-dropdown/desktop-search-dropdown.module.scss` | New styles                              |
+| Create | `src/features/listings/components/search-quick-categories/index.tsx`                           | Category chips component                |
+| Create | `src/features/listings/components/search-quick-categories/search-quick-categories.module.scss` | Styles                                  |
+| Create | `src/features/listings/components/recent-searches/index.tsx`                                   | Recent searches list component          |
+| Create | `src/features/listings/components/recent-searches/recent-searches.module.scss`                 | Styles                                  |
+| Modify | `src/features/listings/hooks/use-autocomplete.ts`                                              | `>= 3` → `>= 2`                         |
+| Modify | `src/app/api/listings/autocomplete/route.ts`                                                   | `< 3` → `< 2`                           |
+| Modify | `src/components/navigation/navbar/index.tsx`                                                   | Search bar redesign, integrate dropdown |
+| Modify | `src/components/navigation/navbar/navbar.module.scss`                                          | Pill-shaped search bar styles           |
+| Modify | `src/features/listings/components/search-overlay/index.tsx`                                    | Add on-focus content                    |
+| Modify | `src/features/listings/components/search-overlay/search-overlay.module.scss`                   | Styles for new sections                 |
+| Modify | `src/app/(frontend)/search/search-results.tsx`                                                 | Filter bar + toggle sidebar layout      |
+| Modify | `src/app/(frontend)/search/search-results.module.scss`                                         | New layout styles                       |
+| Modify | `src/features/listings/components/filter-panel/index.tsx`                                      | Animated sidebar + full-screen mobile   |
+| Modify | `src/features/listings/components/filter-panel/filter-panel.module.scss`                       | Sidebar animation, mobile full-screen   |
+| Modify | `src/features/listings/components/filter-chips/filter-chips.module.scss`                       | Polish chip styling                     |
+| Modify | `src/features/listings/components/autocomplete/autocomplete.module.scss`                       | Section headers, icons, polish          |
+| Modify | `src/features/listings/hooks/use-search-filters.ts`                                            | Exclude `sort` from `activeFilterCount` |
+| Modify | `src/features/listings/CLAUDE.md`                                                              | Document new hooks and components       |
 
 ### 7. Accessibility
 
@@ -327,13 +341,13 @@ New: full-width content with toggle sidebar. When sidebar closed, grid gets an e
 
 ## What We're NOT Building (from original tickets)
 
-| Original Ticket Item | Status | Reason |
-|---------------------|--------|--------|
-| `useLiveSearch` hook | Dropped | Performance concern at scale, redundant with /search page |
-| `LiveSearchResultItem` component | Dropped | No inline listing results |
-| `LiveSearchResults` component | Dropped | No inline listing results |
-| Suggestion-fills-input behavior | Dropped | Breaks learned UX pattern, confusing |
-| "See all results" button in dropdown | Dropped | No inline results to "see all" of |
+| Original Ticket Item                 | Status  | Reason                                                    |
+| ------------------------------------ | ------- | --------------------------------------------------------- |
+| `useLiveSearch` hook                 | Dropped | Performance concern at scale, redundant with /search page |
+| `LiveSearchResultItem` component     | Dropped | No inline listing results                                 |
+| `LiveSearchResults` component        | Dropped | No inline listing results                                 |
+| Suggestion-fills-input behavior      | Dropped | Breaks learned UX pattern, confusing                      |
+| "See all results" button in dropdown | Dropped | No inline results to "see all" of                         |
 
 ## Validation
 

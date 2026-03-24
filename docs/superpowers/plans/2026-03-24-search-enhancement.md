@@ -16,37 +16,38 @@
 
 ## File Map
 
-| Action | Path | Responsibility |
-|--------|------|---------------|
-| Create | `src/features/listings/hooks/use-recent-searches.ts` | localStorage-backed recent searches hook |
-| Create | `src/features/listings/hooks/__tests__/use-recent-searches.test.ts` | Unit tests for recent searches |
-| Create | `src/features/listings/components/recent-searches/index.tsx` | Recent searches list (controlled) |
-| Create | `src/features/listings/components/recent-searches/recent-searches.module.scss` | Styles |
-| Create | `src/features/listings/components/search-quick-categories/index.tsx` | Category chip row (controlled) |
-| Create | `src/features/listings/components/search-quick-categories/search-quick-categories.module.scss` | Styles |
-| Create | `src/features/listings/components/desktop-search-dropdown/index.tsx` | Multi-section dropdown (controlled) |
-| Create | `src/features/listings/components/desktop-search-dropdown/desktop-search-dropdown.module.scss` | Styles |
-| Modify | `src/features/listings/hooks/use-autocomplete.ts` | Threshold 3→2 |
-| Modify | `src/app/api/listings/autocomplete/route.ts` | Threshold 3→2 |
-| Modify | `src/features/listings/hooks/use-search-filters.ts` | Exclude `sort` from active filter count |
-| Modify | `src/components/navigation/navbar/index.tsx` | Pill search bar, integrate dropdown, threshold 3→2 |
-| Modify | `src/components/navigation/navbar/navbar.module.scss` | Pill-shaped search bar styles |
-| Modify | `src/features/listings/components/autocomplete/index.tsx` | Add search icon per suggestion, section header |
-| Modify | `src/features/listings/components/autocomplete/autocomplete.module.scss` | Polish suggestion styling |
-| Modify | `src/features/listings/components/search-overlay/index.tsx` | Add on-focus content, threshold 3→2 |
-| Modify | `src/features/listings/components/search-overlay/search-overlay.module.scss` | Styles for new sections |
-| Modify | `src/app/(frontend)/search/search-results.tsx` | Top filter bar + toggle sidebar layout |
-| Modify | `src/app/(frontend)/search/search-results.module.scss` | CSS Grid layout with sidebar transition |
-| Modify | `src/features/listings/components/filter-panel/index.tsx` | Animated sidebar desktop + full-screen mobile |
-| Modify | `src/features/listings/components/filter-panel/filter-panel.module.scss` | Sidebar animation, full-screen mobile |
-| Modify | `src/features/listings/components/filter-chips/filter-chips.module.scss` | Polish chip styling |
-| Modify | `src/features/listings/CLAUDE.md` | Document new hooks and components |
+| Action | Path                                                                                           | Responsibility                                     |
+| ------ | ---------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| Create | `src/features/listings/hooks/use-recent-searches.ts`                                           | localStorage-backed recent searches hook           |
+| Create | `src/features/listings/hooks/__tests__/use-recent-searches.test.ts`                            | Unit tests for recent searches                     |
+| Create | `src/features/listings/components/recent-searches/index.tsx`                                   | Recent searches list (controlled)                  |
+| Create | `src/features/listings/components/recent-searches/recent-searches.module.scss`                 | Styles                                             |
+| Create | `src/features/listings/components/search-quick-categories/index.tsx`                           | Category chip row (controlled)                     |
+| Create | `src/features/listings/components/search-quick-categories/search-quick-categories.module.scss` | Styles                                             |
+| Create | `src/features/listings/components/desktop-search-dropdown/index.tsx`                           | Multi-section dropdown (controlled)                |
+| Create | `src/features/listings/components/desktop-search-dropdown/desktop-search-dropdown.module.scss` | Styles                                             |
+| Modify | `src/features/listings/hooks/use-autocomplete.ts`                                              | Threshold 3→2                                      |
+| Modify | `src/app/api/listings/autocomplete/route.ts`                                                   | Threshold 3→2                                      |
+| Modify | `src/features/listings/hooks/use-search-filters.ts`                                            | Exclude `sort` from active filter count            |
+| Modify | `src/components/navigation/navbar/index.tsx`                                                   | Pill search bar, integrate dropdown, threshold 3→2 |
+| Modify | `src/components/navigation/navbar/navbar.module.scss`                                          | Pill-shaped search bar styles                      |
+| Modify | `src/features/listings/components/autocomplete/index.tsx`                                      | Add search icon per suggestion, section header     |
+| Modify | `src/features/listings/components/autocomplete/autocomplete.module.scss`                       | Polish suggestion styling                          |
+| Modify | `src/features/listings/components/search-overlay/index.tsx`                                    | Add on-focus content, threshold 3→2                |
+| Modify | `src/features/listings/components/search-overlay/search-overlay.module.scss`                   | Styles for new sections                            |
+| Modify | `src/app/(frontend)/search/search-results.tsx`                                                 | Top filter bar + toggle sidebar layout             |
+| Modify | `src/app/(frontend)/search/search-results.module.scss`                                         | CSS Grid layout with sidebar transition            |
+| Modify | `src/features/listings/components/filter-panel/index.tsx`                                      | Animated sidebar desktop + full-screen mobile      |
+| Modify | `src/features/listings/components/filter-panel/filter-panel.module.scss`                       | Sidebar animation, full-screen mobile              |
+| Modify | `src/features/listings/components/filter-chips/filter-chips.module.scss`                       | Polish chip styling                                |
+| Modify | `src/features/listings/CLAUDE.md`                                                              | Document new hooks and components                  |
 
 ---
 
 ## Task 1: Create branch and `useRecentSearches` hook with tests
 
 **Files:**
+
 - Create: `src/features/listings/hooks/use-recent-searches.ts`
 - Create: `src/features/listings/hooks/__tests__/use-recent-searches.test.ts`
 
@@ -222,6 +223,7 @@ git commit -m "feat(search): add useRecentSearches hook with localStorage + test
 ## Task 2: Lower autocomplete threshold to 2 chars (all 4 locations)
 
 **Files:**
+
 - Modify: `src/features/listings/hooks/use-autocomplete.ts`
 - Modify: `src/app/api/listings/autocomplete/route.ts`
 - Modify: `src/components/navigation/navbar/index.tsx` (line 82)
@@ -265,6 +267,7 @@ git commit -m "feat(search): lower autocomplete threshold from 3 to 2 chars"
 ## Task 3: Exclude `sort` from active filter count
 
 **Files:**
+
 - Modify: `src/features/listings/hooks/use-search-filters.ts`
 
 - [ ] **Step 1: Update `countActiveFilters`**
@@ -296,6 +299,7 @@ git commit -m "fix(search): exclude sort from active filter count"
 ## Task 4: Create `RecentSearches` presentational component
 
 **Files:**
+
 - Create: `src/features/listings/components/recent-searches/index.tsx`
 - Create: `src/features/listings/components/recent-searches/recent-searches.module.scss`
 
@@ -501,6 +505,7 @@ git commit -m "feat(search): add RecentSearches presentational component"
 ## Task 5: Create `SearchQuickCategories` presentational component
 
 **Files:**
+
 - Create: `src/features/listings/components/search-quick-categories/index.tsx`
 - Create: `src/features/listings/components/search-quick-categories/search-quick-categories.module.scss`
 
@@ -635,6 +640,7 @@ git commit -m "feat(search): add SearchQuickCategories chip row component"
 ## Task 6: Create `DesktopSearchDropdown` component
 
 **Files:**
+
 - Create: `src/features/listings/components/desktop-search-dropdown/index.tsx`
 - Create: `src/features/listings/components/desktop-search-dropdown/desktop-search-dropdown.module.scss`
 
@@ -774,12 +780,14 @@ git commit -m "feat(search): add DesktopSearchDropdown multi-section component"
 ## Task 7: Polish `Autocomplete` component with search icons
 
 **Files:**
+
 - Modify: `src/features/listings/components/autocomplete/index.tsx`
 - Modify: `src/features/listings/components/autocomplete/autocomplete.module.scss`
 
 - [ ] **Step 1: Add search icon to each suggestion item**
 
 Update `src/features/listings/components/autocomplete/index.tsx`:
+
 - Add import: `import { HiSearch } from 'react-icons/hi';`
 - Wrap each suggestion item content in icon + text:
 
@@ -846,6 +854,7 @@ git commit -m "style(search): polish autocomplete with search icons and spacing"
 ## Task 8: Redesign navbar search bar + integrate dropdown
 
 **Files:**
+
 - Modify: `src/components/navigation/navbar/index.tsx`
 - Modify: `src/components/navigation/navbar/navbar.module.scss`
 
@@ -854,6 +863,7 @@ git commit -m "style(search): polish autocomplete with search icons and spacing"
 In `src/components/navigation/navbar/index.tsx`:
 
 1. Add imports:
+
    ```tsx
    import { HiOutlineX } from 'react-icons/hi';
    import DesktopSearchDropdown from '@/features/listings/components/desktop-search-dropdown';
@@ -862,6 +872,7 @@ In `src/components/navigation/navbar/index.tsx`:
    ```
 
 2. Inside the `Navbar` component, add the recent searches hook:
+
    ```tsx
    const { recentSearches, addRecentSearch, removeRecentSearch, clearRecentSearches } =
      useRecentSearches();
@@ -878,6 +889,7 @@ In `src/components/navigation/navbar/index.tsx`:
 5. Update `handleSearchSelect` to also call `addRecentSearch(suggestion.term)`
 
 6. Add category select handler:
+
    ```tsx
    const handleCategorySelect = (category: ListingCategory) => {
      router.push(`/search?category=${category}`);
@@ -887,6 +899,7 @@ In `src/components/navigation/navbar/index.tsx`:
    ```
 
 7. Add recent search select handler:
+
    ```tsx
    const handleRecentSearchSelect = (term: string) => {
      router.push(`/search?q=${encodeURIComponent(term)}`);
@@ -899,12 +912,7 @@ In `src/components/navigation/navbar/index.tsx`:
 8. Replace the entire `<form>` block (lines 204-250 in the current file) with:
 
 ```tsx
-<form
-  className={styles.form}
-  role="search"
-  aria-label="Site search"
-  onSubmit={handleSearchSubmit}
->
+<form className={styles.form} role="search" aria-label="Site search" onSubmit={handleSearchSubmit}>
   <label htmlFor="site-search" className="sr-only">
     Search fishing gear
   </label>
@@ -974,6 +982,7 @@ In `src/components/navigation/navbar/index.tsx`:
 ```
 
 Note: The `hasSearchSuggestions` guard also needs updating to use the new threshold:
+
 ```tsx
 const hasSearchSuggestions = searchSuggestions.length > 0 && searchQuery.length >= 2;
 ```
@@ -1114,6 +1123,7 @@ git commit -m "feat(search): redesign navbar search bar as pill + integrate drop
 ## Task 9: Enhance mobile `SearchOverlay` with on-focus content
 
 **Files:**
+
 - Modify: `src/features/listings/components/search-overlay/index.tsx`
 - Modify: `src/features/listings/components/search-overlay/search-overlay.module.scss`
 
@@ -1122,6 +1132,7 @@ git commit -m "feat(search): redesign navbar search bar as pill + integrate drop
 In `src/features/listings/components/search-overlay/index.tsx`:
 
 1. Add imports:
+
    ```tsx
    import { useRecentSearches } from '../../hooks/use-recent-searches';
    import RecentSearches from '../recent-searches';
@@ -1130,6 +1141,7 @@ In `src/features/listings/components/search-overlay/index.tsx`:
    ```
 
 2. Add recent searches hook inside the component:
+
    ```tsx
    const { recentSearches, addRecentSearch, removeRecentSearch, clearRecentSearches } =
      useRecentSearches();
@@ -1138,6 +1150,7 @@ In `src/features/listings/components/search-overlay/index.tsx`:
 3. Update `navigateToSearch` to also call `addRecentSearch(term)`
 
 4. Add category select handler:
+
    ```tsx
    const handleCategorySelect = useCallback(
      (category: ListingCategory) => {
@@ -1149,6 +1162,7 @@ In `src/features/listings/components/search-overlay/index.tsx`:
    ```
 
 5. Add recent search select handler:
+
    ```tsx
    const handleRecentSearchSelect = useCallback(
      (term: string) => {
@@ -1161,17 +1175,19 @@ In `src/features/listings/components/search-overlay/index.tsx`:
 
 6. Below the `<Autocomplete>` component (or instead of it when query is empty), render on-focus content:
    ```tsx
-   {query.length < 2 && (
-     <div className={styles.onFocusContent}>
-       <RecentSearches
-         searches={recentSearches}
-         onSelect={handleRecentSearchSelect}
-         onRemove={removeRecentSearch}
-         onClearAll={clearRecentSearches}
-       />
-       <SearchQuickCategories onSelect={handleCategorySelect} />
-     </div>
-   )}
+   {
+     query.length < 2 && (
+       <div className={styles.onFocusContent}>
+         <RecentSearches
+           searches={recentSearches}
+           onSelect={handleRecentSearchSelect}
+           onRemove={removeRecentSearch}
+           onClearAll={clearRecentSearches}
+         />
+         <SearchQuickCategories onSelect={handleCategorySelect} />
+       </div>
+     );
+   }
    ```
 
 - [ ] **Step 2: Add SCSS for on-focus content**
@@ -1203,6 +1219,7 @@ git commit -m "feat(search): add recent searches + category chips to mobile over
 ## Task 10: Redesign `FilterPanel` — animated sidebar + full-screen mobile
 
 **Files:**
+
 - Modify: `src/features/listings/components/filter-panel/index.tsx`
 - Modify: `src/features/listings/components/filter-panel/filter-panel.module.scss`
 
@@ -1398,21 +1415,13 @@ export default function FilterPanel({
           >
             <div className={styles.mobileHeader}>
               <h2 className={styles.mobileTitle}>Filters</h2>
-              <button
-                className={styles.resetButton}
-                onClick={onClearAll}
-                type="button"
-              >
+              <button className={styles.resetButton} onClick={onClearAll} type="button">
                 Reset
               </button>
             </div>
             <div className={styles.mobileBody}>{filterContent}</div>
             <div className={styles.mobileFooter}>
-              <button
-                className={styles.showResultsButton}
-                onClick={onMobileClose}
-                type="button"
-              >
+              <button className={styles.showResultsButton} onClick={onMobileClose} type="button">
                 Show {resultCount !== undefined ? `${resultCount} ` : ''}results
               </button>
             </div>
@@ -1527,6 +1536,7 @@ git commit -m "feat(search): refactor FilterPanel — animated sidebar + full-sc
 ## Task 11: Redesign search results page layout
 
 **Files:**
+
 - Modify: `src/app/(frontend)/search/search-results.tsx`
 - Modify: `src/app/(frontend)/search/search-results.module.scss`
 
@@ -1613,9 +1623,7 @@ export default function SearchResults() {
           <span className={styles.filterToggleLabel}>
             {filtersOpen ? 'Hide filters' : 'Show filters'}
           </span>
-          {activeFilterCount > 0 && (
-            <span className={styles.filterBadge}>{activeFilterCount}</span>
-          )}
+          {activeFilterCount > 0 && <span className={styles.filterBadge}>{activeFilterCount}</span>}
         </button>
 
         {hasActiveFilters && (
@@ -1870,6 +1878,7 @@ git commit -m "feat(search): redesign search results with top filter bar + toggl
 ## Task 12: Update `listings/CLAUDE.md` and run full validation
 
 **Files:**
+
 - Modify: `src/features/listings/CLAUDE.md`
 
 - [ ] **Step 1: Update feature documentation**
@@ -1911,6 +1920,7 @@ Run: `pnpm dev`
 - [ ] **Step 2: Verify desktop search bar**
 
 Open `http://localhost:3000`. Verify:
+
 - Pill-shaped search bar with orange button renders correctly
 - Focusing the input opens dropdown with category chips
 - Typing 2+ chars shows autocomplete suggestions with search icons
@@ -1921,6 +1931,7 @@ Open `http://localhost:3000`. Verify:
 - [ ] **Step 3: Verify mobile search overlay**
 
 Resize to mobile viewport (<600px). Verify:
+
 - Mobile search icon opens full-screen overlay
 - On focus: recent searches + category chips visible
 - Typing shows autocomplete
@@ -1929,6 +1940,7 @@ Resize to mobile viewport (<600px). Verify:
 - [ ] **Step 4: Verify search results page**
 
 Navigate to `/search?q=rod`. Verify:
+
 - Top filter bar with toggle button + chips + sort
 - Clicking "Show filters" slides sidebar in on desktop
 - Grid resizes smoothly from 4→3 columns
