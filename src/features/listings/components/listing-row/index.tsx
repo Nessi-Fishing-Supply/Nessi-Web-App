@@ -63,7 +63,9 @@ export default function ListingRow({ listing, onActionsClick, onPriceClick }: Li
               style={{ objectFit: 'cover' }}
             />
           ) : (
-            <div className={styles.thumbnailEmpty} aria-hidden="true" />
+            <div className={styles.thumbnailEmpty} aria-hidden="true">
+              <HiOutlineCamera size={24} color="var(--color-neutral-400)" />
+            </div>
           )}
         </div>
       )}
