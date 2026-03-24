@@ -121,6 +121,7 @@ Display the plan summary:
       - Launch **phase-verifier** agent to run `pnpm build`
       - If verification fails: attempt fix, re-verify once, escalate to blocked if still failing
       - If passes: update health in `state.json`, persist
+      - **Format all changed files before committing:** `pnpm prettier --write $(git diff --name-only HEAD)` — this prevents CI `format:check` failures, especially on markdown files (CLAUDE.md, plan.md) that Prettier reformats
       - Stage conductor state alongside source changes: `git add .claude/conductor/` (tracks state, plan, learnings)
       - Commit phase: `{type}({scope}): #{issue} {phase description}` with task summaries in body
       - Append any learnings to `learnings.md`
@@ -236,6 +237,7 @@ Rules for this step:
 - **EVERY state transition MUST be persisted to `state.json` on disk immediately.** This is the crash recovery mechanism.
 - **EVERY `git commit` MUST include `.claude/conductor/` alongside source changes.** Never commit source files without also staging conductor state. Use `git add .claude/conductor/ <source files>` in every commit command. This includes phase commits, review commits, fix commits, and the final depot-move commit.
 - **The depot move + active.json clear MUST be committed and pushed as part of the branch.** Do this BEFORE launching the pr-creator agent, not after. If the depot move isn't in the branch, it won't be in the PR merge and the track will be stranded in `tracks/` forever.
+- **EVERY `git commit` MUST be preceded by `pnpm prettier --write` on all changed files.** Run `pnpm prettier --write $(git diff --name-only HEAD)` before staging. This prevents CI `format:check` failures — especially on markdown files (CLAUDE.md, plan.md) that Prettier reformats tables and line lengths.
 - **Append-only**: `review-log.md` is never overwritten, only appended to.
 - **Agent isolation**: Only launch agents for their designated purpose. task-executor writes code. pr-creator does git operations. phase-verifier only reports.
 - Always read `state.json` fresh before making decisions — never rely on in-memory state from earlier in the conversation.
