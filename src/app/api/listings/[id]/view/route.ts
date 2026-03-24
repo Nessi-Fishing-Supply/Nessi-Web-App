@@ -31,6 +31,16 @@ export async function POST(_: Request, context: { params: Promise<{ id: string }
       .update({ view_count: (listing.view_count || 0) + 1 })
       .eq('id', id);
 
+    // Upsert into recently_viewed — non-blocking (failure logged, not surfaced)
+    supabase
+      .from('recently_viewed')
+      .upsert({ user_id: user.id, listing_id: id }, { onConflict: 'user_id,listing_id' })
+      .then(({ error: upsertError }) => {
+        if (upsertError) {
+          console.error('Recently viewed upsert error:', upsertError);
+        }
+      });
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('View count error:', error);
