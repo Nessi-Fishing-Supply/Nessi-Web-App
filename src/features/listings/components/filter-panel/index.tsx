@@ -184,21 +184,13 @@ export default function FilterPanel({
           >
             <div className={styles.mobileHeader}>
               <h2 className={styles.mobileTitle}>Filters</h2>
-              <button
-                className={styles.resetButton}
-                onClick={onClearAll}
-                type="button"
-              >
+              <button className={styles.resetButton} onClick={onClearAll} type="button">
                 Reset
               </button>
             </div>
             <div className={styles.mobileBody}>{filterContent}</div>
             <div className={styles.mobileFooter}>
-              <button
-                className={styles.showResultsButton}
-                onClick={onMobileClose}
-                type="button"
-              >
+              <button className={styles.showResultsButton} onClick={onMobileClose} type="button">
                 Show {resultCount !== undefined ? `${resultCount} ` : ''}results
               </button>
             </div>

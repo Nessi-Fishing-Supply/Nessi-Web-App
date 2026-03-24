@@ -76,9 +76,7 @@ export default function SearchResults() {
           <span className={styles.filterToggleLabel}>
             {filtersOpen ? 'Hide filters' : 'Show filters'}
           </span>
-          {activeFilterCount > 0 && (
-            <span className={styles.filterBadge}>{activeFilterCount}</span>
-          )}
+          {activeFilterCount > 0 && <span className={styles.filterBadge}>{activeFilterCount}</span>}
         </button>
 
         {hasActiveFilters && (
