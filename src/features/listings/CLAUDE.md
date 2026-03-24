@@ -162,7 +162,7 @@ All listing API routes live in `src/app/api/listings/`:
 | `useListingPhotos(listingId)`        | `['listings', listingId, 'photos']`            | Fetch ordered photos for a listing                                                |
 | `useCreateListing()`                 | mutation, invalidates `['listings']`           | Create a new listing                                                              |
 | `useCreateDraft()`                   | mutation, invalidates `['listings']`           | Create an empty draft                                                             |
-| `useDuplicateListing()`              | mutation, invalidates `['listings']`           | Duplicate an existing listing as a new draft (copies all fields except photos)     |
+| `useDuplicateListing()`              | mutation, invalidates `['listings']`           | Duplicate an existing listing as a new draft (copies all fields except photos)    |
 | `useUpdateListing()`                 | mutation, invalidates `['listings']`           | Update listing fields                                                             |
 | `useDeleteListing()`                 | mutation, invalidates `['listings']`           | Soft-delete a listing                                                             |
 | `useDeleteDraft()`                   | mutation, invalidates `['listings']`           | Hard-delete a draft                                                               |

@@ -15,10 +15,7 @@ import AddToCartButton from '@/features/cart/components/add-to-cart-button';
 import { formatPrice } from '@/features/shared/utils/format';
 import { CONDITION_TIERS } from '@/features/listings/constants/condition';
 import { getCategoryLabel } from '@/features/listings/constants/category';
-import {
-  useIncrementViewCount,
-  useDuplicateListing,
-} from '@/features/listings/hooks/use-listings';
+import { useIncrementViewCount, useDuplicateListing } from '@/features/listings/hooks/use-listings';
 import { useToast } from '@/components/indicators/toast/context';
 import useContextStore from '@/features/context/stores/context-store';
 import type { ListingWithPhotos, SellerIdentity } from '@/features/listings/types/listing';
