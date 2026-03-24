@@ -34,7 +34,10 @@ export async function POST(_: Request, context: { params: Promise<{ id: string }
     // Upsert into recently_viewed — non-blocking (failure logged, not surfaced)
     supabase
       .from('recently_viewed')
-      .upsert({ user_id: user.id, listing_id: id }, { onConflict: 'user_id,listing_id' })
+      .upsert(
+        { user_id: user.id, listing_id: id, viewed_at: new Date().toISOString() },
+        { onConflict: 'user_id,listing_id' },
+      )
       .then(({ error: upsertError }) => {
         if (upsertError) {
           console.error('Recently viewed upsert error:', upsertError);
