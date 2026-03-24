@@ -4,7 +4,9 @@ import type { SellerIdentity } from '@/features/listings/types/listing';
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export async function getRecentlyViewedServer(userId: string): Promise<RecentlyViewedListingItem[]> {
+export async function getRecentlyViewedServer(
+  userId: string,
+): Promise<RecentlyViewedListingItem[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('recently_viewed')
@@ -25,9 +27,7 @@ export async function getRecentlyViewedServer(userId: string): Promise<RecentlyV
 
   // Collect unique shop_ids and seller_ids for batch fetching
   const shopIds = [
-    ...new Set(
-      items.map((i) => (i.listing as any)?.shop_id).filter(Boolean) as string[],
-    ),
+    ...new Set(items.map((i) => (i.listing as any)?.shop_id).filter(Boolean) as string[]),
   ];
   const sellerIds = [
     ...new Set(

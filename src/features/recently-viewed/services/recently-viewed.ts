@@ -1,5 +1,8 @@
 import { get, post, del } from '@/libs/fetch';
-import type { RecentlyViewedItem, RecentlyViewedListingItem } from '@/features/recently-viewed/types/recently-viewed';
+import type {
+  RecentlyViewedItem,
+  RecentlyViewedListingItem,
+} from '@/features/recently-viewed/types/recently-viewed';
 
 const BASE_URL = '/api/recently-viewed';
 
