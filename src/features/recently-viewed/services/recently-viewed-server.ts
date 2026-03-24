@@ -52,7 +52,8 @@ export async function getRecentlyViewedServer(
     const { data: shops } = await supabase
       .from('shops')
       .select('id, shop_name, avatar_url, slug, created_at, is_verified')
-      .in('id', shopIds);
+      .in('id', shopIds)
+      .is('deleted_at', null);
     for (const shop of shops ?? []) {
       shopMap.set(shop.id, shop);
     }
@@ -141,24 +142,25 @@ export async function mergeGuestViewsServer(
   items: RecentlyViewedItem[],
 ): Promise<number> {
   const supabase = await createClient();
-  let mergedCount = 0;
 
-  for (const item of items) {
-    if (!UUID_REGEX.test(item.listingId)) {
-      continue;
-    }
+  const validItems = items.filter((item) => UUID_REGEX.test(item.listingId));
+  if (validItems.length === 0) return 0;
 
-    const { error } = await supabase
-      .from('recently_viewed')
-      .upsert(
-        { user_id: userId, listing_id: item.listingId, viewed_at: item.viewedAt },
-        { onConflict: 'user_id,listing_id' },
-      );
+  const { data, error } = await supabase
+    .from('recently_viewed')
+    .upsert(
+      validItems.map((item) => ({
+        user_id: userId,
+        listing_id: item.listingId,
+        viewed_at: item.viewedAt,
+      })),
+      { onConflict: 'user_id,listing_id' },
+    )
+    .select('id');
 
-    if (!error) {
-      mergedCount++;
-    }
+  if (error) {
+    throw new Error(`Failed to merge guest views: ${error.message}`);
   }
 
-  return mergedCount;
+  return data?.length ?? 0;
 }
