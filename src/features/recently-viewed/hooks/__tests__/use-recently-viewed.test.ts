@@ -1,8 +1,19 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useRecentlyViewed } from '../use-recently-viewed';
 import { STORAGE_KEY } from '@/features/recently-viewed/utils/recently-viewed';
 import type { RecentlyViewedItem } from '@/features/recently-viewed/types/recently-viewed';
+
+// Mock auth — tests exercise the guest (unauthenticated) path
+vi.mock('@/features/auth/context', () => ({
+  useAuth: () => ({ user: null, isAuthenticated: false, isLoading: false }),
+}));
+
+// Mock Tanstack Query hooks — not exercised in guest path
+vi.mock('../use-recently-viewed-query', () => ({
+  useRecentlyViewedQuery: () => ({ data: undefined }),
+  useClearRecentlyViewed: () => ({ mutate: vi.fn() }),
+}));
 
 beforeEach(() => {
   localStorage.clear();
