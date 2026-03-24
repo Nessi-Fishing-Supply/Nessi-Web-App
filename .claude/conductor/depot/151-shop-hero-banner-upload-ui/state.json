@@ -3,7 +3,7 @@
   "issue": 151,
   "title": "Shop hero banner upload UI",
   "branch": "feat/151/shop-hero-banner-upload-ui",
-  "status": "reviewing",
+  "status": "pr_open",
   "phase": {
     "current": 3,
     "total": 3,
@@ -13,7 +13,12 @@
       "remaining": []
     }
   },
-  "health": { "build": "pass", "lint": "unknown", "tests": "unknown" },
+  "health": { "build": "pass", "lint": "pass", "tests": "pass" },
   "failureCount": { "currentTask": 0 },
-  "timestamps": { "started": "2026-03-23T12:00:00Z", "lastActivity": "2026-03-23T12:27:00Z" }
+  "timestamps": {
+    "started": "2026-03-23T12:00:00Z",
+    "lastActivity": "2026-03-23T12:35:00Z",
+    "completedAt": "2026-03-23T12:35:00Z",
+    "pruneAfter": "2026-05-22T12:35:00Z"
+  }
 }
