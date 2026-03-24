@@ -1,0 +1,121 @@
+import { createClient } from '@/libs/supabase/server';
+import { AUTH_CACHE_HEADERS } from '@/libs/api-headers';
+import { NextResponse } from 'next/server';
+import sharp from 'sharp';
+
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
+
+export async function POST(req: Request) {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401, headers: AUTH_CACHE_HEADERS },
+      );
+    }
+
+    const formData = await req.formData();
+    const file = formData.get('file') as File;
+    const shopId = formData.get('shopId') as string;
+
+    if (!shopId) {
+      return NextResponse.json(
+        { error: 'Shop ID is required' },
+        { status: 400, headers: AUTH_CACHE_HEADERS },
+      );
+    }
+
+    const { data: shop, error: shopError } = await supabase
+      .from('shops')
+      .select('owner_id')
+      .eq('id', shopId)
+      .single();
+
+    if (shopError || !shop) {
+      return NextResponse.json(
+        { error: 'Shop not found' },
+        { status: 404, headers: AUTH_CACHE_HEADERS },
+      );
+    }
+
+    if (shop.owner_id !== user.id) {
+      return NextResponse.json(
+        { error: 'Forbidden' },
+        { status: 403, headers: AUTH_CACHE_HEADERS },
+      );
+    }
+
+    if (!file) {
+      return NextResponse.json(
+        { error: 'No file provided' },
+        { status: 400, headers: AUTH_CACHE_HEADERS },
+      );
+    }
+
+    if (!file.type.startsWith('image/') || !ALLOWED_MIME_TYPES.includes(file.type)) {
+      return NextResponse.json(
+        { error: 'Invalid file type' },
+        { status: 400, headers: AUTH_CACHE_HEADERS },
+      );
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json(
+        { error: 'File exceeds 5MB limit' },
+        { status: 400, headers: AUTH_CACHE_HEADERS },
+      );
+    }
+
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const resized = await sharp(buffer)
+      .resize(1200, 400, { fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: 85 })
+      .toBuffer();
+
+    const fileName = `shop-hero-${shopId}.webp`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(fileName, resized, {
+        contentType: 'image/webp',
+        upsert: true,
+      });
+
+    if (uploadError) {
+      return NextResponse.json(
+        { error: uploadError.message },
+        { status: 500, headers: AUTH_CACHE_HEADERS },
+      );
+    }
+
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from('avatars').getPublicUrl(fileName);
+
+    const { error: updateError } = await supabase
+      .from('shops')
+      .update({ hero_banner_url: publicUrl })
+      .eq('id', shopId);
+
+    if (updateError) {
+      return NextResponse.json(
+        { error: updateError.message },
+        { status: 500, headers: AUTH_CACHE_HEADERS },
+      );
+    }
+
+    return NextResponse.json({ url: publicUrl }, { headers: AUTH_CACHE_HEADERS });
+  } catch (error) {
+    console.error('Upload error:', error);
+    return NextResponse.json(
+      { error: 'Upload failed' },
+      { status: 500, headers: AUTH_CACHE_HEADERS },
+    );
+  }
+}
