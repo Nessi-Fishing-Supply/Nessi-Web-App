@@ -306,94 +306,91 @@ export default function Navbar() {
                   <p>Profiles</p>
                 </DropdownTitle>
                 <div className={styles.profilesList}>
-                <DropdownItem>
-                  <button
-                    type="button"
-                    className={styles.switchItem}
-                    onClick={() => {
-                      if (isShopContext) {
-                        switchToMember();
-                        showToast({
-                          type: 'success',
-                          message: `Now acting as ${firstName} ${lastName}`,
-                          description: 'Your context has been switched.',
-                        });
-                      }
-                    }}
-                    aria-current={!isShopContext ? 'true' : undefined}
-                  >
-                    {member?.avatar_url ? (
-                      <Image
-                        src={member.avatar_url}
-                        alt=""
-                        width={32}
-                        height={32}
-                        className={styles.switchAvatarImage}
-                      />
-                    ) : (
-                      <span className={styles.switchAvatar} aria-hidden="true">
-                        {(firstName?.[0] ?? '').toUpperCase()}
-                        {(lastName?.[0] ?? '').toUpperCase()}
+                  <DropdownItem>
+                    <button
+                      type="button"
+                      className={styles.switchItem}
+                      onClick={() => {
+                        if (isShopContext) {
+                          switchToMember();
+                          showToast({
+                            type: 'success',
+                            message: `Now acting as ${firstName} ${lastName}`,
+                            description: 'Your context has been switched.',
+                          });
+                        }
+                      }}
+                      aria-current={!isShopContext ? 'true' : undefined}
+                    >
+                      {member?.avatar_url ? (
+                        <Image
+                          src={member.avatar_url}
+                          alt=""
+                          width={32}
+                          height={32}
+                          className={styles.switchAvatarImage}
+                        />
+                      ) : (
+                        <span className={styles.switchAvatar} aria-hidden="true">
+                          {(firstName?.[0] ?? '').toUpperCase()}
+                          {(lastName?.[0] ?? '').toUpperCase()}
+                        </span>
+                      )}
+                      <span>
+                        {firstName} {lastName}
                       </span>
-                    )}
-                    <span>
-                      {firstName} {lastName}
-                    </span>
-                    {!isShopContext ? (
-                      <HiCheckCircle className={styles.activeIcon} aria-label="Active profile" />
-                    ) : (
-                      <HiSwitchHorizontal className={styles.switchIcon} aria-hidden="true" />
-                    )}
-                  </button>
-                </DropdownItem>
-                {shops?.map((shop) => {
-                  const isActive = activeShopId === shop.id;
-                  return (
-                    <DropdownItem key={shop.id}>
-                      <button
-                        type="button"
-                        className={styles.switchItem}
-                        onClick={() => {
-                          if (!isActive) {
-                            switchToShop(shop.id, shop.shop_name ?? undefined);
-                            showToast({
-                              type: 'success',
-                              message: `Now acting as ${shop.shop_name}`,
-                              description: 'Your context has been switched.',
-                            });
-                          }
-                        }}
-                        aria-current={isActive ? 'true' : undefined}
-                      >
-                        {shop.avatar_url ? (
-                          <Image
-                            src={shop.avatar_url}
-                            alt=""
-                            width={32}
-                            height={32}
-                            className={styles.switchAvatarImage}
-                          />
-                        ) : (
-                          <span className={styles.switchAvatar} aria-hidden="true">
-                            {(shop.shop_name?.[0] ?? '').toUpperCase()}
-                          </span>
-                        )}
-                        <span>{shop.shop_name}</span>
-                        {isActive ? (
-                          <HiCheckCircle
-                            className={styles.activeIcon}
-                            aria-label="Active profile"
-                          />
-                        ) : (
-                          <HiSwitchHorizontal
-                            className={styles.switchIcon}
-                            aria-hidden="true"
-                          />
-                        )}
-                      </button>
-                    </DropdownItem>
-                  );
-                })}
+                      {!isShopContext ? (
+                        <HiCheckCircle className={styles.activeIcon} aria-label="Active profile" />
+                      ) : (
+                        <HiSwitchHorizontal className={styles.switchIcon} aria-hidden="true" />
+                      )}
+                    </button>
+                  </DropdownItem>
+                  {shops?.map((shop) => {
+                    const isActive = activeShopId === shop.id;
+                    return (
+                      <DropdownItem key={shop.id}>
+                        <button
+                          type="button"
+                          className={styles.switchItem}
+                          onClick={() => {
+                            if (!isActive) {
+                              switchToShop(shop.id, shop.shop_name ?? undefined);
+                              showToast({
+                                type: 'success',
+                                message: `Now acting as ${shop.shop_name}`,
+                                description: 'Your context has been switched.',
+                              });
+                            }
+                          }}
+                          aria-current={isActive ? 'true' : undefined}
+                        >
+                          {shop.avatar_url ? (
+                            <Image
+                              src={shop.avatar_url}
+                              alt=""
+                              width={32}
+                              height={32}
+                              className={styles.switchAvatarImage}
+                            />
+                          ) : (
+                            <span className={styles.switchAvatar} aria-hidden="true">
+                              {(shop.shop_name?.[0] ?? '').toUpperCase()}
+                            </span>
+                          )}
+                          <span>{shop.shop_name}</span>
+                          {isActive ? (
+                            <HiCheckCircle
+                              className={styles.activeIcon}
+                              aria-label="Active profile"
+                            />
+                          ) : (
+                            <HiSwitchHorizontal className={styles.switchIcon} aria-hidden="true" />
+                          )}
+                        </button>
+                      </DropdownItem>
+                    );
+                  })}
                 </div>
               </>
             )}
