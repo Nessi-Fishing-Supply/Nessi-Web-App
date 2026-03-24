@@ -21,17 +21,24 @@ export default function ShareButton({ listingId, listingTitle }: Props) {
         await navigator.share({ title: listingTitle, url });
       } catch (error) {
         if (error instanceof Error && error.name === 'AbortError') return;
-        throw error;
       }
       return;
     }
 
-    await navigator.clipboard.writeText(url);
-    showToast({
-      type: 'success',
-      message: 'Link copied!',
-      description: 'The listing URL has been copied to your clipboard.',
-    });
+    try {
+      await navigator.clipboard.writeText(url);
+      showToast({
+        type: 'success',
+        message: 'Link copied!',
+        description: 'The listing URL has been copied to your clipboard.',
+      });
+    } catch {
+      showToast({
+        type: 'error',
+        message: 'Unable to copy link',
+        description: 'Please copy the URL from your browser address bar.',
+      });
+    }
   }, [listingId, listingTitle, showToast]);
 
   return (

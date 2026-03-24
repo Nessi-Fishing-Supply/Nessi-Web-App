@@ -3,7 +3,7 @@
   "issue": 153,
   "title": "Social sharing on listings — Web Share API + copy link",
   "branch": "feat/153/social-sharing-listings",
-  "status": "implementing",
+  "status": "complete",
   "phase": {
     "current": 2,
     "total": 2,
@@ -13,7 +13,7 @@
       "remaining": []
     }
   },
-  "health": { "build": "unknown", "lint": "unknown", "tests": "unknown" },
+  "health": { "build": "pass", "lint": "pass", "tests": "pass" },
   "failureCount": { "currentTask": 0 },
-  "timestamps": { "started": "2026-03-23T18:00:00Z", "lastActivity": "2026-03-23T18:06:00Z" }
+  "timestamps": { "started": "2026-03-23T18:00:00Z", "lastActivity": "2026-03-23T18:15:00Z" }
 }
