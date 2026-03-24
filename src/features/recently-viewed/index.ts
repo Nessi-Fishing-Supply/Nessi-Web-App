@@ -10,3 +10,6 @@ export {
   STORAGE_KEY,
   MAX_ITEMS,
 } from './utils/recently-viewed';
+
+// Hooks
+export { useRecentlyViewed } from './hooks/use-recently-viewed';
