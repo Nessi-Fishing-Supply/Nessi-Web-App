@@ -59,11 +59,14 @@ flowchart TD
     F --> F1["Stripe subscription placeholder (not built)"]
 
     B --> G[Ownership Transfer]
-    G --> G1[Select new owner from members]
+    G --> G0{Pending transfer?}
+    G0 -->|No| G1[Select new owner from members]
     G1 --> G2[Two-step confirmation modal]
     G2 --> G3["POST /api/shops/[id]/ownership"]
-    G3 --> G4[New owner gets owner role]
-    G3 --> G5[Old owner becomes manager]
+    G3 --> G4[Pending status card shown]
+    G0 -->|Yes| G4
+    G4 --> G5[Shows transferee name + expiry]
+    G4 --> G6["Cancel Transfer → confirm modal → DELETE"]
 
     B --> H[Delete Shop]
     H --> H1[Type shop name to confirm]
@@ -134,13 +137,15 @@ flowchart TD
     end
 
     subgraph Accept
-        N["Transferee clicks email link"] --> O["/shop/transfer/{token} page (#258)"]
-        O --> P["GET /api/shops/ownership-transfer/[token]"]
+        N["Transferee clicks email link"] --> O["/shop/transfer/{token} page"]
+        O --> OA{"proxy.ts: authenticated?"}
+        OA -->|No| OB["Redirect to /"]
+        OA -->|Yes| P["Server component: admin client fetch"]
         P --> P1{Validation}
-        P1 -->|Not found/non-pending| Q1["404"]
-        P1 -->|Expired| Q2["410"]
-        P1 -->|Wrong user| Q3["403"]
-        P1 -->|Valid| R[Show transfer details]
+        P1 -->|Not found/non-pending| Q1["notFound()"]
+        P1 -->|Wrong user| Q3["notFound()"]
+        P1 -->|Expired| Q2["Show expired message"]
+        P1 -->|Valid| R["Show TransferAccept component"]
         R --> S[Transferee clicks Accept]
         S --> T["POST /api/shops/ownership-transfer/[token]/accept"]
         T --> U{Atomic swap}
