@@ -36,7 +36,7 @@ export function InviteAccept({ invite, isAuthenticated: serverAuth }: Props) {
         });
         router.push('/dashboard');
       },
-      onError: (err: any) => {
+      onError: (err: Error & { code?: string }) => {
         const message =
           err.code === 'ALREADY_MEMBER'
             ? 'You are already a member of this shop.'
@@ -61,7 +61,7 @@ export function InviteAccept({ invite, isAuthenticated: serverAuth }: Props) {
     return (
       <div className={styles.page}>
         <div className={styles.card}>
-          <div role="alert" className={styles.errorState}>
+          <div className={styles.errorState}>
             <h1 className={styles.errorTitle}>Invitation Expired</h1>
             <p className={styles.errorMessage}>
               This invitation has expired. Please ask the shop owner to send a new invite.
@@ -76,7 +76,7 @@ export function InviteAccept({ invite, isAuthenticated: serverAuth }: Props) {
     return (
       <div className={styles.page}>
         <div className={styles.card}>
-          <div role="alert" className={styles.errorState}>
+          <div className={styles.errorState}>
             <h1 className={styles.errorTitle}>Already Accepted</h1>
             <p className={styles.errorMessage}>This invitation has already been accepted.</p>
           </div>
@@ -89,7 +89,7 @@ export function InviteAccept({ invite, isAuthenticated: serverAuth }: Props) {
     return (
       <div className={styles.page}>
         <div className={styles.card}>
-          <div role="alert" className={styles.errorState}>
+          <div className={styles.errorState}>
             <h1 className={styles.errorTitle}>Invitation Revoked</h1>
             <p className={styles.errorMessage}>This invitation has been revoked.</p>
           </div>

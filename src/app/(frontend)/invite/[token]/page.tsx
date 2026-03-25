@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function InvitePage({ params }: Props) {
   const { token } = await params;
   const adminClient = createAdminClient();
-  const serverClient = createClient();
+  const serverClient = await createClient();
 
   // Fetch invite with related data — admin client bypasses RLS (invitee not yet a member)
   const { data: invite } = await adminClient
@@ -72,7 +72,7 @@ export default async function InvitePage({ params }: Props) {
 
   const {
     data: { user },
-  } = await (await serverClient).auth.getUser();
+  } = await serverClient.auth.getUser();
 
   return <InviteAccept invite={inviteData} isAuthenticated={!!user} />;
 }

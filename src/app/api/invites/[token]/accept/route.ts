@@ -86,6 +86,8 @@ export async function POST(_request: Request, { params }: { params: Promise<{ to
         .from('shop_members')
         .select('id', { count: 'exact', head: true })
         .eq('shop_id', invite.shop_id),
+      // Exclude this invite's own token — it's still 'pending' but will become a membership,
+      // so it should not count against the cap in this check.
       admin
         .from('shop_invites')
         .select('id', { count: 'exact', head: true })
