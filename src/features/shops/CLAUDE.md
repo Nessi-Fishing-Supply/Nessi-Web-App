@@ -82,12 +82,12 @@ Shops are business entities in Nessi's C2C marketplace, separate from member ide
 
 ## Pages
 
-| Route                      | Description                                                                                                                                                              |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `/dashboard/shop/create`   | Shop creation page — renders `ShopCreationForm`                                                                                                                          |
-| `/dashboard/shop/settings` | Shop settings page — permission-based rendering: Owner sees all, Manager sees details read-only (no members/transfer/deletion), Contributor redirected by ShopRouteGuard |
-| `/dashboard/shop/roles`    | Roles & Permissions page — displays system roles with permission matrices, "Add Custom Role" (Owner-only) opens upsell modal                                             |
-| `/shop/[slug]`             | Public shop page — server-rendered with SEO metadata, product grid, shop stats                                                                                           |
+| Route                      | Description                                                                                                                                                                               |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/dashboard/shop/create`   | Shop creation page — renders `ShopCreationForm`                                                                                                                                           |
+| `/dashboard/shop/settings` | Shop settings page — shop details (name, slug, avatar, hero banner), subscription, and deletion. Owner sees all, Manager sees details read-only, Contributor redirected by ShopRouteGuard |
+| `/dashboard/shop/roles`    | Roles & Permissions page — system roles with permission matrices, member management with role dropdowns, ownership transfer, and "Add Custom Role" upsell (Owner-only)                    |
+| `/shop/[slug]`             | Public shop page — server-rendered with SEO metadata, product grid, shop stats                                                                                                            |
 
 ## Avatar Upload API
 
