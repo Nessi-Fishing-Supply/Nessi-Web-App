@@ -112,21 +112,49 @@ flowchart TD
     Y -->|No| AA[No immediate effect]
 ```
 
-## Ownership Transfer
+## Ownership Transfer (Request/Accept/Cancel)
 
 ```mermaid
 flowchart TD
     A[Owner clicks Transfer Ownership] --> B[Select new owner from current members]
-    B --> C[First confirmation: Are you sure?]
-    C --> D[Second confirmation: Type shop name]
-    D --> E["POST /api/shops/[id]/ownership"]
-    E --> F{Server-side}
-    F --> G["New owner: role_id → owner"]
-    F --> H["Old owner: role_id → manager"]
-    F --> I["shops.owner_id → new owner's member ID"]
-    G & H & I --> J[Ownership transferred]
-    J --> K[Old owner loses owner-only UI sections]
-    K --> L[New owner sees full shop settings]
+    B --> C[Confirmation modal]
+    C --> D["POST /api/shops/[id]/ownership"]
+    D --> D1{Pending transfer exists?}
+    D1 -->|Yes| D2["409 — cancel existing first"]
+    D1 -->|No| E{Server-side: initiate}
+    E --> F["Insert shop_ownership_transfers row (status: pending, 7-day expiry)"]
+    E --> G["Look up transferee email via admin client"]
+    G --> H["Send ownership transfer email (Resend)"]
+    H --> I["Email contains link: /shop/transfer/{token}"]
+    F --> J["Return { success: true }"]
+
+    subgraph Cancel
+        K[Owner clicks Cancel Transfer] --> L["DELETE /api/shops/[id]/ownership-transfer"]
+        L --> M["Set status → cancelled"]
+    end
+
+    subgraph Accept
+        N["Transferee clicks email link"] --> O["/shop/transfer/{token} page (#258)"]
+        O --> P["GET /api/shops/ownership-transfer/[token]"]
+        P --> P1{Validation}
+        P1 -->|Not found/non-pending| Q1["404"]
+        P1 -->|Expired| Q2["410"]
+        P1 -->|Wrong user| Q3["403"]
+        P1 -->|Valid| R[Show transfer details]
+        R --> S[Transferee clicks Accept]
+        S --> T["POST /api/shops/ownership-transfer/[token]/accept"]
+        T --> U{Atomic swap}
+        U --> V["shops.owner_id → new owner"]
+        U --> W["New owner: role_id → OWNER"]
+        U --> X["Old owner: role_id → MANAGER"]
+        U --> Y["Transfer status → accepted"]
+        V & W & X & Y --> Z[Ownership transferred]
+    end
+
+    style D2 fill:#ffcdd2
+    style Q1 fill:#ffcdd2
+    style Q2 fill:#ffcdd2
+    style Q3 fill:#ffcdd2
 ```
 
 ## Roles & Permissions Page
