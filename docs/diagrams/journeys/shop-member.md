@@ -69,23 +69,30 @@ block-beta
 flowchart TD
     A[User receives invite email] --> B["Clicks link → /invite/{token}"]
     B --> C{Authenticated?}
-    C -->|No| D["Sign in via navbar modal (?login=true)"]
-    D --> E[Page re-renders with Accept button]
-    C -->|Yes| E
-    E --> F{Invite still valid?}
-    F -->|Expired| G["Show 'Invitation Expired' message"]
-    F -->|Revoked| H["Show 'Invitation Revoked' message"]
-    F -->|Already accepted| I["Show 'Already Accepted' message"]
-    F -->|Pending + not expired| J["Click 'Accept Invitation'"]
-    J --> K["POST /api/invites/{token}/accept"]
-    K --> L{Validation}
-    L -->|Already a member| M[409 ALREADY_MEMBER]
-    L -->|Shop at member cap| N[409 MEMBER_LIMIT_REACHED]
-    L -->|Member at 5-shop limit| O[409 SHOP_LIMIT_REACHED]
-    L -->|All clear| P["Insert shop_members row with invite's role_id"]
-    P --> Q["Update shop_invites status = 'accepted'"]
-    Q --> R[Redirect to /dashboard + success toast]
-    R --> S[Member sees shop in navbar dropdown]
+    C -->|No| D{New or existing user?}
+    D -->|Existing| E["Click 'Sign In' → navbar modal (?login=true)"]
+    E --> F[Page re-renders with Accept button]
+    D -->|New| G["Click 'Sign Up' → navbar modal (?register=true&invite={token})"]
+    G --> H["Register + OTP verification"]
+    H --> I["Auto-accept: acceptShopInvite(token)"]
+    I --> J{Accept result?}
+    J -->|Success| K["Toast + redirect to /dashboard"]
+    J -->|Failure| L["Error toast — account still created"]
+    C -->|Yes| F
+    F --> M{Invite still valid?}
+    M -->|Expired| N["Show 'Invitation Expired' message"]
+    M -->|Revoked| O["Show 'Invitation Revoked' message"]
+    M -->|Already accepted| P["Show 'Already Accepted' message"]
+    M -->|Pending + not expired| Q["Click 'Accept Invitation'"]
+    Q --> R["POST /api/invites/{token}/accept"]
+    R --> S{Validation}
+    S -->|Already a member| T[409 ALREADY_MEMBER]
+    S -->|Shop at member cap| U[409 MEMBER_LIMIT_REACHED]
+    S -->|Member at 5-shop limit| V[409 SHOP_LIMIT_REACHED]
+    S -->|All clear| W["Insert shop_members row with invite's role_id"]
+    W --> X["Update shop_invites status = 'accepted'"]
+    X --> Y[Redirect to /dashboard + success toast]
+    K & Y --> Z[Member sees shop in navbar dropdown]
 ```
 
 ## Shop Member Journey
