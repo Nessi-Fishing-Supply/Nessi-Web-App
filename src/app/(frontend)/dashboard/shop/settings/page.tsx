@@ -62,7 +62,7 @@ export default function ShopSettings() {
         {shop && hasFullMembers && <OwnershipTransferSection shop={shop} />}
       </div>
 
-      {shop && hasFullSettings && <ShopDeletionSection shop={shop} />}
+      {shop && hasFullMembers && <ShopDeletionSection shop={shop} />}
     </div>
   );
 }

@@ -102,6 +102,14 @@ export default function InlineEdit({
   const showCounter = multiline && maxLength !== undefined;
   const isDisabled = saving || validating;
 
+  if (readOnly) {
+    return (
+      <span className={styles.displayText}>
+        {value || <span className={styles.placeholder}>{placeholder}</span>}
+      </span>
+    );
+  }
+
   if (compact) {
     return (
       <div className={styles.compactContainer}>
@@ -121,14 +129,6 @@ export default function InlineEdit({
           disabled={saving}
         />
       </div>
-    );
-  }
-
-  if (readOnly) {
-    return (
-      <span className={styles.displayText}>
-        {value || <span className={styles.placeholder}>{placeholder}</span>}
-      </span>
     );
   }
 
