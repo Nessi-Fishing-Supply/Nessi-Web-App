@@ -3,7 +3,7 @@
   "issue": 259,
   "title": "Ownership transfer UI with pending status, cancel, and acceptance page",
   "branch": "feat/259/ownership-transfer-ui",
-  "status": "reviewing",
+  "status": "complete",
   "phase": {
     "current": 3,
     "total": 3,
