@@ -53,6 +53,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     .select('id')
     .eq('shop_id', shopId)
     .eq('status', 'pending')
+    .gt('expires_at', new Date().toISOString())
     .maybeSingle();
 
   if (!transfer) {

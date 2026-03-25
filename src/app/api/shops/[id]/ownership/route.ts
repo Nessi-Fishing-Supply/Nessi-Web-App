@@ -31,6 +31,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     );
   }
 
+  if (newOwnerId === result.user.id) {
+    return NextResponse.json(
+      { error: 'Cannot transfer ownership to yourself' },
+      { status: 400, headers: AUTH_CACHE_HEADERS },
+    );
+  }
+
   const admin = createAdminClient();
 
   // Verify newOwnerId is already a shop member

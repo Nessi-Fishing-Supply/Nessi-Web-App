@@ -55,49 +55,21 @@ export async function POST(_request: Request, { params }: { params: Promise<{ to
     );
   }
 
-  // Perform atomic ownership swap:
-  // 1. Update shops.owner_id
-  // 2. Promote new owner to Owner role
-  // 3. Demote old owner to Manager role
-  // 4. Mark transfer as accepted
-  const [shopUpdate, newOwnerRoleUpdate, oldOwnerRoleUpdate, transferUpdate] = await Promise.all([
-    admin.from('shops').update({ owner_id: transfer.to_member_id }).eq('id', transfer.shop_id),
-    admin
-      .from('shop_members')
-      .update({ role_id: SYSTEM_ROLE_IDS.OWNER })
-      .eq('shop_id', transfer.shop_id)
-      .eq('member_id', transfer.to_member_id),
-    admin
-      .from('shop_members')
-      .update({ role_id: SYSTEM_ROLE_IDS.MANAGER })
-      .eq('shop_id', transfer.shop_id)
-      .eq('member_id', transfer.from_member_id),
-    admin.from('shop_ownership_transfers').update({ status: 'accepted' }).eq('id', transfer.id),
-  ]);
+  // Perform atomic ownership swap via database function (single transaction)
+  const { error: rpcError } = await admin.rpc('accept_ownership_transfer', {
+    p_transfer_id: transfer.id,
+    p_shop_id: transfer.shop_id,
+    p_from_member_id: transfer.from_member_id,
+    p_to_member_id: transfer.to_member_id,
+    p_owner_role_id: SYSTEM_ROLE_IDS.OWNER,
+    p_manager_role_id: SYSTEM_ROLE_IDS.MANAGER,
+  });
 
-  if (shopUpdate.error) {
+  if (rpcError) {
     return NextResponse.json(
-      { error: `Failed to transfer ownership: ${shopUpdate.error.message}` },
+      { error: `Failed to transfer ownership: ${rpcError.message}` },
       { status: 500, headers: AUTH_CACHE_HEADERS },
     );
-  }
-
-  if (newOwnerRoleUpdate.error) {
-    return NextResponse.json(
-      { error: `Failed to update new owner role: ${newOwnerRoleUpdate.error.message}` },
-      { status: 500, headers: AUTH_CACHE_HEADERS },
-    );
-  }
-
-  if (oldOwnerRoleUpdate.error) {
-    return NextResponse.json(
-      { error: `Failed to update previous owner role: ${oldOwnerRoleUpdate.error.message}` },
-      { status: 500, headers: AUTH_CACHE_HEADERS },
-    );
-  }
-
-  if (transferUpdate.error) {
-    console.error('Failed to mark transfer as accepted:', transferUpdate.error.message);
   }
 
   const shops = transfer.shops as { shop_name: string } | null;
