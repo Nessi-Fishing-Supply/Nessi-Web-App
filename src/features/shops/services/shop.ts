@@ -1,6 +1,7 @@
-import { del, post } from '@/libs/fetch';
+import { del, get, post } from '@/libs/fetch';
 import { createClient } from '@/libs/supabase/client';
 import type { Shop, ShopMember, ShopUpdate } from '@/features/shops/types/shop';
+import type { ShopRole } from '@/features/shops/types/permissions';
 
 export async function getShop(id: string): Promise<Shop | null> {
   const supabase = createClient();
@@ -200,6 +201,10 @@ export async function transferOwnership(shopId: string, newOwnerId: string): Pro
     const body = await response.json();
     throw new Error(body.error || 'Failed to transfer ownership');
   }
+}
+
+export async function getShopRoles(shopId: string): Promise<ShopRole[]> {
+  return get<ShopRole[]>(`/api/shops/${shopId}/roles`);
 }
 
 export async function checkShopSlugAvailable(slug: string): Promise<boolean> {
