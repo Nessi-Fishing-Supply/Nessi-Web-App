@@ -309,7 +309,7 @@ export default function ShopMembersSection({ shop }: ShopMembersSectionProps) {
       showToast({
         type: 'success',
         message: 'Ownership transferred',
-        description: `${getMemberDisplayName(member)} is now the shop owner.`,
+        description: `${getMemberDisplayName(member)} is now the shop owner. You've been downgraded to Manager.`,
       });
       closeModal();
     } catch {
@@ -472,7 +472,7 @@ export default function ShopMembersSection({ shop }: ShopMembersSectionProps) {
             </p>
             <ul className={styles.confirmList}>
               <li>Immediately grant them full owner privileges</li>
-              <li>Remove your owner access to this shop</li>
+              <li>Downgrade your role to Manager — you keep shop access but lose owner controls</li>
               <li>Switch your context back to your member profile</li>
             </ul>
             <p className={styles.confirmMessage} id="transfer-confirm-hint">
