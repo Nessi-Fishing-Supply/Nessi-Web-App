@@ -141,10 +141,12 @@ export default function Navbar() {
     const inviteQuery = searchParams?.get('invite');
 
     if (registerQuery === 'true') {
-      if (inviteQuery) {
-        setInviteToken(inviteQuery);
-      }
-      requestAnimationFrame(() => setRegisterModalOpen(true));
+      requestAnimationFrame(() => {
+        if (inviteQuery) {
+          setInviteToken(inviteQuery);
+        }
+        setRegisterModalOpen(true);
+      });
     } else if (loginQuery === 'true') {
       requestAnimationFrame(() => setLoginModalOpen(true));
     }
