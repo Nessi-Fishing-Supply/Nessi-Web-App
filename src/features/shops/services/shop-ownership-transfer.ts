@@ -1,4 +1,5 @@
 import { del, get, post } from '@/libs/fetch';
+import { FetchError } from '@/libs/fetch-error';
 import type { OwnershipTransfer, OwnershipTransferWithDetails } from '@/features/shops/types/shop';
 
 export async function initiateOwnershipTransfer(
@@ -12,8 +13,7 @@ export async function getOwnershipTransfer(shopId: string): Promise<OwnershipTra
   try {
     return await get<OwnershipTransfer>(`/api/shops/${shopId}/ownership-transfer`);
   } catch (error) {
-    if (error instanceof Error && 'status' in error && (error as { status: number }).status === 404)
-      return null;
+    if (error instanceof FetchError && error.status === 404) return null;
     throw error;
   }
 }

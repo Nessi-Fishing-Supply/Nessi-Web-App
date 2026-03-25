@@ -159,6 +159,7 @@ export function useRemoveShopMember() {
   });
 }
 
+/** @deprecated Use useInitiateOwnershipTransfer() from use-ownership-transfer.ts */
 export function useTransferOwnership() {
   const queryClient = useQueryClient();
   return useMutation({

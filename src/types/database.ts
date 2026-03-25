@@ -712,6 +712,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_ownership_transfer: {
+        Args: {
+          p_transfer_id: string
+          p_shop_id: string
+          p_from_member_id: string
+          p_to_member_id: string
+          p_owner_role_id: string
+          p_manager_role_id: string
+        }
+        Returns: undefined
+      }
       check_slug_available: { Args: { p_slug: string }; Returns: boolean }
       release_slug: {
         Args: { p_entity_id: string; p_entity_type: string }
