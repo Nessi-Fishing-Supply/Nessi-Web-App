@@ -51,6 +51,9 @@ export default function TransferAccept({ transfer }: Props) {
               This ownership transfer request has expired. Please ask the current owner to send a
               new request.
             </p>
+            <Button onClick={() => router.push('/dashboard')} style="dark" outline>
+              Back to Dashboard
+            </Button>
           </div>
         </div>
       </div>
@@ -76,12 +79,7 @@ export default function TransferAccept({ transfer }: Props) {
         )}
 
         <div className={styles.actions}>
-          <Button
-            onClick={handleAccept}
-            loading={acceptMutation.isPending}
-            aria-busy={acceptMutation.isPending}
-            fullWidth
-          >
+          <Button onClick={handleAccept} loading={acceptMutation.isPending} fullWidth>
             Accept Ownership
           </Button>
           <Button onClick={() => router.push('/dashboard')} style="dark" outline fullWidth>

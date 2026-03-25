@@ -241,7 +241,6 @@ export default function OwnershipTransferSection({ shop }: OwnershipTransferSect
               disabled={!isConfirmNameMatch}
               loading={initiateTransferMutation.isPending}
               ariaLabel="Confirm ownership transfer"
-              aria-busy={initiateTransferMutation.isPending}
             >
               Transfer
             </Button>
@@ -274,7 +273,6 @@ export default function OwnershipTransferSection({ shop }: OwnershipTransferSect
               onClick={handleCancelTransfer}
               loading={cancelTransferMutation.isPending}
               ariaLabel="Yes, cancel ownership transfer"
-              aria-busy={cancelTransferMutation.isPending}
             >
               Yes, Cancel
             </Button>
