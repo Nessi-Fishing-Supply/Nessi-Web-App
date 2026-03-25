@@ -9,7 +9,7 @@ Shops are business entities in Nessi's C2C marketplace, separate from member ide
 - **types/shop.ts** — Database-derived types: `Shop` (from shops Row), `ShopInsert` (Insert minus system fields), `ShopUpdate` (Update minus system fields), `ShopMember` (from shop_members Row with joined `shop_roles` data), `ShopMemberInsert`
 - **types/permissions.ts** — Permission model types: `ShopPermissionFeature` (6 feature domains), `ShopPermissionLevel` (`'full' | 'view' | 'none'`), `ShopPermissions` (Record mapping features to levels), `ShopRole` (typed `shop_roles` row with `ShopPermissions` instead of generic `Json`)
 - **constants/roles.ts** — System role constants: `SYSTEM_ROLE_IDS` (deterministic UUIDs), `SYSTEM_ROLE_SLUGS`, `DEFAULT_ROLE_ID` (Contributor)
-- **utils/check-permission.ts** — Pure permission utility functions: `checkPermission` (returns level, defaults to `'none'`), `hasAccess` (true for `'full'` or `'view'`), `hasFullAccess` (true only for `'full'`)
+- **utils/check-permission.ts** — Pure permission utility functions: `checkPermission` (returns level, defaults to `'none'`), `hasAccess` (true for `'full'` or `'view'`), `hasFullAccess` (true only for `'full'`), `meetsLevel` (true if user's level >= required level — used by `requireShopPermission` in `src/libs/shop-permissions.ts`)
 - **services/shop.ts** — Direct Supabase queries via browser client (RLS handles authorization)
 - **services/shop-server.ts** — Server-side Supabase queries via server client (for server components, e.g., public shop page)
 - **hooks/use-shops.ts** — Tanstack Query hooks for data fetching and mutations
@@ -144,6 +144,50 @@ Shop member roles are stored in the `shop_roles` table with a FK from `shop_memb
 | Manager     | `11111111-1111-1111-1111-111111111102` | Full on listings/pricing/orders/messaging, view on shop_settings, none on members |
 | Contributor | `11111111-1111-1111-1111-111111111103` | Full on listings only                                                             |
 
-Use `SYSTEM_ROLE_IDS` from `constants/roles.ts` to reference these UUIDs in application code — never hardcode the UUID strings directly. Use `checkPermission`, `hasAccess`, and `hasFullAccess` from `utils/check-permission.ts` to check a member's effective permission level for a feature — never hardcode permission logic for specific roles.
+Use `SYSTEM_ROLE_IDS` from `constants/roles.ts` to reference these UUIDs in application code — never hardcode the UUID strings directly. Use `checkPermission`, `hasAccess`, `hasFullAccess`, and `meetsLevel` from `utils/check-permission.ts` to check a member's effective permission level for a feature — never hardcode permission logic for specific roles.
 
 System roles have `shop_id IS NULL` and `is_system = true`. Future custom roles will have a `shop_id` FK to a specific shop. RLS allows all authenticated users to read system roles; custom roles are only visible to members of that shop.
+
+## Server-Side Permission Middleware
+
+API routes that require shop-level authorization use `requireShopPermission` from `src/libs/shop-permissions.ts`. This replaces manual `owner_id` checks with role-based permission checking.
+
+### Usage Pattern
+
+```ts
+import { requireShopPermission } from '@/libs/shop-permissions';
+import { NextResponse } from 'next/server';
+
+export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id: shopId } = await params;
+
+  const result = await requireShopPermission(request, 'members', 'full', {
+    expectedShopId: shopId,
+  });
+  if (result instanceof NextResponse) return result;
+
+  const { user, shopId: contextShopId, member } = result;
+  // ... route logic
+}
+```
+
+### How It Works
+
+1. Authenticates via server Supabase client (`getUser()`) — returns 401 if no session
+2. Parses `X-Nessi-Context` header (format: `shop:{shopId}`) — returns 403 if missing/invalid
+3. Validates `expectedShopId` matches the context header shopId (prevents privilege escalation) — returns 403 on mismatch
+4. Queries `shop_members` joined with `shop_roles` via admin client (bypasses RLS)
+5. Owner bypass: `is_system === true && slug === 'owner'` always passes
+6. Permission check: uses `meetsLevel()` to compare user's level against required level
+
+### Key Types
+
+- `ShopPermissionResult` — success return: `{ user, shopId, member }` where `member` includes typed `shop_roles`
+- `RequireShopPermissionOptions` — `{ expectedShopId?: string }` for URL param validation
+- Return type is `Promise<NextResponse | ShopPermissionResult>` — use `instanceof NextResponse` to discriminate
+
+### Important
+
+- Always pass `{ expectedShopId: shopId }` when the route has a shop ID in the URL params — this prevents a caller from having context for Shop A but operating on Shop B
+- The helper is stateless — no caching across requests
+- Owner bypass uses the role's `is_system` + `slug` fields, NOT `shops.owner_id`
