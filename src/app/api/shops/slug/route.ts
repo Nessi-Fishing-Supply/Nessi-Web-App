@@ -1,20 +1,11 @@
-import { createClient } from '@/libs/supabase/server';
 import { createAdminClient } from '@/libs/supabase/admin';
 import { AUTH_CACHE_HEADERS } from '@/libs/api-headers';
 import { NextResponse } from 'next/server';
+import { requireShopPermission } from '@/libs/shop-permissions';
 
 export async function POST(request: Request) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json(
-      { error: 'Unauthorized' },
-      { status: 401, headers: AUTH_CACHE_HEADERS },
-    );
-  }
+  const result = await requireShopPermission(request, 'shop_settings', 'full');
+  if (result instanceof NextResponse) return result;
 
   const body = await request.json();
   const { shopId, slug } = body ?? {};
@@ -26,25 +17,11 @@ export async function POST(request: Request) {
     );
   }
 
-  const admin = createAdminClient();
-
-  const { data: shop } = await admin
-    .from('shops')
-    .select('id, owner_id')
-    .eq('id', shopId)
-    .is('deleted_at', null)
-    .single();
-
-  if (!shop) {
-    return NextResponse.json(
-      { error: 'Shop not found' },
-      { status: 404, headers: AUTH_CACHE_HEADERS },
-    );
-  }
-
-  if (shop.owner_id !== user.id) {
+  if (shopId !== result.shopId) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403, headers: AUTH_CACHE_HEADERS });
   }
+
+  const admin = createAdminClient();
 
   const { error: rpcError } = await admin.rpc('reserve_slug', {
     p_slug: slug,

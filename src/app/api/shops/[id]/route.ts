@@ -1,7 +1,7 @@
-import { createClient } from '@/libs/supabase/server';
 import { createAdminClient } from '@/libs/supabase/admin';
 import { AUTH_CACHE_HEADERS } from '@/libs/api-headers';
 import { NextResponse } from 'next/server';
+import { requireShopPermission } from '@/libs/shop-permissions';
 
 function parseStoragePath(bucketName: string, publicUrl: string): string | null {
   const marker = `/storage/v1/object/public/${bucketName}/`;
@@ -10,26 +10,19 @@ function parseStoragePath(bucketName: string, publicUrl: string): string | null 
   return publicUrl.slice(index + marker.length) || null;
 }
 
-export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id: shopId } = await params;
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json(
-      { error: 'Unauthorized' },
-      { status: 401, headers: AUTH_CACHE_HEADERS },
-    );
-  }
+  const result = await requireShopPermission(request, 'shop_settings', 'full', {
+    expectedShopId: shopId,
+  });
+  if (result instanceof NextResponse) return result;
 
   const admin = createAdminClient();
 
   const { data: shop } = await admin
     .from('shops')
-    .select('id, owner_id, hero_banner_url')
+    .select('id, hero_banner_url')
     .eq('id', shopId)
     .is('deleted_at', null)
     .single();
@@ -39,10 +32,6 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
       { error: 'Shop not found' },
       { status: 404, headers: AUTH_CACHE_HEADERS },
     );
-  }
-
-  if (shop.owner_id !== user.id) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403, headers: AUTH_CACHE_HEADERS });
   }
 
   // Storage cleanup — best-effort, non-blocking
