@@ -1,0 +1,19 @@
+{
+  "version": "1.0.0",
+  "issue": 250,
+  "title": "feat(shops): Create shop_invites database table and RLS policies",
+  "branch": "feat/250/create-shop-invites-table-rls",
+  "status": "implementing",
+  "phase": {
+    "current": 1,
+    "total": 2,
+    "tasks": {
+      "completed": ["1.1", "1.2"],
+      "current": null,
+      "remaining": ["2.1", "2.2"]
+    }
+  },
+  "health": { "build": "unknown", "lint": "unknown", "tests": "unknown" },
+  "failureCount": { "currentTask": 0 },
+  "timestamps": { "started": "2026-03-25T12:00:00Z", "lastActivity": "2026-03-25T12:15:00Z" }
+}
