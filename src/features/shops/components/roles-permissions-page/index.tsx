@@ -4,10 +4,13 @@ import { useState } from 'react';
 import { HiOutlinePlus } from 'react-icons/hi';
 import { useAuth } from '@/features/auth/context';
 import useContextStore from '@/features/context/stores/context-store';
+import { useShop } from '@/features/shops/hooks/use-shops';
 import { useShopRoles } from '@/features/shops/hooks/use-shop-roles';
 import { useShopPermissions } from '@/features/shops/hooks/use-shop-permissions';
 import RoleCard from '@/features/shops/components/role-card';
 import CustomRoleUpsellModal from '@/features/shops/components/custom-role-upsell-modal';
+import ShopMembersSection from '@/features/shops/components/shop-settings/shop-members-section';
+import OwnershipTransferSection from '@/features/shops/components/shop-settings/ownership-transfer-section';
 import Button from '@/components/controls/button';
 import type { ShopRole } from '@/features/shops/types/permissions';
 import styles from './roles-permissions-page.module.scss';
@@ -33,10 +36,11 @@ export default function RolesPermissionsPage() {
   const isShopContext = activeContext.type === 'shop';
   const shopId = isShopContext ? activeContext.shopId : '';
 
+  const { data: shop, isLoading: shopLoading } = useShop(shopId, isShopContext);
   const { data: roles, isLoading: rolesLoading, isError, refetch } = useShopRoles(shopId);
-  const { role, isLoading: permissionsLoading } = useShopPermissions(shopId);
+  const { role, permissions, isLoading: permissionsLoading } = useShopPermissions(shopId);
 
-  if (authLoading || rolesLoading || permissionsLoading) {
+  if (authLoading || shopLoading || rolesLoading || permissionsLoading) {
     return (
       <div className={styles.page}>
         <p>Loading...</p>
@@ -56,6 +60,7 @@ export default function RolesPermissionsPage() {
   }
 
   const isOwner = role === 'owner';
+  const hasFullMembers = permissions.members === 'full';
   const sortedRoles = sortRoles(roles ?? []);
 
   return (
@@ -77,6 +82,18 @@ export default function RolesPermissionsPage() {
           <RoleCard key={r.id} role={r} />
         ))}
       </div>
+
+      {shop && hasFullMembers && (
+        <div className={styles.membersSection}>
+          <ShopMembersSection shop={shop} />
+        </div>
+      )}
+
+      {shop && hasFullMembers && (
+        <div className={styles.membersSection}>
+          <OwnershipTransferSection shop={shop} />
+        </div>
+      )}
 
       <CustomRoleUpsellModal isOpen={isUpsellOpen} onClose={() => setIsUpsellOpen(false)} />
     </div>
