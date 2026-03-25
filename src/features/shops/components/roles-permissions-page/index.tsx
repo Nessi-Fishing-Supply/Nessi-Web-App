@@ -30,6 +30,7 @@ function sortRoles(roles: ShopRole[]): ShopRole[] {
 
 export default function RolesPermissionsPage() {
   const [isUpsellOpen, setIsUpsellOpen] = useState(false);
+  const [activeRoleId, setActiveRoleId] = useState<string | null>(null);
   const { isLoading: authLoading } = useAuth();
   const activeContext = useContextStore.use.activeContext();
 
@@ -62,6 +63,8 @@ export default function RolesPermissionsPage() {
   const isOwner = role === 'owner';
   const hasFullMembers = permissions.members === 'full';
   const sortedRoles = sortRoles(roles ?? []);
+  const selectedRoleId = activeRoleId ?? sortedRoles[0]?.id ?? null;
+  const selectedRole = sortedRoles.find((r) => r.id === selectedRoleId);
 
   return (
     <div className={styles.page}>
@@ -77,11 +80,36 @@ export default function RolesPermissionsPage() {
         )}
       </div>
 
-      <div className={styles.roles}>
-        {sortedRoles.map((r) => (
-          <RoleCard key={r.id} role={r} />
-        ))}
-      </div>
+      {sortedRoles.length > 0 && (
+        <div className={styles.roles}>
+          <div className={styles.tabList} role="tablist" aria-label="Shop roles">
+            {sortedRoles.map((r) => (
+              <button
+                key={r.id}
+                role="tab"
+                aria-selected={r.id === selectedRoleId}
+                aria-controls={`role-panel-${r.id}`}
+                id={`role-tab-${r.id}`}
+                className={`${styles.tab} ${r.id === selectedRoleId ? styles.tabActive : ''}`}
+                onClick={() => setActiveRoleId(r.id)}
+              >
+                {r.name}
+              </button>
+            ))}
+          </div>
+
+          {selectedRole && (
+            <div
+              role="tabpanel"
+              id={`role-panel-${selectedRole.id}`}
+              aria-labelledby={`role-tab-${selectedRole.id}`}
+              className={styles.tabPanel}
+            >
+              <RoleCard role={selectedRole} />
+            </div>
+          )}
+        </div>
+      )}
 
       {shop && hasFullMembers && (
         <div className={styles.membersSection}>
