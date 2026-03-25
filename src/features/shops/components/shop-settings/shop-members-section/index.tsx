@@ -2,11 +2,19 @@
 
 import { useState } from 'react';
 import { HiUserRemove, HiUsers } from 'react-icons/hi';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/features/auth/context';
-import { useShopMembers, useRemoveShopMember } from '@/features/shops/hooks/use-shops';
+import {
+  useShopMembers,
+  useRemoveShopMember,
+  useUpdateMemberRole,
+} from '@/features/shops/hooks/use-shops';
+import { useShopRoles } from '@/features/shops/hooks/use-shop-roles';
 import { useToast } from '@/components/indicators/toast/context';
 import Button from '@/components/controls/button';
+import RoleSelect from '@/features/shops/components/role-select';
 import type { Shop, ShopMember } from '@/features/shops/types/shop';
+import type { ShopRole } from '@/features/shops/types/permissions';
 import { SYSTEM_ROLE_IDS } from '@/features/shops/constants/roles';
 import styles from './shop-members-section.module.scss';
 
@@ -14,46 +22,56 @@ interface ShopMembersSectionProps {
   shop: Shop;
 }
 
-const ROLE_LABELS: Record<string, string> = {
-  [SYSTEM_ROLE_IDS.OWNER]: 'Owner',
-  [SYSTEM_ROLE_IDS.MANAGER]: 'Manager',
-  [SYSTEM_ROLE_IDS.CONTRIBUTOR]: 'Contributor',
-};
+function getRoleLabel(roleId: string, roles: ShopRole[]): string {
+  const role = roles.find((r) => r.id === roleId);
+  return role?.name ?? 'Contributor';
+}
 
-function getRoleLabel(roleId: string): string {
-  return ROLE_LABELS[roleId] ?? 'Member';
+function getMemberDisplayName(member: ShopMember): string {
+  if (member.members) {
+    const name = `${member.members.first_name ?? ''} ${member.members.last_name ?? ''}`.trim();
+    if (name) return name;
+  }
+  return member.member_id;
 }
 
 interface MemberRowProps {
   member: ShopMember;
   isOwner: boolean;
   isCurrentUser: boolean;
+  roles: ShopRole[];
   onRemove: (member: ShopMember) => void;
-  isPending: boolean;
-  pendingMemberId: string | null;
+  onRoleChange: (member: ShopMember, roleId: string) => void;
+  isRemovePending: boolean;
+  pendingRemoveMemberId: string | null;
+  pendingRoleMemberId: string | null;
 }
 
 function MemberRow({
   member,
   isOwner,
   isCurrentUser,
+  roles,
   onRemove,
-  isPending,
-  pendingMemberId,
+  onRoleChange,
+  isRemovePending,
+  pendingRemoveMemberId,
+  pendingRoleMemberId,
 }: MemberRowProps) {
-  const isThisPending = isPending && pendingMemberId === member.member_id;
+  const isThisRemovePending = isRemovePending && pendingRemoveMemberId === member.member_id;
+  const isThisRolePending = pendingRoleMemberId === member.member_id;
   const isOwnerRole = member.role_id === SYSTEM_ROLE_IDS.OWNER;
   const canRemove = isOwner && !isOwnerRole && !isCurrentUser;
+  const canChangeRole = isOwner && !isOwnerRole;
+  const displayName = getMemberDisplayName(member);
+  const roleLabel = getRoleLabel(member.role_id, roles);
 
   return (
     <li className={styles.memberRow}>
       <div className={styles.memberInfo}>
         <HiUsers className={styles.memberIcon} aria-hidden="true" />
         <span className={styles.memberId}>
-          {member.members
-            ? `${member.members.first_name ?? ''} ${member.members.last_name ?? ''}`.trim() ||
-              member.member_id
-            : member.member_id}
+          {displayName}
           {isCurrentUser && (
             <span className={styles.youBadge} aria-label="(you)">
               {' '}
@@ -61,26 +79,42 @@ function MemberRow({
             </span>
           )}
         </span>
-        <span
-          className={`${styles.memberRole} ${styles[`role-${getRoleLabel(member.role_id).toLowerCase()}`] ?? ''}`}
-          aria-label={`Role: ${getRoleLabel(member.role_id)}`}
-        >
-          {getRoleLabel(member.role_id)}
-        </span>
+        {(!isOwner || isOwnerRole) && (
+          <span
+            className={`${styles.memberRole} ${styles[`role-${roleLabel.toLowerCase()}`] ?? ''}`}
+            aria-label={`Role: ${roleLabel}`}
+          >
+            {roleLabel}
+          </span>
+        )}
       </div>
 
-      {canRemove && (
-        <Button
-          style="danger"
-          onClick={() => onRemove(member)}
-          loading={isThisPending}
-          disabled={isPending}
-          ariaLabel={`Remove member ${member.members ? `${member.members.first_name ?? ''} ${member.members.last_name ?? ''}`.trim() : member.member_id}`}
-          icon={<HiUserRemove aria-hidden="true" />}
-          iconPosition="left"
-        >
-          Remove
-        </Button>
+      {(canChangeRole || canRemove) && (
+        <div className={styles.memberActions}>
+          {canChangeRole && (
+            <RoleSelect
+              roles={roles}
+              currentRoleId={member.role_id}
+              onChange={(roleId) => onRoleChange(member, roleId)}
+              disabled={isRemovePending}
+              loading={isThisRolePending}
+              ariaLabel={`Change role for ${displayName}`}
+            />
+          )}
+          {canRemove && (
+            <Button
+              style="danger"
+              onClick={() => onRemove(member)}
+              loading={isThisRemovePending}
+              disabled={isRemovePending || isThisRolePending}
+              ariaLabel={`Remove member ${displayName}`}
+              icon={<HiUserRemove aria-hidden="true" />}
+              iconPosition="left"
+            >
+              Remove
+            </Button>
+          )}
+        </div>
       )}
     </li>
   );
@@ -89,10 +123,14 @@ function MemberRow({
 export default function ShopMembersSection({ shop }: ShopMembersSectionProps) {
   const { user } = useAuth();
   const { showToast } = useToast();
+  const queryClient = useQueryClient();
   const { data: members, isLoading, isError } = useShopMembers(shop.id);
+  const { data: roles = [] } = useShopRoles(shop.id);
   const removeShopMember = useRemoveShopMember();
+  const updateMemberRole = useUpdateMemberRole();
 
-  const [pendingMemberId, setPendingMemberId] = useState<string | null>(null);
+  const [pendingRemoveMemberId, setPendingRemoveMemberId] = useState<string | null>(null);
+  const [pendingRoleMemberId, setPendingRoleMemberId] = useState<string | null>(null);
 
   const isOwner = !!user && shop.owner_id === user.id;
 
@@ -102,7 +140,7 @@ export default function ShopMembersSection({ shop }: ShopMembersSectionProps) {
     );
     if (!confirmed) return;
 
-    setPendingMemberId(member.member_id);
+    setPendingRemoveMemberId(member.member_id);
     removeShopMember.mutate(
       { shopId: shop.id, memberId: member.member_id },
       {
@@ -121,7 +159,44 @@ export default function ShopMembersSection({ shop }: ShopMembersSectionProps) {
           });
         },
         onSettled: () => {
-          setPendingMemberId(null);
+          setPendingRemoveMemberId(null);
+        },
+      },
+    );
+  };
+
+  const handleRoleChange = (member: ShopMember, roleId: string) => {
+    if (roleId === member.role_id) return;
+
+    const previousMembers = queryClient.getQueryData<ShopMember[]>(['shops', shop.id, 'members']);
+
+    // Optimistic update
+    queryClient.setQueryData<ShopMember[]>(['shops', shop.id, 'members'], (old) =>
+      old?.map((m) => (m.member_id === member.member_id ? { ...m, role_id: roleId } : m)),
+    );
+
+    setPendingRoleMemberId(member.member_id);
+    updateMemberRole.mutate(
+      { shopId: shop.id, memberId: member.member_id, roleId },
+      {
+        onSuccess: (data) => {
+          showToast({
+            type: 'success',
+            message: `Role updated to ${data.roleName}`,
+            description: `${getMemberDisplayName(member)}'s role has been updated.`,
+          });
+        },
+        onError: () => {
+          // Rollback optimistic update
+          queryClient.setQueryData(['shops', shop.id, 'members'], previousMembers);
+          showToast({
+            type: 'error',
+            message: 'Failed to update role',
+            description: 'Something went wrong. Please try again.',
+          });
+        },
+        onSettled: () => {
+          setPendingRoleMemberId(null);
         },
       },
     );
@@ -133,7 +208,7 @@ export default function ShopMembersSection({ shop }: ShopMembersSectionProps) {
         Members
       </h2>
       <p className={styles.description}>
-        People who have access to this shop. Only the owner can remove members.
+        People who have access to this shop. Only the owner can manage roles and remove members.
       </p>
 
       {isLoading && (
@@ -160,9 +235,12 @@ export default function ShopMembersSection({ shop }: ShopMembersSectionProps) {
               member={member}
               isOwner={isOwner}
               isCurrentUser={user?.id === member.member_id}
+              roles={roles}
               onRemove={handleRemove}
-              isPending={removeShopMember.isPending}
-              pendingMemberId={pendingMemberId}
+              onRoleChange={handleRoleChange}
+              isRemovePending={removeShopMember.isPending}
+              pendingRemoveMemberId={pendingRemoveMemberId}
+              pendingRoleMemberId={pendingRoleMemberId}
             />
           ))}
         </ul>

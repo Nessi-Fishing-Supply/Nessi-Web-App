@@ -114,3 +114,17 @@
     color: var(--color-warning-700, #b45309);
   }
 }
+
+.memberActions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-200);
+  width: 100%;
+
+  @include breakpoint(sm) {
+    flex-direction: row;
+    align-items: center;
+    width: auto;
+    flex-shrink: 0;
+  }
+}
