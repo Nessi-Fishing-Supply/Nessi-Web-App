@@ -61,7 +61,7 @@ block-beta
     style R8D fill:#ffcdd2
 ```
 
-> **STATUS: Permission enforcement is NOT YET BUILT.** The role structure exists in the DB (shop_roles table with deterministic UUIDs), but UI gating and API-level checks are pending.
+> **STATUS: Permission enforcement is FULLY IMPLEMENTED.** Server-side: `requireShopPermission` middleware on all shop API routes (#246, #248). Client-side: `ShopRouteGuard` component + permission-aware side nav (#247). Roles & Permissions page at `/dashboard/shop/roles` (#249). Role assignment dropdown for owners (#258).
 
 ## Invite Acceptance Flow
 
@@ -119,6 +119,28 @@ flowchart TD
     O[Switch back to personal] --> P["switchToMember()"]
     P --> Q["X-Nessi-Context: member"]
     Q --> R[Listings now under personal profile]
+```
+
+## Leave Shop (Non-Owner)
+
+```mermaid
+flowchart TD
+    A[Non-owner member views Shop Members section] --> B["Sees 'Leave Shop' button"]
+    B --> C[Click Leave Shop]
+    C --> D[Confirmation modal opens]
+    D --> E["Type phrase: 'I {name} want to leave {shopName}'"]
+    E --> F{Phrase matches?}
+    F -->|No| G[Submit button disabled]
+    F -->|Yes| H["removeShopMember(shopId, myMemberId)"]
+    H --> I["switchToMember()"]
+    I --> J[Invalidate shop queries]
+    J --> K["Toast: 'You left {shopName}'"]
+    K --> L[Modal closes, user in member context]
+
+    M{Owner tries to leave?} --> N["Leave button NOT shown for owners"]
+    N --> O[Must transfer ownership first]
+
+    style N fill:#ffcdd2
 ```
 
 ## Context Revocation

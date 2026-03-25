@@ -19,7 +19,7 @@ flowchart LR
     subgraph SUPABASE["Supabase"]
         AUTH["Auth"]
         DB["PostgreSQL<br/>(+ RLS)"]
-        STOR["Storage<br/>(product-images)"]
+        STOR["Storage<br/>(listing-images, profile-assets)"]
     end
 
     UI -->|"useQuery/useMutation"| TQ

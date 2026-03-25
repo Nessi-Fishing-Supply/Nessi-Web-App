@@ -26,6 +26,12 @@ flowchart TD
     B --> F["Seller Settings"]
     F --> F1["Toggle seller on/off (see seller.md)"]
 
+    B --> F2["Shipping Addresses"]
+    F2 --> F2a["View saved addresses (max 5)"]
+    F2 --> F2b["Add / edit / delete addresses"]
+    F2 --> F2c["Set default address"]
+    F2 --> F2d["See buyer.md for full addresses flow"]
+
     B --> G["Linked Accounts"]
     G --> G1["Stripe Connect placeholder (not built)"]
 
