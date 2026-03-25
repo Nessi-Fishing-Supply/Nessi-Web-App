@@ -3,17 +3,33 @@
   "issue": 166,
   "title": "Saved shipping addresses — store and reuse buyer addresses for faster checkout",
   "branch": "feat/166/saved-shipping-addresses",
-  "status": "implementing",
+  "status": "reviewing",
   "phase": {
     "current": 4,
     "total": 4,
     "tasks": {
-      "completed": ["1.1", "1.2", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "3.1", "3.2", "3.3"],
-      "current": "4.1",
-      "remaining": ["4.2", "4.3", "4.4"]
+      "completed": [
+        "1.1",
+        "1.2",
+        "2.1",
+        "2.2",
+        "2.3",
+        "2.4",
+        "2.5",
+        "2.6",
+        "3.1",
+        "3.2",
+        "3.3",
+        "4.1",
+        "4.2",
+        "4.3",
+        "4.4"
+      ],
+      "current": null,
+      "remaining": []
     }
   },
   "health": { "build": "pass", "lint": "unknown", "tests": "unknown" },
   "failureCount": { "currentTask": 0 },
-  "timestamps": { "started": "2026-03-25T12:00:00Z", "lastActivity": "2026-03-25T12:35:00Z" }
+  "timestamps": { "started": "2026-03-25T12:00:00Z", "lastActivity": "2026-03-25T12:45:00Z" }
 }
