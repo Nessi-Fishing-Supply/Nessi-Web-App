@@ -16,13 +16,21 @@ flowchart TD
     H --> I{Valid?}
     I -->|No| J[Show error, allow retry]
     I -->|Yes| K[Session established via cookies]
-    K --> L{Onboarding complete?}
-    L -->|No| M[Onboarding banner appears]
-    L -->|Yes| N[User stays on current page]
+    K --> L{Invite token present?}
+    L -->|Yes| M["acceptShopInvite(token)"]
+    M --> MA{Accept result?}
+    MA -->|Success| MB["Toast: 'You've joined {shopName}!'"]
+    MB --> MC["Redirect to /dashboard"]
+    MA -->|Failure| MD["Error toast (account NOT blocked)"]
+    MD --> N[Normal registration complete]
+    L -->|No| N[Normal registration complete]
+    N --> O{Onboarding complete?}
+    O -->|No| P[Onboarding banner appears]
+    O -->|Yes| Q[User stays on current page]
 
-    F --> O{Code not received?}
-    O --> P["resendOtp() - 60s cooldown"]
-    P --> F
+    F --> R{Code not received?}
+    R --> S["resendOtp() - 60s cooldown"]
+    S --> F
 ```
 
 ## Login
