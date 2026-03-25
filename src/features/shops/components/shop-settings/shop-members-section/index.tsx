@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { HiUserRemove, HiUsers } from 'react-icons/hi';
+import { useState, useRef, useEffect } from 'react';
+import { HiDotsVertical, HiSwitchHorizontal, HiUserRemove } from 'react-icons/hi';
+import Image from 'next/image';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/features/auth/context';
 import {
@@ -33,92 +34,145 @@ function getMemberDisplayName(member: ShopMember): string {
     const name = `${member.members.first_name ?? ''} ${member.members.last_name ?? ''}`.trim();
     if (name) return name;
   }
-  return member.member_id;
+  return 'Unknown Member';
 }
 
-interface PendingRoleChange {
-  member: ShopMember;
-  roleId: string;
+function getMemberHandle(member: ShopMember): string | null {
+  return member.members?.slug ?? null;
 }
+
+function getMemberInitials(member: ShopMember): string {
+  if (member.members) {
+    const first = member.members.first_name?.[0] ?? '';
+    const last = member.members.last_name?.[0] ?? '';
+    if (first || last) return `${first}${last}`.toUpperCase();
+  }
+  return '?';
+}
+
+type ModalAction =
+  | { type: 'changeRole'; member: ShopMember; roleId: string }
+  | { type: 'remove'; member: ShopMember };
 
 interface MemberRowProps {
   member: ShopMember;
   isOwner: boolean;
   isCurrentUser: boolean;
   roles: ShopRole[];
-  onRemove: (member: ShopMember) => void;
-  onRoleChange: (member: ShopMember, roleId: string) => void;
-  isRemovePending: boolean;
-  pendingRemoveMemberId: string | null;
-  pendingRoleMemberId: string | null;
+  onAction: (action: ModalAction) => void;
+  isPending: boolean;
 }
 
-function MemberRow({
-  member,
-  isOwner,
-  isCurrentUser,
-  roles,
-  onRemove,
-  onRoleChange,
-  isRemovePending,
-  pendingRemoveMemberId,
-  pendingRoleMemberId,
-}: MemberRowProps) {
-  const isThisRemovePending = isRemovePending && pendingRemoveMemberId === member.member_id;
-  const isThisRolePending = pendingRoleMemberId === member.member_id;
+function MemberRow({ member, isOwner, isCurrentUser, roles, onAction, isPending }: MemberRowProps) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
   const isOwnerRole = member.role_id === SYSTEM_ROLE_IDS.OWNER;
-  const canRemove = isOwner && !isOwnerRole && !isCurrentUser;
-  const canChangeRole = isOwner && !isOwnerRole;
   const displayName = getMemberDisplayName(member);
+  const handle = getMemberHandle(member);
   const roleLabel = getRoleLabel(member.role_id, roles);
+  const initials = getMemberInitials(member);
+  const avatarUrl = member.members?.avatar_url;
+
+  // Close menu on outside click
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handleClick = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [menuOpen]);
+
+  // Close menu on Escape
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMenuOpen(false);
+        buttonRef.current?.focus();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [menuOpen]);
+
+  const showMenu = isOwner && !isOwnerRole && !isCurrentUser;
 
   return (
     <li className={styles.memberRow}>
       <div className={styles.memberInfo}>
-        <HiUsers className={styles.memberIcon} aria-hidden="true" />
-        <span className={styles.memberId}>
-          {displayName}
-          {isCurrentUser && (
-            <span className={styles.youBadge} aria-label="(you)">
-              {' '}
-              (you)
+        <div className={styles.avatar}>
+          {avatarUrl ? (
+            <Image src={avatarUrl} alt="" width={40} height={40} className={styles.avatarImage} />
+          ) : (
+            <span className={styles.avatarInitials} aria-hidden="true">
+              {initials}
             </span>
           )}
-        </span>
-        {(!isOwner || isOwnerRole) && (
-          <span
-            className={`${styles.memberRole} ${styles[`role-${roleLabel.toLowerCase()}`] ?? ''}`}
-            aria-label={`Role: ${roleLabel}`}
-          >
-            {roleLabel}
+        </div>
+        <div className={styles.memberDetails}>
+          <span className={styles.memberName}>
+            {displayName}
+            {isCurrentUser && (
+              <span className={styles.youBadge} aria-label="(you)">
+                {' '}
+                (you)
+              </span>
+            )}
           </span>
-        )}
+          {handle && <span className={styles.memberHandle}>@{handle}</span>}
+        </div>
+        <span
+          className={`${styles.memberRole} ${styles[`role-${roleLabel.toLowerCase()}`] ?? ''}`}
+          aria-label={`Role: ${roleLabel}`}
+        >
+          {roleLabel}
+        </span>
       </div>
 
-      {(canChangeRole || canRemove) && (
-        <div className={styles.memberActions}>
-          {canChangeRole && (
-            <RoleSelect
-              roles={roles}
-              currentRoleId={member.role_id}
-              onChange={(roleId) => onRoleChange(member, roleId)}
-              disabled={isRemovePending}
-              loading={isThisRolePending}
-              ariaLabel={`Change role for ${displayName}`}
-            />
-          )}
-          {canRemove && (
-            <Button
-              style="danger"
-              onClick={() => onRemove(member)}
-              loading={isThisRemovePending}
-              disabled={isRemovePending || isThisRolePending}
-              ariaLabel={`Remove member ${displayName}`}
-              icon={<HiUserRemove aria-hidden="true" />}
-              iconPosition="left"
-            >
-              Remove
-            </Button>
+      {showMenu && (
+        <div className={styles.menuWrapper} ref={menuRef}>
+          <button
+            ref={buttonRef}
+            className={styles.menuButton}
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label={`Actions for ${displayName}`}
+            aria-expanded={menuOpen}
+            aria-haspopup="menu"
+            disabled={isPending}
+          >
+            <HiDotsVertical aria-hidden="true" />
+          </button>
+
+          {menuOpen && (
+            <div className={styles.menu} role="menu" aria-label="Member actions">
+              <button
+                className={styles.menuItem}
+                role="menuitem"
+                onClick={() => {
+                  setMenuOpen(false);
+                  onAction({ type: 'changeRole', member, roleId: member.role_id });
+                }}
+              >
+                <HiSwitchHorizontal aria-hidden="true" />
+                Change Role
+              </button>
+              <button
+                className={`${styles.menuItem} ${styles.menuItemDanger}`}
+                role="menuitem"
+                onClick={() => {
+                  setMenuOpen(false);
+                  onAction({ type: 'remove', member });
+                }}
+              >
+                <HiUserRemove aria-hidden="true" />
+                Remove from Shop
+              </button>
+            </div>
           )}
         </div>
       )}
@@ -135,19 +189,24 @@ export default function ShopMembersSection({ shop }: ShopMembersSectionProps) {
   const removeShopMember = useRemoveShopMember();
   const updateMemberRole = useUpdateMemberRole();
 
-  const [pendingRemoveMemberId, setPendingRemoveMemberId] = useState<string | null>(null);
-  const [pendingRoleMemberId, setPendingRoleMemberId] = useState<string | null>(null);
-  const [pendingRoleChange, setPendingRoleChange] = useState<PendingRoleChange | null>(null);
+  const [modalAction, setModalAction] = useState<ModalAction | null>(null);
+  const [selectedRoleId, setSelectedRoleId] = useState<string | null>(null);
 
   const isOwner = !!user && shop.owner_id === user.id;
+  const isPending = removeShopMember.isPending || updateMemberRole.isPending;
 
-  const handleRemove = (member: ShopMember) => {
-    const confirmed = window.confirm(
-      `Remove this member from the shop? This action cannot be undone.`,
-    );
-    if (!confirmed) return;
+  const handleAction = (action: ModalAction) => {
+    setModalAction(action);
+    if (action.type === 'changeRole') {
+      setSelectedRoleId(action.member.role_id);
+    }
+  };
 
-    setPendingRemoveMemberId(member.member_id);
+  const handleConfirmRemove = () => {
+    if (modalAction?.type !== 'remove') return;
+    const { member } = modalAction;
+    setModalAction(null);
+
     removeShopMember.mutate(
       { shopId: shop.id, memberId: member.member_id },
       {
@@ -155,7 +214,7 @@ export default function ShopMembersSection({ shop }: ShopMembersSectionProps) {
           showToast({
             type: 'success',
             message: 'Member removed',
-            description: 'The member has been removed from this shop.',
+            description: `${getMemberDisplayName(member)} has been removed from this shop.`,
           });
         },
         onError: () => {
@@ -165,34 +224,29 @@ export default function ShopMembersSection({ shop }: ShopMembersSectionProps) {
             description: 'Something went wrong. Please try again.',
           });
         },
-        onSettled: () => {
-          setPendingRemoveMemberId(null);
-        },
       },
     );
   };
 
-  const handleRoleSelectChange = (member: ShopMember, roleId: string) => {
-    if (roleId === member.role_id) return;
-    setPendingRoleChange({ member, roleId });
-  };
+  const handleConfirmRoleChange = () => {
+    if (modalAction?.type !== 'changeRole' || !selectedRoleId) return;
+    const { member } = modalAction;
+    if (selectedRoleId === member.role_id) {
+      setModalAction(null);
+      return;
+    }
 
-  const handleRoleChangeConfirm = () => {
-    if (!pendingRoleChange) return;
-
-    const { member, roleId } = pendingRoleChange;
-    setPendingRoleChange(null);
+    setModalAction(null);
 
     const previousMembers = queryClient.getQueryData<ShopMember[]>(['shops', shop.id, 'members']);
 
     // Optimistic update
     queryClient.setQueryData<ShopMember[]>(['shops', shop.id, 'members'], (old) =>
-      old?.map((m) => (m.member_id === member.member_id ? { ...m, role_id: roleId } : m)),
+      old?.map((m) => (m.member_id === member.member_id ? { ...m, role_id: selectedRoleId } : m)),
     );
 
-    setPendingRoleMemberId(member.member_id);
     updateMemberRole.mutate(
-      { shopId: shop.id, memberId: member.member_id, roleId },
+      { shopId: shop.id, memberId: member.member_id, roleId: selectedRoleId },
       {
         onSuccess: (data) => {
           showToast({
@@ -202,7 +256,6 @@ export default function ShopMembersSection({ shop }: ShopMembersSectionProps) {
           });
         },
         onError: () => {
-          // Rollback optimistic update
           queryClient.setQueryData(['shops', shop.id, 'members'], previousMembers);
           showToast({
             type: 'error',
@@ -210,15 +263,8 @@ export default function ShopMembersSection({ shop }: ShopMembersSectionProps) {
             description: 'Something went wrong. Please try again.',
           });
         },
-        onSettled: () => {
-          setPendingRoleMemberId(null);
-        },
       },
     );
-  };
-
-  const handleRoleChangeCancel = () => {
-    setPendingRoleChange(null);
   };
 
   return (
@@ -255,36 +301,76 @@ export default function ShopMembersSection({ shop }: ShopMembersSectionProps) {
               isOwner={isOwner}
               isCurrentUser={user?.id === member.member_id}
               roles={roles}
-              onRemove={handleRemove}
-              onRoleChange={handleRoleSelectChange}
-              isRemovePending={removeShopMember.isPending}
-              pendingRemoveMemberId={pendingRemoveMemberId}
-              pendingRoleMemberId={pendingRoleMemberId}
+              onAction={handleAction}
+              isPending={isPending}
             />
           ))}
         </ul>
       )}
 
+      {/* Change Role Modal */}
       <Modal
-        isOpen={!!pendingRoleChange}
-        onClose={handleRoleChangeCancel}
-        ariaLabel="Confirm role change"
+        isOpen={modalAction?.type === 'changeRole'}
+        onClose={() => setModalAction(null)}
+        ariaLabel="Change member role"
       >
-        {pendingRoleChange && (
+        {modalAction?.type === 'changeRole' && (
           <div className={styles.confirmModal}>
-            <h3 className={styles.confirmTitle}>Change member role?</h3>
+            <h3 className={styles.confirmTitle}>Change role</h3>
             <p className={styles.confirmMessage}>
-              Change <strong>{getMemberDisplayName(pendingRoleChange.member)}</strong>&apos;s role
-              from <strong>{getRoleLabel(pendingRoleChange.member.role_id, roles)}</strong> to{' '}
-              <strong>{getRoleLabel(pendingRoleChange.roleId, roles)}</strong>? This will
-              immediately update their permissions in this shop.
+              Select a new role for <strong>{getMemberDisplayName(modalAction.member)}</strong>.
             </p>
+            <div className={styles.roleSelectWrapper}>
+              <RoleSelect
+                roles={roles}
+                currentRoleId={selectedRoleId ?? modalAction.member.role_id}
+                onChange={(roleId) => setSelectedRoleId(roleId)}
+                ariaLabel={`New role for ${getMemberDisplayName(modalAction.member)}`}
+              />
+            </div>
+            {selectedRoleId && selectedRoleId !== modalAction.member.role_id && (
+              <p className={styles.confirmHint}>
+                This will change their role from{' '}
+                <strong>{getRoleLabel(modalAction.member.role_id, roles)}</strong> to{' '}
+                <strong>{getRoleLabel(selectedRoleId, roles)}</strong> and immediately update their
+                permissions.
+              </p>
+            )}
             <div className={styles.confirmActions}>
-              <Button style="secondary" onClick={handleRoleChangeCancel}>
+              <Button style="secondary" onClick={() => setModalAction(null)}>
                 Cancel
               </Button>
-              <Button style="primary" onClick={handleRoleChangeConfirm}>
+              <Button
+                style="primary"
+                onClick={handleConfirmRoleChange}
+                disabled={!selectedRoleId || selectedRoleId === modalAction.member.role_id}
+              >
                 Change Role
+              </Button>
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      {/* Remove Member Modal */}
+      <Modal
+        isOpen={modalAction?.type === 'remove'}
+        onClose={() => setModalAction(null)}
+        ariaLabel="Remove member from shop"
+      >
+        {modalAction?.type === 'remove' && (
+          <div className={styles.confirmModal}>
+            <h3 className={styles.confirmTitle}>Remove member?</h3>
+            <p className={styles.confirmMessage}>
+              Remove <strong>{getMemberDisplayName(modalAction.member)}</strong> from this shop?
+              They will lose all access immediately. This action cannot be undone.
+            </p>
+            <div className={styles.confirmActions}>
+              <Button style="secondary" onClick={() => setModalAction(null)}>
+                Cancel
+              </Button>
+              <Button style="danger" onClick={handleConfirmRemove}>
+                Remove Member
               </Button>
             </div>
           </div>

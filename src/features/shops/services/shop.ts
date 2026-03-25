@@ -127,7 +127,9 @@ export async function getShopMembers(shopId: string): Promise<ShopMember[]> {
   const supabase = createClient();
   const { data, error } = await supabase
     .from('shop_members')
-    .select('*, members(first_name, last_name, avatar_url), shop_roles(name, slug, permissions)')
+    .select(
+      '*, members(first_name, last_name, avatar_url, slug), shop_roles(name, slug, permissions)',
+    )
     .eq('shop_id', shopId);
 
   if (error) {
@@ -147,7 +149,9 @@ export async function getMyShopRole(shopId: string): Promise<ShopMember | null> 
 
   const { data, error } = await supabase
     .from('shop_members')
-    .select('*, members(first_name, last_name, avatar_url), shop_roles(name, slug, permissions)')
+    .select(
+      '*, members(first_name, last_name, avatar_url, slug), shop_roles(name, slug, permissions)',
+    )
     .eq('shop_id', shopId)
     .eq('member_id', user.id)
     .single();
