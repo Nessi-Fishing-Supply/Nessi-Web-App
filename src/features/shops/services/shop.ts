@@ -195,16 +195,7 @@ export async function removeShopMember(shopId: string, memberId: string): Promis
 }
 
 export async function transferOwnership(shopId: string, newOwnerId: string): Promise<void> {
-  const response = await fetch(`/api/shops/${shopId}/ownership`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ newOwnerId }),
-  });
-
-  if (!response.ok) {
-    const body = await response.json();
-    throw new Error(body.error || 'Failed to transfer ownership');
-  }
+  await post(`/api/shops/${shopId}/ownership`, { newOwnerId });
 }
 
 export async function updateMemberRole(
