@@ -60,6 +60,36 @@
   }
 }
 
+.statusHeader {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-300);
+  margin-bottom: var(--spacing-300);
+}
+
+.transfereeName {
+  font-size: var(--font-size-700);
+  font-weight: 600;
+  color: var(--color-neutral-900);
+  margin: 0 0 var(--spacing-200);
+}
+
+.expiryText {
+  font-size: var(--font-size-500);
+  color: var(--color-neutral-500);
+  margin: 0 0 var(--spacing-400);
+}
+
+.cancelRow {
+  display: flex;
+  align-items: center;
+
+  button {
+    min-height: 44px;
+  }
+}
+
 .modalContent {
   display: flex;
   flex-direction: column;
