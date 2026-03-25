@@ -34,13 +34,15 @@ gh pr list --repo Nessi-Fishing-Supply/Nessi-Web-App --state merged --limit 20 -
 ```
 Then filter by date in code.
 
-### 2. GitHub Project Board — Completed Today
+### 2. Nessi Kanban Board (GitHub Project #2) — Source of Truth
 
 ```bash
-gh project item-list 2 --owner Nessi-Fishing-Supply --format json --limit 100
+gh project item-list 2 --owner Nessi-Fishing-Supply --format json --limit 200
 ```
 
-Filter for items in the **Done** column. Cross-reference with merged PRs to avoid duplicates.
+This single query serves both the "Completed Today" and "Tickets Created Today" sections — no need to call it twice. From the results:
+- **Completed:** Filter for items in the **Done** column. Cross-reference with merged PRs to avoid duplicates.
+- **Created:** Filter for items whose creation date matches `{date}` (any column).
 
 ### 3. Conductor Depot — Recently Completed Tracks
 
@@ -52,7 +54,17 @@ find .conductor/depot -name state.json -exec grep -l "{date}" {} \;
 
 For each matching track, read `state.json` for issue number and title, and `plan.md` for a brief scope summary.
 
-### 4. Recent Commits on Main (supplementary)
+### 4. Tickets Created Today
+
+Use the Nessi Kanban board (GitHub Project #2) as the source of truth — not `gh issue list`.
+
+```bash
+gh project item-list 2 --owner Nessi-Fishing-Supply --format json --limit 200
+```
+
+From the full project item list, filter for items whose `createdAt` (or issue creation date) falls on `{date}`. Each item includes its issue number, title, labels, and status column. Include tickets in any column — a ticket created and completed on the same day should appear in both the "Tickets Created" and shipped sections.
+
+### 5. Recent Commits on Main (supplementary)
 
 ```bash
 git log main --since="{date}T00:00:00" --until="{date}T23:59:59" --oneline --no-merges
@@ -85,6 +97,7 @@ Output format:
 ## Stats
 - **{total} items shipped** ({features} features, {bugs} bug fixes, {infra} infrastructure, {docs} docs)
 - **{pr_count} PRs merged**
+- **{tickets_created} tickets created**
 
 ---
 
@@ -109,6 +122,12 @@ Output format:
 
 ## Documentation
 - **#{issue}** — {one-line description}
+
+---
+
+## Tickets Created
+- **#{issue}** — {title} [{label}]
+- **#{issue}** — {title} [{label}]
 ```
 
 ### Writing Guidelines
@@ -116,6 +135,7 @@ Output format:
 - **Features get the spotlight.** 1-2 bullet points each, written from the user's perspective. "Shop owners can now invite members with specific roles (owner, manager, contributor)" — not "Added shop_roles table with FK migration."
 - **Bug fixes are one-liners.** "Fixed cart not updating badge count after removing items" — not "Resolved race condition in useCartBadgeCount hook."
 - **Infrastructure is brief.** "Moved conductor pipeline for better autonomous execution" — not implementation details.
+- **Tickets Created lists what's in the pipeline.** Show each ticket with its label so the team can see what's queued up. If a ticket was both created and completed the same day, it appears in both sections.
 - **Skip internal-only changes** that have zero user impact (CI tweaks, linter config, test-only changes) unless they're significant.
 - **Use plain language.** No code references, file paths, or technical jargon. Your audience is product managers and associate engineers.
 - **Group related PRs.** If 3 PRs all contributed to one feature (e.g., cart: DB migration, API routes, UI), collapse them into one feature entry with the parent issue number.

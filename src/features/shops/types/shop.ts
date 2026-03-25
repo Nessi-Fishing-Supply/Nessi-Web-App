@@ -45,6 +45,7 @@ export type ShopMember = ShopMemberRow & {
     first_name: string | null;
     last_name: string | null;
     avatar_url: string | null;
+    slug: string | null;
   } | null;
   shop_roles: {
     name: string;

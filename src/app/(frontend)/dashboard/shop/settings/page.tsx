@@ -5,9 +5,7 @@ import useContextStore from '@/features/context/stores/context-store';
 import { useShop } from '@/features/shops/hooks/use-shops';
 import { useShopPermissions } from '@/features/shops/hooks/use-shop-permissions';
 import ShopDetailsSection from '@/features/shops/components/shop-settings/shop-details-section';
-import ShopMembersSection from '@/features/shops/components/shop-settings/shop-members-section';
 import ShopSubscriptionSection from '@/features/shops/components/shop-settings/shop-subscription-section';
-import OwnershipTransferSection from '@/features/shops/components/shop-settings/ownership-transfer-section';
 import ShopDeletionSection from '@/features/shops/components/shop-settings/shop-deletion-section';
 import Button from '@/components/controls/button';
 import Link from 'next/link';
@@ -57,9 +55,7 @@ export default function ShopSettings() {
 
       <div className={styles.sections}>
         {shop && <ShopDetailsSection shop={shop} readOnly={!hasFullSettings} />}
-        {shop && hasFullMembers && <ShopMembersSection shop={shop} />}
         <ShopSubscriptionSection />
-        {shop && hasFullMembers && <OwnershipTransferSection shop={shop} />}
       </div>
 
       {shop && hasFullMembers && <ShopDeletionSection shop={shop} />}

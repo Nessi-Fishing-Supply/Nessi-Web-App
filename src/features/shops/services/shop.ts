@@ -1,4 +1,4 @@
-import { del, get, post } from '@/libs/fetch';
+import { del, get, patch, post } from '@/libs/fetch';
 import { createClient } from '@/libs/supabase/client';
 import type { Shop, ShopMember, ShopUpdate } from '@/features/shops/types/shop';
 import type { ShopRole } from '@/features/shops/types/permissions';
@@ -127,7 +127,9 @@ export async function getShopMembers(shopId: string): Promise<ShopMember[]> {
   const supabase = createClient();
   const { data, error } = await supabase
     .from('shop_members')
-    .select('*, members(first_name, last_name, avatar_url), shop_roles(name, slug, permissions)')
+    .select(
+      '*, members(first_name, last_name, avatar_url, slug), shop_roles(name, slug, permissions)',
+    )
     .eq('shop_id', shopId);
 
   if (error) {
@@ -147,7 +149,9 @@ export async function getMyShopRole(shopId: string): Promise<ShopMember | null> 
 
   const { data, error } = await supabase
     .from('shop_members')
-    .select('*, members(first_name, last_name, avatar_url), shop_roles(name, slug, permissions)')
+    .select(
+      '*, members(first_name, last_name, avatar_url, slug), shop_roles(name, slug, permissions)',
+    )
     .eq('shop_id', shopId)
     .eq('member_id', user.id)
     .single();
@@ -201,6 +205,17 @@ export async function transferOwnership(shopId: string, newOwnerId: string): Pro
     const body = await response.json();
     throw new Error(body.error || 'Failed to transfer ownership');
   }
+}
+
+export async function updateMemberRole(
+  shopId: string,
+  memberId: string,
+  roleId: string,
+): Promise<{ success: boolean; roleName: string }> {
+  return patch<{ success: boolean; roleName: string }>(
+    `/api/shops/${shopId}/members/${memberId}/role`,
+    { roleId },
+  );
 }
 
 export async function getShopRoles(shopId: string): Promise<ShopRole[]> {
