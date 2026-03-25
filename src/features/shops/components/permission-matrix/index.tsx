@@ -45,7 +45,10 @@ function LevelIcon({ level }: { level: ShopPermissionLevel }) {
   return <HiMinus aria-hidden="true" />;
 }
 
-export default function PermissionMatrix({ permissions, disabled: _disabled }: PermissionMatrixProps) {
+export default function PermissionMatrix({
+  permissions,
+  disabled: _disabled,
+}: PermissionMatrixProps) {
   return (
     <div className={styles.matrix}>
       {/* Mobile: stacked card layout */}
@@ -96,7 +99,12 @@ export default function PermissionMatrix({ permissions, disabled: _disabled }: P
                     className={`${styles.levelCell} ${isActive ? styles[`active-${level}`] : styles.inactive}`}
                     aria-label={`${FEATURE_LABELS[feature]}: ${LEVEL_LABELS[level]} access${isActive ? ' (current)' : ''}`}
                   >
-                    {isActive && <LevelIcon level={level} />}
+                    {isActive && (
+                      <>
+                        <LevelIcon level={level} />
+                        <span className={styles.levelLabel}>{LEVEL_LABELS[level]}</span>
+                      </>
+                    )}
                   </div>
                 );
               })}

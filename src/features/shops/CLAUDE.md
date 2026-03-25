@@ -33,6 +33,7 @@ Shops are business entities in Nessi's C2C marketplace, separate from member ide
 | `removeShopMember(shopId, memberId)`      | Remove a member from a shop                                                                                        |
 | `transferOwnership(shopId, newOwnerId)`   | Transfer shop ownership to another member, updates owner_id                                                        |
 | `checkShopSlugAvailable(slug)`            | Slug uniqueness check against shared slugs table, returns `boolean`                                                |
+| `getShopRoles(shopId)`                    | Fetch all roles for a shop (system + custom) via `GET /api/shops/{shopId}/roles`, returns `ShopRole[]`             |
 
 ### Server-side Service Functions (`services/shop-server.ts`)
 
@@ -58,18 +59,23 @@ Shops are business entities in Nessi's C2C marketplace, separate from member ide
 | `useAddShopMember()`         | mutation, invalidates `['shops', shopId, 'members']` | Add a member to a shop                                                         |
 | `useRemoveShopMember()`      | mutation, invalidates `['shops', shopId, 'members']` | Remove a member from a shop                                                    |
 | `useTransferOwnership()`     | mutation, invalidates `['shops']`                    | Transfer shop ownership to another member                                      |
+| `useShopRoles(shopId)`       | `['shops', shopId, 'roles']`                         | Fetch all roles for a shop                                                     |
 
 ## Components
 
-| Component                  | Location                                               | Purpose                                                                                                    |
-| -------------------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
-| `ShopCreationForm`         | `components/shop-creation-form/`                       | Multi-field form with slug auto-generation, availability check, and context switching on submit            |
-| `ShopDetailsSection`       | `components/shop-settings/shop-details-section/`       | Inline-edit section for shop name, slug, description, and avatar (uses InlineEdit + AvatarUpload)          |
-| `ShopSubscriptionSection`  | `components/shop-settings/shop-subscription-section/`  | Stripe subscription placeholder (Coming Soon)                                                              |
-| `OwnershipTransferSection` | `components/shop-settings/ownership-transfer-section/` | Two-step confirmation modal for transferring shop ownership                                                |
-| `ShopDeletionSection`      | `components/shop-settings/shop-deletion-section/`      | Danger zone with type-to-confirm deletion modal                                                            |
-| `HeroBannerUpload`         | `components/hero-banner-upload/`                       | Hero banner image picker with crop UI (uses ImageCropper + Modal); uploads via POST /api/shops/hero-banner |
-| `ShopRouteGuard`           | `components/shop-route-guard/`                         | Client-side route guard — redirects to /dashboard with toast when user lacks permission for a shop route   |
+| Component                  | Location                                               | Purpose                                                                                                                                                     |
+| -------------------------- | ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ShopCreationForm`         | `components/shop-creation-form/`                       | Multi-field form with slug auto-generation, availability check, and context switching on submit                                                             |
+| `ShopDetailsSection`       | `components/shop-settings/shop-details-section/`       | Inline-edit section for shop name, slug, description, and avatar (uses InlineEdit + AvatarUpload)                                                           |
+| `ShopSubscriptionSection`  | `components/shop-settings/shop-subscription-section/`  | Stripe subscription placeholder (Coming Soon)                                                                                                               |
+| `OwnershipTransferSection` | `components/shop-settings/ownership-transfer-section/` | Two-step confirmation modal for transferring shop ownership                                                                                                 |
+| `ShopDeletionSection`      | `components/shop-settings/shop-deletion-section/`      | Danger zone with type-to-confirm deletion modal                                                                                                             |
+| `HeroBannerUpload`         | `components/hero-banner-upload/`                       | Hero banner image picker with crop UI (uses ImageCropper + Modal); uploads via POST /api/shops/hero-banner                                                  |
+| `ShopRouteGuard`           | `components/shop-route-guard/`                         | Client-side route guard — redirects to /dashboard with toast when user lacks permission for a shop route                                                    |
+| `PermissionMatrix`         | `components/permission-matrix/`                        | Reusable matrix showing 6 features × 3 levels with visual indicators; accepts `disabled` prop (true for system roles, false for future custom role editing) |
+| `RoleCard`                 | `components/role-card/`                                | Card displaying a single role: name, system badge, description, and embedded PermissionMatrix                                                               |
+| `CustomRoleUpsellModal`    | `components/custom-role-upsell-modal/`                 | Placeholder modal for "Add Custom Role" — premium plan upsell gate                                                                                          |
+| `RolesPermissionsPage`     | `components/roles-permissions-page/`                   | Full page component for /dashboard/shop/roles — renders role cards, Owner-only add button                                                                   |
 
 ## Pages
 
@@ -77,6 +83,7 @@ Shops are business entities in Nessi's C2C marketplace, separate from member ide
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `/dashboard/shop/create`   | Shop creation page — renders `ShopCreationForm`                                                                                                                          |
 | `/dashboard/shop/settings` | Shop settings page — permission-based rendering: Owner sees all, Manager sees details read-only (no members/transfer/deletion), Contributor redirected by ShopRouteGuard |
+| `/dashboard/shop/roles`    | Roles & Permissions page — displays system roles with permission matrices, "Add Custom Role" (Owner-only) opens upsell modal                                             |
 | `/shop/[slug]`             | Public shop page — server-rendered with SEO metadata, product grid, shop stats                                                                                           |
 
 ## Avatar Upload API
@@ -118,6 +125,14 @@ Shops are business entities in Nessi's C2C marketplace, separate from member ide
 - Pattern mirrors `src/app/api/auth/delete-account/route.ts` (account deletion with storage cleanup)
 - Returns `{ success: true }` on 200
 
+## Roles API
+
+`GET /api/shops/[id]/roles`
+
+- Requires `requireShopPermission(request, 'members', 'view', { expectedShopId })` — any member with at least view access to the members domain can fetch roles
+- Returns system roles and shop-specific custom roles for the given shop
+- Response: `ShopRole[]` JSON with `AUTH_CACHE_HEADERS`
+
 ## Shared Components Reused
 
 - `InlineEdit` from `@/components/controls/inline-edit`
@@ -137,6 +152,7 @@ Shops are business entities in Nessi's C2C marketplace, separate from member ide
 - **Slug uniqueness** — Shop slugs are checked for uniqueness against the shared `slugs` table (not just the shops table), since slugs are a cross-entity namespace shared with member slugs. The `generateSlug` utility in `src/features/shared/utils/slug.ts` handles auto-generating a slug from a display name.
 - **Avatar upload via API route** — Unlike standard shop CRUD (direct Supabase), avatar uploads go through `POST /api/shops/avatar` for server-side image processing with `sharp`.
 - **Server-side deletion with storage cleanup** — Shop deletion uses `DELETE /api/shops/[id]` (server-side API route with admin client) to clean up storage objects before soft-deleting. The `deleteShop()` service function calls this API route via `fetch`. This parallels the account deletion pattern in `src/app/api/auth/delete-account/route.ts`.
+- **PermissionMatrix reusability** — The `PermissionMatrix` component is designed for reuse. In the current Roles & Permissions page it always renders with `disabled={true}` (system roles are read-only). When custom role editing is implemented, it will render with `disabled={false}` to allow inline permission level changes.
 
 ## Shop Roles
 

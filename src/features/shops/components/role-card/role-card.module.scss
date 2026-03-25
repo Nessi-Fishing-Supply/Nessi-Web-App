@@ -13,11 +13,10 @@
 
 .header {
   display: flex;
-  flex-direction: row;
+  flex-flow: row wrap;
   align-items: center;
   gap: var(--spacing-200);
   margin-bottom: var(--spacing-200);
-  flex-wrap: wrap;
 }
 
 .name {
