@@ -26,6 +26,7 @@ import Modal from '@/components/layout/modal';
 import Button from '@/components/controls/button';
 import RoleSelect from '@/features/shops/components/role-select';
 import InviteMemberModal from '@/features/shops/components/invite-member-modal';
+import PendingInvitesList from '@/features/shops/components/pending-invites-list';
 import type { Shop, ShopMember } from '@/features/shops/types/shop';
 import type { ShopRole } from '@/features/shops/types/permissions';
 import { SYSTEM_ROLE_IDS } from '@/features/shops/constants/roles';
@@ -230,7 +231,11 @@ export default function ShopMembersSection({ shop }: ShopMembersSectionProps) {
   const updateMemberRole = useUpdateMemberRole();
   const transferOwnership = useTransferOwnership();
 
-  const { data: invites = [] } = useShopInvites(shop.id);
+  const {
+    data: invites = [],
+    isLoading: invitesLoading,
+    isError: invitesError,
+  } = useShopInvites(shop.id);
 
   const [modalAction, setModalAction] = useState<ModalAction | null>(null);
   const [selectedRoleId, setSelectedRoleId] = useState<string | null>(null);
@@ -385,253 +390,277 @@ export default function ShopMembersSection({ shop }: ShopMembersSectionProps) {
   const isLeavePhraseMatch = modalAction?.type === 'leave' && confirmName === leavePhrase;
 
   return (
-    <section className={styles.card} aria-labelledby="shop-members-heading">
-      <div className={styles.sectionHeader}>
-        <div>
-          <h2 id="shop-members-heading" className={styles.heading}>
-            {!isLoading && !isError
-              ? `Members (${memberCount}/${MAX_MEMBERS_PER_SHOP})`
-              : 'Members'}
-          </h2>
-          <p className={styles.description}>
-            People who have access to this shop. Only the owner can manage roles and remove members.
-          </p>
+    <>
+      <section className={styles.card} aria-labelledby="shop-members-heading">
+        <div className={styles.sectionHeader}>
+          <div>
+            <h2 id="shop-members-heading" className={styles.heading}>
+              {!isLoading && !isError
+                ? `Members (${memberCount}/${MAX_MEMBERS_PER_SHOP})`
+                : 'Members'}
+            </h2>
+            <p className={styles.description}>
+              People who have access to this shop. Only the owner can manage roles and remove
+              members.
+            </p>
+          </div>
+          {isOwner && (
+            <Button
+              style="secondary"
+              onClick={() => setIsInviteModalOpen(true)}
+              disabled={isAtCap}
+              icon={<HiUserAdd aria-hidden="true" />}
+              iconPosition="left"
+              ariaLabel="Invite member"
+            >
+              Invite
+            </Button>
+          )}
         </div>
-        {isOwner && (
-          <Button
-            style="secondary"
-            onClick={() => setIsInviteModalOpen(true)}
-            disabled={isAtCap}
-            icon={<HiUserAdd aria-hidden="true" />}
-            iconPosition="left"
-            ariaLabel="Invite member"
-          >
-            Invite
-          </Button>
+
+        {isLoading && (
+          <p className={styles.stateMessage} role="status" aria-live="polite">
+            Loading members…
+          </p>
         )}
-      </div>
 
-      {isLoading && (
-        <p className={styles.stateMessage} role="status" aria-live="polite">
-          Loading members…
-        </p>
-      )}
+        {isError && (
+          <p className={styles.stateMessage} role="alert" aria-live="assertive">
+            Failed to load members. Please refresh and try again.
+          </p>
+        )}
 
-      {isError && (
-        <p className={styles.stateMessage} role="alert" aria-live="assertive">
-          Failed to load members. Please refresh and try again.
-        </p>
-      )}
+        {!isLoading && !isError && members && members.length === 0 && (
+          <p className={styles.stateMessage}>No members found for this shop.</p>
+        )}
 
-      {!isLoading && !isError && members && members.length === 0 && (
-        <p className={styles.stateMessage}>No members found for this shop.</p>
-      )}
-
-      {!isLoading && !isError && members && members.length > 0 && (
-        <ul className={styles.memberList} aria-label="Shop members">
-          {members.map((member) => (
-            <MemberRow
-              key={member.id}
-              member={member}
-              isOwner={isOwner}
-              isCurrentUser={user?.id === member.member_id}
-              roles={roles}
-              onAction={handleAction}
-              isPending={isPending}
-            />
-          ))}
-        </ul>
-      )}
-
-      {/* Change Role Modal */}
-      <Modal
-        isOpen={modalAction?.type === 'changeRole'}
-        onClose={closeModal}
-        ariaLabel="Change member role"
-      >
-        {modalAction?.type === 'changeRole' && (
-          <div className={styles.confirmModal}>
-            <h3 className={styles.confirmTitle}>Change role</h3>
-            <p className={styles.confirmMessage}>
-              Select a new role for <strong>{getMemberDisplayName(modalAction.member)}</strong>.
-            </p>
-            <div className={styles.roleSelectWrapper}>
-              <RoleSelect
+        {!isLoading && !isError && members && members.length > 0 && (
+          <ul className={styles.memberList} aria-label="Shop members">
+            {members.map((member) => (
+              <MemberRow
+                key={member.id}
+                member={member}
+                isOwner={isOwner}
+                isCurrentUser={user?.id === member.member_id}
                 roles={roles}
-                currentRoleId={selectedRoleId ?? modalAction.member.role_id}
-                onChange={(roleId) => setSelectedRoleId(roleId)}
-                ariaLabel={`New role for ${getMemberDisplayName(modalAction.member)}`}
+                onAction={handleAction}
+                isPending={isPending}
               />
-            </div>
-            {selectedRoleId && selectedRoleId !== modalAction.member.role_id && (
-              <p className={styles.confirmHint}>
-                This will change their role from{' '}
-                <strong>{getRoleLabel(modalAction.member.role_id, roles)}</strong> to{' '}
-                <strong>{getRoleLabel(selectedRoleId, roles)}</strong> and immediately update their
-                permissions.
+            ))}
+          </ul>
+        )}
+
+        {/* Change Role Modal */}
+        <Modal
+          isOpen={modalAction?.type === 'changeRole'}
+          onClose={closeModal}
+          ariaLabel="Change member role"
+        >
+          {modalAction?.type === 'changeRole' && (
+            <div className={styles.confirmModal}>
+              <h3 className={styles.confirmTitle}>Change role</h3>
+              <p className={styles.confirmMessage}>
+                Select a new role for <strong>{getMemberDisplayName(modalAction.member)}</strong>.
               </p>
-            )}
-            <div className={styles.confirmActions}>
-              <Button style="secondary" onClick={closeModal}>
-                Cancel
-              </Button>
-              <Button
-                style="primary"
-                onClick={handleConfirmRoleChange}
-                disabled={!selectedRoleId || selectedRoleId === modalAction.member.role_id}
-              >
-                Change Role
-              </Button>
+              <div className={styles.roleSelectWrapper}>
+                <RoleSelect
+                  roles={roles}
+                  currentRoleId={selectedRoleId ?? modalAction.member.role_id}
+                  onChange={(roleId) => setSelectedRoleId(roleId)}
+                  ariaLabel={`New role for ${getMemberDisplayName(modalAction.member)}`}
+                />
+              </div>
+              {selectedRoleId && selectedRoleId !== modalAction.member.role_id && (
+                <p className={styles.confirmHint}>
+                  This will change their role from{' '}
+                  <strong>{getRoleLabel(modalAction.member.role_id, roles)}</strong> to{' '}
+                  <strong>{getRoleLabel(selectedRoleId, roles)}</strong> and immediately update
+                  their permissions.
+                </p>
+              )}
+              <div className={styles.confirmActions}>
+                <Button style="secondary" onClick={closeModal}>
+                  Cancel
+                </Button>
+                <Button
+                  style="primary"
+                  onClick={handleConfirmRoleChange}
+                  disabled={!selectedRoleId || selectedRoleId === modalAction.member.role_id}
+                >
+                  Change Role
+                </Button>
+              </div>
             </div>
-          </div>
-        )}
-      </Modal>
+          )}
+        </Modal>
 
-      {/* Remove Member Modal */}
-      <Modal
-        isOpen={modalAction?.type === 'remove'}
-        onClose={closeModal}
-        ariaLabel="Remove member from shop"
-      >
-        {modalAction?.type === 'remove' && (
-          <div className={styles.confirmModal}>
-            <h3 className={styles.confirmTitle}>Remove member?</h3>
-            <p className={styles.confirmMessage}>
-              Remove <strong>{getMemberDisplayName(modalAction.member)}</strong> from this shop?
-              They will lose all access immediately. This action cannot be undone.
-            </p>
-            <div className={styles.confirmActions}>
-              <Button style="secondary" onClick={closeModal}>
-                Cancel
-              </Button>
-              <Button style="danger" onClick={handleConfirmRemove}>
-                Remove Member
-              </Button>
+        {/* Remove Member Modal */}
+        <Modal
+          isOpen={modalAction?.type === 'remove'}
+          onClose={closeModal}
+          ariaLabel="Remove member from shop"
+        >
+          {modalAction?.type === 'remove' && (
+            <div className={styles.confirmModal}>
+              <h3 className={styles.confirmTitle}>Remove member?</h3>
+              <p className={styles.confirmMessage}>
+                Remove <strong>{getMemberDisplayName(modalAction.member)}</strong> from this shop?
+                They will lose all access immediately. This action cannot be undone.
+              </p>
+              <div className={styles.confirmActions}>
+                <Button style="secondary" onClick={closeModal}>
+                  Cancel
+                </Button>
+                <Button style="danger" onClick={handleConfirmRemove}>
+                  Remove Member
+                </Button>
+              </div>
             </div>
-          </div>
-        )}
-      </Modal>
+          )}
+        </Modal>
 
-      {/* Transfer Ownership — requires typing full confirmation phrase */}
-      <Modal
-        isOpen={modalAction?.type === 'transfer'}
-        onClose={closeModal}
-        ariaLabel="Confirm ownership transfer"
-      >
-        {modalAction?.type === 'transfer' && (
-          <div className={styles.confirmModal}>
-            <h3 className={styles.confirmTitle}>Transfer shop ownership</h3>
-            <p className={styles.confirmMessage}>
-              You are about to transfer ownership of <strong>{shop.shop_name}</strong> to{' '}
-              <strong>{getMemberDisplayName(modalAction.member)}</strong>. This will:
-            </p>
-            <ul className={styles.confirmList}>
-              <li>Immediately grant them full owner privileges</li>
-              <li>Downgrade your role to Manager — you keep shop access but lose owner controls</li>
-              <li>Switch your context back to your member profile</li>
-            </ul>
-            <p className={styles.confirmMessage} id="transfer-confirm-hint">
-              To confirm, type <strong className={styles.confirmPhrase}>{transferPhrase}</strong>{' '}
-              below.
-            </p>
-            <label htmlFor="transfer-confirm-input" className="sr-only">
-              Transfer confirmation phrase
-            </label>
-            <input
-              id="transfer-confirm-input"
-              className={styles.confirmInput}
-              type="text"
-              value={confirmName}
-              onChange={(e) => setConfirmName(e.target.value)}
-              placeholder={transferPhrase}
-              aria-describedby="transfer-confirm-hint"
-              autoComplete="off"
-            />
-            <div className={styles.confirmActions}>
-              <Button style="secondary" onClick={closeModal} disabled={transferOwnership.isPending}>
-                Cancel
-              </Button>
-              <Button
-                style="danger"
-                onClick={handleTransferConfirm}
-                disabled={!isTransferPhraseMatch}
-                loading={transferOwnership.isPending}
-              >
-                Transfer Ownership
-              </Button>
+        {/* Transfer Ownership — requires typing full confirmation phrase */}
+        <Modal
+          isOpen={modalAction?.type === 'transfer'}
+          onClose={closeModal}
+          ariaLabel="Confirm ownership transfer"
+        >
+          {modalAction?.type === 'transfer' && (
+            <div className={styles.confirmModal}>
+              <h3 className={styles.confirmTitle}>Transfer shop ownership</h3>
+              <p className={styles.confirmMessage}>
+                You are about to transfer ownership of <strong>{shop.shop_name}</strong> to{' '}
+                <strong>{getMemberDisplayName(modalAction.member)}</strong>. This will:
+              </p>
+              <ul className={styles.confirmList}>
+                <li>Immediately grant them full owner privileges</li>
+                <li>
+                  Downgrade your role to Manager — you keep shop access but lose owner controls
+                </li>
+                <li>Switch your context back to your member profile</li>
+              </ul>
+              <p className={styles.confirmMessage} id="transfer-confirm-hint">
+                To confirm, type <strong className={styles.confirmPhrase}>{transferPhrase}</strong>{' '}
+                below.
+              </p>
+              <label htmlFor="transfer-confirm-input" className="sr-only">
+                Transfer confirmation phrase
+              </label>
+              <input
+                id="transfer-confirm-input"
+                className={styles.confirmInput}
+                type="text"
+                value={confirmName}
+                onChange={(e) => setConfirmName(e.target.value)}
+                placeholder={transferPhrase}
+                aria-describedby="transfer-confirm-hint"
+                autoComplete="off"
+              />
+              <div className={styles.confirmActions}>
+                <Button
+                  style="secondary"
+                  onClick={closeModal}
+                  disabled={transferOwnership.isPending}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  style="danger"
+                  onClick={handleTransferConfirm}
+                  disabled={!isTransferPhraseMatch}
+                  loading={transferOwnership.isPending}
+                >
+                  Transfer Ownership
+                </Button>
+              </div>
             </div>
-          </div>
-        )}
-      </Modal>
+          )}
+        </Modal>
 
-      {/* Invite Member Modal */}
-      <InviteMemberModal
-        isOpen={isInviteModalOpen}
-        onClose={() => setIsInviteModalOpen(false)}
-        shopId={shop.id}
-        roles={roles}
-        onSuccess={() => {
-          setIsInviteModalOpen(false);
-          showToast({
-            type: 'success',
-            message: 'Invitation sent',
-            description: 'The invitation email has been sent successfully.',
-          });
-        }}
-      />
+        {/* Invite Member Modal */}
+        <InviteMemberModal
+          isOpen={isInviteModalOpen}
+          onClose={() => setIsInviteModalOpen(false)}
+          shopId={shop.id}
+          roles={roles}
+          onSuccess={() => {
+            setIsInviteModalOpen(false);
+            showToast({
+              type: 'success',
+              message: 'Invitation sent',
+              description: 'The invitation email has been sent successfully.',
+            });
+          }}
+        />
 
-      {/* Leave Shop — requires typing full confirmation phrase */}
-      <Modal
-        isOpen={modalAction?.type === 'leave'}
-        onClose={closeModal}
-        ariaLabel="Confirm leaving shop"
-      >
-        {modalAction?.type === 'leave' && (
-          <div className={styles.confirmModal}>
-            <h3 className={styles.confirmTitle}>Leave shop?</h3>
-            <p className={styles.confirmMessage}>
-              You are about to leave <strong>{shop.shop_name}</strong>. This will:
-            </p>
-            <ul className={styles.confirmList}>
-              <li>Immediately revoke your access to this shop</li>
-              <li>
-                Leave your listings and contributions intact, but you can no longer manage them
-              </li>
-              <li>Switch your context back to your member profile</li>
-            </ul>
-            <p className={styles.confirmMessage} id="leave-confirm-hint">
-              To confirm, type <strong className={styles.confirmPhrase}>{leavePhrase}</strong>{' '}
-              below.
-            </p>
-            <label htmlFor="leave-confirm-input" className="sr-only">
-              Leave confirmation phrase
-            </label>
-            <input
-              id="leave-confirm-input"
-              className={styles.confirmInput}
-              type="text"
-              value={confirmName}
-              onChange={(e) => setConfirmName(e.target.value)}
-              placeholder={leavePhrase}
-              aria-describedby="leave-confirm-hint"
-              autoComplete="off"
-            />
-            <div className={styles.confirmActions}>
-              <Button style="secondary" onClick={closeModal} disabled={removeShopMember.isPending}>
-                Cancel
-              </Button>
-              <Button
-                style="danger"
-                onClick={handleConfirmLeave}
-                disabled={!isLeavePhraseMatch}
-                loading={removeShopMember.isPending}
-              >
-                Leave Shop
-              </Button>
+        {/* Leave Shop — requires typing full confirmation phrase */}
+        <Modal
+          isOpen={modalAction?.type === 'leave'}
+          onClose={closeModal}
+          ariaLabel="Confirm leaving shop"
+        >
+          {modalAction?.type === 'leave' && (
+            <div className={styles.confirmModal}>
+              <h3 className={styles.confirmTitle}>Leave shop?</h3>
+              <p className={styles.confirmMessage}>
+                You are about to leave <strong>{shop.shop_name}</strong>. This will:
+              </p>
+              <ul className={styles.confirmList}>
+                <li>Immediately revoke your access to this shop</li>
+                <li>
+                  Leave your listings and contributions intact, but you can no longer manage them
+                </li>
+                <li>Switch your context back to your member profile</li>
+              </ul>
+              <p className={styles.confirmMessage} id="leave-confirm-hint">
+                To confirm, type <strong className={styles.confirmPhrase}>{leavePhrase}</strong>{' '}
+                below.
+              </p>
+              <label htmlFor="leave-confirm-input" className="sr-only">
+                Leave confirmation phrase
+              </label>
+              <input
+                id="leave-confirm-input"
+                className={styles.confirmInput}
+                type="text"
+                value={confirmName}
+                onChange={(e) => setConfirmName(e.target.value)}
+                placeholder={leavePhrase}
+                aria-describedby="leave-confirm-hint"
+                autoComplete="off"
+              />
+              <div className={styles.confirmActions}>
+                <Button
+                  style="secondary"
+                  onClick={closeModal}
+                  disabled={removeShopMember.isPending}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  style="danger"
+                  onClick={handleConfirmLeave}
+                  disabled={!isLeavePhraseMatch}
+                  loading={removeShopMember.isPending}
+                >
+                  Leave Shop
+                </Button>
+              </div>
             </div>
-          </div>
-        )}
-      </Modal>
-    </section>
+          )}
+        </Modal>
+      </section>
+
+      {isOwner && (
+        <PendingInvitesList
+          invites={invites}
+          roles={roles}
+          shopId={shop.id}
+          isOwner={isOwner}
+          isLoading={invitesLoading}
+          isError={invitesError}
+        />
+      )}
+    </>
   );
 }
