@@ -9,7 +9,7 @@ argument-hint: "[issue number, e.g. #42]"
 
 You are the Conductor — an autonomous workflow engine that takes a GitHub issue from ticket to PR.
 
-The full architecture reference is auto-loaded from `.claude/conductor/CLAUDE.md`. Every state transition MUST be persisted to disk immediately.
+The full architecture reference is auto-loaded from `.conductor/CLAUDE.md`. Every state transition MUST be persisted to disk immediately.
 
 ## Input
 
@@ -19,10 +19,10 @@ Parse the issue number from the argument: `{{ issue }}`
 
 ### Step 1: Initialize Track
 
-1. Read project config from `.claude/conductor/github-project.json`
+1. Read project config from `.conductor/github-project.json`
 2. Fetch the GitHub issue via `gh issue view {issue} --repo Nessi-Fishing-Supply/Nessi-Web-App --json title,body,labels,comments,assignees`
 3. Generate a track name: `{issue_number}-{kebab-title}` (max 50 chars for the kebab portion)
-4. Create directory: `.claude/conductor/tracks/{track_name}/`
+4. Create directory: `.conductor/tracks/{track_name}/`
 5. Write initial `state.json`:
    ```json
    {
@@ -122,7 +122,7 @@ Display the plan summary:
       - If verification fails: attempt fix, re-verify once, escalate to blocked if still failing
       - If passes: update health in `state.json`, persist
       - **Format all changed files before committing:** `pnpm prettier --write $(git diff --name-only HEAD)` — this prevents CI `format:check` failures, especially on markdown files (CLAUDE.md, plan.md) that Prettier reformats
-      - Stage conductor state alongside source changes: `git add .claude/conductor/` (tracks state, plan, learnings)
+      - Stage conductor state alongside source changes: `git add .conductor/` (tracks state, plan, learnings)
       - Commit phase: `{type}({scope}): #{issue} {phase description}` with task summaries in body
       - Append any learnings to `learnings.md`
       - Display checkpoint:
@@ -196,7 +196,7 @@ Rules for this step:
    c. Clear `active.json` → `{ "active": null, "lastAccessed": "<now>" }`
    d. Stage and commit all conductor state changes:
       ```bash
-      git add .claude/conductor/
+      git add .conductor/
       git commit -m "chore: #${issue} finalize conductor — move track to depot
 
       Co-Authored-By: Conductor <noreply@conductor.dev>"
@@ -250,7 +250,7 @@ Rules for this step:
 ## Critical Rules
 
 - **EVERY state transition MUST be persisted to `state.json` on disk immediately.** This is the crash recovery mechanism.
-- **EVERY `git commit` MUST include `.claude/conductor/` alongside source changes.** Never commit source files without also staging conductor state. Use `git add .claude/conductor/ <source files>` in every commit command. This includes phase commits, review commits, fix commits, and the final depot-move commit.
+- **EVERY `git commit` MUST include `.conductor/` alongside source changes.** Never commit source files without also staging conductor state. Use `git add .conductor/ <source files>` in every commit command. This includes phase commits, review commits, fix commits, and the final depot-move commit.
 - **The depot move + active.json clear MUST be committed and pushed as part of the branch.** Do this BEFORE launching the pr-creator agent, not after. If the depot move isn't in the branch, it won't be in the PR merge and the track will be stranded in `tracks/` forever.
 - **EVERY `git commit` MUST be preceded by `pnpm prettier --write` on all changed files.** Run `pnpm prettier --write $(git diff --name-only HEAD)` before staging. This prevents CI `format:check` failures — especially on markdown files (CLAUDE.md, plan.md) that Prettier reformats tables and line lengths.
 - **Append-only**: `review-log.md` is never overwritten, only appended to.

@@ -50,12 +50,12 @@ Unlike traditional workflow engines, the conductor runs autonomously. Tickets ar
 
 ## 3. State Persistence (File System)
 
-All runtime state lives in `.claude/conductor/` (git-ignored). Skill and agent definitions live in their standard locations (`.claude/skills/`, `.claude/agents/`).
+All runtime state lives in `.conductor/` (git-ignored). Skill and agent definitions live in their standard locations (`.claude/skills/`, `.claude/agents/`).
 
 ### Directory Layout
 
 ```
-.claude/conductor/
+.conductor/
 ├── active.json                          # Points to current track
 ├── tracks/                              # Active work
 │   └── 42-add-order-history/
@@ -422,10 +422,10 @@ Type is inferred from issue labels or content. Defaults to `feat`.
 
 ### Commit Strategy (Per-Phase)
 
-Each completed phase produces one commit. **EVERY commit MUST include `.claude/conductor/` alongside source changes** — track state, plan, learnings, and review logs are part of the feature branch and must be pushed to GitHub. This is non-negotiable.
+Each completed phase produces one commit. **EVERY commit MUST include `.conductor/` alongside source changes** — track state, plan, learnings, and review logs are part of the feature branch and must be pushed to GitHub. This is non-negotiable.
 
 ```bash
-git add .claude/conductor/ <source files...>
+git add .conductor/ <source files...>
 ```
 
 ```
@@ -446,7 +446,7 @@ Before PR creation, the conductor MUST:
 3. Clear `active.json`
 4. **Commit these changes** as a dedicated commit:
    ```bash
-   git add .claude/conductor/
+   git add .conductor/
    git commit -m "chore: #{issue} finalize conductor — move track to depot"
    ```
 

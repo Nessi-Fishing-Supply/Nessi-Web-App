@@ -10,7 +10,7 @@ Prune expired entries from the conductor depot.
 
 ## Execution
 
-1. Read all `state.json` files in `.claude/conductor/depot/*/`
+1. Read all `state.json` files in `.conductor/depot/*/`
 2. For each entry, check if `pruneAfter` timestamp has passed (compared to current date)
 3. Delete directories where `pruneAfter` < now
 4. Display results:

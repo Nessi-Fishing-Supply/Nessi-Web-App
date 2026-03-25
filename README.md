@@ -192,7 +192,7 @@ Nessi uses a fleet of **14 AI agents** and **21 skills** for autonomous feature 
                                                 └── expert skills (auto-consulted)
 ```
 
-Skills live in `.claude/skills/`, agents in `.claude/agents/`, Conductor docs in `.claude/conductor/CLAUDE.md`.
+Skills live in `.claude/skills/`, agents in `.claude/agents/`, Conductor docs in `.conductor/CLAUDE.md`.
 
 ## Future Roadmap
 

@@ -25,9 +25,9 @@ You will receive:
 ### 1. Prepare
 
 - Run `git status` to check for uncommitted changes
-- **CRITICAL**: If `.claude/conductor/` has ANY uncommitted changes (modified, deleted, or untracked files), stage and commit them immediately:
+- **CRITICAL**: If `.conductor/` has ANY uncommitted changes (modified, deleted, or untracked files), stage and commit them immediately:
   ```bash
-  git add .claude/conductor/
+  git add .conductor/
   git commit -m "chore: #{issue} include conductor state changes
 
   Co-Authored-By: Conductor <noreply@conductor.dev>"
@@ -84,7 +84,7 @@ EOF
 
 ### 4. Update Kanban
 
-Move the GitHub issue to **Ready for Review** on the kanban board. Read project IDs from `.claude/conductor/github-project.json`.
+Move the GitHub issue to **Ready for Review** on the kanban board. Read project IDs from `.conductor/github-project.json`.
 
 **IMPORTANT: Run each command as a SEPARATE Bash call — never chain with `$()` substitution (it triggers a security prompt that blocks autonomous execution).**
 

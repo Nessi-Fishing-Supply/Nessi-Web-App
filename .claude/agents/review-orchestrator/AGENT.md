@@ -86,7 +86,7 @@ Findings: {blocking}B / {warning}W / {info}I
 
 ### 6. Code Review (against plan and standards)
 
-If a conductor plan exists (`.claude/conductor/tracks/*/plan.md` or `.claude/conductor/depot/*/plan.md`):
+If a conductor plan exists (`.conductor/tracks/*/plan.md` or `.conductor/depot/*/plan.md`):
 1. Launch **superpowers:code-reviewer** agent to review implementation against:
    - The implementation plan (`plan.md`)
    - Project coding standards (CLAUDE.md files)

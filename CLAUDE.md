@@ -217,7 +217,7 @@ Accessibility is a requirement, not a nice-to-have. Run `/a11y-audit` before com
 
 ## AI Development Fleet
 
-Nessi uses a fleet of Claude Code skills and agents for autonomous feature development. Skills live in `.claude/skills/`, agents in `.claude/agents/`. The Conductor pipeline (`.claude/conductor/CLAUDE.md`) orchestrates ticket-to-PR automation.
+Nessi uses a fleet of Claude Code skills and agents for autonomous feature development. Skills live in `.claude/skills/`, agents in `.claude/agents/`. The Conductor pipeline (`.conductor/CLAUDE.md`) orchestrates ticket-to-PR automation.
 
 ### Key Workflows
 

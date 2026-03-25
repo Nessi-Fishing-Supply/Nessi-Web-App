@@ -10,7 +10,7 @@ Display a read-only status dashboard for the current conductor track.
 
 ## Execution
 
-1. Read `.claude/conductor/active.json` to find the active track
+1. Read `.conductor/active.json` to find the active track
    - If no active track: display "No active conductor track." and exit
 2. Read `state.json` from the active track directory
 3. Read `plan.md` if it exists (for phase/task names)
