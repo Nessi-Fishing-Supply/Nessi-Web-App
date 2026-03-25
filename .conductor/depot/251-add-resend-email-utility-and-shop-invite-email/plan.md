@@ -1,28 +1,34 @@
 # Implementation Plan: #251 — Add Resend email utility and shop invite email template
 
 ## Overview
+
 2 phases, 4 total tasks
 Estimated scope: small
 
 ## Phase 1: Install Resend and configure environment
+
 **Goal:** Add the `resend` package dependency and document the required environment variables so the foundation is in place for the utility module.
 **Verify:** `pnpm build`
 
 ### Task 1.1: Install the resend package
+
 Run `pnpm add resend` to add the Resend SDK as a production dependency.
 **Files:** `package.json`, `pnpm-lock.yaml`
 **AC:** `resend` appears in `dependencies` in `package.json`; `pnpm install` resolves without errors.
 
 ### Task 1.2: Document RESEND_API_KEY and RESEND_FROM_EMAIL in .env.local.example
+
 Add `RESEND_API_KEY` and `RESEND_FROM_EMAIL` entries to `.env.local.example` under a new `# Email (Resend)` section. Neither variable should be prefixed with `NEXT_PUBLIC_`. Follow the existing format of placeholder values used by the Supabase and App sections.
 **Files:** `.env.local.example`
 **AC:** `.env.local.example` contains `RESEND_API_KEY="re_..."` and `RESEND_FROM_EMAIL="Nessi <noreply@yourdomain.com>"` entries, both without `NEXT_PUBLIC_` prefix, under a clearly labeled section.
 
 ## Phase 2: Create Resend utility and invite email template
+
 **Goal:** Implement the `src/libs/resend.ts` module exporting a singleton Resend client and the `sendInviteEmail` function with a branded inline-CSS HTML email template.
 **Verify:** `pnpm typecheck && pnpm lint && pnpm build`
 
 ### Task 2.1: Create src/libs/resend.ts with singleton client and sendInviteEmail function
+
 Create `src/libs/resend.ts` following the patterns in `src/libs/supabase/server.ts` (module-level singleton, server-only usage). The file should:
 
 1. Import `Resend` from `resend` and instantiate it once at module scope using `process.env.RESEND_API_KEY`.
@@ -41,6 +47,7 @@ Create `src/libs/resend.ts` following the patterns in `src/libs/supabase/server.
 **Expert Domains:** nextjs
 
 ### Task 2.2: Implement the branded invite email HTML template
+
 Within `src/libs/resend.ts`, the HTML template passed to `resend.emails.send()` should be a template literal string with inline CSS styling. The email body must include:
 
 1. A header area with "Nessi" branding (simple text logo, no image dependency).
