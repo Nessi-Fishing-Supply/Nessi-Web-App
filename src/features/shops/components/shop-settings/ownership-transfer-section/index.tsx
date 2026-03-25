@@ -1,11 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { useShopMembers, useTransferOwnership } from '@/features/shops/hooks/use-shops';
-import useContextStore from '@/features/context/stores/context-store';
+import { useShopMembers } from '@/features/shops/hooks/use-shops';
+import {
+  useOwnershipTransfer,
+  useInitiateOwnershipTransfer,
+  useCancelOwnershipTransfer,
+} from '@/features/shops/hooks/use-ownership-transfer';
 import { useToast } from '@/components/indicators/toast/context';
 import Modal from '@/components/layout/modal';
 import Button from '@/components/controls/button';
+import Pill from '@/components/indicators/pill';
 import type { Shop } from '@/features/shops/types/shop';
 import { SYSTEM_ROLE_IDS } from '@/features/shops/constants/roles';
 import styles from './ownership-transfer-section.module.scss';
@@ -17,14 +22,25 @@ interface OwnershipTransferSectionProps {
 export default function OwnershipTransferSection({ shop }: OwnershipTransferSectionProps) {
   const { showToast } = useToast();
   const { data: members } = useShopMembers(shop.id);
-  const transferOwnershipMutation = useTransferOwnership();
+  const { data: pendingTransfer } = useOwnershipTransfer(shop.id);
+  const initiateTransferMutation = useInitiateOwnershipTransfer();
+  const cancelTransferMutation = useCancelOwnershipTransfer();
 
   const [selectedMemberId, setSelectedMemberId] = useState('');
   const [showStep1Modal, setShowStep1Modal] = useState(false);
   const [showStep2Modal, setShowStep2Modal] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
   const [confirmName, setConfirmName] = useState('');
 
   const transferableCandidates = (members ?? []).filter((m) => m.member_id !== shop.owner_id);
+
+  const transfereeMember = pendingTransfer
+    ? (members ?? []).find((m) => m.member_id === pendingTransfer.to_member_id)
+    : null;
+
+  const transfereeName = transfereeMember?.members
+    ? `${transfereeMember.members.first_name ?? ''} ${transfereeMember.members.last_name ?? ''}`.trim()
+    : (pendingTransfer?.to_member_id ?? '');
 
   const handleOpenStep1 = () => {
     setShowStep1Modal(true);
@@ -43,15 +59,18 @@ export default function OwnershipTransferSection({ shop }: OwnershipTransferSect
 
   const handleTransfer = async () => {
     try {
-      await transferOwnershipMutation.mutateAsync({
+      await initiateTransferMutation.mutateAsync({
         shopId: shop.id,
         newOwnerId: selectedMemberId,
       });
-      useContextStore.getState().switchToMember();
+      const selectedMember = transferableCandidates.find((m) => m.member_id === selectedMemberId);
+      const name = selectedMember?.members
+        ? `${selectedMember.members.first_name ?? ''} ${selectedMember.members.last_name ?? ''}`.trim()
+        : '';
       showToast({
         type: 'success',
-        message: 'Ownership transferred',
-        description: 'You are no longer the shop owner.',
+        message: 'Transfer request sent',
+        description: `${name || 'The member'} will receive an email.`,
       });
       setShowStep2Modal(false);
       setConfirmName('');
@@ -65,7 +84,33 @@ export default function OwnershipTransferSection({ shop }: OwnershipTransferSect
     }
   };
 
+  const handleCancelTransfer = async () => {
+    try {
+      await cancelTransferMutation.mutateAsync({ shopId: shop.id });
+      showToast({
+        type: 'success',
+        message: 'Transfer request cancelled.',
+        description: 'No ownership change has been made.',
+      });
+      setShowCancelModal(false);
+    } catch (err) {
+      showToast({
+        type: 'error',
+        message: 'Cancel failed',
+        description: err instanceof Error ? err.message : 'Something went wrong. Please try again.',
+      });
+    }
+  };
+
   const isConfirmNameMatch = confirmName === shop.shop_name;
+
+  const expiryDate = pendingTransfer?.expires_at
+    ? new Date(pendingTransfer.expires_at).toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+      })
+    : null;
 
   return (
     <section className={styles.card}>
@@ -75,7 +120,24 @@ export default function OwnershipTransferSection({ shop }: OwnershipTransferSect
         immediately.
       </p>
 
-      {transferableCandidates.length === 0 ? (
+      {pendingTransfer ? (
+        <div>
+          <div className={styles.statusHeader}>
+            <Pill color="warning">Transfer Pending</Pill>
+          </div>
+          <p className={styles.transfereeName}>{transfereeName}</p>
+          {expiryDate && <p className={styles.expiryText}>Expires on {expiryDate}</p>}
+          <div className={styles.cancelRow}>
+            <Button
+              style="danger"
+              onClick={() => setShowCancelModal(true)}
+              ariaLabel="Cancel ownership transfer"
+            >
+              Cancel Transfer
+            </Button>
+          </div>
+        </div>
+      ) : transferableCandidates.length === 0 ? (
         <p className={styles.emptyText}>Add members to your shop before transferring ownership.</p>
       ) : (
         <div className={styles.selectRow}>
@@ -169,7 +231,7 @@ export default function OwnershipTransferSection({ shop }: OwnershipTransferSect
             <Button
               style="secondary"
               onClick={handleStep2Cancel}
-              disabled={transferOwnershipMutation.isPending}
+              disabled={initiateTransferMutation.isPending}
             >
               Cancel
             </Button>
@@ -177,10 +239,44 @@ export default function OwnershipTransferSection({ shop }: OwnershipTransferSect
               style="primary"
               onClick={handleTransfer}
               disabled={!isConfirmNameMatch}
-              loading={transferOwnershipMutation.isPending}
+              loading={initiateTransferMutation.isPending}
               ariaLabel="Confirm ownership transfer"
+              aria-busy={initiateTransferMutation.isPending}
             >
               Transfer
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Cancel transfer modal */}
+      <Modal
+        isOpen={showCancelModal}
+        onClose={() => setShowCancelModal(false)}
+        ariaLabel="Cancel ownership transfer"
+      >
+        <div className={styles.modalContent}>
+          <h2>Cancel ownership transfer?</h2>
+          <p>
+            The pending transfer to {transfereeName} will be cancelled. You can initiate a new
+            transfer at any time.
+          </p>
+          <div className={styles.modalActions}>
+            <Button
+              style="secondary"
+              onClick={() => setShowCancelModal(false)}
+              disabled={cancelTransferMutation.isPending}
+            >
+              Keep Transfer
+            </Button>
+            <Button
+              style="danger"
+              onClick={handleCancelTransfer}
+              loading={cancelTransferMutation.isPending}
+              ariaLabel="Yes, cancel ownership transfer"
+              aria-busy={cancelTransferMutation.isPending}
+            >
+              Yes, Cancel
             </Button>
           </div>
         </div>
