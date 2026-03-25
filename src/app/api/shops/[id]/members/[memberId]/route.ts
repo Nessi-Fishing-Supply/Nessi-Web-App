@@ -2,35 +2,33 @@ import { createClient } from '@/libs/supabase/server';
 import { createAdminClient } from '@/libs/supabase/admin';
 import { AUTH_CACHE_HEADERS } from '@/libs/api-headers';
 import { NextResponse } from 'next/server';
+import { requireShopPermission } from '@/libs/shop-permissions';
 
 export async function DELETE(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string; memberId: string }> },
 ) {
   const { id: shopId, memberId } = await params;
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const result = await requireShopPermission(request, 'members', 'full', {
+    expectedShopId: shopId,
+  });
 
-  if (!user) {
-    return NextResponse.json(
-      { error: 'Unauthorized' },
-      { status: 401, headers: AUTH_CACHE_HEADERS },
-    );
+  if (result instanceof NextResponse) {
+    // Permission check failed — allow self-removal as a fallback
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user || memberId !== user.id) {
+      return result;
+    }
+
+    // Self-removal: authenticated user removing themselves
   }
 
   const admin = createAdminClient();
-
-  const { data: shop } = await admin.from('shops').select('owner_id').eq('id', shopId).single();
-
-  const isOwner = shop?.owner_id === user.id;
-  const isRemovingSelf = memberId === user.id;
-
-  if (!isOwner && !isRemovingSelf) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403, headers: AUTH_CACHE_HEADERS });
-  }
 
   const { error } = await admin
     .from('shop_members')

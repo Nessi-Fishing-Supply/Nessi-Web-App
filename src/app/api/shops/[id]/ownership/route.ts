@@ -1,23 +1,16 @@
-import { createClient } from '@/libs/supabase/server';
 import { createAdminClient } from '@/libs/supabase/admin';
 import { AUTH_CACHE_HEADERS } from '@/libs/api-headers';
 import { SYSTEM_ROLE_IDS } from '@/features/shops/constants/roles';
 import { NextResponse } from 'next/server';
+import { requireShopPermission } from '@/libs/shop-permissions';
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id: shopId } = await params;
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json(
-      { error: 'Unauthorized' },
-      { status: 401, headers: AUTH_CACHE_HEADERS },
-    );
-  }
+  const result = await requireShopPermission(request, 'members', 'full', {
+    expectedShopId: shopId,
+  });
+  if (result instanceof NextResponse) return result;
 
   let newOwnerId: string;
   try {
@@ -38,25 +31,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   }
 
   const admin = createAdminClient();
-
-  // Verify current user is the shop owner
-  const { data: shop } = await admin
-    .from('shops')
-    .select('owner_id')
-    .eq('id', shopId)
-    .is('deleted_at', null)
-    .single();
-
-  if (!shop) {
-    return NextResponse.json(
-      { error: 'Shop not found' },
-      { status: 404, headers: AUTH_CACHE_HEADERS },
-    );
-  }
-
-  if (shop.owner_id !== user.id) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403, headers: AUTH_CACHE_HEADERS });
-  }
 
   // Verify newOwnerId is already a shop member
   const { data: newOwnerMember } = await admin
@@ -85,7 +59,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       .from('shop_members')
       .update({ role_id: SYSTEM_ROLE_IDS.MANAGER })
       .eq('shop_id', shopId)
-      .eq('member_id', user.id),
+      .eq('member_id', result.user.id),
   ]);
 
   if (shopUpdate.error) {

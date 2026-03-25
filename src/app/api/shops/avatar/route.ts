@@ -1,7 +1,7 @@
-import { createClient } from '@/libs/supabase/server';
 import { createAdminClient } from '@/libs/supabase/admin';
 import { AUTH_CACHE_HEADERS } from '@/libs/api-headers';
 import { NextResponse } from 'next/server';
+import { requireShopPermission } from '@/libs/shop-permissions';
 import sharp from 'sharp';
 
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
@@ -9,17 +9,8 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 export async function POST(req: Request) {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401, headers: AUTH_CACHE_HEADERS },
-      );
-    }
+    const result = await requireShopPermission(req, 'shop_settings', 'full');
+    if (result instanceof NextResponse) return result;
 
     const formData = await req.formData();
     const file = formData.get('file') as File;
@@ -32,20 +23,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const { data: shop, error: shopError } = await supabase
-      .from('shops')
-      .select('owner_id')
-      .eq('id', shopId)
-      .single();
-
-    if (shopError || !shop) {
-      return NextResponse.json(
-        { error: 'Shop not found' },
-        { status: 404, headers: AUTH_CACHE_HEADERS },
-      );
-    }
-
-    if (shop.owner_id !== user.id) {
+    if (shopId !== result.shopId) {
       return NextResponse.json(
         { error: 'Forbidden' },
         { status: 403, headers: AUTH_CACHE_HEADERS },

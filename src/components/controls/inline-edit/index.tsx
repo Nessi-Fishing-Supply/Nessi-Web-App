@@ -14,6 +14,7 @@ interface InlineEditProps {
   validating?: boolean;
   ariaLabel?: string;
   compact?: boolean;
+  readOnly?: boolean;
 }
 
 export default function InlineEdit({
@@ -26,6 +27,7 @@ export default function InlineEdit({
   validating = false,
   ariaLabel,
   compact = false,
+  readOnly = false,
 }: InlineEditProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState(value);
@@ -99,6 +101,14 @@ export default function InlineEdit({
   const isOverLimit = maxLength !== undefined && charCount > maxLength;
   const showCounter = multiline && maxLength !== undefined;
   const isDisabled = saving || validating;
+
+  if (readOnly) {
+    return (
+      <span className={styles.displayText}>
+        {value || <span className={styles.placeholder}>{placeholder}</span>}
+      </span>
+    );
+  }
 
   if (compact) {
     return (
