@@ -396,7 +396,7 @@ export default function ShopMembersSection({ shop }: ShopMembersSectionProps) {
           <div>
             <h2 id="shop-members-heading" className={styles.heading}>
               {!isLoading && !isError
-                ? `Members (${memberCount}/${MAX_MEMBERS_PER_SHOP})`
+                ? `Members (${totalCount}/${MAX_MEMBERS_PER_SHOP})`
                 : 'Members'}
             </h2>
             <p className={styles.description}>
@@ -405,16 +405,24 @@ export default function ShopMembersSection({ shop }: ShopMembersSectionProps) {
             </p>
           </div>
           {isOwner && (
-            <Button
-              style="secondary"
-              onClick={() => setIsInviteModalOpen(true)}
-              disabled={isAtCap}
-              icon={<HiUserAdd aria-hidden="true" />}
-              iconPosition="left"
-              ariaLabel="Invite member"
+            <span
+              title={
+                isAtCap
+                  ? `Maximum of ${MAX_MEMBERS_PER_SHOP} members reached (includes pending invites)`
+                  : undefined
+              }
             >
-              Invite
-            </Button>
+              <Button
+                style="secondary"
+                onClick={() => setIsInviteModalOpen(true)}
+                disabled={isAtCap}
+                icon={<HiUserAdd aria-hidden="true" />}
+                iconPosition="left"
+                ariaLabel="Invite member"
+              >
+                Invite
+              </Button>
+            </span>
           )}
         </div>
 
