@@ -57,6 +57,7 @@ Status: Built = flow exists in code | Tested = has Playwright/Vitest coverage | 
 - [x] Built | [ ] Tested — Cart expiry refresh (30-day TTL)
 - [x] Built | [ ] Tested — Recently viewed (dual-source: DB + localStorage)
 - [x] Built | [ ] Tested — Recently viewed merge on login
+- [x] Built | [ ] Tested — Saved shipping addresses (CRUD, 5-cap, default management)
 - [ ] Built | [ ] Tested — Checkout — not implemented
 - [ ] Built | [ ] Tested — Order history — not implemented
 - [ ] Built | [ ] Tested — Favorites/saved listings — not implemented
@@ -75,6 +76,7 @@ Status: Built = flow exists in code | Tested = has Playwright/Vitest coverage | 
 - [x] Built | [ ] Tested — Delete draft (hard delete)
 - [x] Built | [ ] Tested — Quick edit price (inline from dashboard)
 - [x] Built | [ ] Tested — View count tracking
+- [x] Built | [ ] Tested — Social sharing (Web Share API + clipboard fallback)
 
 ### Shop Owner Flows
 
@@ -92,8 +94,11 @@ Status: Built = flow exists in code | Tested = has Playwright/Vitest coverage | 
 - [x] Built | [ ] Tested — View shops user belongs to
 - [x] Built | [ ] Tested — Context switch to shop identity
 - [x] Built | [ ] Tested — Context revocation on 403 (auto-switch back)
-- [ ] Built | [ ] Tested — Role-based permission enforcement in UI
-- [ ] Built | [ ] Tested — Role-based permission enforcement in API
+- [x] Built | [ ] Tested — Role-based permission enforcement in UI (ShopRouteGuard + side nav)
+- [x] Built | [ ] Tested — Role-based permission enforcement in API (requireShopPermission middleware)
+- [x] Built | [ ] Tested — Roles & Permissions dashboard page (/dashboard/shop/roles)
+- [x] Built | [ ] Tested — Role assignment dropdown (owner-only)
+- [x] Built | [ ] Tested — Leave shop (non-owner, type-to-confirm)
 
 ### Account Management
 
@@ -103,5 +108,6 @@ Status: Built = flow exists in code | Tested = has Playwright/Vitest coverage | 
 - [x] Built | [ ] Tested — Edit fishing identity (species, technique, state)
 - [x] Built | [ ] Tested — Toggle seller status (with precondition check)
 - [x] Built | [ ] Tested — Change email (+ OTP verification)
+- [x] Built | [ ] Tested — Saved shipping addresses (CRUD, 5-cap, default)
 - [x] Built | [ ] Tested — Delete account (shop ownership gate, storage cleanup, cascade)
 - [x] Built | [ ] Tested — Notification preferences

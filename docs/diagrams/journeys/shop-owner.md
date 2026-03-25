@@ -1,6 +1,6 @@
 # Shop Owner Flows
 
-Create shop, manage settings, invite members, transfer ownership, delete shop.
+Create shop, manage settings, invite members, roles & permissions, transfer ownership, delete shop.
 
 ## Create Shop
 
@@ -21,7 +21,9 @@ flowchart TD
     I -->|No| J[Show error, suggest alternatives]
     I -->|Yes| K[Enter description]
     K --> L["POST /api/shops"]
-    L --> M{Server-side}
+    L --> LA{Member at 5-shop limit?}
+    LA -->|Yes| LB["409 SHOP_LIMIT_REACHED"]
+    LA -->|No| M{Server-side}
     M --> N["Reserve slug in slugs table (atomic)"]
     M --> O["Create shop row (owner_id = user)"]
     M --> P["Add owner to shop_members with owner role"]
@@ -125,4 +127,45 @@ flowchart TD
     G & H & I --> J[Ownership transferred]
     J --> K[Old owner loses owner-only UI sections]
     K --> L[New owner sees full shop settings]
+```
+
+## Roles & Permissions Page
+
+```mermaid
+flowchart TD
+    A["/dashboard/shop/roles"] --> B{User's role?}
+    B -->|Owner| C[Full page access]
+    B -->|Manager| C
+    B -->|Contributor| D["ShopRouteGuard → redirect to /dashboard"]
+
+    C --> E[System Roles section]
+    E --> F[RoleCard: Owner — all 6 domains at 'full']
+    E --> G["RoleCard: Manager — listings/pricing/orders/messaging 'full', shop_settings 'view', members 'none'"]
+    E --> H["RoleCard: Contributor — listings 'full' only"]
+    F & G & H --> I[Each card shows PermissionMatrix grid]
+
+    C --> J{"Owner sees 'Add Custom Role' button"}
+    J --> K[Click → CustomRoleUpsellModal]
+    K --> L["Premium plan gate (not yet available)"]
+
+    style D fill:#ffcdd2
+    style L fill:#fff3e0
+```
+
+## Role Assignment
+
+```mermaid
+flowchart TD
+    A[Owner views Shop Members section] --> B[Each member row has RoleSelect dropdown]
+    B --> C{Owner member?}
+    C -->|Yes| D["Dropdown disabled — Owner role cannot be changed"]
+    C -->|No| E[Select new role from dropdown]
+    E --> F["PATCH /api/shops/[id]/members/[memberId]/role"]
+    F --> G{Validation}
+    G -->|Cannot assign Owner role| H[400 error]
+    G -->|Valid| I[Optimistic cache update]
+    I --> J["Toast: 'Role updated to {roleName}'"]
+    J --> K[Member's permissions change immediately]
+
+    style D fill:#f0f0f0
 ```

@@ -1,5 +1,7 @@
 # Member & Shop User Journey
 
+> **NOTE:** This is the original monolith journey diagram from early development. For current, maintained diagrams see [`docs/diagrams/journeys/`](journeys/README.md). This file is kept for historical reference.
+
 Complete user journey covering guest checkout, member registration, buyer/seller paths, and shop creation.
 
 ## Account Tiers Overview
@@ -115,22 +117,22 @@ flowchart TD
 
 ```mermaid
 erDiagram
-    MEMBERS ||--o{ PRODUCTS : "member_id (personal listings)"
-    SHOPS ||--o{ PRODUCTS : "shop_id (shop listings)"
+    MEMBERS ||--o{ LISTINGS : "member_id (personal listings)"
+    SHOPS ||--o{ LISTINGS : "shop_id (shop listings)"
     MEMBERS ||--o{ SHOPS : "owner_id"
     MEMBERS ||--o{ SHOP_MEMBERS : "member_id"
     SHOPS ||--o{ SHOP_MEMBERS : "shop_id"
+    SHOP_ROLES ||--o{ SHOP_MEMBERS : "role_id"
+    MEMBERS ||--o{ ADDRESSES : "user_id (max 5)"
     MEMBERS ||--|| SLUGS : "slug (globally unique)"
     SHOPS ||--|| SLUGS : "slug (globally unique)"
+    SHOPS ||--o{ SHOP_INVITES : "shop_id"
 
     MEMBERS {
         uuid id PK
         text display_name
-        text first_name
-        text last_name
         text slug UK
         boolean is_seller
-        text stripe_account_id
     }
 
     SHOPS {
@@ -138,24 +140,46 @@ erDiagram
         uuid owner_id FK
         text shop_name
         text slug UK
-        text subscription_tier
-        text stripe_account_id
-        boolean is_verified
+        timestamptz deleted_at
     }
 
     SHOP_MEMBERS {
         uuid shop_id FK
         uuid member_id FK
-        text role
+        uuid role_id FK
     }
 
-    PRODUCTS {
+    SHOP_ROLES {
         uuid id PK
+        text name
+        boolean is_system
+        jsonb permissions
+    }
+
+    SHOP_INVITES {
+        uuid id PK
+        uuid shop_id FK
+        text email
+        uuid role_id FK
+        text status
+        timestamptz expires_at
+    }
+
+    LISTINGS {
+        uuid id PK
+        uuid seller_id FK
         uuid member_id FK
         uuid shop_id FK
         text title
-        decimal price
-        boolean is_visible
+        integer price_cents
+        listing_status status
+    }
+
+    ADDRESSES {
+        uuid id PK
+        uuid user_id FK
+        text label
+        boolean is_default
     }
 
     SLUGS {
@@ -202,7 +226,7 @@ flowchart TD
     BLOCKED --> DELETE_SHOP["Delete Shop
     (confirmation modal)"]
 
-    TRANSFER --> DEMOTED["Former owner → admin
+    TRANSFER --> DEMOTED["Former owner → manager
     Can now leave shop"]
     DEMOTED --> OWN_SHOP
 

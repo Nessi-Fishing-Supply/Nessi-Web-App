@@ -112,6 +112,38 @@ flowchart TD
     style S fill:#e1f5fe
 ```
 
+## Saved Shipping Addresses
+
+```mermaid
+flowchart TD
+    A["/dashboard/account → Addresses section"] --> B["GET /api/addresses"]
+    B --> C{Has addresses?}
+    C -->|No| D["Empty state: 'Add your first address'"]
+    C -->|Yes| E[AddressList: cards with label, address, default badge]
+
+    E --> F{Actions}
+    F --> G["Edit → AddressFormModal (pre-populated)"]
+    F --> H["Delete → confirmation → DELETE /api/addresses/[id]"]
+    F --> I["Set default → PATCH /api/addresses/[id]/default"]
+
+    H --> J{Was default?}
+    J -->|Yes| K[Next address auto-promoted to default]
+    J -->|No| L[Simple removal]
+
+    D --> M["Click 'Add Address'"]
+    E --> M
+    M --> N{At 5-address cap?}
+    N -->|Yes| O[Button disabled: maximum reached]
+    N -->|No| P[AddressFormModal opens]
+    P --> Q["Enter: label, line1, line2, city, state, zip, is_default"]
+    Q --> R["POST /api/addresses"]
+    R --> S{Validation}
+    S -->|Duplicate label| T[Error: label already used]
+    S -->|Valid| U[Address saved, list updates]
+
+    style O fill:#ffcdd2
+```
+
 ## Checkout (NOT BUILT)
 
 ```mermaid

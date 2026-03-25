@@ -118,6 +118,23 @@ flowchart TD
     T --> U["Reactivate → PATCH status=active"]
 ```
 
+## Social Sharing
+
+```mermaid
+flowchart TD
+    A[Listing detail page] --> B[ShareButton in action bar]
+    B --> C{Web Share API available?}
+    C -->|Yes - mobile| D["navigator.share({ title, url })"]
+    D --> E[Native share sheet opens]
+    E --> F{User action}
+    F -->|Share completed| G[Done]
+    F -->|Cancelled/AbortError| H[Silently ignored]
+    C -->|No - desktop| I["navigator.clipboard.writeText(url)"]
+    I --> J{Clipboard access?}
+    J -->|Success| K["Toast: 'Link copied!'"]
+    J -->|Denied| L["Toast: 'Unable to copy link'"]
+```
+
 ## Seller Context (Member vs Shop)
 
 ```mermaid
