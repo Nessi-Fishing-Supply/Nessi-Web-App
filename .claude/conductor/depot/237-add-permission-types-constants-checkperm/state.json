@@ -3,7 +3,7 @@
   "issue": 237,
   "title": "Add permission types, constants, and checkPermission utility",
   "branch": "feat/237/add-permission-types-constants-checkperm",
-  "status": "reviewing",
+  "status": "pr_open",
   "phase": {
     "current": 3,
     "total": 3,
@@ -13,7 +13,12 @@
       "remaining": []
     }
   },
-  "health": { "build": "pass", "lint": "unknown", "tests": "pass" },
+  "health": { "build": "pass", "lint": "pass", "tests": "pass" },
   "failureCount": { "currentTask": 0 },
-  "timestamps": { "started": "2026-03-24T12:00:00Z", "lastActivity": "2026-03-24T12:12:00Z" }
+  "timestamps": {
+    "started": "2026-03-24T12:00:00Z",
+    "lastActivity": "2026-03-24T12:15:00Z",
+    "completedAt": "2026-03-24T12:15:00Z",
+    "pruneAfter": "2026-05-23T12:15:00Z"
+  }
 }
