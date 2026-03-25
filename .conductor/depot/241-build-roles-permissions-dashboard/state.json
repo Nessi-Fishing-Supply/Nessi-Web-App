@@ -3,7 +3,7 @@
   "issue": 241,
   "title": "Build Roles & Permissions dashboard page with system role display and upsell gate",
   "branch": "feat/241/build-roles-permissions-dashboard",
-  "status": "reviewing",
+  "status": "pr_open",
   "phase": {
     "current": 4,
     "total": 4,
@@ -29,5 +29,7 @@
   },
   "health": { "build": "pass", "lint": "pass", "tests": "unknown" },
   "failureCount": { "currentTask": 0 },
-  "timestamps": { "started": "2026-03-24T12:00:00Z", "lastActivity": "2026-03-24T12:45:00Z" }
+  "timestamps": { "started": "2026-03-24T12:00:00Z", "lastActivity": "2026-03-24T12:50:00Z" },
+  "completedAt": "2026-03-24T12:50:00Z",
+  "pruneAfter": "2026-05-23T12:50:00Z"
 }

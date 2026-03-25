@@ -47,7 +47,7 @@ function LevelIcon({ level }: { level: ShopPermissionLevel }) {
 
 export default function PermissionMatrix({
   permissions,
-  disabled: _disabled,
+  disabled: _disabled, // eslint-disable-line @typescript-eslint/no-unused-vars -- reserved for future custom role editing
 }: PermissionMatrixProps) {
   return (
     <div className={styles.matrix}>
