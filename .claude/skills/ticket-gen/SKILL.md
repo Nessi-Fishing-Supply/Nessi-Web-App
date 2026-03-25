@@ -82,7 +82,7 @@ Execution order: #1 → #2 → #3, #4 (parallel) → #5
 
 Ask the user to confirm before creating. Once confirmed:
 
-1. Read project config from `.claude/conductor/github-project.json` for repo, project, and field IDs
+1. Read project config from `.conductor/github-project.json` for repo, project, and field IDs
 2. Create each issue and add to the project board:
 
 **IMPORTANT: Run each command as a SEPARATE Bash call — never chain with `$()` substitution (it triggers a security prompt that blocks autonomous execution).**
@@ -137,7 +137,7 @@ gh project item-edit --project-id PVT_kwDOCuq3-M4BSHz8 \
   --single-select-option-id 1482d955
 ```
 
-Map priority/area option IDs from `.claude/conductor/github-project.json`.
+Map priority/area option IDs from `.conductor/github-project.json`.
 
 Each issue gets:
 - Full ticket body in canonical format

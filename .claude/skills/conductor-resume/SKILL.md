@@ -10,7 +10,7 @@ Resume an interrupted conductor track. This handles cases where Claude disconnec
 
 ## Execution
 
-1. Read `.claude/conductor/active.json` to find the active track
+1. Read `.conductor/active.json` to find the active track
    - If no active track exists, check if an issue number was provided and look for it in `tracks/`
    - If still nothing found: display "No active conductor track to resume." and exit
 2. Read `state.json` from the track directory
