@@ -3,7 +3,7 @@
   "issue": 254,
   "title": "Auto-accept invite after new account registration",
   "branch": "feat/254/auto-accept-invite-after-registration",
-  "status": "reviewing",
+  "status": "pr_open",
   "phase": {
     "current": 3,
     "total": 3,
@@ -13,7 +13,9 @@
       "remaining": []
     }
   },
-  "health": { "build": "pass", "lint": "unknown", "tests": "unknown" },
+  "health": { "build": "pass", "lint": "pass", "tests": "unknown" },
   "failureCount": { "currentTask": 0 },
-  "timestamps": { "started": "2026-03-25T12:00:00Z", "lastActivity": "2026-03-25T12:10:00Z" }
+  "timestamps": { "started": "2026-03-25T12:00:00Z", "lastActivity": "2026-03-25T12:15:00Z" },
+  "completedAt": "2026-03-25T12:15:00Z",
+  "pruneAfter": "2026-05-24T12:15:00Z"
 }
