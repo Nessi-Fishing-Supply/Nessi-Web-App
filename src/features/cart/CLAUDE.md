@@ -163,12 +163,13 @@ The guest cart enables unauthenticated users to add items to a localStorage-back
 - **cart-page.tsx** — Client component orchestrating all cart states:
   - Loading: skeleton placeholders matching cart layout
   - Empty: centered icon + "Your cart is empty" + "Start Shopping" CTA
-  - Authenticated: items grouped by seller (header with 32px avatar + name + profile link), two-column layout at lg+, sticky sidebar summary, mobile sticky checkout bar
+  - Authenticated: items grouped by seller (header with 32px avatar + name + profile link), two-column layout at lg+, sticky sidebar summary, mobile sticky checkout bar, "You Might Also Like" recommendations strip (below layout, above sticky bar)
   - Guest: minimal item list with "Sign in to checkout" CTA
   - Stale items: auto-removal on mount + dismissible banner with per-item reasons
+  - Recommendations: `AlsoLikedStrip` renders for authenticated users with non-empty carts. Uses `useRecommendations({ context: 'also_liked', userId })` — server resolves recently viewed IDs. Cart item listing IDs are excluded client-side. Hidden for guests and empty carts.
 
 ## Related Features
 
-- `src/features/listings/` — Listing entity; `listing_id` FK on cart items, listing types used for JOIN
+- `src/features/listings/` — Listing entity; `listing_id` FK on cart items, listing types used for JOIN; `AlsoLikedStrip` component for cart recommendations
 - `src/features/context/` — Active member/shop context; determines seller identity for "not own listing" check
 - `src/features/members/` — User identity; `user_id` FK on cart items

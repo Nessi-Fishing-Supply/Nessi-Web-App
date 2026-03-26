@@ -140,3 +140,5 @@ export { default as BooleanFilter } from './components/boolean-filter';
 export { default as StateFilter } from './components/state-filter';
 export { default as SpeciesFilter } from './components/species-filter';
 export { default as ListingTypeFilter } from './components/listing-type-filter';
+export { default as SimilarItemsStrip } from './components/similar-items-strip';
+export { default as AlsoLikedStrip } from './components/also-liked-strip';
