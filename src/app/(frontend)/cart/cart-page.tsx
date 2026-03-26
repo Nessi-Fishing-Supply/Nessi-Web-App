@@ -1,10 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { HiOutlineShoppingCart, HiOutlineX } from 'react-icons/hi';
-import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/features/auth/context';
 import AlsoLikedStrip from '@/features/listings/components/also-liked-strip';
