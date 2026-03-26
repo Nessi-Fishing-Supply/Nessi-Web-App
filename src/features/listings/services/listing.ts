@@ -80,5 +80,8 @@ export const duplicateListing = async (sourceId: string): Promise<ListingWithPho
 export const incrementViewCount = async (id: string): Promise<{ success: boolean }> =>
   post<{ success: boolean }>(`${BASE_URL}/${id}/view`);
 
+export const getListingsByIds = async (ids: string[]): Promise<ListingWithPhotos[]> =>
+  get<ListingWithPhotos[]>(`${BASE_URL}/batch?ids=${ids.join(',')}`);
+
 // Re-export Listing type for consumers that only need to import from this module
 export type { Listing, ListingWithPhotos };
