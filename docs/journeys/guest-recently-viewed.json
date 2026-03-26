@@ -1,0 +1,73 @@
+{
+  "slug": "guest-recently-viewed",
+  "title": "Guest Recently Viewed",
+  "persona": "guest",
+  "description": "Guest's listing views are tracked in localStorage, deduped and capped at 30 items. On login, views silently merge to the database.",
+  "relatedIssues": [],
+  "flows": [
+    {
+      "id": "track-view",
+      "title": "Track Listing View",
+      "trigger": "Guest views a listing detail page",
+      "steps": [
+        {
+          "id": "view-listing",
+          "label": "Guest views listing detail page",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "add-recently-viewed",
+          "label": "addRecentlyViewed(listingId) called",
+          "layer": "background",
+          "status": "built"
+        },
+        {
+          "id": "store-localstorage",
+          "label": "Stored in localStorage",
+          "layer": "background",
+          "status": "built"
+        },
+        {
+          "id": "dedup-reorder",
+          "label": "Deduped + reordered, max 30 items",
+          "layer": "background",
+          "status": "built"
+        }
+      ]
+    },
+    {
+      "id": "merge-on-login",
+      "title": "Merge Recently Viewed on Login",
+      "trigger": "Guest logs in with items in localStorage recently viewed",
+      "steps": [
+        {
+          "id": "login-detected",
+          "label": "useRecentlyViewedMerge() detects login",
+          "layer": "background",
+          "status": "built",
+          "codeRef": "src/features/recently-viewed/hooks/use-recently-viewed-merge.ts"
+        },
+        {
+          "id": "post-merge",
+          "label": "POST /api/recently-viewed/merge",
+          "layer": "server",
+          "status": "built",
+          "route": "POST /api/recently-viewed/merge"
+        },
+        {
+          "id": "merge-to-db",
+          "label": "Guest views merged to DB, deduped on server",
+          "layer": "database",
+          "status": "built"
+        },
+        {
+          "id": "silent-complete",
+          "label": "No toast — silent merge",
+          "layer": "background",
+          "status": "built"
+        }
+      ]
+    }
+  ]
+}

@@ -2,8 +2,17 @@
  * Extract database schema from Supabase-generated types and migrations.
  *
  * Reads `src/types/database.ts` to parse table definitions (Row blocks),
- * then walks `supabase/migrations/*.sql` to detect RLS policies and triggers.
- * Outputs entities (tables with fields/badges) and an ERD (nodes + edges).
+ * then walks `supabase/migrations/*.sql` to extract:
+ *   - Enum types and their values
+ *   - RLS policies (with operation + expressions)
+ *   - Indexes (with unique flag and columns)
+ *   - Trigger details (name, event, timing, function)
+ *   - FK cascade behavior
+ *   - PK / UNIQUE field markers
+ *   - Column defaults
+ *
+ * Outputs entities (tables with enriched fields/badges) and an ERD
+ * (nodes + edges, no x/y coordinates).
  */
 
 import { readFile, walkFiles } from './utils/fs.js';
@@ -20,6 +29,54 @@ const TABLE_ALIASES: Record<string, string> = {
   products: 'listings',
   product_images: 'listing_photos',
 };
+
+// ---------------------------------------------------------------------------
+// Extended types
+// ---------------------------------------------------------------------------
+
+export interface EnumDef {
+  name: string;
+  values: string[];
+}
+
+export interface RlsPolicy {
+  name: string;
+  operation: string;
+  using?: string;
+  withCheck?: string;
+}
+
+export interface IndexDef {
+  name: string;
+  columns: string[];
+  unique: boolean;
+}
+
+export interface TriggerDef {
+  name: string;
+  event: string;
+  timing: string;
+  function: string;
+}
+
+// Augmented EntityField with PK, unique, default, and references.onDelete
+export interface EnrichedEntityField extends EntityField {
+  isPrimaryKey?: boolean;
+  isUnique?: boolean;
+  default?: string;
+  references?: {
+    table: string;
+    column: string;
+    onDelete?: string;
+  };
+}
+
+export interface EnrichedEntity extends Omit<Entity, 'fields'> {
+  fields: EnrichedEntityField[];
+  rlsPolicies: RlsPolicy[];
+  indexes: IndexDef[];
+  triggers: TriggerDef[];
+}
 
 // ---------------------------------------------------------------------------
 // Parse database.ts
@@ -159,23 +216,63 @@ function parseRelationships(tableBlock: string): ParsedRelationship[] {
 }
 
 // ---------------------------------------------------------------------------
-// Scan migrations for RLS and triggers
+// Migration scanning — enriched extraction
 // ---------------------------------------------------------------------------
 
-function scanMigrations(tableNames: string[]): {
+interface MigrationData {
   rls: Set<string>;
   triggers: Set<string>;
-} {
+  enums: EnumDef[];
+  rlsPoliciesByTable: Record<string, RlsPolicy[]>;
+  indexesByTable: Record<string, IndexDef[]>;
+  triggersByTable: Record<string, TriggerDef[]>;
+  pkByTable: Record<string, Set<string>>;
+  uniqueByTable: Record<string, Set<string>>;
+  defaultsByTable: Record<string, Record<string, string>>;
+  fkCascadeByTable: Record<string, Record<string, string>>;
+}
+
+function scanMigrations(tableNames: string[]): MigrationData {
   const rls = new Set<string>();
   const triggers = new Set<string>();
+  const enums: EnumDef[] = [];
+  const enumNames = new Set<string>();
+  const rlsPoliciesByTable: Record<string, RlsPolicy[]> = {};
+  const indexesByTable: Record<string, IndexDef[]> = {};
+  const triggersByTable: Record<string, TriggerDef[]> = {};
+  const pkByTable: Record<string, Set<string>> = {};
+  const uniqueByTable: Record<string, Set<string>> = {};
+  const defaultsByTable: Record<string, Record<string, string>> = {};
+  const fkCascadeByTable: Record<string, Record<string, string>> = {};
 
   const migrationFiles = walkFiles('supabase/migrations', /\.sql$/);
 
   for (const filePath of migrationFiles) {
     const content = readFile(filePath);
-    const lines = content.split('\n');
 
-    // Detect RLS: ALTER TABLE ... ENABLE ROW LEVEL SECURITY
+    // -------------------------------------------------------------------------
+    // 1. Enum extraction
+    // Parse: CREATE TYPE name AS ENUM (...) — both bare and inside DO $$ BEGIN blocks
+    // -------------------------------------------------------------------------
+    const enumPattern =
+      /CREATE\s+TYPE\s+(?:public\.)?(\w+)\s+AS\s+ENUM\s*\(([^)]+)\)/gi;
+    let enumMatch: RegExpExecArray | null;
+    while ((enumMatch = enumPattern.exec(content)) !== null) {
+      const enumName = enumMatch[1];
+      if (enumNames.has(enumName)) continue;
+      enumNames.add(enumName);
+      const valuesRaw = enumMatch[2];
+      const values = valuesRaw
+        .split(',')
+        .map((v) => v.trim().replace(/^['"]|['"]$/g, ''))
+        .filter(Boolean);
+      enums.push({ name: enumName, values });
+    }
+
+    // -------------------------------------------------------------------------
+    // 2. RLS badge (ENABLE ROW LEVEL SECURITY)
+    // -------------------------------------------------------------------------
+    const lines = content.split('\n');
     for (const line of lines) {
       if (/ENABLE\s+ROW\s+LEVEL\s+SECURITY/i.test(line)) {
         const tableMatch = line.match(
@@ -183,7 +280,7 @@ function scanMigrations(tableNames: string[]): {
         );
         if (tableMatch) {
           const rawName = tableMatch[1];
-          const resolved = TABLE_ALIASES[rawName] || rawName;
+          const resolved = TABLE_ALIASES[rawName] ?? rawName;
           if (tableNames.includes(resolved)) {
             rls.add(resolved);
           }
@@ -191,20 +288,218 @@ function scanMigrations(tableNames: string[]): {
       }
     }
 
-    // Detect triggers: CREATE TRIGGER ... ON tablename
-    const triggerBlocks = content.matchAll(
-      /CREATE\s+TRIGGER[\s\S]*?\bON\s+(?:public\.)?(\w+)/gi,
-    );
-    for (const tm of triggerBlocks) {
-      const rawName = tm[1];
-      const resolved = TABLE_ALIASES[rawName] || rawName;
-      if (tableNames.includes(resolved)) {
-        triggers.add(resolved);
+    // -------------------------------------------------------------------------
+    // 3. RLS policy extraction
+    // Pattern:
+    //   CREATE POLICY "name"
+    //     ON table FOR operation
+    //     [TO role]
+    //     [USING (expr)]
+    //     [WITH CHECK (expr)];
+    // -------------------------------------------------------------------------
+    const normalised = content.replace(/\r\n/g, '\n');
+
+    // Match CREATE POLICY blocks — capture up to the semicolon
+    const policyPattern =
+      /CREATE\s+POLICY\s+["']([^"']+)["']\s+ON\s+(?:public\.)?(\w+)\s+FOR\s+(\w+)([\s\S]*?)(?=;)/gi;
+    let policyMatch: RegExpExecArray | null;
+    while ((policyMatch = policyPattern.exec(normalised)) !== null) {
+      const policyName = policyMatch[1];
+      const rawTableName = policyMatch[2];
+      const operation = policyMatch[3].toUpperCase();
+      const body = policyMatch[4];
+
+      const resolvedTable = TABLE_ALIASES[rawTableName] ?? rawTableName;
+      if (!tableNames.includes(resolvedTable)) continue;
+
+      // Extract USING expression (balanced parens after USING keyword)
+      const usingExpr = extractParenExpr(body, /\bUSING\s*\(/i);
+      // Extract WITH CHECK expression
+      const withCheckExpr = extractParenExpr(body, /\bWITH\s+CHECK\s*\(/i);
+
+      const policy: RlsPolicy = { name: policyName, operation };
+      if (usingExpr !== undefined) policy.using = usingExpr;
+      if (withCheckExpr !== undefined) policy.withCheck = withCheckExpr;
+
+      if (!rlsPoliciesByTable[resolvedTable]) {
+        rlsPoliciesByTable[resolvedTable] = [];
       }
+      rlsPoliciesByTable[resolvedTable].push(policy);
+    }
+
+    // -------------------------------------------------------------------------
+    // 4. Index extraction
+    // Pattern: CREATE [UNIQUE] INDEX [IF NOT EXISTS] name ON table (columns)
+    // -------------------------------------------------------------------------
+    const indexPattern =
+      /CREATE\s+(UNIQUE\s+)?INDEX\s+(?:IF\s+NOT\s+EXISTS\s+)?(\w+)\s+ON\s+(?:public\.)?(\w+)\s*(?:USING\s+\w+\s*)?\(([^)]+)\)/gi;
+    let indexMatch: RegExpExecArray | null;
+    while ((indexMatch = indexPattern.exec(content)) !== null) {
+      const isUnique = Boolean(indexMatch[1]);
+      const indexName = indexMatch[2];
+      const rawTableName = indexMatch[3];
+      const columnsRaw = indexMatch[4];
+
+      const resolvedTable = TABLE_ALIASES[rawTableName] ?? rawTableName;
+      if (!tableNames.includes(resolvedTable)) continue;
+
+      // Parse column list — strip ops (gin_trgm_ops etc.)
+      const columns = columnsRaw
+        .split(',')
+        .map((c) => {
+          return c
+            .trim()
+            .split(/\s+/)[0]
+            .replace(/[()]/g, '')
+            .trim();
+        })
+        .filter(Boolean);
+
+      if (!indexesByTable[resolvedTable]) {
+        indexesByTable[resolvedTable] = [];
+      }
+      indexesByTable[resolvedTable].push({ name: indexName, columns, unique: isUnique });
+
+      // Track unique single-column indexes for field-level isUnique
+      if (isUnique && columns.length === 1) {
+        if (!uniqueByTable[resolvedTable]) uniqueByTable[resolvedTable] = new Set();
+        uniqueByTable[resolvedTable].add(columns[0]);
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // 5. Trigger extraction (badge + detail)
+    // Pattern: CREATE TRIGGER name BEFORE|AFTER event ON table EXECUTE FUNCTION func
+    // -------------------------------------------------------------------------
+    const triggerPattern =
+      /CREATE\s+TRIGGER\s+(\w+)\s+(BEFORE|AFTER)\s+([\w\s]+?)\s+ON\s+(?:public\.)?(\w+)[\s\S]*?EXECUTE\s+FUNCTION\s+([\w.]+)\s*\(\)/gi;
+    let triggerBlockMatch: RegExpExecArray | null;
+    while ((triggerBlockMatch = triggerPattern.exec(content)) !== null) {
+      const triggerName = triggerBlockMatch[1];
+      const timing = triggerBlockMatch[2].toUpperCase();
+      const event = triggerBlockMatch[3].trim().toUpperCase();
+      const rawTableName = triggerBlockMatch[4];
+      const func = triggerBlockMatch[5];
+
+      const resolvedTable = TABLE_ALIASES[rawTableName] ?? rawTableName;
+      if (tableNames.includes(resolvedTable)) {
+        triggers.add(resolvedTable);
+
+        if (!triggersByTable[resolvedTable]) {
+          triggersByTable[resolvedTable] = [];
+        }
+        triggersByTable[resolvedTable].push({
+          name: triggerName,
+          event,
+          timing,
+          function: func,
+        });
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // 6. PK/UNIQUE/DEFAULT/FK detection from CREATE TABLE blocks
+    // -------------------------------------------------------------------------
+    const createTablePattern =
+      /CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:public\.)?(\w+)\s*\(([\s\S]*?)\)\s*;/gi;
+    let ctMatch: RegExpExecArray | null;
+    while ((ctMatch = createTablePattern.exec(content)) !== null) {
+      const rawTableName = ctMatch[1];
+      const tableBody = ctMatch[2];
+      const resolvedTable = TABLE_ALIASES[rawTableName] ?? rawTableName;
+      if (!tableNames.includes(resolvedTable)) continue;
+
+      const colLines = tableBody.split('\n');
+      for (const colLine of colLines) {
+        const trimmedCol = colLine.trim();
+        if (!trimmedCol || trimmedCol.startsWith('--') || trimmedCol.startsWith('CONSTRAINT')) continue;
+
+        const colNameMatch = trimmedCol.match(/^(\w+)\s+/);
+        if (!colNameMatch) continue;
+        const colName = colNameMatch[1];
+
+        if (/\bPRIMARY\s+KEY\b/i.test(trimmedCol)) {
+          if (!pkByTable[resolvedTable]) pkByTable[resolvedTable] = new Set();
+          pkByTable[resolvedTable].add(colName);
+        }
+
+        if (/\bUNIQUE\b/i.test(trimmedCol)) {
+          if (!uniqueByTable[resolvedTable]) uniqueByTable[resolvedTable] = new Set();
+          uniqueByTable[resolvedTable].add(colName);
+        }
+
+        const defaultMatch = trimmedCol.match(/\bDEFAULT\s+(.+?)(?:\s*,\s*$|\s*$)/i);
+        if (defaultMatch) {
+          if (!defaultsByTable[resolvedTable]) defaultsByTable[resolvedTable] = {};
+          const defaultVal = defaultMatch[1].replace(/,\s*$/, '').trim();
+          defaultsByTable[resolvedTable][colName] = defaultVal;
+        }
+
+        // Inline FK reference — capture ON DELETE behaviour
+        const fkMatch = trimmedCol.match(
+          /REFERENCES\s+(?:public\.)?(\w+)\s*\(\s*(\w+)\s*\)(?:\s+ON\s+DELETE\s+(\w+(?:\s+\w+)?))?/i,
+        );
+        if (fkMatch) {
+          const onDelete = fkMatch[3]?.toUpperCase();
+          if (onDelete) {
+            if (!fkCascadeByTable[resolvedTable]) fkCascadeByTable[resolvedTable] = {};
+            fkCascadeByTable[resolvedTable][colName] = onDelete;
+          }
+        }
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // 7. ALTER TABLE ADD CONSTRAINT ... FOREIGN KEY with ON DELETE
+    // -------------------------------------------------------------------------
+    const alterFkPattern =
+      /ALTER\s+TABLE\s+(?:public\.)?(\w+)\s+ADD\s+CONSTRAINT\s+\w+\s+FOREIGN\s+KEY\s*\(\s*(\w+)\s*\)\s+REFERENCES\s+(?:public\.)?(\w+)\s*\(\s*(\w+)\s*\)\s+ON\s+DELETE\s+(\w+(?:\s+\w+)?)/gi;
+    let afkMatch: RegExpExecArray | null;
+    while ((afkMatch = alterFkPattern.exec(content)) !== null) {
+      const rawTableName = afkMatch[1];
+      const colName = afkMatch[2];
+      const onDelete = afkMatch[5].toUpperCase();
+      const resolvedTable = TABLE_ALIASES[rawTableName] ?? rawTableName;
+      if (!tableNames.includes(resolvedTable)) continue;
+      if (!fkCascadeByTable[resolvedTable]) fkCascadeByTable[resolvedTable] = {};
+      fkCascadeByTable[resolvedTable][colName] = onDelete;
     }
   }
 
-  return { rls, triggers };
+  return {
+    rls,
+    triggers,
+    enums,
+    rlsPoliciesByTable,
+    indexesByTable,
+    triggersByTable,
+    pkByTable,
+    uniqueByTable,
+    defaultsByTable,
+    fkCascadeByTable,
+  };
+}
+
+/**
+ * Extract the content of a balanced-paren expression immediately following a
+ * pattern like USING( or WITH CHECK(. Returns undefined if not found.
+ */
+function extractParenExpr(text: string, startPattern: RegExp): string | undefined {
+  const m = startPattern.exec(text);
+  if (!m) return undefined;
+
+  // Start after the opening paren (the pattern captures the '(')
+  let depth = 1;
+  let i = m.index + m[0].length;
+  const start = i;
+
+  while (i < text.length && depth > 0) {
+    if (text[i] === '(') depth++;
+    else if (text[i] === ')') depth--;
+    i++;
+  }
+
+  return text.slice(start, i - 1).trim();
 }
 
 // ---------------------------------------------------------------------------
@@ -213,30 +508,62 @@ function scanMigrations(tableNames: string[]): {
 
 function buildEntities(
   tables: ParsedTable[],
-  rls: Set<string>,
-  triggers: Set<string>,
-): Entity[] {
+  migData: MigrationData,
+): EnrichedEntity[] {
   return tables.map((table) => {
     const badges: string[] = [];
-    if (rls.has(table.name)) badges.push('RLS');
-    if (triggers.has(table.name)) badges.push('Triggers');
+    if (migData.rls.has(table.name)) badges.push('RLS');
+    if (migData.triggers.has(table.name)) badges.push('Triggers');
+
+    const pkSet = migData.pkByTable[table.name] ?? new Set<string>();
+    const uniqueSet = migData.uniqueByTable[table.name] ?? new Set<string>();
+    const defaults = migData.defaultsByTable[table.name] ?? {};
+    const fkCascade = migData.fkCascadeByTable[table.name] ?? {};
+
+    const enrichedFields: EnrichedEntityField[] = table.fields.map((field) => {
+      const ef: EnrichedEntityField = { ...field };
+
+      if (pkSet.has(field.name)) ef.isPrimaryKey = true;
+      if (uniqueSet.has(field.name)) ef.isUnique = true;
+      if (defaults[field.name] !== undefined) ef.default = defaults[field.name];
+
+      if (fkCascade[field.name]) {
+        ef.references = { table: '', column: '', onDelete: fkCascade[field.name] };
+      }
+
+      return ef;
+    });
+
+    // Attach references table/column from parsed relationships
+    for (const rel of table.relationships) {
+      for (const col of rel.columns) {
+        const field = enrichedFields.find((f) => f.name === col);
+        if (field) {
+          if (field.references) {
+            field.references.table = rel.referencedRelation;
+            field.references.column = 'id';
+          } else {
+            field.references = { table: rel.referencedRelation, column: 'id' };
+          }
+        }
+      }
+    }
 
     return {
       name: table.name,
       label: titleCase(table.name),
-      fields: table.fields,
+      fields: enrichedFields,
       badges,
+      rlsPolicies: migData.rlsPoliciesByTable[table.name] ?? [],
+      indexes: migData.indexesByTable[table.name] ?? [],
+      triggers: migData.triggersByTable[table.name] ?? [],
     };
   });
 }
 
 // ---------------------------------------------------------------------------
-// Build ERD
+// Build ERD (no x/y)
 // ---------------------------------------------------------------------------
-
-const GRID_X_SPACING = 280;
-const GRID_Y_SPACING = 160;
-const GRID_COLUMNS = 3;
 
 function buildErd(tables: ParsedTable[]): {
   nodes: ErdNode[];
@@ -244,12 +571,10 @@ function buildErd(tables: ParsedTable[]): {
 } {
   const tableNames = tables.map((t) => t.name);
 
-  // Nodes: 3-column grid layout
-  const nodes: ErdNode[] = tables.map((table, i) => ({
+  // Nodes: id + label only — layout coordinates computed by the rendering layer
+  const nodes: ErdNode[] = tables.map((table) => ({
     id: table.name,
     label: titleCase(table.name),
-    x: (i % GRID_COLUMNS) * GRID_X_SPACING,
-    y: Math.floor(i / GRID_COLUMNS) * GRID_Y_SPACING,
   }));
 
   // Edges: use explicit Relationships from the type definitions
@@ -282,7 +607,6 @@ function buildErd(tables: ParsedTable[]): {
 
       const stem = field.name.replace(/_id$/, '');
 
-      // Try matching table names: plural forms
       const candidates = [
         stem,
         stem + 's',
@@ -315,17 +639,18 @@ function buildErd(tables: ParsedTable[]): {
 // ---------------------------------------------------------------------------
 
 export function extractDatabase(): {
-  entities: Entity[];
+  entities: EnrichedEntity[];
+  enums: EnumDef[];
   erd: { nodes: ErdNode[]; edges: ErdEdge[] };
 } {
   const source = readFile('src/types/database.ts');
   const tables = parseTables(source);
   const tableNames = tables.map((t) => t.name);
-  const { rls, triggers } = scanMigrations(tableNames);
-  const entities = buildEntities(tables, rls, triggers);
+  const migData = scanMigrations(tableNames);
+  const entities = buildEntities(tables, migData);
   const erd = buildErd(tables);
 
-  return { entities, erd };
+  return { entities, enums: migData.enums, erd };
 }
 
 // ---------------------------------------------------------------------------
@@ -339,12 +664,14 @@ const isMain =
 
 if (isMain) {
   console.log('Extracting database schema...');
-  const { entities, erd } = extractDatabase();
+  const { entities, enums, erd } = extractDatabase();
 
   writeJson('data-model.json', entities);
   writeJson('entity-relationships.json', erd);
+  writeJson('db-enums.json', enums);
 
   console.log(`\n  Tables: ${entities.length}`);
+  console.log(`  Enums: ${enums.length}`);
   console.log(
     `  With RLS: ${entities.filter((e) => e.badges.includes('RLS')).length}`,
   );

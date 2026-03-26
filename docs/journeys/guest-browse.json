@@ -1,0 +1,156 @@
+{
+  "slug": "guest-browse",
+  "title": "Guest Browse & Discover",
+  "persona": "guest",
+  "description": "Unauthenticated user browses the marketplace by category, keyword search, or featured listings. Views listing details, seller profiles, and shop pages.",
+  "relatedIssues": [],
+  "flows": [
+    {
+      "id": "browse-by-category",
+      "title": "Browse by Category",
+      "trigger": "Guest clicks a category on the homepage",
+      "steps": [
+        {
+          "id": "land-homepage",
+          "label": "Guest lands on homepage",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "click-category",
+          "label": "Click a category link",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "category-page",
+          "label": "Navigate to /category/[slug]",
+          "layer": "client",
+          "status": "built",
+          "route": "/category/[slug]"
+        },
+        {
+          "id": "apply-filters",
+          "label": "Filter: condition, price, state, species, listing type",
+          "layer": "client",
+          "status": "built",
+          "notes": "All filters stored in URL params (shareable)."
+        },
+        {
+          "id": "infinite-scroll",
+          "label": "Infinite scroll results",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "click-listing",
+          "label": "Click listing card",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "listing-detail",
+          "label": "View listing detail at /listing/[id]",
+          "layer": "client",
+          "status": "built",
+          "route": "/listing/[id]"
+        },
+        {
+          "id": "view-count",
+          "label": "View count incremented",
+          "layer": "server",
+          "status": "built"
+        }
+      ]
+    },
+    {
+      "id": "search-by-keyword",
+      "title": "Search by Keyword",
+      "trigger": "Guest types in search bar",
+      "steps": [
+        {
+          "id": "type-search",
+          "label": "Type in search bar",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "autocomplete",
+          "label": "Autocomplete suggestions appear (3+ chars, 200ms debounce)",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "select-or-enter",
+          "label": "Select suggestion or press Enter",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "search-results",
+          "label": "Navigate to /search?q=...",
+          "layer": "client",
+          "status": "built",
+          "route": "/search"
+        },
+        {
+          "id": "filter-results",
+          "label": "Apply filters: condition, price, state, species, listing type",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "scroll-results",
+          "label": "Infinite scroll results",
+          "layer": "client",
+          "status": "built"
+        }
+      ]
+    },
+    {
+      "id": "view-profiles",
+      "title": "View Seller & Shop Profiles",
+      "trigger": "Guest clicks seller or shop link on listing detail",
+      "steps": [
+        {
+          "id": "click-seller",
+          "label": "Click seller profile link on listing detail",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "member-page",
+          "label": "View seller profile at /member/[slug]",
+          "layer": "client",
+          "status": "built",
+          "route": "/member/[slug]"
+        },
+        {
+          "id": "seller-listings",
+          "label": "See seller's other listings",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "click-shop",
+          "label": "Click shop page link on listing detail",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "shop-page",
+          "label": "View shop page at /shop/[slug]",
+          "layer": "client",
+          "status": "built",
+          "route": "/shop/[slug]"
+        },
+        {
+          "id": "shop-listings",
+          "label": "See shop's listings grid + hero banner",
+          "layer": "client",
+          "status": "built"
+        }
+      ]
+    }
+  ]
+}

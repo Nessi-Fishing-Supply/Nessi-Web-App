@@ -1,0 +1,89 @@
+{
+  "slug": "shop-roles",
+  "title": "Shop Roles & Permissions",
+  "persona": "shop-owner",
+  "description": "Roles & Permissions page showing system role cards (Owner, Manager, Contributor) with permission matrix. Custom roles gated behind premium plan.",
+  "relatedIssues": [],
+  "flows": [
+    {
+      "id": "view-roles",
+      "title": "View Roles & Permissions Page",
+      "trigger": "User navigates to /dashboard/shop/roles",
+      "steps": [
+        {
+          "id": "navigate-roles",
+          "label": "Navigate to /dashboard/shop/roles",
+          "layer": "client",
+          "status": "built",
+          "route": "/dashboard/shop/roles"
+        },
+        {
+          "id": "route-guard",
+          "label": "ShopRouteGuard checks user role",
+          "layer": "client",
+          "status": "built",
+          "notes": "Contributors are redirected to /dashboard."
+        },
+        {
+          "id": "show-system-roles",
+          "label": "System Roles section with RoleCards",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "owner-role",
+          "label": "RoleCard: Owner — all 6 domains at 'full'",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "manager-role",
+          "label": "RoleCard: Manager — listings/pricing/orders/messaging 'full', shop_settings 'view', members 'none'",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "contributor-role",
+          "label": "RoleCard: Contributor — listings 'full' only",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "permission-matrix",
+          "label": "Each card shows PermissionMatrix grid",
+          "layer": "client",
+          "status": "built"
+        }
+      ],
+      "branches": [
+        {
+          "afterStep": "route-guard",
+          "condition": "User's role?",
+          "paths": [
+            { "label": "Owner or Manager", "goTo": "show-system-roles" },
+            { "label": "Contributor — redirect to /dashboard", "goTo": "END" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "custom-roles",
+      "title": "Custom Roles (Premium Gate)",
+      "trigger": "Owner clicks 'Add Custom Role'",
+      "steps": [
+        {
+          "id": "click-add-custom",
+          "label": "Owner clicks 'Add Custom Role' button",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "upsell-modal",
+          "label": "CustomRoleUpsellModal opens — premium plan gate (not yet available)",
+          "layer": "client",
+          "status": "planned"
+        }
+      ]
+    }
+  ]
+}

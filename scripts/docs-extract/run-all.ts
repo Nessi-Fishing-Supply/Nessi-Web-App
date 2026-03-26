@@ -27,10 +27,12 @@ async function main(): Promise<void> {
   counts.apiGroups = apiGroups.length;
 
   console.log('[2/10] Extracting database model…');
-  const { entities, erd } = extractDatabase();
+  const { entities, enums: dbEnums, erd } = extractDatabase();
   writeJson('data-model.json', { entities });
   writeJson('entity-relationships.json', erd);
+  writeJson('db-enums.json', { enums: dbEnums });
   counts.entities = entities.length;
+  counts.dbEnums = dbEnums.length;
 
   console.log('[3/10] Extracting permissions…');
   const permissions = buildPermissions();
@@ -54,7 +56,7 @@ async function main(): Promise<void> {
   counts.lifecycles = lifecycles.length;
 
   console.log('[7/10] Extracting journeys…');
-  const journeys = extractJourneys();
+  const { journeys } = extractJourneys();
   writeJson('journeys.json', { journeys });
   counts.journeys = journeys.length;
 
@@ -87,7 +89,48 @@ async function main(): Promise<void> {
     counts.changelogEntries = 0;
   }
 
+  // ---------- Gaps ----------
+
+  type Gap = { type: string; slug: string; reason: string };
+  const gaps: Gap[] = [];
+
+  // Lifecycles with empty transitions
+  for (const lc of lifecycles) {
+    if (lc.transitions.length === 0) {
+      gaps.push({ type: 'lifecycle', slug: lc.slug, reason: 'No transitions defined' });
+    }
+  }
+
+  // Features with missing/default descriptions (description equals "{Name} feature")
+  for (const feat of features) {
+    const defaultDesc = `${feat.name} feature`;
+    if (!feat.description || feat.description === defaultDesc) {
+      gaps.push({ type: 'feature', slug: feat.slug, reason: 'No CLAUDE.md description' });
+    }
+  }
+
+  // API routes with no description — report summary count only
+  let apiRoutesWithoutDescription = 0;
+  for (const group of apiGroups) {
+    for (const endpoint of group.endpoints ?? []) {
+      if (!endpoint.description) {
+        apiRoutesWithoutDescription++;
+      }
+    }
+  }
+  if (apiRoutesWithoutDescription > 0) {
+    gaps.push({
+      type: 'api-summary',
+      slug: 'api-contracts',
+      reason: `${apiRoutesWithoutDescription} endpoint(s) missing description`,
+    });
+  }
+
   // ---------- Meta ----------
+
+  // Rename dbEnums count to enums for consistency
+  counts.enums = counts.dbEnums;
+  delete counts.dbEnums;
 
   const meta = {
     extractedAt: new Date().toISOString(),
@@ -95,6 +138,7 @@ async function main(): Promise<void> {
     sourceRepo: 'nessi-fishing-supply/Nessi-Web-App',
     scriptVersion: '1.0.0',
     itemCounts: counts,
+    gaps,
   };
   writeJson('_meta.json', meta);
 

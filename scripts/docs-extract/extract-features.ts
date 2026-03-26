@@ -1,8 +1,9 @@
-import { existsSync } from 'fs';
+import { existsSync, readdirSync, readFileSync } from 'fs';
+import { join } from 'path';
 import { listDirs, readFile, walkFiles, root } from './utils/fs.js';
 import { titleCase } from './utils/labels.js';
 import { writeJson } from './utils/output.js';
-import type { Feature } from './types.js';
+import type { Feature, FeatureLink } from './types.js';
 
 /**
  * Extract the first paragraph after the first heading from a CLAUDE.md file.
@@ -67,21 +68,125 @@ function countApiRoutes(slug: string): number {
 }
 
 /**
+ * Detect feature status from CLAUDE.md content and directory structure.
+ *
+ * Priority:
+ *   1. Explicit `status: planned|in-progress|stubbed` in CLAUDE.md
+ *   2. TODO/WIP markers in CLAUDE.md → 'in-progress'
+ *   3. No components/ AND no services/ dirs → 'planned'
+ *   4. Otherwise → 'built'
+ */
+function detectStatus(slug: string, claudeContent: string | null): string {
+  if (claudeContent) {
+    // 1. Explicit status declaration
+    const statusMatch = claudeContent.match(/\bstatus:\s*(planned|in-progress|stubbed)\b/i);
+    if (statusMatch) return statusMatch[1].toLowerCase();
+
+    // 2. TODO/WIP markers
+    if (/\b(TODO|WIP)\b/.test(claudeContent)) return 'in-progress';
+  }
+
+  // 3. No components/ and no services/ → planned
+  const hasComponents = existsSync(root('src', 'features', slug, 'components'));
+  const hasServices = existsSync(root('src', 'features', slug, 'services'));
+  if (!hasComponents && !hasServices) return 'planned';
+
+  // 4. Default
+  return 'built';
+}
+
+/**
+ * Extract unique Supabase table names referenced in a feature's source files.
+ * Matches patterns like .from('table_name') or .from("table_name").
+ */
+function extractEntities(slug: string): string[] {
+  const featureDir = root('src', 'features', slug);
+  if (!existsSync(featureDir)) return [];
+
+  const files = walkFiles(`src/features/${slug}`, /\.(ts|tsx)$/);
+  const tables = new Set<string>();
+  const pattern = /\.from\(['"]([a-z_]+)['"]\)/g;
+
+  for (const relPath of files) {
+    const content = readFileSync(root(relPath), 'utf-8');
+    let match: RegExpExecArray | null;
+    pattern.lastIndex = 0;
+    while ((match = pattern.exec(content)) !== null) {
+      tables.add(match[1]);
+    }
+  }
+
+  return Array.from(tables).sort();
+}
+
+/**
+ * Build a map of feature slug → set of journey slugs that reference it via codeRef.
+ * Scans all journey JSON files in docs/journeys/, skipping schema.json and _example.json.
+ */
+function buildJourneyCrossRefs(): Map<string, Set<string>> {
+  const journeyDir = root('docs', 'journeys');
+  const map = new Map<string, Set<string>>();
+
+  if (!existsSync(journeyDir)) return map;
+
+  const SKIP = new Set(['schema.json', '_example.json']);
+
+  for (const entry of readdirSync(journeyDir, { withFileTypes: true })) {
+    if (!entry.isFile() || !entry.name.endsWith('.json')) continue;
+    if (SKIP.has(entry.name)) continue;
+
+    let data: Record<string, unknown>;
+    try {
+      data = JSON.parse(readFileSync(join(journeyDir, entry.name), 'utf-8'));
+    } catch {
+      continue;
+    }
+
+    const journeySlug = (data.slug as string | undefined) ?? entry.name.replace('.json', '');
+    const flows = (data.flows as unknown[]) ?? [];
+
+    for (const flow of flows) {
+      if (typeof flow !== 'object' || flow === null) continue;
+      const steps = ((flow as Record<string, unknown>).steps as unknown[]) ?? [];
+
+      for (const step of steps) {
+        if (typeof step !== 'object' || step === null) continue;
+        const codeRef = (step as Record<string, unknown>).codeRef;
+        if (typeof codeRef !== 'string') continue;
+
+        // Match src/features/{slug}/...
+        const featureMatch = codeRef.match(/^src\/features\/([^/]+)\//);
+        if (!featureMatch) continue;
+
+        const featureSlug = featureMatch[1];
+        if (!map.has(featureSlug)) map.set(featureSlug, new Set());
+        map.get(featureSlug)!.add(journeySlug);
+      }
+    }
+  }
+
+  return map;
+}
+
+/**
  * Extract all features from src/features/ directories.
  */
 export function extractFeatures(): Feature[] {
   const dirs = listDirs('src/features');
   const features: Feature[] = [];
+  const journeyRefs = buildJourneyCrossRefs();
 
   for (const slug of dirs) {
     const name = titleCase(slug);
 
-    // Read description from CLAUDE.md
+    // Read CLAUDE.md
     const claudePath = root('src', 'features', slug, 'CLAUDE.md');
+    let claudeContent: string | null = null;
     let description: string;
+
     if (existsSync(claudePath)) {
-      const content = readFile('src', 'features', slug, 'CLAUDE.md');
-      description = extractDescription(content) || `${name} feature`;
+      claudeContent = readFile('src', 'features', slug, 'CLAUDE.md');
+      description = extractDescription(claudeContent) || `${name} feature`;
     } else {
       description = `${name} feature`;
     }
@@ -91,15 +196,37 @@ export function extractFeatures(): Feature[] {
     const serviceCount = countFiles(slug, 'services', /\.ts$/);
     const endpointCount = countApiRoutes(slug);
 
+    const status = detectStatus(slug, claudeContent);
+    const entities = extractEntities(slug);
+    const journeySlugs = Array.from(journeyRefs.get(slug) ?? []).sort();
+
+    // Build links array
+    const links: FeatureLink[] = [];
+
+    for (const table of entities) {
+      links.push({ type: 'entity', label: table, href: '/data-model' });
+    }
+
+    for (const journeySlug of journeySlugs) {
+      links.push({ type: 'journey', label: journeySlug, href: `/journeys/${journeySlug}` });
+    }
+
+    if (endpointCount > 0) {
+      links.push({ type: 'api-group', label: name, href: '/api-map' });
+    }
+
     features.push({
       slug,
       name,
       description,
-      status: 'built',
+      status,
       componentCount,
       endpointCount,
       hookCount,
       serviceCount,
+      entities,
+      journeySlugs,
+      links,
     });
   }
 

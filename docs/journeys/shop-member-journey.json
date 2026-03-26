@@ -1,0 +1,220 @@
+{
+  "slug": "shop-member-journey",
+  "title": "Shop Member Journey (Join, Work, Leave)",
+  "persona": "shop-member",
+  "description": "Shop member lifecycle: switch to shop context, work within role-based permissions, leave shop with confirmation, and handle context revocation when removed by owner.",
+  "relatedIssues": [],
+  "flows": [
+    {
+      "id": "work-in-shop",
+      "title": "Work in Shop Context",
+      "trigger": "Member clicks shop name in navbar → switchToShop(shopId)",
+      "steps": [
+        {
+          "id": "switch-to-shop",
+          "label": "Member clicks shop name → switchToShop(shopId)",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "set-context-header",
+          "label": "X-Nessi-Context: shop:{shopId} set on all requests",
+          "layer": "background",
+          "status": "built"
+        },
+        {
+          "id": "create-listing",
+          "label": "Create listing in shop context — shop_id set, visible on shop page",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "role-based-access",
+          "label": "Access based on role: Owner/Manager get settings + members, Contributor gets own listings only",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "switch-back",
+          "label": "Switch back to personal: switchToMember() → X-Nessi-Context: member",
+          "layer": "client",
+          "status": "built"
+        }
+      ],
+      "branches": [
+        {
+          "afterStep": "set-context-header",
+          "condition": "Role?",
+          "paths": [
+            { "label": "Owner/Manager — access shop settings, manage members, edit any listing", "goTo": "create-listing" },
+            { "label": "Contributor — edit own listings only, no settings/members access", "goTo": "create-listing" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "leave-shop",
+      "title": "Leave Shop (Non-Owner)",
+      "trigger": "Non-owner member clicks 'Leave Shop'",
+      "steps": [
+        {
+          "id": "click-leave",
+          "label": "Non-owner sees and clicks 'Leave Shop' button",
+          "layer": "client",
+          "status": "built",
+          "notes": "Leave button NOT shown for owners — must transfer ownership first."
+        },
+        {
+          "id": "confirm-modal",
+          "label": "Confirmation modal opens",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "type-phrase",
+          "label": "Type confirmation phrase: 'I {name} want to leave {shopName}'",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "remove-self",
+          "label": "removeShopMember(shopId, myMemberId)",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "switch-to-member",
+          "label": "switchToMember() — revert to personal context",
+          "layer": "background",
+          "status": "built"
+        },
+        {
+          "id": "invalidate-queries",
+          "label": "Invalidate shop queries",
+          "layer": "background",
+          "status": "built"
+        },
+        {
+          "id": "show-toast",
+          "label": "Toast: 'You left {shopName}'",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "close-modal",
+          "label": "Modal closes, user in member context",
+          "layer": "client",
+          "status": "built"
+        }
+      ],
+      "branches": [
+        {
+          "afterStep": "type-phrase",
+          "condition": "Phrase matches?",
+          "paths": [
+            { "label": "Yes", "goTo": "remove-self" },
+            { "label": "No — submit button disabled", "goTo": "END" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "context-revocation",
+      "title": "Context Revocation (Removed by Owner)",
+      "trigger": "Owner removes member while member is in shop context",
+      "steps": [
+        {
+          "id": "owner-removes",
+          "label": "Owner removes member from shop via API",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "next-api-call",
+          "label": "Member's next API call includes shop context",
+          "layer": "background",
+          "status": "built"
+        },
+        {
+          "id": "receive-403",
+          "label": "API returns 403 Forbidden",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "handle-revocation",
+          "label": "handleContextRevocation() fires (with 2s dedup check)",
+          "layer": "background",
+          "status": "built"
+        },
+        {
+          "id": "switch-to-member",
+          "label": "switchToMember() — revert to personal context",
+          "layer": "background",
+          "status": "built"
+        },
+        {
+          "id": "cancel-queries",
+          "label": "Cancel all queries + invalidate cache",
+          "layer": "background",
+          "status": "built"
+        },
+        {
+          "id": "dispatch-event",
+          "label": "Dispatch 'nessi:context-revoked' event",
+          "layer": "background",
+          "status": "built"
+        },
+        {
+          "id": "show-toast",
+          "label": "ContextRevocationListener → Toast: 'You have been removed from shop'",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "navigate-dashboard",
+          "label": "Navigate to /dashboard",
+          "layer": "client",
+          "status": "built"
+        }
+      ]
+    },
+    {
+      "id": "multi-shop",
+      "title": "Multi-Shop Member",
+      "trigger": "User belongs to multiple shops",
+      "steps": [
+        {
+          "id": "fetch-shops",
+          "label": "getShopsByMember(memberId) — fetch all shops",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "navbar-dropdown",
+          "label": "Navbar dropdown lists all shops + personal profile",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "select-identity",
+          "label": "Select identity: personal, or any shop (with role)",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "set-context",
+          "label": "Set context in Zustand store",
+          "layer": "background",
+          "status": "built"
+        },
+        {
+          "id": "persist-context",
+          "label": "Persisted to localStorage — survives page refresh",
+          "layer": "background",
+          "status": "built"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "slug": "route-protection",
+  "title": "Route Protection (proxy.ts)",
+  "persona": "auth",
+  "description": "proxy.ts intercepts every request to enforce auth on /dashboard/* routes, redirect completed onboarding users, and refresh session cookies on public pages.",
+  "relatedIssues": [],
+  "flows": [
+    {
+      "id": "route-protection",
+      "title": "Request Interception & Auth Enforcement",
+      "trigger": "Any incoming request",
+      "steps": [
+        {
+          "id": "receive-request",
+          "label": "proxy.ts intercepts incoming request",
+          "layer": "server",
+          "status": "built",
+          "codeRef": "src/proxy.ts"
+        },
+        {
+          "id": "check-path",
+          "label": "Check request path pattern",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "skip-auth",
+          "label": "Skip auth check for /api/*, /_next/*, /auth/* — pass through",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "verify-jwt",
+          "label": "getUser() — verify JWT from cookies for /dashboard/* routes",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "redirect-unauthed",
+          "label": "Redirect unauthenticated users to /",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "check-onboarding",
+          "label": "Check if path is /onboarding and onboarding_completed_at is set",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "redirect-onboarded",
+          "label": "Redirect already-onboarded users away from /onboarding to /",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "allow-dashboard",
+          "label": "Allow authenticated user through to dashboard",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "refresh-public",
+          "label": "Refresh session cookies on public pages, allow through",
+          "layer": "server",
+          "status": "built"
+        }
+      ],
+      "branches": [
+        {
+          "afterStep": "check-path",
+          "condition": "Path type?",
+          "paths": [
+            { "label": "/api/*, /_next/*, /auth/*", "goTo": "skip-auth" },
+            { "label": "/dashboard/*", "goTo": "verify-jwt" },
+            { "label": "Public pages", "goTo": "refresh-public" }
+          ]
+        },
+        {
+          "afterStep": "verify-jwt",
+          "condition": "Authenticated?",
+          "paths": [
+            { "label": "No", "goTo": "redirect-unauthed" },
+            { "label": "Yes", "goTo": "check-onboarding" }
+          ]
+        },
+        {
+          "afterStep": "check-onboarding",
+          "condition": "Path is /onboarding and already completed?",
+          "paths": [
+            { "label": "Yes — already onboarded", "goTo": "redirect-onboarded" },
+            { "label": "No — allow through", "goTo": "allow-dashboard" }
+          ]
+        }
+      ]
+    }
+  ]
+}

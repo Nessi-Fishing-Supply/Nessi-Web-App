@@ -1,0 +1,234 @@
+{
+  "slug": "seller-listings",
+  "title": "Listing Lifecycle (Create, Edit, Manage)",
+  "persona": "seller",
+  "description": "Full listing lifecycle: 5-step create wizard with photo upload, edit wizard with partial saves, dashboard management with status tabs, and listing actions (publish, sold, archive, duplicate, delete).",
+  "relatedIssues": [],
+  "flows": [
+    {
+      "id": "lifecycle",
+      "title": "Listing State Machine",
+      "trigger": "Seller creates a new listing",
+      "steps": [
+        {
+          "id": "create-draft",
+          "label": "POST /api/listings — create empty draft",
+          "layer": "server",
+          "status": "built",
+          "route": "POST /api/listings"
+        },
+        {
+          "id": "draft-state",
+          "label": "Listing in draft state — requires 2+ photos to publish",
+          "layer": "database",
+          "status": "built",
+          "notes": "localStorage persistence for create wizard."
+        },
+        {
+          "id": "publish",
+          "label": "PATCH status=active — publish, sets published_at",
+          "layer": "server",
+          "status": "built",
+          "notes": "Visible in search, browse, shop page. Editable until sold."
+        },
+        {
+          "id": "mark-sold",
+          "label": "PATCH status=sold — sets sold_at (final state)",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "archive",
+          "label": "PATCH status=archived — hide from search",
+          "layer": "server",
+          "status": "built",
+          "notes": "Hidden from search. Kept for history. Can be reactivated."
+        },
+        {
+          "id": "unarchive",
+          "label": "PATCH status=active — reactivate archived listing",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "delete-draft",
+          "label": "DELETE /api/listings/drafts — hard delete (draft only)",
+          "layer": "server",
+          "status": "built",
+          "route": "DELETE /api/listings/drafts"
+        }
+      ]
+    },
+    {
+      "id": "create-wizard",
+      "title": "Create Listing (5-Step Wizard)",
+      "trigger": "Seller clicks 'New Listing'",
+      "steps": [
+        {
+          "id": "click-new",
+          "label": "Seller clicks 'New Listing'",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "create-draft",
+          "label": "POST /api/listings/drafts → empty draft created",
+          "layer": "server",
+          "status": "built",
+          "route": "POST /api/listings/drafts"
+        },
+        {
+          "id": "redirect-wizard",
+          "label": "Redirect to /dashboard/listings/new",
+          "layer": "client",
+          "status": "built",
+          "route": "/dashboard/listings/new"
+        },
+        {
+          "id": "step1-photos",
+          "label": "Step 1: Photos — upload via POST /api/listings/upload",
+          "layer": "client",
+          "status": "built",
+          "route": "POST /api/listings/upload",
+          "notes": "Sharp: resize 1200x1200 max + 400x400 thumb. Stored as WebP in listing-images bucket."
+        },
+        {
+          "id": "step2-category",
+          "label": "Step 2: Category (10 options) + Condition (6 tiers)",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "step3-details",
+          "label": "Step 3: Details — title, brand, description, species, state, listing type",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "step4-pricing",
+          "label": "Step 4: Pricing (dollars → stored as cents) + Shipping options",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "step5-review",
+          "label": "Step 5: Review — preview all fields",
+          "layer": "client",
+          "status": "built"
+        }
+      ],
+      "branches": [
+        {
+          "afterStep": "step1-photos",
+          "condition": "2+ photos uploaded?",
+          "paths": [
+            { "label": "Yes", "goTo": "step2-category" },
+            { "label": "No — cannot proceed", "goTo": "END" }
+          ]
+        },
+        {
+          "afterStep": "step5-review",
+          "condition": "Action?",
+          "paths": [
+            { "label": "Save as draft — PUT /api/listings/[id]", "goTo": "END" },
+            { "label": "Publish — PUT + PATCH status=active, published_at set", "goTo": "END" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "edit-wizard",
+      "title": "Edit Listing",
+      "trigger": "Seller clicks Edit on a listing",
+      "steps": [
+        {
+          "id": "click-edit",
+          "label": "Seller clicks Edit on listing",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "navigate-edit",
+          "label": "Navigate to /dashboard/listings/[id]/edit",
+          "layer": "client",
+          "status": "built",
+          "route": "/dashboard/listings/[id]/edit"
+        },
+        {
+          "id": "prefill-wizard",
+          "label": "GET /api/listings/[id] → pre-populate wizard",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "edit-steps",
+          "label": "Same 5-step wizard as create, tracks changedFields for partial save",
+          "layer": "client",
+          "status": "built",
+          "notes": "No localStorage persistence for edit mode."
+        },
+        {
+          "id": "save-changes",
+          "label": "PUT /api/listings/[id] with only changed fields",
+          "layer": "server",
+          "status": "built",
+          "route": "PUT /api/listings/[id]"
+        },
+        {
+          "id": "photo-management",
+          "label": "Add new photos or delete existing (DELETE /api/listings/upload/delete)",
+          "layer": "server",
+          "status": "built",
+          "route": "DELETE /api/listings/upload/delete",
+          "notes": "Remaining photos re-sequenced after deletion."
+        }
+      ]
+    },
+    {
+      "id": "dashboard-management",
+      "title": "Dashboard Listing Management",
+      "trigger": "Seller navigates to /dashboard/listings",
+      "steps": [
+        {
+          "id": "fetch-listings",
+          "label": "GET /api/listings/seller — all listings, all statuses",
+          "layer": "server",
+          "status": "built",
+          "route": "GET /api/listings/seller"
+        },
+        {
+          "id": "filter-tabs",
+          "label": "Filter by tab: Active, Drafts, Sold, Archived",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "active-actions",
+          "label": "Active listing actions: Edit, Mark Sold, Archive, Quick Edit Price, Duplicate",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "duplicate-listing",
+          "label": "Duplicate → POST /api/listings/[id]/duplicate → new draft with copied fields",
+          "layer": "server",
+          "status": "built",
+          "route": "POST /api/listings/[id]/duplicate",
+          "notes": "Opens at Step 1 — needs photos."
+        },
+        {
+          "id": "draft-actions",
+          "label": "Draft actions: Continue editing, Delete draft (hard delete)",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "archived-actions",
+          "label": "Archived actions: Reactivate → PATCH status=active",
+          "layer": "client",
+          "status": "built"
+        }
+      ]
+    }
+  ]
+}

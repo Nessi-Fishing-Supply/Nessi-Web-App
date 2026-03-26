@@ -1,0 +1,204 @@
+{
+  "slug": "context-switching",
+  "title": "Context Switching (Member / Shop Identity)",
+  "persona": "context",
+  "description": "Identity system overview: member/shop context switching via Zustand store, X-Nessi-Context header on every request, localStorage persistence, page load rehydration, and edge case handling.",
+  "relatedIssues": [],
+  "flows": [
+    {
+      "id": "identity-system",
+      "title": "Identity System Overview",
+      "trigger": "User logs in — default context is member",
+      "steps": [
+        {
+          "id": "login-default",
+          "label": "User logs in — default context: { type: 'member' }",
+          "layer": "background",
+          "status": "built"
+        },
+        {
+          "id": "check-shops",
+          "label": "Check if user belongs to shops",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "show-switcher",
+          "label": "Navbar shows context switcher dropdown (if shops exist)",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "switch-to-member",
+          "label": "switchToMember() — Zustand: { type: 'member' } — X-Nessi-Context: member",
+          "layer": "background",
+          "status": "built"
+        },
+        {
+          "id": "switch-to-shop",
+          "label": "switchToShop(shopId, shopName) — Zustand: { type: 'shop', shopId } — X-Nessi-Context: shop:{shopId}",
+          "layer": "background",
+          "status": "built"
+        },
+        {
+          "id": "persist-localstorage",
+          "label": "Persisted to localStorage — survives refresh, tab close, re-open",
+          "layer": "background",
+          "status": "built"
+        }
+      ],
+      "branches": [
+        {
+          "afterStep": "check-shops",
+          "condition": "Belongs to shops?",
+          "paths": [
+            { "label": "No — only member context available", "goTo": "END" },
+            { "label": "Yes", "goTo": "show-switcher" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "context-effects",
+      "title": "How Context Affects Operations",
+      "trigger": "User performs any operation in a given context",
+      "steps": [
+        {
+          "id": "create-listing-member",
+          "label": "Create listing (member): listing.member_id = user.id, shop_id = null — appears on /member/[slug]",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "create-listing-shop",
+          "label": "Create listing (shop): listing.shop_id = shopId, member_id = null — appears on /shop/[slug]",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "dashboard-member",
+          "label": "View dashboard (member): personal dashboard KPIs",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "dashboard-shop",
+          "label": "View dashboard (shop): shop dashboard KPIs",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "settings-member",
+          "label": "Shop settings (member): not available",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "settings-shop",
+          "label": "Shop settings (shop): accessible based on role",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "upload-member",
+          "label": "Upload assets (member): stored in members/{userId}/",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "upload-shop",
+          "label": "Upload assets (shop): stored in shops/{shopId}/",
+          "layer": "server",
+          "status": "built"
+        }
+      ]
+    },
+    {
+      "id": "page-load",
+      "title": "Context on Page Load",
+      "trigger": "Page loads or refreshes",
+      "steps": [
+        {
+          "id": "rehydrate",
+          "label": "Zustand rehydrates from localStorage",
+          "layer": "background",
+          "status": "built"
+        },
+        {
+          "id": "set-default",
+          "label": "No stored context — default to { type: 'member' }",
+          "layer": "background",
+          "status": "built"
+        },
+        {
+          "id": "set-member",
+          "label": "Stored member context — set context: member",
+          "layer": "background",
+          "status": "built"
+        },
+        {
+          "id": "set-shop",
+          "label": "Stored shop context — set context: shop:{id}",
+          "layer": "background",
+          "status": "built"
+        },
+        {
+          "id": "validate-membership",
+          "label": "First API call validates membership",
+          "layer": "server",
+          "status": "built"
+        }
+      ],
+      "branches": [
+        {
+          "afterStep": "rehydrate",
+          "condition": "Stored context?",
+          "paths": [
+            { "label": "None", "goTo": "set-default" },
+            { "label": "Member", "goTo": "set-member" },
+            { "label": "Shop", "goTo": "set-shop" }
+          ]
+        },
+        {
+          "afterStep": "validate-membership",
+          "condition": "Still a member?",
+          "paths": [
+            { "label": "Yes — continue in shop context", "goTo": "END" },
+            { "label": "No — 403 — revocation flow", "goTo": "END" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "edge-cases",
+      "title": "Edge Cases",
+      "trigger": "Unusual state transitions",
+      "steps": [
+        {
+          "id": "shop-deleted",
+          "label": "Shop deleted while user in shop context — next API call — 403 — revocation",
+          "layer": "background",
+          "status": "built"
+        },
+        {
+          "id": "role-changed",
+          "label": "Role changed (e.g., owner to contributor) — API checks role per request, UI may show stale permissions until refresh",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "multiple-tabs",
+          "label": "Multiple tabs in different contexts — localStorage sync via StorageEvent, both tabs update",
+          "layer": "background",
+          "status": "built"
+        },
+        {
+          "id": "localstorage-cleared",
+          "label": "localStorage cleared or incognito — defaults to member context",
+          "layer": "background",
+          "status": "built"
+        }
+      ]
+    }
+  ]
+}

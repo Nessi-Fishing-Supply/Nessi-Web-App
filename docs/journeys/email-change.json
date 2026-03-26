@@ -1,0 +1,83 @@
+{
+  "slug": "email-change",
+  "title": "Email Change (Authenticated + OTP)",
+  "persona": "account",
+  "description": "Authenticated user changes their email address from account settings. Requires OTP verification sent to the new email.",
+  "relatedIssues": [],
+  "flows": [
+    {
+      "id": "change-email",
+      "title": "Change Email with OTP Verification",
+      "trigger": "User clicks edit email in /dashboard/account",
+      "steps": [
+        {
+          "id": "click-edit",
+          "label": "User clicks edit email in /dashboard/account",
+          "layer": "client",
+          "status": "built",
+          "route": "/dashboard/account"
+        },
+        {
+          "id": "enter-new-email",
+          "label": "Enter new email address",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "check-availability",
+          "label": "checkEmailAvailable(email)",
+          "layer": "server",
+          "status": "built",
+          "errorCases": [
+            { "condition": "Email already taken", "result": "Show error: email taken" }
+          ]
+        },
+        {
+          "id": "send-change-request",
+          "label": "changeEmail(newEmail) — OTP sent to NEW email",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "enter-otp",
+          "label": "Enter 6-digit code from new email",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "verify-otp",
+          "label": "verifyEmailChange(type='email_change')",
+          "layer": "server",
+          "status": "built",
+          "errorCases": [
+            { "condition": "Invalid/expired code", "result": "Show error" }
+          ]
+        },
+        {
+          "id": "email-updated",
+          "label": "Email updated, session persists",
+          "layer": "server",
+          "status": "built"
+        }
+      ],
+      "branches": [
+        {
+          "afterStep": "check-availability",
+          "condition": "Email available?",
+          "paths": [
+            { "label": "Yes", "goTo": "send-change-request" },
+            { "label": "No — email taken", "goTo": "END" }
+          ]
+        },
+        {
+          "afterStep": "verify-otp",
+          "condition": "OTP valid?",
+          "paths": [
+            { "label": "Yes", "goTo": "email-updated" },
+            { "label": "No — show error", "goTo": "enter-otp" }
+          ]
+        }
+      ]
+    }
+  ]
+}

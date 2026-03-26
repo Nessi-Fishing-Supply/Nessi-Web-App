@@ -1,0 +1,121 @@
+{
+  "slug": "login",
+  "title": "Login (Email + Password)",
+  "persona": "auth",
+  "description": "Existing user logs in with email and password. Triggers background cart merge and recently-viewed merge as side effects.",
+  "relatedIssues": [],
+  "flows": [
+    {
+      "id": "login",
+      "title": "Sign In with Email & Password",
+      "trigger": "User clicks Log In in navbar modal",
+      "steps": [
+        {
+          "id": "open-modal",
+          "label": "User clicks Log In → navbar modal opens",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "enter-credentials",
+          "label": "Enter email + password",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "sign-in",
+          "label": "signInWithPassword() called",
+          "layer": "server",
+          "status": "built",
+          "errorCases": [
+            {
+              "condition": "email_not_confirmed",
+              "result": "Show inline resend verification button"
+            },
+            {
+              "condition": "Invalid credentials",
+              "result": "Show error message"
+            }
+          ]
+        },
+        {
+          "id": "session-set",
+          "label": "Session cookies set on success",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "close-modal",
+          "label": "onSuccess callback fires, modal closes",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "stay-on-page",
+          "label": "User stays on current page",
+          "layer": "client",
+          "status": "built"
+        }
+      ],
+      "branches": [
+        {
+          "afterStep": "sign-in",
+          "condition": "Response?",
+          "paths": [
+            { "label": "email_not_confirmed", "goTo": "END" },
+            { "label": "Invalid credentials", "goTo": "END" },
+            { "label": "Success", "goTo": "session-set" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "post-login-side-effects",
+      "title": "Post-Login Background Side Effects",
+      "trigger": "Session established after login",
+      "steps": [
+        {
+          "id": "cart-merge",
+          "label": "useCartMerge() — merge localStorage cart to DB",
+          "layer": "background",
+          "status": "built",
+          "codeRef": "src/features/cart/hooks/use-cart-merge.ts",
+          "notes": "Silent. No toast. Fires on any auth state change. See guest-cart.json for full flow."
+        },
+        {
+          "id": "recently-viewed-merge",
+          "label": "useRecentlyViewedMerge() — merge localStorage views to DB",
+          "layer": "background",
+          "status": "built",
+          "codeRef": "src/features/recently-viewed/hooks/use-recently-viewed-merge.ts",
+          "notes": "Silent. POST /api/recently-viewed/merge. Deduplicates on server."
+        }
+      ]
+    },
+    {
+      "id": "resend-verification",
+      "title": "Resend Email Verification",
+      "trigger": "Login fails with email_not_confirmed error",
+      "steps": [
+        {
+          "id": "show-resend-button",
+          "label": "Show inline resend verification button",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "resend-otp",
+          "label": "resendOtp() sends new verification code",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "verify-then-login",
+          "label": "User verifies email, then logs in again",
+          "layer": "client",
+          "status": "built"
+        }
+      ]
+    }
+  ]
+}

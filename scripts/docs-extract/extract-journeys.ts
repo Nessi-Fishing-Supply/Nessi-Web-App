@@ -23,6 +23,7 @@ interface SourceStep {
   notes?: string;
   why?: string;
   errorCases?: SourceErrorCase[];
+  ux?: string;
 }
 
 interface SourceBranchPath {
@@ -61,21 +62,12 @@ interface SourceJourney {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Layout constants                                                   */
-/* ------------------------------------------------------------------ */
-
-const X_START = 40;
-const Y_SPACING = 120;
-const DECISION_X_OFFSET = 240;
-
-/* ------------------------------------------------------------------ */
 /*  Transform a source journey into nodes/edges format                 */
 /* ------------------------------------------------------------------ */
 
 function transformJourney(source: SourceJourney): Journey {
   const nodes: JourneyNode[] = [];
   const edges: JourneyEdge[] = [];
-  let y = 0;
 
   for (const flow of source.flows) {
     // --- Entry node for the flow ---
@@ -84,10 +76,7 @@ function transformJourney(source: SourceJourney): Journey {
       id: entryId,
       type: 'entry',
       label: flow.title,
-      x: X_START,
-      y,
     });
-    y += Y_SPACING;
 
     // Build a set of branch afterStep ids for this flow
     const branchAfterSteps = new Set(
@@ -108,8 +97,6 @@ function transformJourney(source: SourceJourney): Journey {
         id: stepNodeId,
         type: 'step',
         label: step.label,
-        x: X_START,
-        y,
       };
       if (step.layer) stepNode.layer = step.layer;
       if (step.status) stepNode.status = step.status;
@@ -117,14 +104,18 @@ function transformJourney(source: SourceJourney): Journey {
       if (step.codeRef) stepNode.codeRef = step.codeRef;
       if (step.notes) stepNode.notes = step.notes;
       if (step.why) stepNode.why = step.why;
+      if (step.ux) stepNode.ux = step.ux;
       if (step.errorCases && step.errorCases.length > 0) {
         stepNode.errorCases = step.errorCases;
       }
       nodes.push(stepNode);
-      y += Y_SPACING;
 
       // --- Edge from previous node to this step ---
-      edges.push({ from: prevNodeId, to: stepNodeId });
+      // Skip if previous was a decision node — decision opt edges handle routing
+      const prevIsDecision = prevNodeId.includes('--decision-');
+      if (!prevIsDecision) {
+        edges.push({ from: prevNodeId, to: stepNodeId });
+      }
       prevNodeId = stepNodeId;
 
       // --- If this step has a branch, insert a decision node ---
@@ -138,15 +129,12 @@ function transformJourney(source: SourceJourney): Journey {
           id: decisionId,
           type: 'decision',
           label: branch.condition,
-          x: X_START + DECISION_X_OFFSET,
-          y,
           options: branch.paths.map((p) => ({
             label: p.label,
             to: p.goTo === 'END' ? 'END' : `${flow.id}--${p.goTo}`,
           })),
         };
         nodes.push(decisionNode);
-        y += Y_SPACING;
 
         // Edge from current step to decision
         edges.push({ from: stepNodeId, to: decisionId });
@@ -155,7 +143,6 @@ function transformJourney(source: SourceJourney): Journey {
         for (const path of branch.paths) {
           if (path.goTo !== 'END') {
             const targetId = `${flow.id}--${path.goTo}`;
-            // Only add edge if target exists in this flow
             if (stepIds.includes(path.goTo)) {
               edges.push({ from: decisionId, to: targetId, opt: path.label });
             }
@@ -194,10 +181,10 @@ function transformJourney(source: SourceJourney): Journey {
 /*  Read all journey JSON files and extract                            */
 /* ------------------------------------------------------------------ */
 
-export function extractJourneys(): Journey[] {
+export function extractJourneys(): { journeys: Journey[] } {
   const journeyDir = 'docs/journeys';
   const files = readdirSync(root(journeyDir)).filter(
-    (f) => f.endsWith('.json') && f !== 'schema.json',
+    (f) => f.endsWith('.json') && !f.startsWith('_') && f !== 'schema.json',
   );
 
   const journeys: Journey[] = [];
@@ -208,7 +195,7 @@ export function extractJourneys(): Journey[] {
     journeys.push(transformJourney(source));
   }
 
-  return journeys;
+  return { journeys };
 }
 
 /* ------------------------------------------------------------------ */
@@ -219,7 +206,7 @@ if (
   process.argv[1] &&
   import.meta.url.endsWith('extract-journeys.ts')
 ) {
-  const journeys = extractJourneys();
+  const { journeys } = extractJourneys();
   console.log(`Found ${journeys.length} journeys`);
   writeJson('journeys.json', { journeys });
 }

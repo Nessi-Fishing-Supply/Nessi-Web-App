@@ -1,3 +1,9 @@
+export interface RequestField {
+  name: string;
+  type: string;
+  required: boolean;
+}
+
 export interface ApiEndpoint {
   method: string;
   path: string;
@@ -5,6 +11,9 @@ export interface ApiEndpoint {
   auth: 'user' | 'admin' | 'none';
   permissions?: { feature: string; level: string };
   errorCodes: number[];
+  requestFields: RequestField[];
+  description: string;
+  tags: string[];
 }
 
 export interface ApiGroup {
@@ -28,8 +37,7 @@ export interface Entity {
 export interface ErdNode {
   id: string;
   label: string;
-  x: number;
-  y: number;
+  // x/y removed — layout coordinates are computed by the rendering layer
 }
 
 export interface ErdEdge {
@@ -61,6 +69,12 @@ export interface ConfigEnum {
   values: ConfigValue[];
 }
 
+export interface FeatureLink {
+  type: 'entity' | 'journey' | 'api-group';
+  label: string;
+  href: string;
+}
+
 export interface Feature {
   slug: string;
   name: string;
@@ -70,6 +84,9 @@ export interface Feature {
   endpointCount: number;
   hookCount: number;
   serviceCount: number;
+  entities: string[];
+  journeySlugs: string[];
+  links: FeatureLink[];
 }
 
 export interface LifecycleState {
@@ -89,20 +106,20 @@ export interface Lifecycle {
   description: string;
   states: LifecycleState[];
   transitions: LifecycleTransition[];
+  source?: 'enum' | 'check_constraint' | 'typescript';
 }
 
 export interface JourneyNode {
   id: string;
   type: 'entry' | 'step' | 'decision';
   label: string;
-  x: number;
-  y: number;
   layer?: string;
   status?: string;
   route?: string;
   codeRef?: string;
   notes?: string;
   why?: string;
+  ux?: string;
   errorCases?: { condition: string; result: string; httpStatus?: number }[];
   options?: { label: string; to: string }[];
 }

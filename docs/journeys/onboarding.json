@@ -1,0 +1,157 @@
+{
+  "slug": "onboarding",
+  "title": "Onboarding Wizard (Buyer vs Seller Path)",
+  "persona": "onboarding",
+  "description": "Branching wizard after first signup. Buyer path (4 steps) vs Seller path (5 steps). Includes post-onboarding seller opt-in for users who initially chose buyer.",
+  "relatedIssues": [],
+  "flows": [
+    {
+      "id": "buyer-path",
+      "title": "Onboarding — Buyer Path (4 Steps)",
+      "trigger": "New user signs up, verifies OTP, and visits /onboarding",
+      "steps": [
+        {
+          "id": "banner-appears",
+          "label": "Onboarding banner appears after signup",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "visit-onboarding",
+          "label": "Visit /onboarding",
+          "layer": "client",
+          "status": "built",
+          "route": "/onboarding"
+        },
+        {
+          "id": "step1-display-name",
+          "label": "Step 1: Display Name + Avatar",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "step2-intent",
+          "label": "Step 2: Intent — How will you use Nessi?",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "step3-fishing-identity",
+          "label": "Step 3: Fishing Identity (optional)",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "step4-bio",
+          "label": "Step 4: Bio (280 chars)",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "complete-onboarding",
+          "label": "completeOnboarding() called",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "redirect-dashboard",
+          "label": "Redirect to /dashboard",
+          "layer": "client",
+          "status": "built"
+        }
+      ],
+      "branches": [
+        {
+          "afterStep": "step2-intent",
+          "condition": "Intent choice?",
+          "paths": [
+            { "label": "Buyer", "goTo": "step3-fishing-identity" },
+            { "label": "Seller / Both", "goTo": "END" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "seller-path",
+      "title": "Onboarding — Seller Path (5 Steps)",
+      "trigger": "User selects Seller or Both intent in Step 2",
+      "steps": [
+        {
+          "id": "step3-fishing-identity-seller",
+          "label": "Step 3: Fishing Identity (optional)",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "step4-seller-type",
+          "label": "Step 4: Seller Type — free profile or shop",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "step5-bio",
+          "label": "Step 5: Bio (280 chars)",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "complete-onboarding-seller",
+          "label": "completeOnboarding() called",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "redirect-dashboard-seller",
+          "label": "Redirect to /dashboard",
+          "layer": "client",
+          "status": "built"
+        }
+      ],
+      "branches": [
+        {
+          "afterStep": "step4-seller-type",
+          "condition": "Seller type?",
+          "paths": [
+            { "label": "Free profile", "goTo": "step5-bio" },
+            { "label": "Shop", "goTo": "step5-bio" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "post-onboarding-seller-optin",
+      "title": "Post-Onboarding Seller Opt-In",
+      "trigger": "Buyer-onboarded user clicks 'Start Selling' CTA in dashboard",
+      "steps": [
+        {
+          "id": "show-cta",
+          "label": "Dashboard shows 'Start Selling' CTA",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "click-cta",
+          "label": "User clicks CTA → SellerOnboardingModal opens",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "choose-method",
+          "label": "How do you want to sell? Free profile or Create a shop",
+          "layer": "client",
+          "status": "built"
+        }
+      ],
+      "branches": [
+        {
+          "afterStep": "choose-method",
+          "condition": "Selling method?",
+          "paths": [
+            { "label": "Free profile → toggleSeller(true) → is_seller = true", "goTo": "END" },
+            { "label": "Create a shop → redirect to /dashboard/shop/create", "goTo": "END" }
+          ]
+        }
+      ]
+    }
+  ]
+}

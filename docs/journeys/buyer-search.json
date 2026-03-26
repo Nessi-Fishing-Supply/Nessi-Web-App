@@ -1,0 +1,98 @@
+{
+  "slug": "buyer-search",
+  "title": "Buyer Search & Discovery",
+  "persona": "buyer",
+  "description": "Authenticated buyer discovers listings via search with autocomplete, category browsing, or homepage featured. Includes filters, infinite scroll, view tracking, and recently viewed.",
+  "relatedIssues": [],
+  "flows": [
+    {
+      "id": "search",
+      "title": "Search with Autocomplete",
+      "trigger": "Buyer types in search bar",
+      "steps": [
+        {
+          "id": "type-query",
+          "label": "Type 3+ chars → autocomplete (200ms debounce)",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "suggestion-sources",
+          "label": "Suggestions from popular search terms, listing titles, category names",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "select-or-enter",
+          "label": "Select suggestion or press Enter",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "search-page",
+          "label": "Navigate to /search?q=...",
+          "layer": "client",
+          "status": "built",
+          "route": "/search"
+        },
+        {
+          "id": "track-suggestion",
+          "label": "trackSearchSuggestion() — fire and forget",
+          "layer": "background",
+          "status": "built"
+        }
+      ]
+    },
+    {
+      "id": "filter-results",
+      "title": "Filter & Browse Results",
+      "trigger": "Buyer reaches search or category results page",
+      "steps": [
+        {
+          "id": "filter-panel",
+          "label": "Filter panel with category, condition (6 tiers), price range, state, species, listing type, free shipping",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "url-params",
+          "label": "All filters stored in URL params (shareable)",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "infinite-scroll",
+          "label": "Infinite scroll results",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "click-listing",
+          "label": "Click listing card",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "listing-detail",
+          "label": "View listing detail at /listing/[id]",
+          "layer": "client",
+          "status": "built",
+          "route": "/listing/[id]"
+        },
+        {
+          "id": "view-count",
+          "label": "View count incremented via POST /api/listings/[id]/view",
+          "layer": "server",
+          "status": "built",
+          "route": "POST /api/listings/[id]/view"
+        },
+        {
+          "id": "recently-viewed",
+          "label": "Recently viewed tracked",
+          "layer": "background",
+          "status": "built"
+        }
+      ]
+    }
+  ]
+}

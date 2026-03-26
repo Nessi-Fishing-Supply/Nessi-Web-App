@@ -1,0 +1,113 @@
+{
+  "slug": "account-settings",
+  "title": "Account Settings & Profile Completeness",
+  "persona": "account",
+  "description": "Account settings page with sections for personal info, fishing identity, notifications, seller settings, shipping addresses, linked accounts, and profile completeness tracking.",
+  "relatedIssues": [],
+  "flows": [
+    {
+      "id": "settings-sections",
+      "title": "Account Settings Page",
+      "trigger": "User navigates to /dashboard/account",
+      "steps": [
+        {
+          "id": "visit-account",
+          "label": "Navigate to /dashboard/account",
+          "layer": "client",
+          "status": "built",
+          "route": "/dashboard/account"
+        },
+        {
+          "id": "personal-info",
+          "label": "Personal Info: edit display name, bio (280 chars), upload avatar (200x200 WebP)",
+          "layer": "client",
+          "status": "built",
+          "notes": "Change email triggers OTP flow — see email-change.json."
+        },
+        {
+          "id": "fishing-identity",
+          "label": "Fishing Identity: select species (multi), technique (multi), home state, years fishing",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "notifications",
+          "label": "Notifications: email preferences (JSONB)",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "seller-settings",
+          "label": "Seller Settings: toggle seller on/off — see seller-toggle.json",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "shipping-addresses",
+          "label": "Shipping Addresses: view/add/edit/delete (max 5) — see buyer-addresses.json",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "linked-accounts",
+          "label": "Linked Accounts: Stripe Connect placeholder",
+          "layer": "client",
+          "status": "planned"
+        },
+        {
+          "id": "danger-zone",
+          "label": "Danger Zone: Delete Account — see account-deletion.json",
+          "layer": "client",
+          "status": "built"
+        }
+      ]
+    },
+    {
+      "id": "profile-completeness",
+      "title": "Profile Completeness Tracker",
+      "trigger": "MemberCompleteness component renders on dashboard",
+      "steps": [
+        {
+          "id": "check-fields",
+          "label": "Check fields: has avatar, has bio, has fishing identity, has display name",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "calculate-percentage",
+          "label": "Calculate % complete",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "show-progress",
+          "label": "Show progress bar",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "show-suggestions",
+          "label": "Show suggestions for missing fields (if not 100%)",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "complete-badge",
+          "label": "Profile complete badge (if 100%)",
+          "layer": "client",
+          "status": "built"
+        }
+      ],
+      "branches": [
+        {
+          "afterStep": "show-progress",
+          "condition": "100% complete?",
+          "paths": [
+            { "label": "No", "goTo": "show-suggestions" },
+            { "label": "Yes", "goTo": "complete-badge" }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,124 @@
+{
+  "slug": "shop-settings",
+  "title": "Shop Settings & Deletion",
+  "persona": "shop-owner",
+  "description": "Shop settings page with sections for details, hero banner, subscription (planned), and shop deletion with full storage cleanup.",
+  "relatedIssues": [],
+  "flows": [
+    {
+      "id": "shop-details",
+      "title": "Edit Shop Details",
+      "trigger": "Owner navigates to /dashboard/shop/settings → Shop Details section",
+      "steps": [
+        {
+          "id": "visit-settings",
+          "label": "Navigate to /dashboard/shop/settings",
+          "layer": "client",
+          "status": "built",
+          "route": "/dashboard/shop/settings"
+        },
+        {
+          "id": "edit-name",
+          "label": "Inline-edit shop name",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "edit-slug",
+          "label": "Edit slug (availability check)",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "edit-description",
+          "label": "Edit description",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "upload-avatar",
+          "label": "Upload avatar (200x200 WebP)",
+          "layer": "server",
+          "status": "built",
+          "route": "POST /api/shops/avatar"
+        }
+      ]
+    },
+    {
+      "id": "hero-banner",
+      "title": "Upload Hero Banner",
+      "trigger": "Owner clicks upload in Hero Banner section",
+      "steps": [
+        {
+          "id": "upload-banner",
+          "label": "Upload hero banner image",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "process-banner",
+          "label": "Sharp: max 1200x400, convert to WebP",
+          "layer": "server",
+          "status": "built",
+          "route": "POST /api/shops/hero-banner"
+        },
+        {
+          "id": "store-banner",
+          "label": "Stored in profile-assets bucket",
+          "layer": "server",
+          "status": "built"
+        }
+      ]
+    },
+    {
+      "id": "delete-shop",
+      "title": "Delete Shop",
+      "trigger": "Owner clicks Delete Shop in settings",
+      "steps": [
+        {
+          "id": "type-confirmation",
+          "label": "Type shop name to confirm deletion",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "delete-api",
+          "label": "DELETE /api/shops/[id]",
+          "layer": "server",
+          "status": "built",
+          "route": "DELETE /api/shops/[id]"
+        },
+        {
+          "id": "delete-avatar",
+          "label": "Delete avatar from storage",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "delete-hero",
+          "label": "Delete hero banner from storage",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "delete-listing-photos",
+          "label": "Delete all shop listing photos",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "soft-delete-shop",
+          "label": "Soft-delete shop row",
+          "layer": "database",
+          "status": "built"
+        },
+        {
+          "id": "release-slug",
+          "label": "Release slug",
+          "layer": "database",
+          "status": "built"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,123 @@
+{
+  "slug": "buyer-addresses",
+  "title": "Saved Shipping Addresses",
+  "persona": "buyer",
+  "description": "Buyer manages up to 5 saved shipping addresses with CRUD operations, default address management, and auto-promotion on delete.",
+  "relatedIssues": [],
+  "flows": [
+    {
+      "id": "view-addresses",
+      "title": "View Address List",
+      "trigger": "Buyer navigates to /dashboard/account → Addresses section",
+      "steps": [
+        {
+          "id": "fetch-addresses",
+          "label": "GET /api/addresses",
+          "layer": "server",
+          "status": "built",
+          "route": "GET /api/addresses"
+        },
+        {
+          "id": "show-list",
+          "label": "AddressList: cards with label, address, default badge",
+          "layer": "client",
+          "status": "built"
+        }
+      ],
+      "branches": [
+        {
+          "afterStep": "fetch-addresses",
+          "condition": "Has addresses?",
+          "paths": [
+            { "label": "Yes", "goTo": "show-list" },
+            { "label": "No — empty state: 'Add your first address'", "goTo": "END" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "add-address",
+      "title": "Add New Address",
+      "trigger": "Buyer clicks 'Add Address'",
+      "steps": [
+        {
+          "id": "check-cap",
+          "label": "Check if at 5-address cap",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "open-modal",
+          "label": "AddressFormModal opens",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "enter-details",
+          "label": "Enter: label, line1, line2, city, state, zip, is_default",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "save-address",
+          "label": "POST /api/addresses",
+          "layer": "server",
+          "status": "built",
+          "route": "POST /api/addresses",
+          "errorCases": [
+            { "condition": "Duplicate label", "result": "Error: label already used" }
+          ]
+        },
+        {
+          "id": "list-updates",
+          "label": "Address saved, list updates",
+          "layer": "client",
+          "status": "built"
+        }
+      ],
+      "branches": [
+        {
+          "afterStep": "check-cap",
+          "condition": "At 5-address cap?",
+          "paths": [
+            { "label": "Yes — button disabled: maximum reached", "goTo": "END" },
+            { "label": "No", "goTo": "open-modal" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "manage-addresses",
+      "title": "Edit, Delete & Set Default",
+      "trigger": "Buyer interacts with address card actions",
+      "steps": [
+        {
+          "id": "edit-address",
+          "label": "Edit → AddressFormModal (pre-populated)",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "delete-address",
+          "label": "Delete → confirmation → DELETE /api/addresses/[id]",
+          "layer": "server",
+          "status": "built",
+          "route": "DELETE /api/addresses/[id]"
+        },
+        {
+          "id": "auto-promote-default",
+          "label": "If deleted was default, next address auto-promoted to default",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "set-default",
+          "label": "Set default → PATCH /api/addresses/[id]/default",
+          "layer": "server",
+          "status": "built",
+          "route": "PATCH /api/addresses/[id]/default"
+        }
+      ]
+    }
+  ]
+}

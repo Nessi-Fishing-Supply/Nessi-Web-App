@@ -10,6 +10,16 @@ import { readFile, walkFiles } from './utils/fs.js';
 import { titleCase } from './utils/labels.js';
 import { writeJson } from './utils/output.js';
 import type { ConfigEnum, ConfigValue } from './types.js';
+import { readdirSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dir =
+  typeof __dirname !== 'undefined'
+    ? __dirname
+    : dirname(fileURLToPath(import.meta.url));
+
+const MIGRATIONS_DIR = join(__dir, '..', '..', 'supabase', 'migrations');
 
 // ---------------------------------------------------------------------------
 // Pattern 1: Array of objects with { value: '...', label: '...', description?: '...' }
@@ -123,6 +133,77 @@ function extractArrayPatternMultiline(source: string): ConfigValue[] {
 }
 
 // ---------------------------------------------------------------------------
+// Database enum extraction from migration SQL files
+// ---------------------------------------------------------------------------
+
+function extractDbEnumConfigs(): ConfigEnum[] {
+  const configs: ConfigEnum[] = [];
+
+  let migrationFiles: string[];
+  try {
+    migrationFiles = readdirSync(MIGRATIONS_DIR)
+      .filter((f) => f.endsWith('.sql'))
+      .sort();
+  } catch {
+    // No migrations directory — skip silently
+    return configs;
+  }
+
+  // Regex to match: CREATE TYPE [schema.]name AS ENUM ( ... )
+  // Handles optional schema prefix, multi-line enum bodies
+  const enumRe =
+    /CREATE\s+TYPE\s+(?:\w+\.)?(\w+)\s+AS\s+ENUM\s*\(([\s\S]*?)\)/gi;
+
+  for (const filename of migrationFiles) {
+    let sql: string;
+    try {
+      sql = readFile('supabase', 'migrations', filename);
+    } catch {
+      continue;
+    }
+
+    let match: RegExpExecArray | null;
+    enumRe.lastIndex = 0;
+
+    while ((match = enumRe.exec(sql)) !== null) {
+      const enumName = match[1].toLowerCase();
+      const body = match[2];
+
+      // Skip status enums — those go to the lifecycle extractor
+      if (enumName.includes('status')) continue;
+
+      // Parse enum values from the body: 'value1', 'value2', ...
+      const valueRe = /'([^']+)'/g;
+      const values: ConfigValue[] = [];
+      let valueMatch: RegExpExecArray | null;
+      while ((valueMatch = valueRe.exec(body)) !== null) {
+        const raw = valueMatch[1];
+        values.push({
+          value: raw,
+          label: titleCase(raw),
+        });
+      }
+
+      if (values.length === 0) continue;
+
+      const slug = enumName.replace(/_/g, '-');
+      const name = titleCase(enumName);
+      const relativePath = `supabase/migrations/${filename}`;
+
+      configs.push({
+        slug,
+        name,
+        description: `Database enum ${name} with ${values.length} values`,
+        source: relativePath,
+        values,
+      });
+    }
+  }
+
+  return configs;
+}
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
@@ -156,7 +237,7 @@ function buildDescription(name: string, count: number): string {
 // ---------------------------------------------------------------------------
 
 export function extractConfigs(): ConfigEnum[] {
-  const configs: ConfigEnum[] = [];
+  let configs: ConfigEnum[] = [];
 
   // Walk constants and config directories
   const constantsFiles = walkFiles('src/features', /^(?!.*\.test\.)(?!index\.ts$).+\.ts$/);
@@ -211,6 +292,37 @@ export function extractConfigs(): ConfigEnum[] {
       source: filePath,
       values: deduped,
     });
+  }
+
+  // First, deduplicate TS configs that share the same values (e.g., categories vs category)
+  const deduplicatedConfigs: typeof configs = [];
+  const seenValueKeys = new Set<string>();
+  for (const config of configs) {
+    const valueKey = config.values.map((v) => v.value).sort().join('|');
+    if (!seenValueKeys.has(valueKey)) {
+      seenValueKeys.add(valueKey);
+      deduplicatedConfigs.push(config);
+    }
+  }
+  configs = deduplicatedConfigs;
+
+  // Extract database enums and merge, deduplicating by value overlap
+  const dbConfigs = extractDbEnumConfigs();
+
+  // Build a set of all value-sets from TS configs for overlap detection
+  const tsValueSets = configs.map((c) => new Set(c.values.map((v) => v.value)));
+
+  for (const dbConfig of dbConfigs) {
+    const dbValues = new Set(dbConfig.values.map((v) => v.value));
+    // Check if any existing TS config has significant overlap (>50% shared values)
+    const hasOverlap = tsValueSets.some((tsSet) => {
+      const shared = [...dbValues].filter((v) => tsSet.has(v)).length;
+      return shared > Math.min(dbValues.size, tsSet.size) * 0.5;
+    });
+    if (!hasOverlap) {
+      configs.push(dbConfig);
+    }
+    // If overlap exists, the TypeScript version has richer labels — keep it
   }
 
   return configs.sort((a, b) => a.slug.localeCompare(b.slug));

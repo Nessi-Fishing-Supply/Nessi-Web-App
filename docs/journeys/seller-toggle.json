@@ -1,0 +1,90 @@
+{
+  "slug": "seller-toggle",
+  "title": "Seller Toggle (On/Off)",
+  "persona": "seller",
+  "description": "User toggles seller status on or off from account settings. Toggling off requires no active listings or orders, and hides all listings from search.",
+  "relatedIssues": [],
+  "flows": [
+    {
+      "id": "toggle-on",
+      "title": "Enable Seller Status",
+      "trigger": "Non-seller user toggles seller ON in /dashboard/account → Seller Settings",
+      "steps": [
+        {
+          "id": "click-toggle-on",
+          "label": "Toggle ON in Seller Settings",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "post-toggle-on",
+          "label": "POST /api/members/toggle-seller (is_seller=true)",
+          "layer": "server",
+          "status": "built",
+          "route": "POST /api/members/toggle-seller"
+        },
+        {
+          "id": "show-seller-features",
+          "label": "Dashboard shows seller features",
+          "layer": "client",
+          "status": "built"
+        }
+      ]
+    },
+    {
+      "id": "toggle-off",
+      "title": "Disable Seller Status",
+      "trigger": "Seller user clicks toggle OFF",
+      "steps": [
+        {
+          "id": "click-toggle-off",
+          "label": "Click toggle OFF in Seller Settings",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "check-preconditions",
+          "label": "GET /api/members/seller-preconditions",
+          "layer": "server",
+          "status": "built",
+          "route": "GET /api/members/seller-preconditions"
+        },
+        {
+          "id": "show-warning",
+          "label": "Show warning: X active listings, Y orders — must resolve first",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "post-toggle-off",
+          "label": "POST /api/members/toggle-seller (is_seller=false)",
+          "layer": "server",
+          "status": "built",
+          "route": "POST /api/members/toggle-seller"
+        },
+        {
+          "id": "hide-listings",
+          "label": "All listings hidden from search",
+          "layer": "database",
+          "status": "built"
+        },
+        {
+          "id": "hide-seller-features",
+          "label": "Seller features hidden in dashboard",
+          "layer": "client",
+          "status": "built"
+        }
+      ],
+      "branches": [
+        {
+          "afterStep": "check-preconditions",
+          "condition": "Has active listings or orders?",
+          "paths": [
+            { "label": "Yes — must resolve first", "goTo": "show-warning" },
+            { "label": "No — proceed", "goTo": "post-toggle-off" }
+          ]
+        }
+      ]
+    }
+  ]
+}

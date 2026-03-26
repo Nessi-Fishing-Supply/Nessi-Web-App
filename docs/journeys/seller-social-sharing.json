@@ -1,0 +1,71 @@
+{
+  "slug": "seller-social-sharing",
+  "title": "Listing Social Sharing",
+  "persona": "seller",
+  "description": "Share listing via Web Share API (mobile) or clipboard copy (desktop). Handles API availability, cancellation, and clipboard permission gracefully.",
+  "relatedIssues": [],
+  "flows": [
+    {
+      "id": "share-listing",
+      "title": "Share Listing URL",
+      "trigger": "User clicks ShareButton on listing detail page",
+      "steps": [
+        {
+          "id": "click-share",
+          "label": "Click ShareButton in action bar on listing detail page",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "check-api",
+          "label": "Check if Web Share API is available",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "native-share",
+          "label": "navigator.share({ title, url }) — native share sheet opens (mobile)",
+          "layer": "client",
+          "status": "built",
+          "notes": "AbortError from user cancellation is silently ignored."
+        },
+        {
+          "id": "clipboard-copy",
+          "label": "navigator.clipboard.writeText(url) — copy link (desktop)",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "copy-success",
+          "label": "Toast: 'Link copied!'",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "copy-denied",
+          "label": "Toast: 'Unable to copy link' (clipboard access denied)",
+          "layer": "client",
+          "status": "built"
+        }
+      ],
+      "branches": [
+        {
+          "afterStep": "check-api",
+          "condition": "Web Share API available?",
+          "paths": [
+            { "label": "Yes (mobile)", "goTo": "native-share" },
+            { "label": "No (desktop)", "goTo": "clipboard-copy" }
+          ]
+        },
+        {
+          "afterStep": "clipboard-copy",
+          "condition": "Clipboard access?",
+          "paths": [
+            { "label": "Success", "goTo": "copy-success" },
+            { "label": "Denied", "goTo": "copy-denied" }
+          ]
+        }
+      ]
+    }
+  ]
+}

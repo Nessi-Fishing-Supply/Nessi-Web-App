@@ -1,0 +1,47 @@
+{
+  "slug": "logout",
+  "title": "Logout",
+  "persona": "auth",
+  "description": "User logs out, clearing session cookies, resetting context store, and redirecting to homepage.",
+  "relatedIssues": [],
+  "flows": [
+    {
+      "id": "logout",
+      "title": "Sign Out",
+      "trigger": "User clicks Logout",
+      "steps": [
+        {
+          "id": "click-logout",
+          "label": "User clicks Logout button",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "sign-out",
+          "label": "signOut() called",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "clear-cookies",
+          "label": "Session cookies cleared",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "reset-context",
+          "label": "Context store reset to member",
+          "layer": "background",
+          "status": "built",
+          "notes": "Zustand store reverts to default member context."
+        },
+        {
+          "id": "redirect-home",
+          "label": "Redirect to /",
+          "layer": "client",
+          "status": "built"
+        }
+      ]
+    }
+  ]
+}

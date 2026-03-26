@@ -1,0 +1,95 @@
+{
+  "slug": "seller-context",
+  "title": "Seller Context (Member vs Shop)",
+  "persona": "seller",
+  "description": "Listings are created under either member or shop context, controlled by the X-Nessi-Context header. Determines where the listing appears publicly.",
+  "relatedIssues": [],
+  "flows": [
+    {
+      "id": "context-assignment",
+      "title": "Listing Context Assignment",
+      "trigger": "Seller creates a listing",
+      "steps": [
+        {
+          "id": "check-context",
+          "label": "Check active context from Zustand store",
+          "layer": "background",
+          "status": "built"
+        },
+        {
+          "id": "member-context",
+          "label": "Member context: seller_id = user.id, member_id = user.id, shop_id = null",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "shop-context",
+          "label": "Shop context: seller_id = user.id, member_id = null, shop_id = activeShopId",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "member-public",
+          "label": "Listing appears on member's public profile at /member/[slug]",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "shop-public",
+          "label": "Listing appears on shop's public page at /shop/[slug]",
+          "layer": "client",
+          "status": "built"
+        }
+      ],
+      "branches": [
+        {
+          "afterStep": "check-context",
+          "condition": "Active context?",
+          "paths": [
+            { "label": "Member context", "goTo": "member-context" },
+            { "label": "Shop context", "goTo": "shop-context" }
+          ]
+        }
+      ],
+      "connections": [
+        { "from": "member-context", "to": "member-public" },
+        { "from": "shop-context", "to": "shop-public" }
+      ]
+    },
+    {
+      "id": "context-header",
+      "title": "X-Nessi-Context Header Validation",
+      "trigger": "API request with X-Nessi-Context header",
+      "steps": [
+        {
+          "id": "send-header",
+          "label": "X-Nessi-Context header sent with every fetch",
+          "layer": "background",
+          "status": "built"
+        },
+        {
+          "id": "validate-member",
+          "label": "member — API validates: user owns listing",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "validate-shop",
+          "label": "shop:{id} — API validates: user is member of shop",
+          "layer": "server",
+          "status": "built"
+        }
+      ],
+      "branches": [
+        {
+          "afterStep": "send-header",
+          "condition": "Header value?",
+          "paths": [
+            { "label": "member", "goTo": "validate-member" },
+            { "label": "shop:{id}", "goTo": "validate-shop" }
+          ]
+        }
+      ]
+    }
+  ]
+}

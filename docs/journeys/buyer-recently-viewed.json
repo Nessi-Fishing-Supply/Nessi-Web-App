@@ -1,0 +1,138 @@
+{
+  "slug": "buyer-recently-viewed",
+  "title": "Recently Viewed (Dual-Source)",
+  "persona": "buyer",
+  "description": "Recently viewed listings use dual-source storage: localStorage for guests, DB-backed API for authenticated users. Includes merge on login and clear history.",
+  "relatedIssues": [],
+  "flows": [
+    {
+      "id": "track-view",
+      "title": "Track Listing View",
+      "trigger": "User views a listing detail page",
+      "steps": [
+        {
+          "id": "view-listing",
+          "label": "User views listing detail page",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "track-authenticated",
+          "label": "POST /api/recently-viewed (server tracks)",
+          "layer": "server",
+          "status": "built",
+          "route": "POST /api/recently-viewed"
+        },
+        {
+          "id": "track-guest",
+          "label": "addRecentlyViewed() → localStorage",
+          "layer": "background",
+          "status": "built"
+        }
+      ],
+      "branches": [
+        {
+          "afterStep": "view-listing",
+          "condition": "Authenticated?",
+          "paths": [
+            { "label": "Yes", "goTo": "track-authenticated" },
+            { "label": "No", "goTo": "track-guest" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "browse-history",
+      "title": "Browse Recently Viewed",
+      "trigger": "User navigates to recently viewed section",
+      "steps": [
+        {
+          "id": "fetch-authenticated",
+          "label": "GET /api/recently-viewed (with listing data)",
+          "layer": "server",
+          "status": "built",
+          "route": "GET /api/recently-viewed"
+        },
+        {
+          "id": "fetch-guest",
+          "label": "getRecentlyViewed() from localStorage",
+          "layer": "background",
+          "status": "built"
+        }
+      ],
+      "branches": [
+        {
+          "afterStep": "browse-history",
+          "condition": "Authenticated?",
+          "paths": [
+            { "label": "Yes", "goTo": "fetch-authenticated" },
+            { "label": "No", "goTo": "fetch-guest" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "merge-on-login",
+      "title": "Merge on Login",
+      "trigger": "Guest logs in with localStorage recently viewed items",
+      "steps": [
+        {
+          "id": "detect-login",
+          "label": "useRecentlyViewedMerge() detects login",
+          "layer": "background",
+          "status": "built",
+          "codeRef": "src/features/recently-viewed/hooks/use-recently-viewed-merge.ts"
+        },
+        {
+          "id": "post-merge",
+          "label": "POST /api/recently-viewed/merge",
+          "layer": "server",
+          "status": "built",
+          "route": "POST /api/recently-viewed/merge"
+        },
+        {
+          "id": "dedup-merge",
+          "label": "Dedup + merge to DB",
+          "layer": "database",
+          "status": "built"
+        },
+        {
+          "id": "silent-complete",
+          "label": "Silent — no toast",
+          "layer": "background",
+          "status": "built"
+        }
+      ]
+    },
+    {
+      "id": "clear-history",
+      "title": "Clear History",
+      "trigger": "User clicks clear recently viewed",
+      "steps": [
+        {
+          "id": "clear-authenticated",
+          "label": "DELETE /api/recently-viewed",
+          "layer": "server",
+          "status": "built",
+          "route": "DELETE /api/recently-viewed"
+        },
+        {
+          "id": "clear-guest",
+          "label": "clearRecentlyViewed() — clear localStorage",
+          "layer": "background",
+          "status": "built"
+        }
+      ],
+      "branches": [
+        {
+          "afterStep": "clear-history",
+          "condition": "Authenticated?",
+          "paths": [
+            { "label": "Yes", "goTo": "clear-authenticated" },
+            { "label": "No", "goTo": "clear-guest" }
+          ]
+        }
+      ]
+    }
+  ]
+}

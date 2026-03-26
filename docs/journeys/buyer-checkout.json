@@ -1,0 +1,73 @@
+{
+  "slug": "buyer-checkout",
+  "title": "Checkout (Escrow via Stripe Connect)",
+  "persona": "buyer",
+  "description": "Buyer checkout with Stripe Connect escrow payments. Funds held until buyer confirms receipt. NOT BUILT — planned for post-MVP.",
+  "relatedIssues": [],
+  "flows": [
+    {
+      "id": "checkout",
+      "title": "Checkout & Escrow Flow",
+      "trigger": "Buyer clicks checkout button (currently disabled in MVP)",
+      "steps": [
+        {
+          "id": "click-checkout",
+          "label": "Checkout button (disabled in MVP)",
+          "layer": "client",
+          "status": "planned"
+        },
+        {
+          "id": "check-stripe",
+          "label": "Check if seller has Stripe Connect onboarded",
+          "layer": "server",
+          "status": "planned",
+          "errorCases": [
+            { "condition": "Seller has no Stripe Connect", "result": "Cannot purchase from this seller" }
+          ]
+        },
+        {
+          "id": "create-payment-intent",
+          "label": "Create payment intent via Stripe",
+          "layer": "external",
+          "status": "planned"
+        },
+        {
+          "id": "escrow-hold",
+          "label": "Escrow hold — funds captured but not transferred",
+          "layer": "external",
+          "status": "planned"
+        },
+        {
+          "id": "order-created",
+          "label": "Order created in database",
+          "layer": "database",
+          "status": "planned"
+        },
+        {
+          "id": "seller-notified",
+          "label": "Seller notified of new order",
+          "layer": "email",
+          "status": "planned"
+        },
+        {
+          "id": "seller-ships",
+          "label": "Seller ships the item",
+          "layer": "external",
+          "status": "planned"
+        },
+        {
+          "id": "buyer-confirms",
+          "label": "Buyer confirms receipt",
+          "layer": "client",
+          "status": "planned"
+        },
+        {
+          "id": "escrow-released",
+          "label": "Escrow released to seller",
+          "layer": "external",
+          "status": "planned"
+        }
+      ]
+    }
+  ]
+}

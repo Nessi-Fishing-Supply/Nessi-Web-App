@@ -162,9 +162,9 @@ After review passes and before PR creation, update project documentation:
 
 3. **README.md** — If the changes add user-facing features, new scripts, or change the project structure, update the README accordingly.
 
-4. **Diagrams** — If the changes introduce a new user journey, data flow, or significant architectural component, generate a Mermaid diagram via `/diagram` and save to `docs/diagrams/`. Update existing diagrams if the changes modify documented flows.
+4. **Diagrams** — If the changes introduce a new data flow or significant architectural component, generate a Mermaid diagram via `/diagram` and save to `docs/diagrams/`. Update existing diagrams if the changes modify documented flows.
 
-5. **Journey Diagrams** — If the changes affect any user-facing flow, update the relevant journey diagram(s) in `docs/diagrams/journeys/`. This is **mandatory** (not optional) when the feature:
+5. **Journey Sync (HARD REQUIREMENT)** — Run `/journey sync` to update the journey JSON files in `docs/journeys/`. This is **blocking** — the PR MUST NOT be created if journey files are out of sync with code changes. Journey drift causes downstream issues in the nessi-docs app (broken visualizations, stale coverage reports, inaccurate test matrices). This step is mandatory when the feature:
    - Adds, removes, or modifies an API route
    - Changes auth, onboarding, or account flows
    - Modifies listing states/transitions
@@ -172,11 +172,12 @@ After review passes and before PR creation, update project documentation:
    - Changes shop roles, membership, or context switching
    - Introduces a new user persona or flow branch
 
-   Steps:
-   a. Identify which journey file(s) are affected (guest, auth, onboarding, buyer, seller, shop-owner, shop-member, account, context)
-   b. Update the Mermaid flowcharts to reflect the new/changed flow
-   c. Update the Coverage Tracker in `docs/diagrams/journeys/README.md` — check the "Built" box for new flows
-   d. If the feature creates an entirely new persona or flow category, create a new journey file and add it to the README index
+   The `/journey sync` skill will:
+   a. Detect affected journey files from the git diff
+   b. Audit existing journeys against the changed code
+   c. Update stale steps, add new steps, remove deleted steps
+   d. Write updated JSON files to `docs/journeys/`
+   e. Report which files were updated (for the PR body)
 
 6. **API documentation** — If new API routes were created or modified (`src/app/api/`), ensure the route's purpose, request/response format, and auth requirements are documented in the feature's CLAUDE.md.
 
@@ -185,7 +186,7 @@ Rules for this step:
 - Documentation updates are committed as part of the final phase, not as a separate PR
 - If no documentation changes are needed (e.g., a pure bug fix with no architectural impact), skip this step and note "No doc updates needed" in the PR body
 - Architecture diagrams (docs/diagrams/) are optional unless the feature introduces a new data flow or system component
-- Journey diagrams (docs/diagrams/journeys/) are mandatory when user-facing flows change — see item 5 above
+- Journey files (docs/journeys/) are mandatory when user-facing flows change — see item 5 above
 
 ### Step 7: PR Creation
 

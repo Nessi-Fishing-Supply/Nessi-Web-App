@@ -1,0 +1,160 @@
+{
+  "slug": "shop-ownership-transfer",
+  "title": "Shop Ownership Transfer (Request → Accept → Cancel)",
+  "persona": "shop-owner",
+  "description": "Owner initiates ownership transfer to another member. Transferee receives email link, accepts on a dedicated page. Includes atomic role swap and cancellation flow.",
+  "relatedIssues": [],
+  "flows": [
+    {
+      "id": "initiate-transfer",
+      "title": "Initiate Transfer",
+      "trigger": "Owner clicks Transfer Ownership in shop settings",
+      "steps": [
+        {
+          "id": "select-member",
+          "label": "Select new owner from current members",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "confirm-modal",
+          "label": "Two-step confirmation modal",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "post-transfer",
+          "label": "POST /api/shops/[id]/ownership",
+          "layer": "server",
+          "status": "built",
+          "route": "POST /api/shops/[id]/ownership",
+          "errorCases": [
+            { "condition": "Pending transfer already exists", "result": "409 — cancel existing first", "httpStatus": 409 }
+          ]
+        },
+        {
+          "id": "insert-transfer",
+          "label": "Insert shop_ownership_transfers row (status: pending, 7-day expiry)",
+          "layer": "database",
+          "status": "built"
+        },
+        {
+          "id": "send-email",
+          "label": "Send ownership transfer email with /shop/transfer/{token} link",
+          "layer": "email",
+          "status": "built"
+        },
+        {
+          "id": "show-pending",
+          "label": "Pending status card shown with transferee name + expiry",
+          "layer": "client",
+          "status": "built"
+        }
+      ]
+    },
+    {
+      "id": "accept-transfer",
+      "title": "Accept Transfer",
+      "trigger": "Transferee clicks email link → /shop/transfer/{token}",
+      "steps": [
+        {
+          "id": "land-on-page",
+          "label": "Transferee lands on /shop/transfer/{token}",
+          "layer": "client",
+          "status": "built",
+          "route": "/shop/transfer/[token]"
+        },
+        {
+          "id": "check-auth",
+          "label": "proxy.ts: check authentication",
+          "layer": "server",
+          "status": "built"
+        },
+        {
+          "id": "validate-transfer",
+          "label": "Server component fetches transfer via admin client — validate status, user, expiry",
+          "layer": "server",
+          "status": "built",
+          "errorCases": [
+            { "condition": "Not found or non-pending", "result": "notFound()" },
+            { "condition": "Wrong user", "result": "notFound()" },
+            { "condition": "Expired", "result": "Show expired message" }
+          ]
+        },
+        {
+          "id": "show-accept",
+          "label": "Show TransferAccept component",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "click-accept",
+          "label": "Transferee clicks Accept",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "accept-api",
+          "label": "POST /api/shops/ownership-transfer/[token]/accept",
+          "layer": "server",
+          "status": "built",
+          "route": "POST /api/shops/ownership-transfer/[token]/accept"
+        },
+        {
+          "id": "atomic-swap",
+          "label": "Atomic swap: shops.owner_id → new owner, new owner role → OWNER, old owner role → MANAGER, transfer status → accepted",
+          "layer": "database",
+          "status": "built"
+        },
+        {
+          "id": "transfer-complete",
+          "label": "Ownership transferred successfully",
+          "layer": "client",
+          "status": "built"
+        }
+      ],
+      "branches": [
+        {
+          "afterStep": "check-auth",
+          "condition": "Authenticated?",
+          "paths": [
+            { "label": "No — redirect to /", "goTo": "END" },
+            { "label": "Yes", "goTo": "validate-transfer" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cancel-transfer",
+      "title": "Cancel Transfer",
+      "trigger": "Owner clicks Cancel Transfer on pending status card",
+      "steps": [
+        {
+          "id": "click-cancel",
+          "label": "Owner clicks Cancel Transfer",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "confirm-cancel",
+          "label": "Confirmation modal",
+          "layer": "client",
+          "status": "built"
+        },
+        {
+          "id": "delete-transfer",
+          "label": "DELETE /api/shops/[id]/ownership-transfer",
+          "layer": "server",
+          "status": "built",
+          "route": "DELETE /api/shops/[id]/ownership-transfer"
+        },
+        {
+          "id": "set-cancelled",
+          "label": "Set transfer status → cancelled",
+          "layer": "database",
+          "status": "built"
+        }
+      ]
+    }
+  ]
+}
