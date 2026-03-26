@@ -11,7 +11,7 @@ export async function getRecentlyViewedServer(
   const { data, error } = await supabase
     .from('recently_viewed')
     .select(
-      '*, listing:listings!inner(id, title, price_cents, cover_photo_url, status, condition, seller_id, shop_id, slug)',
+      '*, listing:listings!inner(id, title, price_cents, cover_photo_url, status, condition, seller_id, shop_id)',
     )
     .eq('user_id', userId)
     .is('listing.deleted_at', null)
@@ -119,7 +119,6 @@ export async function getRecentlyViewedServer(
       viewedAt: row.viewed_at,
       title: listing.title,
       priceCents: listing.price_cents,
-      slug: listing.slug,
       status: listing.status,
       coverPhotoUrl: listing.cover_photo_url,
       condition: listing.condition,

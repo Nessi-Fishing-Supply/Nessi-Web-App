@@ -10,7 +10,6 @@ export type RecentlyViewedListingItem = {
   viewedAt: string;
   title: string;
   priceCents: number;
-  slug: string;
   status: string;
   coverPhotoUrl: string | null;
   condition: string;
