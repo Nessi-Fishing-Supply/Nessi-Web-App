@@ -302,13 +302,11 @@ export default function ListingDetail({ listing, seller, currentUserId }: Props)
         )}
 
         {/* Similar items */}
-        <div className={styles.similarSection}>
-          <SimilarItemsStrip
-            listingId={listing.id}
-            category={listing.category}
-            condition={listing.condition}
-          />
-        </div>
+        <SimilarItemsStrip
+          listingId={listing.id}
+          category={listing.category}
+          condition={listing.condition}
+        />
 
         {/* Report */}
         <div className={styles.reportRow}>
