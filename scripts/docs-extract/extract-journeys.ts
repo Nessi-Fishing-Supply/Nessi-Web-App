@@ -1,0 +1,225 @@
+import { readdirSync } from 'fs';
+import { readFile, root } from './utils/fs.js';
+import { writeJson } from './utils/output.js';
+import type { Journey, JourneyNode, JourneyEdge } from './types.js';
+
+/* ------------------------------------------------------------------ */
+/*  Source JSON types (flows/steps format from docs/journeys/*.json)   */
+/* ------------------------------------------------------------------ */
+
+interface SourceErrorCase {
+  condition: string;
+  result: string;
+  httpStatus?: number;
+}
+
+interface SourceStep {
+  id: string;
+  label: string;
+  layer: string;
+  status?: string;
+  route?: string;
+  codeRef?: string;
+  notes?: string;
+  why?: string;
+  errorCases?: SourceErrorCase[];
+}
+
+interface SourceBranchPath {
+  label: string;
+  goTo: string;
+}
+
+interface SourceBranch {
+  afterStep: string;
+  condition: string;
+  paths: SourceBranchPath[];
+}
+
+interface SourceConnection {
+  from: string;
+  to: string;
+  label?: string;
+}
+
+interface SourceFlow {
+  id: string;
+  title: string;
+  trigger: string;
+  steps: SourceStep[];
+  branches?: SourceBranch[];
+  connections?: SourceConnection[];
+}
+
+interface SourceJourney {
+  slug: string;
+  title: string;
+  persona: string;
+  description: string;
+  relatedIssues?: number[];
+  flows: SourceFlow[];
+}
+
+/* ------------------------------------------------------------------ */
+/*  Layout constants                                                   */
+/* ------------------------------------------------------------------ */
+
+const X_START = 40;
+const Y_SPACING = 120;
+const DECISION_X_OFFSET = 240;
+
+/* ------------------------------------------------------------------ */
+/*  Transform a source journey into nodes/edges format                 */
+/* ------------------------------------------------------------------ */
+
+function transformJourney(source: SourceJourney): Journey {
+  const nodes: JourneyNode[] = [];
+  const edges: JourneyEdge[] = [];
+  let y = 0;
+
+  for (const flow of source.flows) {
+    // --- Entry node for the flow ---
+    const entryId = `${flow.id}--entry`;
+    nodes.push({
+      id: entryId,
+      type: 'entry',
+      label: flow.title,
+      x: X_START,
+      y,
+    });
+    y += Y_SPACING;
+
+    // Build a set of branch afterStep ids for this flow
+    const branchAfterSteps = new Set(
+      (flow.branches ?? []).map((b) => b.afterStep),
+    );
+
+    // Map step id → index for quick lookup
+    const stepIds = flow.steps.map((s) => s.id);
+
+    let prevNodeId = entryId;
+
+    for (let i = 0; i < flow.steps.length; i++) {
+      const step = flow.steps[i];
+      const stepNodeId = `${flow.id}--${step.id}`;
+
+      // --- Step node ---
+      const stepNode: JourneyNode = {
+        id: stepNodeId,
+        type: 'step',
+        label: step.label,
+        x: X_START,
+        y,
+      };
+      if (step.layer) stepNode.layer = step.layer;
+      if (step.status) stepNode.status = step.status;
+      if (step.route) stepNode.route = step.route;
+      if (step.codeRef) stepNode.codeRef = step.codeRef;
+      if (step.notes) stepNode.notes = step.notes;
+      if (step.why) stepNode.why = step.why;
+      if (step.errorCases && step.errorCases.length > 0) {
+        stepNode.errorCases = step.errorCases;
+      }
+      nodes.push(stepNode);
+      y += Y_SPACING;
+
+      // --- Edge from previous node to this step ---
+      edges.push({ from: prevNodeId, to: stepNodeId });
+      prevNodeId = stepNodeId;
+
+      // --- If this step has a branch, insert a decision node ---
+      if (branchAfterSteps.has(step.id)) {
+        const branch = (flow.branches ?? []).find(
+          (b) => b.afterStep === step.id,
+        )!;
+        const decisionId = `${flow.id}--decision-${step.id}`;
+
+        const decisionNode: JourneyNode = {
+          id: decisionId,
+          type: 'decision',
+          label: branch.condition,
+          x: X_START + DECISION_X_OFFSET,
+          y,
+          options: branch.paths.map((p) => ({
+            label: p.label,
+            to: p.goTo === 'END' ? 'END' : `${flow.id}--${p.goTo}`,
+          })),
+        };
+        nodes.push(decisionNode);
+        y += Y_SPACING;
+
+        // Edge from current step to decision
+        edges.push({ from: stepNodeId, to: decisionId });
+
+        // Option edges from decision to targets
+        for (const path of branch.paths) {
+          if (path.goTo !== 'END') {
+            const targetId = `${flow.id}--${path.goTo}`;
+            // Only add edge if target exists in this flow
+            if (stepIds.includes(path.goTo)) {
+              edges.push({ from: decisionId, to: targetId, opt: path.label });
+            }
+          }
+        }
+
+        prevNodeId = decisionId;
+      }
+    }
+
+    // --- Connections become additional edges ---
+    if (flow.connections) {
+      for (const conn of flow.connections) {
+        const edge: JourneyEdge = {
+          from: `${flow.id}--${conn.from}`,
+          to: `${flow.id}--${conn.to}`,
+        };
+        if (conn.label) edge.opt = conn.label;
+        edges.push(edge);
+      }
+    }
+  }
+
+  return {
+    slug: source.slug,
+    title: source.title,
+    persona: source.persona,
+    description: source.description,
+    relatedIssues: source.relatedIssues,
+    nodes,
+    edges,
+  };
+}
+
+/* ------------------------------------------------------------------ */
+/*  Read all journey JSON files and extract                            */
+/* ------------------------------------------------------------------ */
+
+export function extractJourneys(): Journey[] {
+  const journeyDir = 'docs/journeys';
+  const files = readdirSync(root(journeyDir)).filter(
+    (f) => f.endsWith('.json') && f !== 'schema.json',
+  );
+
+  const journeys: Journey[] = [];
+
+  for (const file of files.sort()) {
+    const content = readFile(journeyDir, file);
+    const source: SourceJourney = JSON.parse(content);
+    journeys.push(transformJourney(source));
+  }
+
+  return journeys;
+}
+
+/* ------------------------------------------------------------------ */
+/*  CLI entrypoint                                                     */
+/* ------------------------------------------------------------------ */
+
+if (
+  process.argv[1] &&
+  import.meta.url.endsWith('extract-journeys.ts')
+) {
+  const journeys = extractJourneys();
+  console.log(`Found ${journeys.length} journeys`);
+  writeJson('journeys.json', { journeys });
+}

@@ -32,3 +32,6 @@ next-env.d.ts
 # plugins
 /.superpowers/
 /.playwright-mcp/
+
+# docs extraction output
+/_docs-output/
