@@ -24,7 +24,7 @@ jobs:
       - name: Extract docs data
         run: pnpm tsx scripts/docs-extract/run-all.ts
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.DOCS_SYNC_TOKEN }}
           SOURCE_COMMIT: ${{ github.sha }}
 
       - name: Validate generated JSON

@@ -66,14 +66,26 @@ async function main(): Promise<void> {
   // ---------- Async GitHub fetchers (9–10) ----------
 
   console.log('[9/10] Fetching kanban board…');
-  const items = await fetchKanban();
-  writeJson('roadmap.json', { items });
-  counts.roadmapItems = items.length;
+  try {
+    const items = await fetchKanban();
+    writeJson('roadmap.json', { items });
+    counts.roadmapItems = items.length;
+  } catch (err) {
+    console.warn(`  ⚠ Kanban fetch failed (${err instanceof Error ? err.message : err}), writing empty`);
+    writeJson('roadmap.json', { items: [] });
+    counts.roadmapItems = 0;
+  }
 
   console.log('[10/10] Fetching changelog…');
-  const entries = await fetchMergedPRs();
-  writeJson('changelog.json', { entries });
-  counts.changelogEntries = entries.length;
+  try {
+    const entries = await fetchMergedPRs();
+    writeJson('changelog.json', { entries });
+    counts.changelogEntries = entries.length;
+  } catch (err) {
+    console.warn(`  ⚠ Changelog fetch failed (${err instanceof Error ? err.message : err}), writing empty`);
+    writeJson('changelog.json', { entries: [] });
+    counts.changelogEntries = 0;
+  }
 
   // ---------- Meta ----------
 
