@@ -141,6 +141,7 @@ When adding a new feature domain:
 3. Place Tanstack Query hooks in `features/{domain}/hooks/`
 4. Place Zustand stores in `features/{domain}/stores/` (when needed)
 5. Keep API routes in `src/app/api/{domain}/` (Next.js requirement)
+6. Every API route handler **must** have a description comment (single-line `//` or JSDoc `/** */`) immediately above the `export async function`. These are extracted automatically for the docs site. Write for a product person, not a developer (e.g., `// Send a shop invite to a new member via email`).
 
 ### State Management
 
