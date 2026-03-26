@@ -10,7 +10,6 @@ import { extractConfigs } from './extract-config.js';
 import { extractFeatures } from './extract-features.js';
 import { extractLifecycles } from './extract-lifecycles.js';
 import { extractJourneys } from './extract-journeys.js';
-import { extractOnboarding } from './extract-onboarding.js';
 import { fetchKanban } from './fetch-kanban.js';
 import { fetchMergedPRs } from './fetch-changelog.js';
 import { writeJson } from './utils/output.js';
@@ -60,14 +59,9 @@ async function main(): Promise<void> {
   writeJson('journeys.json', { journeys });
   counts.journeys = journeys.length;
 
-  console.log('[8/10] Extracting onboarding…');
-  const onboarding = extractOnboarding();
-  writeJson('onboarding.json', onboarding);
-  counts.onboardingSteps = onboarding.steps.length;
+  // ---------- Async GitHub fetchers (8–9) ----------
 
-  // ---------- Async GitHub fetchers (9–10) ----------
-
-  console.log('[9/10] Fetching kanban board…');
+  console.log('[8/9] Fetching kanban board…');
   try {
     const items = await fetchKanban();
     writeJson('roadmap.json', { items });
@@ -80,7 +74,7 @@ async function main(): Promise<void> {
     counts.roadmapItems = 0;
   }
 
-  console.log('[10/10] Fetching changelog…');
+  console.log('[9/9] Fetching changelog…');
   try {
     const entries = await fetchMergedPRs();
     writeJson('changelog.json', { entries });

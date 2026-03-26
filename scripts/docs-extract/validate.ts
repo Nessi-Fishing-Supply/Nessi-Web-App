@@ -22,7 +22,6 @@ const EXPECTED_FILES = [
   'features.json',
   'lifecycles.json',
   'journeys.json',
-  'onboarding.json',
   'roadmap.json',
   'changelog.json',
   '_meta.json',
