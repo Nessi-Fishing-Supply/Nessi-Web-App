@@ -59,32 +59,34 @@ function detectPermissions(source: string): { feature: string; level: string } |
 }
 
 /**
- * Derive the minimum role required for an endpoint.
- * Priority: permissions level > auth heuristic > none.
+ * Determine access contexts for an endpoint.
  *
- * Permission levels from requireShopPermission map to roles:
- *   'owner'       → Owner
- *   'manage'      → Manager
- *   'contribute'  → Contributor
+ * - 'Shop'   — endpoint requires shop context (has requireShopPermission or
+ *              lives under /api/shops/ with admin auth)
+ * - 'Member' — any authenticated marketplace user can call this
  *
- * Auth heuristic fallback:
- *   'admin' (createAdminClient) → Owner
- *   'user'  (createServerClient) → Member
- *   'none'  → None
+ * Endpoints like listings are accessible to both members and shop owners,
+ * so they get both badges.
  */
-function detectRole(
+function detectAccess(
+  path: string,
   auth: 'user' | 'admin' | 'none',
   permissions?: { feature: string; level: string },
-): import('./types').ApiRole {
-  if (permissions) {
-    const level = permissions.level.toLowerCase();
-    if (level === 'owner') return 'Owner';
-    if (level === 'manage' || level === 'manager') return 'Manager';
-    if (level === 'contribute' || level === 'contributor') return 'Contributor';
+): import('./types').AccessContext[] {
+  const access: import('./types').AccessContext[] = [];
+  const isShopEndpoint = permissions != null || (path.startsWith('/api/shops') && auth === 'admin');
+  const isListingEndpoint = path.startsWith('/api/listings');
+
+  if (isListingEndpoint) {
+    // Listings are accessible to both members and shop users
+    access.push('Member', 'Shop');
+  } else if (isShopEndpoint) {
+    access.push('Shop');
+  } else if (auth === 'user' || auth === 'admin') {
+    access.push('Member');
   }
-  if (auth === 'admin') return 'Owner';
-  if (auth === 'user') return 'Member';
-  return 'None';
+
+  return access;
 }
 
 /**
@@ -305,7 +307,7 @@ export function extractApiRoutes(): ApiGroup[] {
         path,
         label: endpointLabel(method, path),
         auth,
-        role: detectRole(auth, permissions),
+        access: detectAccess(path, auth, permissions),
         errorCodes,
         requestFields,
         description,

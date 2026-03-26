@@ -4,14 +4,14 @@ export interface RequestField {
   required: boolean;
 }
 
-export type ApiRole = 'Owner' | 'Manager' | 'Contributor' | 'Member' | 'None';
+export type AccessContext = 'Member' | 'Shop';
 
 export interface ApiEndpoint {
   method: string;
   path: string;
   label: string;
   auth: 'user' | 'admin' | 'none';
-  role: ApiRole;
+  access: AccessContext[];
   permissions?: { feature: string; level: string };
   errorCodes: number[];
   requestFields: RequestField[];
