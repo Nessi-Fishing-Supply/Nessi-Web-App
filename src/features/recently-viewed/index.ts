@@ -19,6 +19,7 @@ export {
   useMergeGuestViews,
 } from './hooks/use-recently-viewed-query';
 export { useRecentlyViewedMerge } from './hooks/use-recently-viewed-merge';
+export { useRecentlyViewedListings } from './hooks/use-recently-viewed-listings';
 
 // Services
 export {

@@ -113,3 +113,22 @@ export async function getActiveListingsServer(): Promise<ListingWithPhotos[]> {
 
   return (data ?? []) as ListingWithPhotos[];
 }
+
+export async function getListingsByIdsServer(ids: string[]): Promise<ListingWithPhotos[]> {
+  if (ids.length === 0) return [];
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('listings')
+    .select('*, listing_photos(*)')
+    .in('id', ids)
+    .eq('status', 'active')
+    .is('deleted_at', null)
+    .order('position', { referencedTable: 'listing_photos', ascending: true });
+
+  if (error) {
+    throw new Error(`Failed to fetch listings by ids: ${error.message}`);
+  }
+
+  return (data ?? []) as ListingWithPhotos[];
+}
