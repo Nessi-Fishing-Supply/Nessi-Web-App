@@ -3,6 +3,7 @@ import { AUTH_CACHE_HEADERS } from '@/libs/api-headers';
 import { NextResponse } from 'next/server';
 import { updateAddressServer } from '@/features/addresses/services/address-server';
 
+// Marks a specific address as the user's default shipping address.
 export async function PATCH(_req: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
 

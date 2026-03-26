@@ -1,6 +1,7 @@
 import { createClient } from '@/libs/supabase/server';
 import { NextResponse } from 'next/server';
 
+// Records a search term to improve future autocomplete suggestions.
 export async function POST(req: Request) {
   try {
     const body = await req.json();

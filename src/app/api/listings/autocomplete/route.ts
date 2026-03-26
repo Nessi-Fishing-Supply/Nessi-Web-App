@@ -7,6 +7,7 @@ export type AutocompleteSuggestion = {
   type: 'suggestion' | 'listing' | 'category';
 };
 
+// Returns quick search suggestions combining popular terms, listings, and categories.
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);

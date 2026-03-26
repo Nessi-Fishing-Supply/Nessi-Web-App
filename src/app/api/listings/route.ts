@@ -27,6 +27,7 @@ const ALLOWED_CREATE_FIELDS = [
   'height_inches',
 ] as const;
 
+// Returns a paginated list of active listings, with optional filters and sorting.
 export async function GET(req: Request) {
   try {
     const supabase = await createClient();
@@ -119,6 +120,7 @@ export async function GET(req: Request) {
   }
 }
 
+// Creates a new listing draft for the seller, in either member or shop context.
 export async function POST(req: Request) {
   try {
     const supabase = await createClient();

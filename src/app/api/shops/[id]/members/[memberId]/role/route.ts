@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 import { requireShopPermission } from '@/libs/shop-permissions';
 import { SYSTEM_ROLE_IDS } from '@/features/shops/constants/roles';
 
+// Changes the role assigned to a shop member.
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string; memberId: string }> },

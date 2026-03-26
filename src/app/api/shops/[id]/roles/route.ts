@@ -3,6 +3,7 @@ import { AUTH_CACHE_HEADERS } from '@/libs/api-headers';
 import { NextResponse } from 'next/server';
 import { requireShopPermission } from '@/libs/shop-permissions';
 
+// Returns the list of roles available to assign to members of a shop.
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id: shopId } = await params;
 

@@ -7,6 +7,7 @@ import {
 } from '@/features/addresses/services/address-server';
 import { addressSchema } from '@/features/addresses/validations/address';
 
+// Updates an existing address on the user's account.
 export async function PUT(req: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
 
@@ -57,6 +58,7 @@ export async function PUT(req: Request, context: { params: Promise<{ id: string 
   }
 }
 
+// Removes a saved address from the user's account.
 export async function DELETE(_req: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
 

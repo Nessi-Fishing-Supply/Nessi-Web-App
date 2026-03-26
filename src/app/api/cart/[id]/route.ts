@@ -3,6 +3,7 @@ import { AUTH_CACHE_HEADERS } from '@/libs/api-headers';
 import { NextResponse } from 'next/server';
 import { removeFromCartServer } from '@/features/cart/services/cart-server';
 
+// Removes a single item from the user's cart.
 export async function DELETE(req: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
 

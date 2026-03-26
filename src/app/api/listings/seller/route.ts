@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+// Returns the seller's own listings, optionally filtered by status.
 export async function GET(req: Request) {
   try {
     const supabase = await createClient();

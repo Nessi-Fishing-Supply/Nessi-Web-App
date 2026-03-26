@@ -14,6 +14,7 @@ function parseStoragePath(publicUrl: string): string | null {
   }
 }
 
+// Returns the full details of a single listing, including photos.
 export async function GET(_: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
 
@@ -50,6 +51,7 @@ export async function GET(_: Request, context: { params: Promise<{ id: string }>
   }
 }
 
+// Updates the details of an existing listing owned by the seller.
 export async function PUT(req: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
 
@@ -161,6 +163,7 @@ export async function PUT(req: Request, context: { params: Promise<{ id: string 
   }
 }
 
+// Permanently removes a listing and its photos from the seller's account.
 export async function DELETE(_: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
 

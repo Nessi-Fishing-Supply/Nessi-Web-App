@@ -3,6 +3,7 @@ import { AUTH_CACHE_HEADERS } from '@/libs/api-headers';
 import { NextResponse } from 'next/server';
 import { requireShopPermission } from '@/libs/shop-permissions';
 
+// Reserves a new URL slug for a shop, replacing the previous one.
 export async function POST(request: Request) {
   const result = await requireShopPermission(request, 'shop_settings', 'full');
   if (result instanceof NextResponse) return result;

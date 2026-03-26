@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+// Returns all draft listings the seller has not yet published.
 export async function GET() {
   try {
     const supabase = await createClient();
@@ -48,6 +49,7 @@ export async function GET() {
   }
 }
 
+// Creates a new blank draft listing ready for the seller to fill in.
 export async function POST(req: Request) {
   try {
     const supabase = await createClient();
@@ -126,6 +128,7 @@ export async function POST(req: Request) {
   }
 }
 
+// Discards a draft listing that was never published.
 export async function DELETE(req: Request) {
   try {
     const supabase = await createClient();

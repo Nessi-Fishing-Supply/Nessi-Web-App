@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 const MAX_IDS = 30;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+// Fetches multiple listings by ID in a single request, useful for cart and watchlist displays.
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);

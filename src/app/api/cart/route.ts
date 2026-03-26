@@ -7,6 +7,7 @@ import {
 } from '@/features/cart/services/cart-server';
 import { NextResponse } from 'next/server';
 
+// Returns all items currently in the user's cart.
 export async function GET() {
   try {
     const supabase = await createClient();
@@ -33,6 +34,7 @@ export async function GET() {
   }
 }
 
+// Adds a listing to the user's cart and places a temporary hold on it.
 export async function POST(req: Request) {
   try {
     const supabase = await createClient();
@@ -94,6 +96,7 @@ export async function POST(req: Request) {
   }
 }
 
+// Removes all items from the user's cart at once.
 export async function DELETE() {
   try {
     const supabase = await createClient();

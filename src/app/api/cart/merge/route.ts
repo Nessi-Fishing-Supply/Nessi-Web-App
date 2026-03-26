@@ -3,6 +3,7 @@ import { AUTH_CACHE_HEADERS } from '@/libs/api-headers';
 import { NextResponse } from 'next/server';
 import { mergeGuestCartServer } from '@/features/cart/services/cart-server';
 
+// Merges items browsed as a guest into the user's cart after sign-in.
 export async function POST(req: Request) {
   try {
     const supabase = await createClient();

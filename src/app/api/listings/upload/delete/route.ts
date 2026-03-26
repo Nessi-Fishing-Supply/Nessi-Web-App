@@ -14,6 +14,7 @@ function parseStoragePath(publicUrl: string): string | null {
   }
 }
 
+// Removes a previously uploaded listing photo from storage.
 export async function DELETE(req: Request) {
   try {
     const supabase = await createClient();

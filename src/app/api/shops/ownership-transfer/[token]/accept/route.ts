@@ -4,6 +4,7 @@ import { createAdminClient } from '@/libs/supabase/admin';
 import { AUTH_CACHE_HEADERS } from '@/libs/api-headers';
 import { SYSTEM_ROLE_IDS } from '@/features/shops/constants/roles';
 
+// Accepts a shop ownership transfer, making the recipient the new owner.
 export async function POST(_request: Request, { params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
 

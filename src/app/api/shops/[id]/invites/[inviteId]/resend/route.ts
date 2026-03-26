@@ -5,6 +5,7 @@ import { AUTH_CACHE_HEADERS } from '@/libs/api-headers';
 import { sendEmail } from '@/features/email/services/send-email';
 import { inviteToShop } from '@/features/email/templates/invite-to-shop';
 
+// Resends a shop invite email with a refreshed token and expiry.
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string; inviteId: string }> },

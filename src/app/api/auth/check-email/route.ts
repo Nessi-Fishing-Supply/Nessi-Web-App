@@ -4,6 +4,7 @@ import { AUTH_CACHE_HEADERS } from '@/libs/api-headers';
 import { EMAIL_REGEX } from '@/features/auth/validations/server';
 import { NextResponse } from 'next/server';
 
+// Checks whether an email address is already registered on the platform.
 export async function POST(req: Request) {
   try {
     const supabase = await createClient();

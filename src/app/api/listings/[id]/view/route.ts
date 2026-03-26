@@ -1,6 +1,7 @@
 import { createClient } from '@/libs/supabase/server';
 import { NextResponse } from 'next/server';
 
+// Records a listing view and updates the user's recently-viewed history.
 export async function POST(_: Request, context: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await context.params;

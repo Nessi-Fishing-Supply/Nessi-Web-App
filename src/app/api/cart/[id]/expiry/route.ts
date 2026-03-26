@@ -3,6 +3,7 @@ import { AUTH_CACHE_HEADERS } from '@/libs/api-headers';
 import { NextResponse } from 'next/server';
 import { refreshExpiryServer } from '@/features/cart/services/cart-server';
 
+// Extends the hold timer on a cart item to keep it reserved longer.
 export async function PATCH(req: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
 

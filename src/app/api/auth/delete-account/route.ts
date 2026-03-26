@@ -117,6 +117,7 @@ async function cleanupStorage(
   }
 }
 
+// Permanently deletes the user's account, listings, and all associated data.
 export async function DELETE() {
   try {
     const supabase = await createClient();

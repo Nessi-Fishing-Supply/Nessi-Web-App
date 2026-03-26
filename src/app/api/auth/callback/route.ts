@@ -14,6 +14,7 @@ function sanitizeRedirectPath(next: string | null): string {
   return next;
 }
 
+// Completes the OAuth or email verification flow and redirects the user.
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const tokenHash = searchParams.get('token_hash');

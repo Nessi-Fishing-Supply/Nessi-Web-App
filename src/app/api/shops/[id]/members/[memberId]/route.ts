@@ -4,6 +4,7 @@ import { AUTH_CACHE_HEADERS } from '@/libs/api-headers';
 import { NextResponse } from 'next/server';
 import { requireShopPermission } from '@/libs/shop-permissions';
 
+// Removes a member from a shop, or allows a member to remove themselves.
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string; memberId: string }> },

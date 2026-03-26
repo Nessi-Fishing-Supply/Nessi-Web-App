@@ -3,6 +3,7 @@ import { AUTH_CACHE_HEADERS } from '@/libs/api-headers';
 import { NextResponse } from 'next/server';
 import { requireShopPermission } from '@/libs/shop-permissions';
 
+// Returns the pending ownership transfer request for a shop, if one exists.
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id: shopId } = await params;
 
@@ -38,6 +39,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   return NextResponse.json(transfer, { headers: AUTH_CACHE_HEADERS });
 }
 
+// Cancels a pending shop ownership transfer before it is accepted.
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id: shopId } = await params;
 

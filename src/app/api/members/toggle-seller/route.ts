@@ -2,6 +2,7 @@ import { createClient } from '@/libs/supabase/server';
 import { AUTH_CACHE_HEADERS } from '@/libs/api-headers';
 import { NextResponse } from 'next/server';
 
+// Enables or disables seller mode on the member's account.
 export async function POST(req: Request) {
   try {
     const supabase = await createClient();

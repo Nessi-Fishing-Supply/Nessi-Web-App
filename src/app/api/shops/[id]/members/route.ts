@@ -3,6 +3,7 @@ import { AUTH_CACHE_HEADERS } from '@/libs/api-headers';
 import { NextResponse } from 'next/server';
 import { requireShopPermission } from '@/libs/shop-permissions';
 
+// Adds a member directly to a shop with a specified role, bypassing the invite flow.
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id: shopId } = await params;
 

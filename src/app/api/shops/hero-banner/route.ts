@@ -7,6 +7,7 @@ import sharp from 'sharp';
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
+// Uploads and sets a new hero banner image displayed at the top of a shop's page.
 export async function POST(req: Request) {
   try {
     const result = await requireShopPermission(req, 'shop_settings', 'full');

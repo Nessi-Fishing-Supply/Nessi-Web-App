@@ -2,6 +2,7 @@ import { createClient } from '@/libs/supabase/server';
 import type { ListingWithPhotos } from '@/features/listings/types/listing';
 import { NextResponse } from 'next/server';
 
+// Full-text search for listings with filters for category, condition, price, and location.
 export async function GET(req: Request) {
   try {
     const supabase = await createClient();

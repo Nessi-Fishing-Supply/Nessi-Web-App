@@ -5,6 +5,7 @@ import { AUTH_CACHE_HEADERS } from '@/libs/api-headers';
 import { MAX_MEMBERS_PER_SHOP } from '@/features/shops/constants/limits';
 import { checkMemberShopLimit } from '@/features/shops/utils/check-member-shop-limit';
 
+// Accepts a shop invite via token and adds the user as a shop member.
 export async function POST(_request: Request, { params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
 

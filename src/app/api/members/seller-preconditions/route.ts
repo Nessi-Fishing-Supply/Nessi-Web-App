@@ -2,6 +2,7 @@ import { createClient } from '@/libs/supabase/server';
 import { AUTH_CACHE_HEADERS } from '@/libs/api-headers';
 import { NextResponse } from 'next/server';
 
+// Checks whether the member has any active listings that would block disabling seller mode.
 export async function GET() {
   try {
     const supabase = await createClient();

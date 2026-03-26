@@ -11,6 +11,7 @@ const THUMB_SIZE = 400;
 const WEBP_QUALITY = 80;
 const THUMB_QUALITY = 70;
 
+// Uploads a photo for a listing, resizes it, and saves both full and thumbnail versions.
 export async function POST(req: Request) {
   try {
     const supabase = await createClient();

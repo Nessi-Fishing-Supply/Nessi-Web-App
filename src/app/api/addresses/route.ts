@@ -9,6 +9,7 @@ import type { AddressFormData } from '@/features/addresses/types/address';
 import { NextResponse } from 'next/server';
 import { ValidationError } from 'yup';
 
+// Returns all saved addresses for the currently logged-in user.
 export async function GET() {
   try {
     const supabase = await createClient();
@@ -35,6 +36,7 @@ export async function GET() {
   }
 }
 
+// Saves a new shipping address to the user's account.
 export async function POST(req: Request) {
   try {
     const supabase = await createClient();

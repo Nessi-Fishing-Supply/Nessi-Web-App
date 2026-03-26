@@ -3,6 +3,7 @@ import { createAdminClient } from '@/libs/supabase/admin';
 import { requireShopPermission } from '@/libs/shop-permissions';
 import { AUTH_CACHE_HEADERS } from '@/libs/api-headers';
 
+// Revokes a pending shop invite so it can no longer be accepted.
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string; inviteId: string }> },

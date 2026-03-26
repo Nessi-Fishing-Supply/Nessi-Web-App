@@ -5,6 +5,7 @@ import { requireShopPermission } from '@/libs/shop-permissions';
 import { sendEmail } from '@/features/email/services/send-email';
 import { ownershipTransferRequest } from '@/features/email/templates/ownership-transfer';
 
+// Initiates a shop ownership transfer by sending a confirmation email to the new owner.
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id: shopId } = await params;
 

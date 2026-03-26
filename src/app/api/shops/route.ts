@@ -5,6 +5,7 @@ import { SYSTEM_ROLE_IDS } from '@/features/shops/constants/roles';
 import { checkMemberShopLimit } from '@/features/shops/utils/check-member-shop-limit';
 import { NextResponse } from 'next/server';
 
+// Creates a new shop and registers the creator as its owner.
 export async function POST(request: Request) {
   const supabase = await createClient();
   const {

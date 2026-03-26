@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server';
 
 const VALID_CONTEXTS: RecommendationContext[] = ['similar', 'seller', 'also_liked'];
 
+// Returns personalized listing recommendations based on context such as similar items or seller listings.
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);

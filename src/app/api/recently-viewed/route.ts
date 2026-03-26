@@ -6,6 +6,7 @@ import {
 } from '@/features/recently-viewed/services/recently-viewed-server';
 import { NextResponse } from 'next/server';
 
+// Returns listings the user has recently viewed, for display on their dashboard.
 export async function GET() {
   try {
     const supabase = await createClient();
@@ -32,6 +33,7 @@ export async function GET() {
   }
 }
 
+// Clears the user's entire recently-viewed browsing history.
 export async function DELETE() {
   try {
     const supabase = await createClient();

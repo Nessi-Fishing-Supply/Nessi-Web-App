@@ -3,6 +3,7 @@ import { AUTH_CACHE_HEADERS } from '@/libs/api-headers';
 import { NextResponse } from 'next/server';
 import { validateCartServer } from '@/features/cart/services/cart-server';
 
+// Checks that all cart items are still available and valid before checkout.
 export async function POST() {
   try {
     const supabase = await createClient();

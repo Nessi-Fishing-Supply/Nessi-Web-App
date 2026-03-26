@@ -3,6 +3,7 @@ import { AUTH_CACHE_HEADERS } from '@/libs/api-headers';
 import { NextResponse } from 'next/server';
 import { mergeGuestViewsServer } from '@/features/recently-viewed/services/recently-viewed-server';
 
+// Merges a guest user's browsing history into their account after sign-in.
 export async function POST(req: Request) {
   try {
     const supabase = await createClient();

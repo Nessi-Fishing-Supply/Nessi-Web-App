@@ -15,6 +15,7 @@ const VALID_TRANSITIONS: Partial<Record<ListingStatus, ListingStatus[]>> = {
   deleted: [],
 };
 
+// Changes a listing's status — such as publishing, archiving, or marking it sold.
 export async function PATCH(req: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
 

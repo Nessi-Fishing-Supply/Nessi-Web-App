@@ -6,6 +6,7 @@ import type { ReportFormData } from '@/features/reports/types/report';
 import { NextResponse } from 'next/server';
 import { ValidationError } from 'yup';
 
+// Submits a report flagging a listing or user for review by the Nessi team.
 export async function POST(req: Request) {
   try {
     const supabase = await createClient();

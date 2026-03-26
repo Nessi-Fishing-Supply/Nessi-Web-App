@@ -7,6 +7,7 @@ import { MAX_MEMBERS_PER_SHOP } from '@/features/shops/constants/limits';
 import { sendEmail } from '@/features/email/services/send-email';
 import { inviteToShop } from '@/features/email/templates/invite-to-shop';
 
+// Sends a shop invite email to a new member with a specified role.
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id: shopId } = await params;
 
@@ -201,6 +202,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   }
 }
 
+// Returns all pending and past invites for a shop.
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id: shopId } = await params;
 

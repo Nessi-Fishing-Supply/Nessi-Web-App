@@ -5,6 +5,7 @@ import { REPORT_TARGET_TYPES } from '@/features/reports/constants/reasons';
 import type { ReportTargetType } from '@/features/reports/types/report';
 import { NextResponse } from 'next/server';
 
+// Checks whether the current user has already reported a specific item.
 export async function GET(req: Request) {
   try {
     const supabase = await createClient();

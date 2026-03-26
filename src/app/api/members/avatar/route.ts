@@ -6,6 +6,7 @@ import sharp from 'sharp';
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
+// Uploads and sets a new profile photo for the member's account.
 export async function POST(req: Request) {
   try {
     const supabase = await createClient();

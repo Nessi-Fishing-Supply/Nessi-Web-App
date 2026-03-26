@@ -3,6 +3,7 @@ import { AUTH_CACHE_HEADERS } from '@/libs/api-headers';
 import { getCartCountServer } from '@/features/cart/services/cart-server';
 import { NextResponse } from 'next/server';
 
+// Returns the number of items currently in the user's cart.
 export async function GET() {
   try {
     const supabase = await createClient();

@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 
 const AUTH_HEADERS = { 'Cache-Control': 'private, no-store' };
 
+// Creates a new user account and sends a verification email.
 export async function POST(req: Request) {
   try {
     const body = await req.json();

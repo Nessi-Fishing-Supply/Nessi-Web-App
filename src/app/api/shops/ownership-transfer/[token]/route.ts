@@ -3,6 +3,7 @@ import { createClient } from '@/libs/supabase/server';
 import { createAdminClient } from '@/libs/supabase/admin';
 import { AUTH_CACHE_HEADERS } from '@/libs/api-headers';
 
+// Looks up the details of a shop ownership transfer by its invite token.
 export async function GET(_request: Request, { params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
 

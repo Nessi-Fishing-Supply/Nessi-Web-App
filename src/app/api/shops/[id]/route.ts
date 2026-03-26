@@ -10,6 +10,7 @@ function parseStoragePath(bucketName: string, publicUrl: string): string | null 
   return publicUrl.slice(index + marker.length) || null;
 }
 
+// Permanently deletes a shop and all its associated listings and assets.
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id: shopId } = await params;
 
