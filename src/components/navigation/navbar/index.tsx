@@ -10,6 +10,7 @@ import {
   HiOutlineShoppingBag,
   HiOutlineHome,
   HiOutlineUserCircle,
+  HiOutlineHeart,
   HiSearch,
   HiSwitchHorizontal,
   HiCheckCircle,
@@ -370,6 +371,11 @@ export default function Navbar() {
             <DropdownItem>
               <AppLink href="/dashboard" icon={<HiOutlineHome />}>
                 Dashboard
+              </AppLink>
+            </DropdownItem>
+            <DropdownItem>
+              <AppLink href="/watchlist" icon={<HiOutlineHeart />}>
+                Watchlist
               </AppLink>
             </DropdownItem>
             <DropdownItem>

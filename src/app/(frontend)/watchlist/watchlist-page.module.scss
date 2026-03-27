@@ -1,0 +1,93 @@
+@use '@/styles/mixins/breakpoints' as *;
+
+.page {
+  padding: var(--space-lg) var(--spacing-page-sm);
+
+  @include breakpoint(md) {
+    padding: var(--space-xl) var(--spacing-page-md);
+  }
+
+  @include breakpoint(lg) {
+    padding: var(--space-xl) var(--spacing-page-lg);
+  }
+}
+
+.heading {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-neutral-900);
+  margin: 0 0 var(--space-lg);
+
+  @include breakpoint(md) {
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--space-xl);
+  }
+}
+
+.cardWrapper {
+  position: relative;
+}
+
+.soldOverlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgb(0 0 0 / 48%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  pointer-events: none;
+}
+
+.soldLabel {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-white);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-3xl) var(--space-base);
+  gap: var(--space-sm);
+
+  @include breakpoint(md) {
+    padding: var(--space-4xl) var(--space-md);
+    gap: var(--space-md);
+  }
+}
+
+.emptyIcon {
+  width: 48px;
+  height: 48px;
+  color: var(--color-neutral-400);
+}
+
+.emptyHeading {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-neutral-800);
+  margin: 0;
+
+  @include breakpoint(md) {
+    font-size: var(--font-size-xl);
+  }
+}
+
+.emptyText {
+  font-size: var(--font-size-base);
+  color: var(--color-neutral-600);
+  margin: 0;
+  max-width: 360px;
+}
+
+.error {
+  font-size: var(--font-size-base);
+  color: var(--color-error-500);
+  margin: var(--space-lg) 0 0;
+}

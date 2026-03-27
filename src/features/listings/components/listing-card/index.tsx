@@ -5,7 +5,7 @@ import styles from './listing-card.module.scss';
 import { useRouter } from 'next/navigation';
 import ConditionBadge from '@/features/listings/components/condition-badge';
 import { formatPrice } from '@/features/shared/utils/format';
-import Favorite from '@/components/controls/favorite';
+import WatchButton from '@/features/watchlist/components/watch-button';
 import Reviews from '@/components/indicators/reviews';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
@@ -43,7 +43,7 @@ export default function ListingCard({ listing, priority = false }: ListingCardPr
         <span className={styles.conditionBadge}>
           <ConditionBadge condition={listing.condition} size="sm" />
         </span>
-        <Favorite className={styles.favorite} />
+        <WatchButton listingId={listing.id} className={styles.watchButton} />
         <Swiper
           className={`swiper__listing-card${isHovered ? ' swiper-hovered' : ''}`}
           modules={[Navigation, Pagination]}
