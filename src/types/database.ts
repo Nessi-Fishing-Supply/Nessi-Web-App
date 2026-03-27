@@ -388,36 +388,36 @@ export type Database = {
           },
         ]
       }
-      reports: {
+      flags: {
         Row: {
           created_at: string
           description: string | null
           id: string
-          reason: Database["public"]["Enums"]["report_reason"]
+          reason: Database["public"]["Enums"]["flag_reason"]
           reporter_id: string
-          status: Database["public"]["Enums"]["report_status"]
+          status: Database["public"]["Enums"]["flag_status"]
           target_id: string
-          target_type: Database["public"]["Enums"]["report_target_type"]
+          target_type: Database["public"]["Enums"]["flag_target_type"]
         }
         Insert: {
           created_at?: string
           description?: string | null
           id?: string
-          reason: Database["public"]["Enums"]["report_reason"]
+          reason: Database["public"]["Enums"]["flag_reason"]
           reporter_id: string
-          status?: Database["public"]["Enums"]["report_status"]
+          status?: Database["public"]["Enums"]["flag_status"]
           target_id: string
-          target_type: Database["public"]["Enums"]["report_target_type"]
+          target_type: Database["public"]["Enums"]["flag_target_type"]
         }
         Update: {
           created_at?: string
           description?: string | null
           id?: string
-          reason?: Database["public"]["Enums"]["report_reason"]
+          reason?: Database["public"]["Enums"]["flag_reason"]
           reporter_id?: string
-          status?: Database["public"]["Enums"]["report_status"]
+          status?: Database["public"]["Enums"]["flag_status"]
           target_id?: string
-          target_type?: Database["public"]["Enums"]["report_target_type"]
+          target_type?: Database["public"]["Enums"]["flag_target_type"]
         }
         Relationships: []
       }
@@ -799,7 +799,7 @@ export type Database = {
         | "sold"
         | "archived"
         | "deleted"
-      report_reason:
+      flag_reason:
         | "spam"
         | "prohibited_item"
         | "counterfeit"
@@ -807,8 +807,8 @@ export type Database = {
         | "off_platform_transaction"
         | "harassment"
         | "other"
-      report_status: "pending" | "reviewed" | "resolved" | "dismissed"
-      report_target_type: "listing" | "member" | "shop" | "message"
+      flag_status: "pending" | "reviewed" | "resolved" | "dismissed"
+      flag_target_type: "listing" | "member" | "shop" | "message"
       shipping_paid_by: "seller" | "buyer" | "split"
     }
     CompositeTypes: {
@@ -966,7 +966,7 @@ export const Constants = {
         "archived",
         "deleted",
       ],
-      report_reason: [
+      flag_reason: [
         "spam",
         "prohibited_item",
         "counterfeit",
@@ -975,8 +975,8 @@ export const Constants = {
         "harassment",
         "other",
       ],
-      report_status: ["pending", "reviewed", "resolved", "dismissed"],
-      report_target_type: ["listing", "member", "shop", "message"],
+      flag_status: ["pending", "reviewed", "resolved", "dismissed"],
+      flag_target_type: ["listing", "member", "shop", "message"],
       shipping_paid_by: ["seller", "buyer", "split"],
     },
   },

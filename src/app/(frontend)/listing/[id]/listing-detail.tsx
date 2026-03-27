@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { HiOutlineTruck } from 'react-icons/hi';
-import { ReportTrigger } from '@/features/reports';
+import { FlagTrigger } from '@/features/flags';
 import PhotoGallery from '@/features/listings/components/photo-gallery';
 import PhotoLightbox from '@/features/listings/components/photo-lightbox';
 import SellerStrip from '@/features/listings/components/seller-strip';
@@ -321,7 +321,7 @@ export default function ListingDetail({ listing, seller, currentUserId }: Props)
         )}
 
         {/* Report */}
-        <ReportTrigger
+        <FlagTrigger
           currentUserId={currentUserId}
           isOwnEntity={isOwnListing}
           targetType="listing"

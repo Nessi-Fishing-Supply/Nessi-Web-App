@@ -5,7 +5,7 @@ import { getMemberBySlugServer } from '@/features/members/services/member-server
 import { formatMemberName, getMemberInitials } from '@/features/members/utils/format-name';
 import { getListingsByMemberServer } from '@/features/listings/services/listing-server';
 import { createClient } from '@/libs/supabase/server';
-import { ReportTrigger } from '@/features/reports';
+import { FlagTrigger } from '@/features/flags';
 import ListingCard from '@/features/listings/components/listing-card';
 import Pill from '@/components/indicators/pill';
 import styles from './member-profile.module.scss';
@@ -144,7 +144,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
         </>
       )}
 
-      <ReportTrigger
+      <FlagTrigger
         currentUserId={currentUserId}
         isOwnEntity={isOwnProfile}
         targetType="member"
