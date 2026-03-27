@@ -5,10 +5,10 @@
   "branch": "feat/36/watchlist-price-drop-alerts",
   "status": "implementing",
   "phase": {
-    "current": 1,
+    "current": 2,
     "total": 4,
     "tasks": {
-      "completed": ["1.1", "1.2", "1.3", "1.4", "1.5"],
+      "completed": ["1.1", "1.2", "1.3", "1.4", "1.5", "2.1", "2.2", "2.3", "2.4", "2.5"],
       "current": null,
       "remaining": [
         "2.1",
