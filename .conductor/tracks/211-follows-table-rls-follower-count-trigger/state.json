@@ -1,0 +1,15 @@
+{
+  "version": "1.0.0",
+  "issue": 211,
+  "title": "follows table, RLS, follower_count columns, and trigger",
+  "branch": "feat/211/follows-table-rls-follower-count-trigger",
+  "status": "implementing",
+  "phase": {
+    "current": 1,
+    "total": 2,
+    "tasks": { "completed": ["1.1", "1.2"], "current": null, "remaining": ["2.1", "2.2"] }
+  },
+  "health": { "build": "unknown", "lint": "unknown", "tests": "unknown" },
+  "failureCount": { "currentTask": 0 },
+  "timestamps": { "started": "2026-03-26T12:00:00Z", "lastActivity": "2026-03-26T12:08:00Z" }
+}
