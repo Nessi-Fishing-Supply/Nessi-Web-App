@@ -445,6 +445,41 @@ export type Database = {
         }
         Relationships: []
       }
+      price_drop_notifications: {
+        Row: {
+          created_at: string
+          id: string
+          listing_id: string
+          new_price_cents: number
+          old_price_cents: number
+          processed: boolean
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          listing_id: string
+          new_price_cents: number
+          old_price_cents: number
+          processed?: boolean
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          listing_id?: string
+          new_price_cents?: number
+          old_price_cents?: number
+          processed?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "price_drop_notifications_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       recently_viewed: {
         Row: {
           id: string
@@ -808,6 +843,45 @@ export type Database = {
           slug?: string
         }
         Relationships: []
+      }
+      watchers: {
+        Row: {
+          id: string
+          last_notified_price_cents: number | null
+          listing_id: string
+          user_id: string
+          watched_at: string
+        }
+        Insert: {
+          id?: string
+          last_notified_price_cents?: number | null
+          listing_id: string
+          user_id: string
+          watched_at?: string
+        }
+        Update: {
+          id?: string
+          last_notified_price_cents?: number | null
+          listing_id?: string
+          user_id?: string
+          watched_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "watchers_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "watchers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
