@@ -123,5 +123,6 @@ Update journey files when code changes:
 | `src/features/members/`                                           | `account-settings.json`, `onboarding.json`                                                                                 |
 | `src/app/api/recently-viewed/` or `src/features/recently-viewed/` | `buyer-recently-viewed.json`, `guest-recently-viewed.json`                                                                 |
 | `src/app/api/addresses/` or `src/features/addresses/`             | `buyer-addresses.json`                                                                                                     |
+| `src/app/api/flags/` or `src/features/flags/`                     | `guest-browse.json` (trigger hidden), future auth'd browse/profile journeys (trigger visible as inline step)               |
 | `src/proxy.ts`                                                    | `route-protection.json`                                                                                                    |
 | `src/features/email/`                                             | Any journey with `"layer": "email"` steps                                                                                  |
