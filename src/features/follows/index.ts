@@ -7,6 +7,8 @@ export type {
   FollowingItem,
 } from '@/features/follows/types/follow';
 
+export type { FollowButtonProps } from '@/features/follows/types/follow-button';
+
 export { useFollowStatus } from '@/features/follows/hooks/use-follow-status';
 export { useFollowerCount } from '@/features/follows/hooks/use-follower-count';
 export { useFollowToggle } from '@/features/follows/hooks/use-follow-toggle';
