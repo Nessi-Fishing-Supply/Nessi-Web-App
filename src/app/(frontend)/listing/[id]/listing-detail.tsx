@@ -15,6 +15,7 @@ import MoreFromSellerStrip from '@/features/listings/components/more-from-seller
 import { useRouter } from 'next/navigation';
 import Button from '@/components/controls/button';
 import AddToCartButton from '@/features/cart/components/add-to-cart-button';
+import WatchButton from '@/features/watchlist/components/watch-button';
 import { formatPrice } from '@/features/shared/utils/format';
 import { CONDITION_TIERS } from '@/features/listings/constants/condition';
 import { getCategoryLabel } from '@/features/listings/constants/category';
@@ -98,7 +99,14 @@ export default function ListingDetail({ listing, seller, currentUserId }: Props)
       <div className={styles.layout}>
         {/* Left column: Gallery */}
         <div className={styles.galleryColumn}>
-          <PhotoGallery photos={photos} title={listing.title} onPhotoTap={handlePhotoTap} />
+          <div className={styles.galleryWrapper}>
+            <PhotoGallery photos={photos} title={listing.title} onPhotoTap={handlePhotoTap} />
+            {!isOwnListing && (
+              <div className={styles.watchButtonOverlay}>
+                <WatchButton listingId={listing.id} />
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Right column: Details + Actions */}

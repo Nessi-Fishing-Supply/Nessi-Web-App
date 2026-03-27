@@ -34,6 +34,19 @@
   }
 }
 
+// Wrapper to position WatchButton over the gallery
+.galleryWrapper {
+  position: relative;
+}
+
+// WatchButton overlay — top-right corner of gallery
+.watchButtonOverlay {
+  position: absolute;
+  top: var(--spacing-200);
+  right: var(--spacing-200);
+  z-index: 2;
+}
+
 // Details column — right side, sticky on desktop
 .detailsColumn {
   padding: var(--spacing-400);
