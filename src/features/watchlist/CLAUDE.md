@@ -1,14 +1,12 @@
 # Watchlist Feature
 
-> Initial scaffold — will be updated after implementation.
-
 Part of the price-drop notification system. Allows authenticated members to watch listings and receive email notifications when the price drops.
 
 ## Overview
 
-Members can watch any active listing. When a seller reduces the price, watched listings are queued into `price_drop_notifications`. A cron job (or Supabase Edge Function) processes the queue and sends emails to all watchers via Resend.
+Members can watch any active listing via the `WatchButton` component — an icon button overlaid on listing cards and the listing detail page. When a seller reduces the price, a DB trigger inserts a row into `price_drop_notifications`. A Vercel cron job (`GET /api/cron/price-drops`) processes unprocessed notifications, fans emails out to all watchers whose `last_notified_price_cents` is above the new price, and marks each notification `processed = true`.
 
-Watcher counts are denormalized onto `listings.watcher_count` for fast display in the seller's quick-edit price modal without joins.
+Watcher counts are denormalized onto `listings.watcher_count` via a DB trigger for fast display in the seller's `QuickEditPrice` modal without joins.
 
 ## Database Schema
 
@@ -44,9 +42,9 @@ Watcher counts are denormalized onto `listings.watcher_count` for fast display i
 
 **Notes:**
 
-- Rows are inserted when a listing price drops (via DB trigger on `listings` UPDATE)
-- The cron pipeline reads `processed = false` rows, fans out emails to watchers, then marks rows `processed = true`
-- One notification row per price drop event (not per watcher) — the cron job resolves watchers at send time
+- Rows are inserted by a DB trigger on `listings` UPDATE when `price_cents` decreases
+- The cron pipeline processes up to 100 `processed = false` rows per run, sends emails, then marks them `processed = true`
+- One row per price-drop event (not per watcher) — the cron resolves watchers at send time
 
 ### Denormalized `watcher_count`
 
@@ -66,78 +64,259 @@ The watcher count is displayed in the seller's `QuickEditPrice` modal to signal 
 | Users can delete own watches            | DELETE    | authenticated | `USING (user_id = auth.uid())`               |
 | price_drop_notifications are not public | SELECT    | authenticated | Read-only via service role (cron processing) |
 
-## Architecture
+## Types
 
-- **types/watcher.ts** — Database-derived types: `Watcher` (Row), `WatcherInsert`, `WatchStatus` (`{ is_watching: boolean }`), `WatchedListing` (listing with photos + `watched_at`), `PriceDropNotification` (Row)
-- **services/watcher-server.ts** — Server-side Supabase queries: `createWatcherServer`, `deleteWatcherServer`, `getWatchStatusServer`, `getWatchedListingsServer`
-- **services/watcher.ts** — Client-side fetch wrappers: `watchListing`, `unwatchListing`, `getWatchStatus`, `getWatchedListings`
-- **hooks/use-watch-status.ts** — `useWatchStatus(listingId)`: query key `['watchlist', 'status', listingId]`
-- **hooks/use-watch-toggle.ts** — `useWatchToggle({ listingId, onSuccess?, onError? })`: mutation with optimistic updates to status and watcher count caches
-- **hooks/use-watched-listings.ts** — `useWatchedListings()`: query key `['watchlist', 'listings']`, returns `WatchedListing[]`
+**`src/features/watchlist/types/watcher.ts`**
 
-## API Routes
+| Type                    | Description                                                               |
+| ----------------------- | ------------------------------------------------------------------------- |
+| `Watcher`               | Database Row type from `watchers` table                                   |
+| `WatcherInsert`         | Insert type (omits `id` and `watched_at`)                                 |
+| `WatchStatus`           | `{ is_watching: boolean }` — returned by the status endpoint              |
+| `WatchedListing`        | `ListingWithPhotos & { watched_at: string }` — used on the watchlist page |
+| `PriceDropNotification` | Database Row type from `price_drop_notifications` table                   |
 
-| Method | Route                     | Auth Required | Description                                           |
-| ------ | ------------------------- | ------------- | ----------------------------------------------------- |
-| POST   | `/api/watchlist`          | Yes           | Watch a listing (409 on duplicate)                    |
-| DELETE | `/api/watchlist`          | Yes           | Unwatch a listing (params via query string)           |
-| GET    | `/api/watchlist/status`   | Yes           | Check if the authenticated user is watching a listing |
-| GET    | `/api/watchlist/listings` | Yes           | List all listings the authenticated user is watching  |
+## Services
 
-## Cron Pipeline
+### Server (`src/features/watchlist/services/watchlist-server.ts`)
 
-Price-drop notifications are processed asynchronously:
+Uses `@/libs/supabase/server` (cookie-based auth, user JWT). Called by API route handlers only.
 
-1. DB trigger inserts a `price_drop_notifications` row when `listings.price_cents` decreases
-2. Cron job (Supabase Edge Function or Vercel cron) queries `processed = false` rows
-3. For each notification: fetch watchers for `listing_id`, send email via Resend, update `watchers.last_notified_price_cents`
-4. Mark the notification row `processed = true`
+| Function                   | Signature                                              | Description                                                                                                       |
+| -------------------------- | ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| `addWatcherServer`         | `(userId, listingId) => Promise<Watcher>`              | Inserts watcher row; on `23505` unique violation, fetches and returns existing row                                |
+| `removeWatcherServer`      | `(userId, listingId) => Promise<{ success: boolean }>` | Deletes by composite match; returns `success: false` if no row deleted                                            |
+| `getWatchStatusServer`     | `(userId, listingId) => Promise<WatchStatus>`          | `maybeSingle()` lookup → `{ is_watching: boolean }`                                                               |
+| `getWatchedListingsServer` | `(userId) => Promise<WatchedListing[]>`                | Joins `watchers` → `listings` → `listing_photos`; filters out soft-deleted listings; ordered by `watched_at DESC` |
+
+### Client (`src/features/watchlist/services/watchlist.ts`)
+
+Thin `fetch` wrappers using `@/libs/fetch` (`get`, `post`, `del`). Called by Tanstack Query hooks.
+
+| Function             | HTTP                                   | Returns                |
+| -------------------- | -------------------------------------- | ---------------------- |
+| `watchListing`       | `POST /api/watchlist`                  | `{ success: boolean }` |
+| `unwatchListing`     | `DELETE /api/watchlist?listing_id=...` | `{ success: boolean }` |
+| `getWatchStatus`     | `GET /api/watchlist/{listingId}`       | `WatchStatus`          |
+| `getWatchedListings` | `GET /api/watchlist`                   | `WatchedListing[]`     |
+
+## Hooks
+
+### `useWatchStatus(listingId)`
+
+**File:** `src/features/watchlist/hooks/use-watch-status.ts`
+**Query key:** `['watchlist', 'status', listingId]`
+
+Returns `{ data: WatchStatus, isLoading }`. Guard: disabled when `listingId` is falsy.
+
+```ts
+const { data, isLoading } = useWatchStatus(listingId);
+// data: { is_watching: boolean } | undefined
+```
+
+### `useWatchToggle({ listingId, onSuccess?, onError? })`
+
+**File:** `src/features/watchlist/hooks/use-watch-toggle.ts`
+
+Mutation that watches or unwatches based on the boolean argument passed to `mutate`. Implements full optimistic UI: cancels in-flight queries, snapshots cache, updates immediately, reverts on error.
+
+- **409** (already watching) and **404** (not watching) are treated as success — routes to `onSuccess` with no rollback
+- On settle: invalidates `['watchlist', 'status', listingId]` and the root `['watchlist']` key
+
+```ts
+const { mutate, isPending } = useWatchToggle({
+  listingId,
+  onSuccess: () => toast('Updated'),
+  onError: (error) => toast(error.message),
+});
+
+// Pass current watch state — mutation inverts it
+mutate(isCurrentlyWatching);
+```
+
+### `useWatchlist()`
+
+**File:** `src/features/watchlist/hooks/use-watchlist.ts`
+**Query key:** `['watchlist']`
+
+Returns `{ data: WatchedListing[], isLoading, isError }`. Used on the `/watchlist` dashboard page.
+
+```ts
+const { data: listings, isLoading, isError } = useWatchlist();
+// data: WatchedListing[] | undefined
+```
 
 ## Components
 
-- **WatchButton** — Watch/unwatch toggle button. `aria-pressed`, `aria-label`, `aria-busy`. Auth gate: unauthenticated users see a sign-in toast.
-- **WatchedListingCard** — Card for the `/dashboard/watchlist` page. Shows listing thumbnail, title, price, price drop badge (if applicable), and unwatch button.
+### WatchButton
+
+**File:** `src/features/watchlist/components/watch-button/index.tsx`
+
+Icon-only toggle button that renders over listing images. Uses `FaRegHeart` (unwatched) and `FaHeart` (watched) from `react-icons/fa`.
+
+**Props (`WatchButtonProps`):**
+
+| Prop        | Type     | Required | Description                            |
+| ----------- | -------- | -------- | -------------------------------------- |
+| `listingId` | `string` | Yes      | UUID of the listing to watch/unwatch   |
+| `className` | `string` | No       | Additional class on the button element |
+
+**Auth gate:** Unauthenticated users are redirected to `{pathname}?login=true` (opens the login modal). No toast — the router push is the signal.
+
+**Toast messages:**
+
+- Watch success: "Added to Watchlist — We'll tell you if the price drops."
+- Unwatch success: "Removed from Watchlist — You will no longer receive alerts."
+- Error: "Something went wrong — Please try again."
+
+**ARIA attributes:**
+
+- `aria-label` — "Add to watchlist" or "Remove from watchlist"
+- `aria-pressed` — reflects current watch state
+- `aria-busy` — true when mutation is in progress
+- Icons have `aria-hidden="true"`
+
+**Visual states:** Semi-transparent dark circle (`rgb(0 0 0 / 40%)`), white icon when unwatched, error-red icon when watched. Minimum 44x44px tap target via `--min-touch-target`.
+
+**Usage:**
+
+```tsx
+import WatchButton from '@/features/watchlist/components/watch-button';
+
+<WatchButton listingId={listing.id} className={styles.watchButton} />;
+```
+
+## API Routes
+
+| Method | Route                           | Auth Required | Status Codes        | Description                                                      |
+| ------ | ------------------------------- | ------------- | ------------------- | ---------------------------------------------------------------- |
+| GET    | `/api/watchlist`                | Yes           | 200/401/500         | List all listings the authenticated user is watching             |
+| POST   | `/api/watchlist`                | Yes           | 201/400/401/409/500 | Watch a listing (409 on duplicate — server returns existing row) |
+| DELETE | `/api/watchlist?listing_id=...` | Yes           | 200/400/401/404/500 | Unwatch a listing (params via query string, 404 if not watching) |
+| GET    | `/api/watchlist/[listing_id]`   | Yes           | 200/401/500         | Check if the authenticated user is watching a specific listing   |
+
+**Route files:**
+
+- `src/app/api/watchlist/route.ts` — GET (list), POST (watch), DELETE (unwatch)
+- `src/app/api/watchlist/[listing_id]/route.ts` — GET (status check)
+
+**Note:** Watch status is a dynamic segment (`[listing_id]`), not a `/status` sub-route. The client service calls `GET /api/watchlist/{listingId}` directly.
+
+## Cron Pipeline
+
+**File:** `src/app/api/cron/price-drops/route.ts`
+
+Secured by `Authorization: Bearer {CRON_SECRET}`. Triggered on a schedule via Vercel cron.
+
+**Flow:**
+
+1. DB trigger on `listings` UPDATE inserts a `price_drop_notifications` row when `price_cents` decreases
+2. Cron `GET /api/cron/price-drops` fetches up to 100 `processed = false` rows (oldest first)
+3. For each notification:
+   - Fetches watchers for `listing_id` where `last_notified_price_cents IS NULL` OR `last_notified_price_cents > new_price_cents` (only notifies watchers who haven't already seen this price or lower)
+   - Fetches each watcher's email via `auth.admin.getUserById()`
+   - Renders `priceDrop()` email template with old/new price and listing URL
+   - Sends via `sendEmail()` (Resend)
+   - Updates `watchers.last_notified_price_cents = new_price_cents`
+4. Marks notification `processed = true`
+5. Returns `{ processed: number, emails_sent: number }`
+
+Individual watcher email failures are silently caught — one failure does not block other watchers or other notifications.
+
+## Email Template
+
+**File:** `src/features/email/templates/price-drop.ts`
+
+```ts
+priceDrop({ listingTitle, oldPriceCents, newPriceCents, listingId }): EmailTemplate
+```
+
+- Subject: `"{listingTitle} just dropped in price!"`
+- Body: listing title, "Good news" copy, old price (strikethrough) + new price, CTA button to `/listing/{listingId}`, fallback plain-text URL
+- Uses `emailLayout()` for the branded Nessi shell
+- `listingTitle` is passed through `escapeHtml()` before interpolation
+
+## Public API
+
+Consuming features import from the barrel export at `src/features/watchlist/index.ts`:
+
+```ts
+import {
+  Watcher,
+  WatcherInsert,
+  WatchStatus,
+  WatchedListing,
+  PriceDropNotification,
+  useWatchStatus,
+  useWatchToggle,
+  useWatchlist,
+} from '@/features/watchlist';
+```
+
+`WatchButton` is imported directly from its component path (not exported from the barrel):
+
+```ts
+import WatchButton from '@/features/watchlist/components/watch-button';
+```
+
+## Integration Points
+
+| Location                                                  | How It's Used                                                                                                   |
+| --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `src/features/listings/components/listing-card/index.tsx` | Renders `WatchButton` overlaid on the listing image; only shown to authenticated users                          |
+| `src/app/(frontend)/listing/[id]/listing-detail.tsx`      | Renders `WatchButton` on the listing detail page                                                                |
+| `src/app/(frontend)/watchlist/watchlist-page.tsx`         | Watchlist dashboard page — uses `useWatchlist()` to render `ListingCard` for each watched listing; sold overlay |
+| `src/app/(frontend)/watchlist/page.tsx`                   | Server page shell for the `/watchlist` route (auth-protected via `proxy.ts`)                                    |
 
 ## Directory Structure
 
 ```
 src/features/watchlist/
 ├── CLAUDE.md
-├── index.ts                              # Barrel export (types + hooks + components)
+├── index.ts                              # Barrel export (types + hooks)
 ├── types/
 │   └── watcher.ts                        # Watcher, WatcherInsert, WatchStatus, WatchedListing, PriceDropNotification
 ├── services/
-│   ├── watcher-server.ts                 # Server-side Supabase queries
-│   └── watcher.ts                        # Client-side fetch wrappers
+│   ├── watchlist-server.ts               # Server-side Supabase queries
+│   └── watchlist.ts                      # Client-side fetch wrappers
 ├── hooks/
-│   ├── use-watch-status.ts               # Query: is the user watching?
+│   ├── use-watch-status.ts               # Query: is the user watching? key: ['watchlist', 'status', listingId]
 │   ├── use-watch-toggle.ts               # Mutation: watch/unwatch with optimistic updates
-│   └── use-watched-listings.ts           # Query: list of watched listings
+│   └── use-watchlist.ts                  # Query: list of watched listings — key: ['watchlist']
 └── components/
-    ├── watch-button/
-    │   ├── index.tsx
-    │   └── watch-button.module.scss
-    └── watched-listing-card/
-        ├── index.tsx
-        └── watched-listing-card.module.scss
+    └── watch-button/
+        ├── index.tsx                     # WatchButton icon toggle (use client)
+        └── watch-button.module.scss      # Semi-transparent circle, heart icon, two-tone states
 
 src/app/api/watchlist/
-├── route.ts                              # POST (watch), DELETE (unwatch)
-├── status/
-│   └── route.ts                          # GET watch status
-└── listings/
-    └── route.ts                          # GET watched listings
+├── route.ts                              # GET (list watched), POST (watch), DELETE (unwatch)
+└── [listing_id]/
+    └── route.ts                          # GET (watch status)
+
+src/app/api/cron/
+└── price-drops/
+    └── route.ts                          # GET — cron: process price_drop_notifications, email watchers
+
+src/features/email/templates/
+└── price-drop.ts                         # Email template: subject + HTML body for price drop alerts
+
+src/app/(frontend)/watchlist/
+├── page.tsx                              # Route shell (auth-protected)
+├── watchlist-page.tsx                    # Client component: renders watchlist grid
+└── watchlist-page.module.scss            # Page layout styles
 ```
 
 ## Key Patterns
 
 - Follows the same shape as `src/features/follows/` — polymorphic target replaced by a direct `listing_id` FK
 - Optimistic updates in `useWatchToggle` mirror the `useFollowToggle` pattern: cancel in-flight queries, snapshot, update cache, revert on error
-- DELETE via query params (not body) — same rationale as `unfollowTarget`
-- Auth gate on `WatchButton` — unauthenticated users see a sign-in toast, not a redirect
+- DELETE via query string (`?listing_id=...`) — same rationale as `unfollowTarget` — `DELETE` bodies are unreliable across clients
+- Watch status uses a dynamic route segment (`[listing_id]`) rather than a `/status` sub-route, so the status check is a single `GET` with the ID in the path
+- Auth gate on `WatchButton` pushes to `{pathname}?login=true` instead of showing a toast — matches the listing-detail auth pattern
+- Cron skips watchers already notified at or below the new price (`last_notified_price_cents <= new_price_cents`) to prevent duplicate emails on successive smaller drops
 
 ## Related Features
 
 - `src/features/listings/` — `watcher_count` on listings table; `QuickEditPrice` displays watcher count
-- `src/features/email/` — Resend client used by the cron pipeline to send price-drop emails
-- `src/features/follows/` — Reference pattern for watch/unwatch toggle + optimistic updates
+- `src/features/email/` — `sendEmail` + `priceDrop` template used by the cron pipeline
+- `src/features/follows/` — Reference pattern for toggle + optimistic updates
