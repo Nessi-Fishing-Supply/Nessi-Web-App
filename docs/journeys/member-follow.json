@@ -4,7 +4,7 @@
   "title": "Follow / Unfollow",
   "persona": "buyer",
   "description": "Follow or unfollow members and shops to get updates on their activity.",
-  "relatedIssues": [212],
+  "relatedIssues": [212, 215],
   "flows": [
     {
       "id": "follow",
@@ -16,16 +16,17 @@
           "title": "View Profile Page",
           "action": "navigate",
           "layer": "client",
-          "status": "planned",
-          "tooltip": "User views a member profile or shop page with a Follow button and follower count"
+          "status": "built",
+          "tooltip": "User views a member profile or shop page with a FollowButton and follower count. Button hidden when viewing own profile/shop.",
+          "codeRef": "src/features/follows/components/follow-button/index.tsx"
         },
         {
           "id": "follow-2",
           "title": "Tap Follow Button",
           "action": "click",
           "layer": "client",
-          "status": "planned",
-          "tooltip": "useFollowToggle fires mutation with isCurrentlyFollowing=false, optimistically sets status to following and increments count cache",
+          "status": "built",
+          "tooltip": "FollowButton checks auth (shows sign-in toast if unauthenticated). useFollowToggle fires mutation with isCurrentlyFollowing=false, optimistically sets status to following and increments count cache.",
           "codeRef": "src/features/follows/hooks/use-follow-toggle.ts"
         },
         {
@@ -82,9 +83,9 @@
           "id": "follow-5",
           "title": "Show Following State",
           "layer": "client",
-          "status": "planned",
-          "tooltip": "Button updates to 'Following' state, follower count increments. onSettled invalidates status, count, and following queries.",
-          "codeRef": "src/features/follows/hooks/use-follow-toggle.ts"
+          "status": "built",
+          "tooltip": "Button updates to 'Following' state (filled primary), follower count increments. Toast: 'Following — You are now following {name}.' onSettled invalidates status, count, and following queries.",
+          "codeRef": "src/features/follows/components/follow-button/index.tsx"
         }
       ]
     },
@@ -98,16 +99,17 @@
           "title": "View Followed Entity",
           "action": "navigate",
           "layer": "client",
-          "status": "planned",
-          "tooltip": "User views a member or shop they already follow, seeing a 'Following' button"
+          "status": "built",
+          "tooltip": "User views a member or shop they already follow. FollowButton shows 'Following' state. On hover/focus, changes to 'Unfollow' with destructive styling.",
+          "codeRef": "src/features/follows/components/follow-button/index.tsx"
         },
         {
           "id": "unfollow-2",
           "title": "Tap Following Button",
           "action": "click",
           "layer": "client",
-          "status": "planned",
-          "tooltip": "useFollowToggle fires mutation with isCurrentlyFollowing=true, optimistically sets status to not-following and decrements count cache",
+          "status": "built",
+          "tooltip": "useFollowToggle fires mutation with isCurrentlyFollowing=true, optimistically sets status to not-following and decrements count cache. Toast: 'Unfollowed — You unfollowed {name}.'",
           "codeRef": "src/features/follows/hooks/use-follow-toggle.ts"
         },
         {
@@ -159,9 +161,9 @@
           "id": "unfollow-5",
           "title": "Show Follow State",
           "layer": "client",
-          "status": "planned",
-          "tooltip": "Button reverts to 'Follow' state, follower count decrements. onSettled invalidates status, count, and following queries.",
-          "codeRef": "src/features/follows/hooks/use-follow-toggle.ts"
+          "status": "built",
+          "tooltip": "Button reverts to 'Follow' state (outline primary), follower count decrements. onSettled invalidates status, count, and following queries.",
+          "codeRef": "src/features/follows/components/follow-button/index.tsx"
         }
       ]
     },
@@ -175,8 +177,9 @@
           "title": "Navigate to Profile",
           "action": "navigate",
           "layer": "client",
-          "status": "planned",
-          "tooltip": "useFollowStatus hook fires query on mount with targetType and targetId"
+          "status": "built",
+          "tooltip": "FollowButton mounts on profile page. useFollowStatus hook fires query with targetType and targetId.",
+          "codeRef": "src/features/follows/components/follow-button/index.tsx"
         },
         {
           "id": "check-status-2",
@@ -214,9 +217,9 @@
           "id": "check-status-3",
           "title": "Render Button State",
           "layer": "client",
-          "status": "planned",
-          "tooltip": "Follow button renders as 'Follow' or 'Following' based on is_following response",
-          "codeRef": "src/features/follows/hooks/use-follow-status.ts"
+          "status": "built",
+          "tooltip": "FollowButton renders as 'Follow' (outline) or 'Following' (filled primary) based on is_following response. Follower count badge also displayed.",
+          "codeRef": "src/features/follows/components/follow-button/index.tsx"
         }
       ],
       "branches": [
@@ -248,8 +251,9 @@
           "title": "Open Following Page",
           "action": "navigate",
           "layer": "client",
-          "status": "planned",
-          "tooltip": "useFollowing hook fires query on mount, optional targetType filter for member-only or shop-only views"
+          "status": "built",
+          "tooltip": "User navigates to /dashboard/following. Page is protected by proxy.ts. useFollowing() hook fires query on mount to fetch all followed entities.",
+          "codeRef": "src/app/(frontend)/dashboard/following/page.tsx"
         },
         {
           "id": "view-following-2",
@@ -282,9 +286,9 @@
           "id": "view-following-3",
           "title": "Render Following List",
           "layer": "client",
-          "status": "planned",
-          "tooltip": "Display list of followed members and shops with names, avatars, and unfollow actions",
-          "codeRef": "src/features/follows/hooks/use-following.ts"
+          "status": "built",
+          "tooltip": "Renders FollowingCard for each item — avatar, linked name, type pill, relative date, Unfollow button. Each card manages its own useFollowToggle mutation with toast feedback. Empty state shows heart icon + 'You are not following anyone yet' + Browse CTA.",
+          "codeRef": "src/features/follows/components/following-card/index.tsx"
         }
       ],
       "branches": [

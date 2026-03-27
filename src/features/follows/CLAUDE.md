@@ -85,6 +85,8 @@ import {
   FollowingItem,
   FollowButtonProps,
   FollowButton,
+  FollowingCardProps,
+  FollowingCard,
   useFollowStatus,
   useFollowerCount,
   useFollowToggle,
@@ -224,9 +226,12 @@ src/features/follows/
 │   ├── use-follow-toggle.ts          # Mutation: follow/unfollow with optimistic updates
 │   └── use-following.ts              # Query: list of targets the user follows
 └── components/
-    └── follow-button/
-        ├── index.tsx                  # FollowButton component (use client)
-        └── follow-button.module.scss # Three-state styles (Follow/Following/Unfollow)
+    ├── follow-button/
+    │   ├── index.tsx                  # FollowButton component (use client)
+    │   └── follow-button.module.scss # Three-state styles (Follow/Following/Unfollow)
+    └── following-card/
+        ├── index.tsx                  # FollowingCard component (use client)
+        └── following-card.module.scss # Card layout with avatar, name, pill, date, unfollow
 
 src/app/api/follows/
 ├── route.ts                          # POST (follow), DELETE (unfollow)
@@ -237,6 +242,39 @@ src/app/api/follows/
 └── following/
     └── route.ts                      # GET following list
 ```
+
+## Components
+
+### FollowingCard
+
+Displays a single followed entity in the `/dashboard/following` list. Self-contained: manages its own unfollow mutation via `useFollowToggle` internally, with toast feedback on success/error.
+
+**Props (`FollowingCardProps`):**
+
+| Prop | Type            | Required | Description                          |
+| ---- | --------------- | -------- | ------------------------------------ |
+| item | `FollowingItem` | Yes      | The followed entity (member or shop) |
+
+**Features:**
+
+- Avatar (with `isShop` flag for shop badge), linked name to profile, type Pill ("Member"/"Shop"), relative follow date, Unfollow button
+- Unfollow button uses `useFollowToggle` with `mutate(true)` — optimistic cache update removes item from following list
+- Toast on success: "Unfollowed — You unfollowed {name}."
+- Toast on error: "Something went wrong — Please try again."
+- `aria-label="Unfollow {name}"` on button
+- Mobile-first: stacks vertically on small screens, row layout on md+
+
+### Dashboard Following Page
+
+Located at `src/app/(frontend)/dashboard/following/page.tsx`. Protected by `proxy.ts` (all `/dashboard/*` routes require auth).
+
+- Fetches all following items via `useFollowing()` — sorted by `created_at DESC` (newest first)
+- Renders `FollowingCard` for each item
+- Loading state: 4 shimmer skeleton cards with `role="status"` and `aria-label`
+- Empty state: heart icon + "You are not following anyone yet" + Browse CTA
+- Error state: `ErrorState` component with `variant="banner"` and retry action
+- Metadata exported from `layout.tsx`: title "Following" → "Following | Nessi"
+- Side nav link: "Following" with `HiOutlineHeart` icon, visible for all authenticated members
 
 ## Integrations
 
