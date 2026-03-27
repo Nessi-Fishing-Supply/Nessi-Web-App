@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 import { getShopBySlugServer } from '@/features/shops/services/shop-server';
 import { getListingsByShopServer } from '@/features/listings/services/listing-server';
 import { createClient } from '@/libs/supabase/server';
-import { ReportTrigger } from '@/features/reports';
+import { FlagTrigger } from '@/features/flags';
 import ListingCard from '@/features/listings/components/listing-card';
 import styles from './shop-page.module.scss';
 
@@ -124,7 +124,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
         )}
       </section>
 
-      <ReportTrigger
+      <FlagTrigger
         currentUserId={currentUserId}
         isOwnEntity={isOwnShop}
         targetType="shop"

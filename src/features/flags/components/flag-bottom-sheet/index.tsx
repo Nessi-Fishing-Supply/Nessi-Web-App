@@ -3,16 +3,16 @@
 import { useCallback, useState } from 'react';
 import BottomSheet from '@/components/layout/bottom-sheet';
 import { useToast } from '@/components/indicators/toast/context';
-import { REPORT_REASONS } from '@/features/reports/constants/reasons';
-import { useSubmitReport } from '@/features/reports/hooks/use-reports';
-import { reportSchema } from '@/features/reports/validations/report';
-import type { ReportReason, ReportTargetType } from '@/features/reports/types/report';
-import styles from './report-bottom-sheet.module.scss';
+import { FLAG_REASONS } from '@/features/flags/constants/reasons';
+import { useSubmitFlag } from '@/features/flags/hooks/use-flags';
+import { flagSchema } from '@/features/flags/validations/flag';
+import type { FlagReason, FlagTargetType } from '@/features/flags/types/flag';
+import styles from './flag-bottom-sheet.module.scss';
 
-interface ReportBottomSheetProps {
+interface FlagBottomSheetProps {
   isOpen: boolean;
   onClose: () => void;
-  targetType: ReportTargetType;
+  targetType: FlagTargetType;
   targetId: string;
 }
 
@@ -22,13 +22,13 @@ function capitalizeFirst(str: string): string {
 
 const MAX_DESCRIPTION_LENGTH = 1000;
 
-export default function ReportBottomSheet({
+export default function FlagBottomSheet({
   isOpen,
   onClose,
   targetType,
   targetId,
-}: ReportBottomSheetProps) {
-  const [selectedReason, setSelectedReason] = useState<ReportReason | null>(null);
+}: FlagBottomSheetProps) {
+  const [selectedReason, setSelectedReason] = useState<FlagReason | null>(null);
   const [description, setDescription] = useState('');
   const { showToast } = useToast();
 
@@ -42,7 +42,7 @@ export default function ReportBottomSheet({
     onClose();
   }, [resetForm, onClose]);
 
-  const submitReport = useSubmitReport({
+  const submitFlag = useSubmitFlag({
     onSuccess: () => {
       handleClose();
       showToast({
@@ -78,7 +78,7 @@ export default function ReportBottomSheet({
     };
 
     try {
-      await reportSchema.validate(formData);
+      await flagSchema.validate(formData);
     } catch {
       showToast({
         message: 'Invalid report',
@@ -88,8 +88,8 @@ export default function ReportBottomSheet({
       return;
     }
 
-    submitReport.mutate(formData);
-  }, [selectedReason, targetType, targetId, description, showToast, submitReport]);
+    submitFlag.mutate(formData);
+  }, [selectedReason, targetType, targetId, description, showToast, submitFlag]);
 
   const displayType = capitalizeFirst(targetType);
   const isOther = selectedReason === 'other';
@@ -100,7 +100,7 @@ export default function ReportBottomSheet({
     selectedReason === null ||
     (isOther && descriptionLength === 0) ||
     isOverLimit ||
-    submitReport.isPending;
+    submitFlag.isPending;
 
   return (
     <BottomSheet title={`Report ${displayType}`} isOpen={isOpen} onClose={handleClose}>
@@ -108,8 +108,8 @@ export default function ReportBottomSheet({
         <legend className="sr-only">Why are you reporting this {targetType}?</legend>
 
         <div className={styles.reasonList}>
-          {REPORT_REASONS.map((reason) => {
-            const inputId = `report-reason-${reason.value}`;
+          {FLAG_REASONS.map((reason) => {
+            const inputId = `flag-reason-${reason.value}`;
             const isSelected = selectedReason === reason.value;
 
             return (
@@ -121,7 +121,7 @@ export default function ReportBottomSheet({
                 <input
                   type="radio"
                   id={inputId}
-                  name="report-reason"
+                  name="flag-reason"
                   value={reason.value}
                   checked={isSelected}
                   onChange={() => setSelectedReason(reason.value)}
@@ -139,11 +139,11 @@ export default function ReportBottomSheet({
       </fieldset>
 
       <div className={styles.descriptionSection}>
-        <label htmlFor="report-description" className={styles.descriptionLabel}>
+        <label htmlFor="flag-description" className={styles.descriptionLabel}>
           Additional details{isOther ? ' (required)' : ' (optional)'}
         </label>
         <textarea
-          id="report-description"
+          id="flag-description"
           className={styles.descriptionTextarea}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
@@ -151,10 +151,10 @@ export default function ReportBottomSheet({
           rows={3}
           aria-required={isOther}
           aria-invalid={isOverLimit || undefined}
-          aria-describedby="report-description-counter"
+          aria-describedby="flag-description-counter"
         />
         <span
-          id="report-description-counter"
+          id="flag-description-counter"
           className={`${styles.charCounter}${isNearLimit ? ` ${styles.charCounterWarning}` : ''}${isOverLimit ? ` ${styles.charCounterError}` : ''}`}
           aria-live="polite"
         >
@@ -167,10 +167,10 @@ export default function ReportBottomSheet({
           type="button"
           className={styles.submitButton}
           disabled={isSubmitDisabled}
-          aria-busy={submitReport.isPending}
+          aria-busy={submitFlag.isPending}
           onClick={handleSubmit}
         >
-          {submitReport.isPending ? 'Submitting...' : 'Submit Report'}
+          {submitFlag.isPending ? 'Submitting...' : 'Submit Report'}
         </button>
       </div>
     </BottomSheet>

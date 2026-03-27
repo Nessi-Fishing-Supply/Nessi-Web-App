@@ -1,20 +1,20 @@
 import type { Database } from '@/types/database';
 
-type ReportReason = Database['public']['Enums']['report_reason'];
-type ReportTargetType = Database['public']['Enums']['report_target_type'];
+type FlagReason = Database['public']['Enums']['flag_reason'];
+type FlagTargetType = Database['public']['Enums']['flag_target_type'];
 
-export type ReportReasonOption = {
-  value: ReportReason;
+export type FlagReasonOption = {
+  value: FlagReason;
   label: string;
   description: string;
 };
 
-export type ReportTargetTypeOption = {
-  value: ReportTargetType;
+export type FlagTargetTypeOption = {
+  value: FlagTargetType;
   label: string;
 };
 
-export const REPORT_REASONS: ReportReasonOption[] = [
+export const FLAG_REASONS: FlagReasonOption[] = [
   {
     value: 'spam',
     label: 'Spam',
@@ -52,7 +52,7 @@ export const REPORT_REASONS: ReportReasonOption[] = [
   },
 ];
 
-export const REPORT_TARGET_TYPES: ReportTargetTypeOption[] = [
+export const FLAG_TARGET_TYPES: FlagTargetTypeOption[] = [
   { value: 'listing', label: 'Listing' },
   { value: 'member', label: 'Member' },
   { value: 'shop', label: 'Shop' },

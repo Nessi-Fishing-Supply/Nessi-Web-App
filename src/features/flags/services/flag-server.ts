@@ -1,11 +1,11 @@
 import { createClient } from '@/libs/supabase/server';
-import type { Report, ReportFormData, ReportTargetType } from '@/features/reports/types/report';
+import type { Flag, FlagFormData, FlagTargetType } from '@/features/flags/types/flag';
 
-export async function createReportServer(userId: string, data: ReportFormData): Promise<Report> {
+export async function createFlagServer(userId: string, data: FlagFormData): Promise<Flag> {
   const supabase = await createClient();
 
-  const { data: report, error } = await supabase
-    .from('reports')
+  const { data: flag, error } = await supabase
+    .from('flags')
     .insert({
       reporter_id: userId,
       target_type: data.target_type,
@@ -18,23 +18,23 @@ export async function createReportServer(userId: string, data: ReportFormData): 
 
   if (error) {
     if (error.code === '23505') {
-      throw new Error('You have already reported this item');
+      throw new Error('You have already flagged this item');
     }
-    throw new Error(`Failed to create report: ${error.message}`);
+    throw new Error(`Failed to create flag: ${error.message}`);
   }
 
-  return report as Report;
+  return flag as Flag;
 }
 
-export async function getExistingReportServer(
+export async function getExistingFlagServer(
   userId: string,
-  targetType: ReportTargetType,
+  targetType: FlagTargetType,
   targetId: string,
-): Promise<Report | null> {
+): Promise<Flag | null> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
-    .from('reports')
+    .from('flags')
     .select('*')
     .eq('reporter_id', userId)
     .eq('target_type', targetType)
@@ -42,8 +42,8 @@ export async function getExistingReportServer(
     .maybeSingle();
 
   if (error) {
-    throw new Error(`Failed to check existing report: ${error.message}`);
+    throw new Error(`Failed to check existing flag: ${error.message}`);
   }
 
-  return (data as Report) ?? null;
+  return (data as Flag) ?? null;
 }

@@ -1,11 +1,11 @@
 import { createClient } from '@/libs/supabase/server';
 import { AUTH_CACHE_HEADERS } from '@/libs/api-headers';
-import { getExistingReportServer } from '@/features/reports/services/report-server';
-import { REPORT_TARGET_TYPES } from '@/features/reports/constants/reasons';
-import type { ReportTargetType } from '@/features/reports/types/report';
+import { getExistingFlagServer } from '@/features/flags/services/flag-server';
+import { FLAG_TARGET_TYPES } from '@/features/flags/constants/reasons';
+import type { FlagTargetType } from '@/features/flags/types/flag';
 import { NextResponse } from 'next/server';
 
-// Checks whether the current user has already reported a specific item.
+// Checks whether the current user has already flagged a specific item.
 export async function GET(req: Request) {
   try {
     const supabase = await createClient();
@@ -31,25 +31,21 @@ export async function GET(req: Request) {
       );
     }
 
-    const validTargetTypes = REPORT_TARGET_TYPES.map((t) => t.value);
-    if (!validTargetTypes.includes(targetType as ReportTargetType)) {
+    const validTargetTypes = FLAG_TARGET_TYPES.map((t) => t.value);
+    if (!validTargetTypes.includes(targetType as FlagTargetType)) {
       return NextResponse.json(
         { error: 'Invalid targetType' },
         { status: 400, headers: AUTH_CACHE_HEADERS },
       );
     }
 
-    const existing = await getExistingReportServer(
-      user.id,
-      targetType as ReportTargetType,
-      targetId,
-    );
+    const existing = await getExistingFlagServer(user.id, targetType as FlagTargetType, targetId);
 
     return NextResponse.json({ exists: !!existing }, { headers: AUTH_CACHE_HEADERS });
   } catch (error) {
-    console.error('Error checking report:', error);
+    console.error('Error checking flag:', error);
     return NextResponse.json(
-      { error: 'Failed to check report' },
+      { error: 'Failed to check flag' },
       { status: 500, headers: AUTH_CACHE_HEADERS },
     );
   }
