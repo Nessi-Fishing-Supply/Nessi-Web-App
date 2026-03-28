@@ -10,6 +10,7 @@ import { extractConfigs } from './extract-config.js';
 import { extractFeatures } from './extract-features.js';
 import { extractLifecycles } from './extract-lifecycles.js';
 import { extractJourneys } from './extract-journeys.js';
+import { extractArchitecture } from './extract-architecture.js';
 import { fetchKanban } from './fetch-kanban.js';
 import { fetchMergedPRs } from './fetch-changelog.js';
 import { writeJson } from './utils/output.js';
@@ -54,14 +55,19 @@ async function main(): Promise<void> {
   writeJson('lifecycles.json', { lifecycles });
   counts.lifecycles = lifecycles.length;
 
-  console.log('[7/10] Extracting journeys…');
+  console.log('[7/11] Extracting journeys…');
   const { journeys } = extractJourneys();
   writeJson('journeys.json', { journeys });
   counts.journeys = journeys.length;
 
-  // ---------- Async GitHub fetchers (8–9) ----------
+  console.log('[8/11] Extracting architecture diagrams…');
+  const archDiagrams = extractArchitecture();
+  writeJson('architecture.json', { diagrams: archDiagrams });
+  counts.architectureDiagrams = archDiagrams.length;
 
-  console.log('[8/9] Fetching kanban board…');
+  // ---------- Async GitHub fetchers (9–10) ----------
+
+  console.log('[9/11] Fetching kanban board…');
   try {
     const items = await fetchKanban();
     writeJson('roadmap.json', { items });
@@ -74,7 +80,7 @@ async function main(): Promise<void> {
     counts.roadmapItems = 0;
   }
 
-  console.log('[9/9] Fetching changelog…');
+  console.log('[10/11] Fetching changelog…');
   try {
     const entries = await fetchMergedPRs();
     writeJson('changelog.json', { entries });

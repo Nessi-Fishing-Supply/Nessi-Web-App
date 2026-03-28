@@ -12,7 +12,6 @@ flowchart LR
 
     subgraph SERVER["Next.js Server"]
         API["API Routes<br/>src/app/api/"]
-        SA["Server Actions"]
         PX["proxy.ts<br/>(auth + routing)"]
     end
 
@@ -25,12 +24,10 @@ flowchart LR
     UI -->|"useQuery/useMutation"| TQ
     UI -->|"useStore.use.*()"| ZS
     TQ -->|"fetch"| API
-    UI -->|"form submit"| SA
     PX -->|"session refresh"| AUTH
     PX -->|"redirect if unauthed"| UI
     API -->|"server client"| DB
     API -->|"admin client"| AUTH
-    SA -->|"server client"| DB
     API -->|"upload"| STOR
     DB -->|"RLS policy check"| AUTH
 ```

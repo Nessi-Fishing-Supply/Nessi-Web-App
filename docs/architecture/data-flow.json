@@ -1,0 +1,86 @@
+{
+  "slug": "data-flow",
+  "category": "flow",
+  "title": "Data Flow",
+  "description": "How data moves between the browser, Next.js server, and Supabase — client state, server state, auth, and storage.",
+  "layers": [
+    {
+      "id": "browser",
+      "label": "Browser",
+      "color": "#58a6ff",
+      "nodes": [
+        {
+          "id": "ui",
+          "label": "React Components",
+          "tooltip": "UI layer rendering pages and interactive elements. Consumes server state via Tanstack Query and client state via Zustand."
+        },
+        {
+          "id": "tanstack-query",
+          "label": "Tanstack Query",
+          "sublabel": "Server state",
+          "tooltip": "Manages server data with caching, background refetch, and optimistic updates. Uses custom fetch wrapper from src/libs/fetch.ts."
+        },
+        {
+          "id": "zustand-store",
+          "label": "Zustand Store",
+          "sublabel": "Client state",
+          "tooltip": "Local client state with createSelectors pattern. Stores: edit-wizard, create-wizard, context-store. Persisted to localStorage where needed."
+        }
+      ]
+    },
+    {
+      "id": "server",
+      "label": "Next.js Server",
+      "color": "#d2a8ff",
+      "nodes": [
+        {
+          "id": "api-routes",
+          "label": "API Routes",
+          "sublabel": "src/app/api/",
+          "tooltip": "60+ RESTful API routes handling all server-side operations. Uses Supabase server client with cookie-based auth."
+        },
+        {
+          "id": "proxy",
+          "label": "proxy.ts",
+          "sublabel": "Auth + routing",
+          "tooltip": "Next.js 16 middleware handling session refresh, auth redirects, and onboarding checks on every request."
+        }
+      ]
+    },
+    {
+      "id": "supabase",
+      "label": "Supabase",
+      "color": "#3dbe87",
+      "nodes": [
+        {
+          "id": "auth",
+          "label": "Auth",
+          "tooltip": "Supabase Auth with cookie-based sessions via @supabase/ssr. Handles signup, login, password reset, and email change."
+        },
+        {
+          "id": "postgres",
+          "label": "PostgreSQL",
+          "sublabel": "RLS enforced",
+          "tooltip": "Primary database with Row Level Security on all tables. Server client uses publishable key; admin client uses secret key for elevated operations."
+        },
+        {
+          "id": "storage",
+          "label": "Storage",
+          "sublabel": "listing-images, profile-assets",
+          "tooltip": "Two storage buckets: listing-images for product photos and thumbnails, profile-assets for member avatars and shop banners/hero images."
+        }
+      ]
+    }
+  ],
+  "connections": [
+    { "from": "ui", "to": "tanstack-query", "label": "useQuery / useMutation" },
+    { "from": "ui", "to": "zustand-store", "label": "useStore.use.*()" },
+    { "from": "tanstack-query", "to": "api-routes", "label": "fetch" },
+    { "from": "proxy", "to": "auth", "label": "Session refresh" },
+    { "from": "proxy", "to": "ui", "label": "Redirect if unauthed" },
+    { "from": "api-routes", "to": "postgres", "label": "Server client" },
+    { "from": "api-routes", "to": "auth", "label": "Admin client" },
+    { "from": "api-routes", "to": "storage", "label": "Upload" },
+    { "from": "postgres", "to": "auth", "label": "RLS policy check" }
+  ]
+}

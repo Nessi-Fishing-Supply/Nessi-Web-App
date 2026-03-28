@@ -1,0 +1,170 @@
+{
+  "slug": "tech-stack",
+  "category": "stack",
+  "title": "Tech Stack",
+  "description": "Technology layers powering the Nessi marketplace — frontend, state management, backend, infrastructure, and code quality.",
+  "layers": [
+    {
+      "id": "frontend",
+      "label": "Frontend",
+      "color": "#58a6ff",
+      "nodes": [
+        {
+          "id": "nextjs",
+          "label": "Next.js 16",
+          "sublabel": "App Router",
+          "tooltip": "Full-stack React framework with file-system routing, server components, and proxy.ts middleware."
+        },
+        {
+          "id": "react",
+          "label": "React 19",
+          "tooltip": "UI component library with hooks, server components, and concurrent features."
+        },
+        {
+          "id": "scss-modules",
+          "label": "SCSS Modules",
+          "tooltip": "Scoped CSS with Nessi design tokens, dark theme, and frosted glass effects."
+        },
+        {
+          "id": "react-icons",
+          "label": "react-icons",
+          "tooltip": "Icon library providing HiOutline and other icon sets across the UI."
+        },
+        {
+          "id": "next-image",
+          "label": "next/image",
+          "tooltip": "Automatic image optimization with lazy loading and responsive sizing."
+        }
+      ]
+    },
+    {
+      "id": "state",
+      "label": "State Management",
+      "color": "#d2a8ff",
+      "nodes": [
+        {
+          "id": "tanstack-query",
+          "label": "Tanstack Query",
+          "sublabel": "Server state",
+          "tooltip": "Data fetching and caching with useQuery/useMutation. QueryCache handles 403 context revocation."
+        },
+        {
+          "id": "zustand",
+          "label": "Zustand",
+          "sublabel": "Client state",
+          "tooltip": "Lightweight stores with createSelectors pattern (useStore.use.*()). Used for edit wizards, create wizards, and context switching."
+        },
+        {
+          "id": "auth-provider",
+          "label": "AuthProvider",
+          "sublabel": "Supabase context",
+          "tooltip": "React context providing authenticated Supabase client and user session to the component tree."
+        }
+      ]
+    },
+    {
+      "id": "backend",
+      "label": "Backend (Supabase)",
+      "color": "#3dbe87",
+      "nodes": [
+        {
+          "id": "supabase-auth",
+          "label": "Supabase Auth",
+          "sublabel": "Cookie sessions",
+          "tooltip": "Authentication via @supabase/ssr with cookie-based session management. Supports email/password signup."
+        },
+        {
+          "id": "postgresql",
+          "label": "PostgreSQL",
+          "sublabel": "RLS enforced",
+          "tooltip": "Relational database with Row Level Security on all tables. Managed by Supabase with migrations in supabase/migrations/."
+        },
+        {
+          "id": "supabase-storage",
+          "label": "Supabase Storage",
+          "sublabel": "Product images",
+          "tooltip": "Object storage with two buckets: listing-images (product photos + thumbnails) and profile-assets (avatars, shop banners)."
+        }
+      ]
+    },
+    {
+      "id": "infrastructure",
+      "label": "Infrastructure",
+      "color": "#e27739",
+      "nodes": [
+        {
+          "id": "vercel",
+          "label": "Vercel",
+          "sublabel": "Deploy + CDN",
+          "tooltip": "Hosting platform with automatic deployments from GitHub, edge CDN, and serverless functions."
+        },
+        {
+          "id": "github-actions",
+          "label": "GitHub Actions",
+          "sublabel": "CI pipeline",
+          "tooltip": "Continuous integration running format check, lint, typecheck, tests, and build on every push."
+        },
+        {
+          "id": "vercel-analytics",
+          "label": "Vercel Analytics",
+          "tooltip": "First-party web analytics integrated via @vercel/analytics in the root layout."
+        },
+        {
+          "id": "speed-insights",
+          "label": "Speed Insights",
+          "tooltip": "Real user performance monitoring via @vercel/speed-insights in the root layout."
+        }
+      ]
+    },
+    {
+      "id": "quality",
+      "label": "Code Quality",
+      "color": "#78756f",
+      "nodes": [
+        {
+          "id": "eslint",
+          "label": "ESLint",
+          "tooltip": "Linting with Next.js core-web-vitals and TypeScript configs."
+        },
+        {
+          "id": "prettier",
+          "label": "Prettier",
+          "tooltip": "Code formatting with semi, singleQuote, trailingComma all configuration."
+        },
+        {
+          "id": "stylelint",
+          "label": "Stylelint",
+          "tooltip": "SCSS linting with stylelint-config-standard-scss."
+        },
+        {
+          "id": "typescript",
+          "label": "TypeScript",
+          "sublabel": "Strict mode",
+          "tooltip": "Type safety with strict: true in tsconfig.json."
+        },
+        {
+          "id": "vitest",
+          "label": "Vitest",
+          "tooltip": "Unit and integration testing framework with setup file and workspace configuration."
+        }
+      ]
+    }
+  ],
+  "connections": [
+    { "from": "nextjs", "to": "react", "label": "renders" },
+    { "from": "react", "to": "tanstack-query", "label": "useQuery" },
+    { "from": "react", "to": "zustand", "label": "useStore" },
+    { "from": "react", "to": "auth-provider", "label": "useAuth" },
+    { "from": "tanstack-query", "to": "supabase-auth", "label": "fetch" },
+    { "from": "tanstack-query", "to": "postgresql", "label": "fetch" },
+    { "from": "supabase-auth", "to": "postgresql", "label": "RLS" },
+    { "from": "nextjs", "to": "vercel", "label": "deploy" },
+    { "from": "vercel", "to": "vercel-analytics", "label": "tracks" },
+    { "from": "vercel", "to": "speed-insights", "label": "monitors" },
+    { "from": "github-actions", "to": "eslint", "label": "runs" },
+    { "from": "github-actions", "to": "prettier", "label": "runs" },
+    { "from": "github-actions", "to": "stylelint", "label": "runs" },
+    { "from": "github-actions", "to": "typescript", "label": "runs" },
+    { "from": "github-actions", "to": "vitest", "label": "runs" }
+  ]
+}

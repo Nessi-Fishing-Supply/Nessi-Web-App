@@ -1,0 +1,280 @@
+{
+  "slug": "skill-agent-pipeline",
+  "category": "pipeline",
+  "title": "Skill & Agent Pipeline",
+  "description": "Developer command routing through skills and agents — from slash commands through expert skills, design intelligence, conductor pipeline, and testing to outputs.",
+  "layers": [
+    {
+      "id": "commands",
+      "label": "Developer Commands",
+      "color": "#58a6ff",
+      "nodes": [
+        {
+          "id": "feature-pipeline",
+          "label": "/feature-pipeline",
+          "tooltip": "End-to-end feature development: design spec → ticket generation → conductor build. Orchestrates the full lifecycle."
+        },
+        {
+          "id": "design-spec",
+          "label": "/design-spec",
+          "tooltip": "Generate a comprehensive design specification for a feature, including UX flows, data model, and API contracts."
+        },
+        {
+          "id": "ticket-gen",
+          "label": "/ticket-gen",
+          "tooltip": "Generate GitHub issues from a design spec, organized by phase with acceptance criteria."
+        },
+        {
+          "id": "conductor-start",
+          "label": "/conductor start #N",
+          "tooltip": "Start the autonomous conductor pipeline for a specific GitHub issue."
+        },
+        {
+          "id": "preflight",
+          "label": "/preflight",
+          "tooltip": "Pre-merge quality gate: lint, typecheck, format, build, and test validation."
+        },
+        {
+          "id": "audit",
+          "label": "/audit",
+          "tooltip": "Code quality audit across the codebase for patterns, consistency, and best practices."
+        },
+        {
+          "id": "marketplace-audit",
+          "label": "/marketplace-audit",
+          "tooltip": "Competitive analysis against real marketplace platforms (Etsy, Reverb, Poshmark) for feature parity."
+        },
+        {
+          "id": "a11y-audit",
+          "label": "/a11y-audit",
+          "tooltip": "Accessibility audit using WCAG guidelines, checking semantic HTML, ARIA, keyboard nav, and color contrast."
+        },
+        {
+          "id": "ui-test",
+          "label": "/ui-test",
+          "tooltip": "Visual UI testing via browser automation — verifies component rendering and interaction behavior."
+        },
+        {
+          "id": "feature-scaffold",
+          "label": "/feature-scaffold",
+          "tooltip": "Scaffold a new feature directory with standard structure: components, hooks, services, types, constants."
+        },
+        {
+          "id": "db-migrate",
+          "label": "/db-migrate",
+          "tooltip": "Generate and apply Supabase database migrations with RLS policies and indexes."
+        },
+        {
+          "id": "write-tests",
+          "label": "/write-tests",
+          "tooltip": "Generate Vitest unit and integration tests for existing code."
+        },
+        {
+          "id": "debug",
+          "label": "/debug",
+          "tooltip": "Systematic debugging skill for investigating and resolving issues."
+        }
+      ]
+    },
+    {
+      "id": "expert-skills",
+      "label": "Tech Expert Skills",
+      "color": "#d2a8ff",
+      "nodes": [
+        {
+          "id": "ask-supabase",
+          "label": "/ask-supabase",
+          "sublabel": "src/libs/supabase/*",
+          "tooltip": "Auto-triggers when editing Supabase files. Provides context on RLS, auth patterns, storage, and database operations."
+        },
+        {
+          "id": "ask-nextjs",
+          "label": "/ask-nextjs",
+          "sublabel": "src/app/**",
+          "tooltip": "Auto-triggers when editing App Router files. Provides context on routing, server components, and proxy.ts patterns."
+        },
+        {
+          "id": "ask-vercel",
+          "label": "/ask-vercel",
+          "sublabel": "vercel.json",
+          "tooltip": "Auto-triggers when editing Vercel config. Provides context on deployment, crons, and platform configuration."
+        },
+        {
+          "id": "ask-scss",
+          "label": "/ask-scss",
+          "sublabel": "*.module.scss",
+          "tooltip": "Auto-triggers when editing SCSS modules. Provides context on design tokens, theming, and styling patterns."
+        },
+        {
+          "id": "ask-state",
+          "label": "/ask-state",
+          "sublabel": "hooks/*, stores/*",
+          "tooltip": "Auto-triggers when editing hooks or stores. Provides context on Tanstack Query, Zustand, and state management patterns."
+        }
+      ]
+    },
+    {
+      "id": "design-intelligence",
+      "label": "Design Intelligence",
+      "color": "#e27739",
+      "nodes": [
+        {
+          "id": "ux-researcher",
+          "label": "ux-researcher",
+          "sublabel": "Agent",
+          "tooltip": "Researches UX patterns from competitor marketplaces and generates design recommendations for Nessi features."
+        },
+        {
+          "id": "marketplace-audit-agent",
+          "label": "marketplace-audit",
+          "sublabel": "Agent",
+          "tooltip": "Analyzes real marketplace platforms for feature parity, UX patterns, and competitive insights."
+        }
+      ]
+    },
+    {
+      "id": "conductor",
+      "label": "Conductor Pipeline",
+      "color": "#3dbe87",
+      "nodes": [
+        {
+          "id": "plan-architect",
+          "label": "plan-architect",
+          "sublabel": "Opus",
+          "tooltip": "Generates phased implementation plans from GitHub issues."
+        },
+        {
+          "id": "task-executor",
+          "label": "task-executor",
+          "sublabel": "Sonnet",
+          "tooltip": "Implements individual tasks with pre-loaded expert skills."
+        },
+        {
+          "id": "phase-verifier",
+          "label": "phase-verifier",
+          "sublabel": "Sonnet",
+          "tooltip": "Validates phase completion before advancing."
+        },
+        {
+          "id": "review-orchestrator",
+          "label": "review-orchestrator",
+          "sublabel": "Sonnet",
+          "tooltip": "Runs quality gates: preflight, ui-test, a11y-audit."
+        },
+        {
+          "id": "finding-resolver",
+          "label": "finding-resolver",
+          "sublabel": "Sonnet",
+          "tooltip": "Creates atomic fix tasks from review findings."
+        },
+        {
+          "id": "debug-investigator",
+          "label": "debug-investigator",
+          "sublabel": "Opus",
+          "tooltip": "Deep investigation for tasks failing 3+ times."
+        },
+        {
+          "id": "pr-creator",
+          "label": "pr-creator",
+          "sublabel": "Sonnet",
+          "tooltip": "Creates pull request with structured description."
+        },
+        {
+          "id": "ticket-generator",
+          "label": "ticket-generator",
+          "sublabel": "Opus",
+          "tooltip": "Generates GitHub issues from design specs."
+        }
+      ]
+    },
+    {
+      "id": "testing",
+      "label": "Testing & Debugging",
+      "color": "#e27739",
+      "nodes": [
+        {
+          "id": "ui-tester",
+          "label": "ui-tester",
+          "sublabel": "Agent",
+          "tooltip": "Browser-based UI testing agent for visual verification and interaction testing."
+        },
+        {
+          "id": "browser-debug",
+          "label": "browser-debug",
+          "sublabel": "Agent",
+          "tooltip": "Browser automation agent for debugging rendering and interaction issues."
+        },
+        {
+          "id": "a11y-auditor",
+          "label": "a11y-auditor",
+          "sublabel": "Agent",
+          "tooltip": "Accessibility auditing agent checking WCAG compliance."
+        },
+        {
+          "id": "test-author",
+          "label": "test-author",
+          "sublabel": "Agent",
+          "tooltip": "Generates unit and integration tests for existing code."
+        }
+      ]
+    },
+    {
+      "id": "outputs",
+      "label": "Outputs",
+      "color": "#78756f",
+      "nodes": [
+        {
+          "id": "design-specs",
+          "label": "Design Specs",
+          "sublabel": "docs/design-specs/*.md",
+          "tooltip": "Markdown design specifications produced by /design-spec and ux-researcher."
+        },
+        {
+          "id": "github-issues",
+          "label": "GitHub Issues",
+          "sublabel": "Kanban Board",
+          "tooltip": "Structured GitHub issues with acceptance criteria, organized on the project kanban board."
+        },
+        {
+          "id": "pull-request",
+          "label": "Pull Request",
+          "tooltip": "Final output of the conductor pipeline — a ready-to-review PR linked to the source issue."
+        }
+      ]
+    }
+  ],
+  "connections": [
+    { "from": "feature-pipeline", "to": "design-spec", "label": "Step 1" },
+    { "from": "design-spec", "to": "ux-researcher", "label": "Research" },
+    { "from": "ux-researcher", "to": "design-specs", "label": "Output" },
+    { "from": "feature-pipeline", "to": "ticket-gen", "label": "Step 2" },
+    { "from": "ticket-gen", "to": "ticket-generator", "label": "Generate" },
+    { "from": "ticket-generator", "to": "github-issues", "label": "Output" },
+    { "from": "feature-pipeline", "to": "conductor-start", "label": "Step 3" },
+    { "from": "conductor-start", "to": "plan-architect", "label": "Start" },
+    { "from": "plan-architect", "to": "task-executor", "label": "Plan ready" },
+    { "from": "task-executor", "to": "phase-verifier", "label": "Phase done" },
+    { "from": "phase-verifier", "to": "review-orchestrator", "label": "All done" },
+    { "from": "review-orchestrator", "to": "pr-creator", "label": "Clean" },
+    { "from": "review-orchestrator", "to": "finding-resolver", "label": "Needs fixes" },
+    { "from": "finding-resolver", "to": "task-executor", "label": "Fix tasks" },
+    { "from": "task-executor", "to": "debug-investigator", "label": "3rd failure" },
+    { "from": "pr-creator", "to": "pull-request", "label": "Output" },
+    {
+      "from": "expert-skills",
+      "to": "task-executor",
+      "label": "Pre-loaded context",
+      "style": "dashed"
+    },
+    {
+      "from": "preflight",
+      "to": "review-orchestrator",
+      "label": "Quality gate",
+      "style": "dashed"
+    },
+    { "from": "ui-test", "to": "ui-tester", "label": "Invokes" },
+    { "from": "a11y-audit", "to": "a11y-auditor", "label": "Invokes" },
+    { "from": "write-tests", "to": "test-author", "label": "Invokes" },
+    { "from": "debug", "to": "browser-debug", "label": "Invokes" }
+  ]
+}

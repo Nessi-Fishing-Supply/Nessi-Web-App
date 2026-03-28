@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "nessi-architecture-v1",
+  "title": "Nessi Architecture Diagram",
+  "description": "Structured architecture data for the Nessi docs site. Source of truth for system architecture visualizations — tech stack, data flows, pipelines, and agent workflows.",
+  "type": "object",
+  "required": ["slug", "category", "title", "description", "layers", "connections"],
+  "properties": {
+    "slug": {
+      "type": "string",
+      "description": "URL-safe identifier (e.g., 'tech-stack', 'data-flow')"
+    },
+    "category": {
+      "type": "string",
+      "enum": ["stack", "flow", "pipeline"],
+      "description": "Diagram type. 'stack' = layered dependency graph (tech stack). 'flow' = directional data movement (data flow). 'pipeline' = sequential workflow with branching (conductor, agent pipelines)."
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "Short diagram title (e.g., 'Tech Stack', 'Data Flow')"
+    },
+    "description": {
+      "type": "string",
+      "description": "One-line summary of what this diagram shows"
+    },
+    "layers": {
+      "type": "array",
+      "description": "Grouped layers/subgraphs containing nodes. Each layer represents a logical boundary (e.g., 'Frontend', 'Backend', 'Infrastructure').",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "nodes"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Layer identifier"
+          },
+          "label": {
+            "type": "string",
+            "description": "Display label for the layer"
+          },
+          "color": {
+            "type": "string",
+            "description": "Optional accent color for the layer (hex)"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id", "label"],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Node identifier, unique across the entire diagram"
+                },
+                "label": {
+                  "type": "string",
+                  "description": "Display label for the node"
+                },
+                "sublabel": {
+                  "type": "string",
+                  "description": "Secondary text shown below the label (e.g., file path, version)"
+                },
+                "icon": {
+                  "type": "string",
+                  "description": "Optional icon identifier (e.g., 'nextjs', 'react', 'supabase')"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "Optional external link (e.g., docs URL, GitHub file)"
+                },
+                "tooltip": {
+                  "type": "string",
+                  "description": "Rich description shown on hover"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "connections": {
+      "type": "array",
+      "description": "Directed edges between nodes across or within layers.",
+      "items": {
+        "type": "object",
+        "required": ["from", "to"],
+        "properties": {
+          "from": {
+            "type": "string",
+            "description": "Source node ID"
+          },
+          "to": {
+            "type": "string",
+            "description": "Target node ID"
+          },
+          "label": {
+            "type": "string",
+            "description": "Edge label describing the relationship (e.g., 'fetch', 'useQuery', 'deploy')"
+          },
+          "style": {
+            "type": "string",
+            "enum": ["solid", "dashed"],
+            "default": "solid",
+            "description": "Edge style. 'dashed' for optional or indirect relationships."
+          }
+        }
+      }
+    }
+  }
+}
