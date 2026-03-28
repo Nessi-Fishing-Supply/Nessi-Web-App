@@ -17,6 +17,7 @@ export interface ApiEndpoint {
   requestFields: RequestField[];
   description: string;
   tags: string[];
+  sourceFile?: string;
 }
 
 export interface ApiGroup {
@@ -35,6 +36,7 @@ export interface Entity {
   label: string;
   fields: EntityField[];
   badges: string[];
+  sourceFile?: string;
 }
 
 export interface ErdNode {
@@ -110,6 +112,7 @@ export interface Lifecycle {
   states: LifecycleState[];
   transitions: LifecycleTransition[];
   source?: 'enum' | 'check_constraint' | 'typescript';
+  sourceFile?: string;
 }
 
 export interface JourneyNode {
