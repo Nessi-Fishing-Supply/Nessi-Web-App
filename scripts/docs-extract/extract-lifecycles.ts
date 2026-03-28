@@ -1,5 +1,5 @@
 import { readdirSync, readFileSync } from 'fs';
-import { join, dirname } from 'path';
+import { join, dirname, relative } from 'path';
 import { fileURLToPath } from 'url';
 import { walkFiles, readFile } from './utils/fs.js';
 import { titleCase } from './utils/labels.js';
@@ -73,9 +73,9 @@ function readMigrationFiles(): Array<{ filePath: string; content: string }> {
   } catch {
     return [];
   }
-  return files.map((filePath) => ({
-    filePath,
-    content: readFileSync(filePath, 'utf-8'),
+  return files.map((fullPath) => ({
+    filePath: relative(ROOT, fullPath),
+    content: readFileSync(fullPath, 'utf-8'),
   }));
 }
 
@@ -185,10 +185,10 @@ function parseStatusLabelsMap(content: string): Map<string, Map<string, string>>
 
 /**
  * Collect all *_STATUS_LABELS maps from src/features constants files.
- * Returns a nested map: entity-slug -> (value -> display label).
+ * Returns a nested map: entity-slug -> { labels: (value -> display label), filePath }.
  */
-function collectStatusLabelMaps(): Map<string, Map<string, string>> {
-  const combined = new Map<string, Map<string, string>>();
+function collectStatusLabelMaps(): Map<string, { labels: Map<string, string>; filePath: string }> {
+  const combined = new Map<string, { labels: Map<string, string>; filePath: string }>();
   const files = walkFiles('src/features', /\.ts$/);
   const constantsFiles = files.filter((f) => /\/constants\//.test(f));
 
@@ -196,7 +196,7 @@ function collectStatusLabelMaps(): Map<string, Map<string, string>> {
     const content = readFile(filePath);
     const parsed = parseStatusLabelsMap(content);
     for (const [slug, labels] of parsed) {
-      combined.set(slug, labels);
+      combined.set(slug, { labels, filePath });
     }
   }
   return combined;
@@ -265,7 +265,7 @@ export function extractLifecycles(): Lifecycle[] {
   const lifecycles: Lifecycle[] = [];
 
   // Pass 1: ENUM types from migrations
-  for (const { content } of migrations) {
+  for (const { filePath, content } of migrations) {
     for (const { enumName, values } of parseEnumTypes(content)) {
       // Apply rename if this enum was later renamed (e.g. report_status -> flag_status)
       const resolvedName = typeRenames.get(enumName) ?? enumName;
@@ -277,15 +277,16 @@ export function extractLifecycles(): Lifecycle[] {
         slug,
         name: `${titleCase(slug)} Lifecycle`,
         description: `Status lifecycle for ${titleCase(slug).toLowerCase()} entities`,
-        states: buildStates(values, labelMaps.get(slug)),
+        states: buildStates(values, labelMaps.get(slug)?.labels),
         transitions: KNOWN_TRANSITIONS[slug] ?? [],
         source: 'enum',
+        sourceFile: filePath,
       });
     }
   }
 
   // Pass 2: CHECK constraints from migrations
-  for (const { content } of migrations) {
+  for (const { filePath, content } of migrations) {
     for (const { columnName, values } of parseCheckConstraints(content)) {
       const slug = deriveSlug(columnName);
       if (seen.has(slug)) continue;
@@ -295,19 +296,20 @@ export function extractLifecycles(): Lifecycle[] {
         slug,
         name: `${titleCase(slug)} Lifecycle`,
         description: `Status lifecycle for ${titleCase(slug).toLowerCase()} entities`,
-        states: buildStates(values, labelMaps.get(slug)),
+        states: buildStates(values, labelMaps.get(slug)?.labels),
         transitions: KNOWN_TRANSITIONS[slug] ?? [],
         source: 'check_constraint',
+        sourceFile: filePath,
       });
     }
   }
 
   // Pass 3: TS constants not already discovered by migrations
-  for (const [slug, labelsMap] of labelMaps) {
+  for (const [slug, { labels, filePath }] of labelMaps) {
     if (seen.has(slug)) continue;
     seen.add(slug);
 
-    const states = [...labelsMap.entries()].map(([id, label]) => ({ id, label }));
+    const states = [...labels.entries()].map(([id, label]) => ({ id, label }));
     lifecycles.push({
       slug,
       name: `${titleCase(slug)} Lifecycle`,
@@ -315,6 +317,7 @@ export function extractLifecycles(): Lifecycle[] {
       states,
       transitions: KNOWN_TRANSITIONS[slug] ?? [],
       source: 'typescript',
+      sourceFile: filePath,
     });
   }
 
