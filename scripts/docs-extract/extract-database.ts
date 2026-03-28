@@ -249,6 +249,7 @@ interface MigrationData {
   uniqueByTable: Record<string, Set<string>>;
   defaultsByTable: Record<string, Record<string, string>>;
   fkCascadeByTable: Record<string, Record<string, string>>;
+  tableSourceFiles: Map<string, string>;
 }
 
 function scanMigrations(tableNames: string[]): MigrationData {
@@ -263,6 +264,7 @@ function scanMigrations(tableNames: string[]): MigrationData {
   const uniqueByTable: Record<string, Set<string>> = {};
   const defaultsByTable: Record<string, Record<string, string>> = {};
   const fkCascadeByTable: Record<string, Record<string, string>> = {};
+  const tableSourceFiles = new Map<string, string>();
 
   const migrationFiles = walkFiles('supabase/migrations', /\.sql$/);
 
@@ -421,6 +423,11 @@ function scanMigrations(tableNames: string[]): MigrationData {
       const resolvedTable = TABLE_ALIASES[rawTableName] ?? rawTableName;
       if (!tableNames.includes(resolvedTable)) continue;
 
+      // Track the first migration file that creates each table
+      if (!tableSourceFiles.has(resolvedTable)) {
+        tableSourceFiles.set(resolvedTable, filePath);
+      }
+
       const colLines = tableBody.split('\n');
       for (const colLine of colLines) {
         const trimmedCol = colLine.trim();
@@ -490,6 +497,7 @@ function scanMigrations(tableNames: string[]): MigrationData {
     uniqueByTable,
     defaultsByTable,
     fkCascadeByTable,
+    tableSourceFiles,
   };
 }
 
@@ -564,6 +572,7 @@ function buildEntities(tables: ParsedTable[], migData: MigrationData): EnrichedE
       label: titleCase(table.name),
       fields: enrichedFields,
       badges,
+      sourceFile: migData.tableSourceFiles.get(table.name),
       rlsPolicies: migData.rlsPoliciesByTable[table.name] ?? [],
       indexes: migData.indexesByTable[table.name] ?? [],
       triggers: migData.triggersByTable[table.name] ?? [],
