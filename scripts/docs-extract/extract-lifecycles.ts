@@ -206,12 +206,9 @@ function collectStatusLabelMaps(): Map<string, Map<string, string>> {
  * Parse `ALTER TYPE {old} RENAME TO {new}` from SQL content.
  * Returns a map of old_name -> new_name for status types.
  */
-function parseTypeRenames(
-  migrations: Array<{ content: string }>,
-): Map<string, string> {
+function parseTypeRenames(migrations: Array<{ content: string }>): Map<string, string> {
   const renames = new Map<string, string>();
-  const renameRegex =
-    /ALTER\s+TYPE\s+(?:public\.)?(\w+)\s+RENAME\s+TO\s+(\w+)/gi;
+  const renameRegex = /ALTER\s+TYPE\s+(?:public\.)?(\w+)\s+RENAME\s+TO\s+(\w+)/gi;
 
   for (const { content } of migrations) {
     let match: RegExpExecArray | null;
