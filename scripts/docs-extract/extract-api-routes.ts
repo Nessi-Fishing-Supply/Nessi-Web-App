@@ -312,6 +312,7 @@ export function extractApiRoutes(): ApiGroup[] {
         requestFields,
         description,
         tags,
+        sourceFile: file,
       };
       if (permissions) {
         endpoint.permissions = permissions;
