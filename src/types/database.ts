@@ -383,6 +383,7 @@ export type Database = {
           response_time_hours: number | null
           review_count: number
           slug: string
+          status: Database["public"]["Enums"]["member_status"]
           stripe_account_id: string | null
           stripe_onboarding_status: string
           total_transactions: number
@@ -410,6 +411,7 @@ export type Database = {
           response_time_hours?: number | null
           review_count?: number
           slug: string
+          status?: Database["public"]["Enums"]["member_status"]
           stripe_account_id?: string | null
           stripe_onboarding_status?: string
           total_transactions?: number
@@ -437,6 +439,7 @@ export type Database = {
           response_time_hours?: number | null
           review_count?: number
           slug?: string
+          status?: Database["public"]["Enums"]["member_status"]
           stripe_account_id?: string | null
           stripe_onboarding_status?: string
           total_transactions?: number
@@ -444,6 +447,169 @@ export type Database = {
           years_fishing?: number | null
         }
         Relationships: []
+      }
+      message_thread_participants: {
+        Row: {
+          id: string
+          is_blocked: boolean
+          joined_at: string
+          last_read_at: string | null
+          member_id: string
+          role: Database["public"]["Enums"]["participant_role"]
+          thread_id: string
+          unread_count: number
+        }
+        Insert: {
+          id?: string
+          is_blocked?: boolean
+          joined_at?: string
+          last_read_at?: string | null
+          member_id: string
+          role: Database["public"]["Enums"]["participant_role"]
+          thread_id: string
+          unread_count?: number
+        }
+        Update: {
+          id?: string
+          is_blocked?: boolean
+          joined_at?: string
+          last_read_at?: string | null
+          member_id?: string
+          role?: Database["public"]["Enums"]["participant_role"]
+          thread_id?: string
+          unread_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_thread_participants_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_thread_participants_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "message_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      message_threads: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          last_message_at: string | null
+          last_message_preview: string | null
+          listing_id: string | null
+          shop_id: string | null
+          status: Database["public"]["Enums"]["thread_status"]
+          type: Database["public"]["Enums"]["thread_type"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          last_message_at?: string | null
+          last_message_preview?: string | null
+          listing_id?: string | null
+          shop_id?: string | null
+          status?: Database["public"]["Enums"]["thread_status"]
+          type: Database["public"]["Enums"]["thread_type"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          last_message_at?: string | null
+          last_message_preview?: string | null
+          listing_id?: string | null
+          shop_id?: string | null
+          status?: Database["public"]["Enums"]["thread_status"]
+          type?: Database["public"]["Enums"]["thread_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_threads_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_threads_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_threads_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          content: string | null
+          created_at: string
+          edited_at: string | null
+          id: string
+          is_filtered: boolean
+          metadata: Json | null
+          original_content: string | null
+          sender_id: string
+          thread_id: string
+          type: Database["public"]["Enums"]["message_type"]
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          edited_at?: string | null
+          id?: string
+          is_filtered?: boolean
+          metadata?: Json | null
+          original_content?: string | null
+          sender_id: string
+          thread_id: string
+          type?: Database["public"]["Enums"]["message_type"]
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          edited_at?: string | null
+          id?: string
+          is_filtered?: boolean
+          metadata?: Json | null
+          original_content?: string | null
+          sender_id?: string
+          thread_id?: string
+          type?: Database["public"]["Enums"]["message_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "message_threads"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       price_drop_notifications: {
         Row: {
@@ -757,6 +923,7 @@ export type Database = {
           review_count: number
           shop_name: string
           slug: string
+          status: Database["public"]["Enums"]["shop_status"]
           stripe_account_id: string | null
           stripe_onboarding_status: string
           stripe_subscription_id: string | null
@@ -781,6 +948,7 @@ export type Database = {
           review_count?: number
           shop_name: string
           slug: string
+          status?: Database["public"]["Enums"]["shop_status"]
           stripe_account_id?: string | null
           stripe_onboarding_status?: string
           stripe_subscription_id?: string | null
@@ -805,6 +973,7 @@ export type Database = {
           review_count?: number
           shop_name?: string
           slug?: string
+          status?: Database["public"]["Enums"]["shop_status"]
           stripe_account_id?: string | null
           stripe_onboarding_status?: string
           stripe_subscription_id?: string | null
@@ -946,7 +1115,19 @@ export type Database = {
         | "sold"
         | "archived"
         | "deleted"
+      member_status: "onboarding" | "active" | "suspended" | "deleted"
+      message_type:
+        | "text"
+        | "system"
+        | "offer_node"
+        | "custom_request_node"
+        | "listing_node"
+        | "nudge"
+      participant_role: "buyer" | "seller" | "initiator" | "recipient"
       shipping_paid_by: "seller" | "buyer" | "split"
+      shop_status: "active" | "suspended" | "archived" | "deleted"
+      thread_status: "active" | "archived" | "closed"
+      thread_type: "inquiry" | "direct" | "offer" | "custom_request"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1117,7 +1298,20 @@ export const Constants = {
         "archived",
         "deleted",
       ],
+      member_status: ["onboarding", "active", "suspended", "deleted"],
+      message_type: [
+        "text",
+        "system",
+        "offer_node",
+        "custom_request_node",
+        "listing_node",
+        "nudge",
+      ],
+      participant_role: ["buyer", "seller", "initiator", "recipient"],
       shipping_paid_by: ["seller", "buyer", "split"],
+      shop_status: ["active", "suspended", "archived", "deleted"],
+      thread_status: ["active", "archived", "closed"],
+      thread_type: ["inquiry", "direct", "offer", "custom_request"],
     },
   },
 } as const
