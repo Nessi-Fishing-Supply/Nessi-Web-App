@@ -1,6 +1,7 @@
 import { createClient } from '@/libs/supabase/server';
 import type { Json } from '@/types/database';
 import type {
+  CreateThreadResult,
   MessageThread,
   ThreadType,
   ThreadWithParticipants,
@@ -172,7 +173,7 @@ export async function createThreadServer(params: {
   roles: ParticipantRole[];
   listingId?: string;
   shopId?: string;
-}): Promise<ThreadWithParticipants> {
+}): Promise<CreateThreadResult> {
   const supabase = await createClient();
 
   // [B2] Inquiry duplicate check — find existing inquiry threads for the listing,
@@ -221,7 +222,7 @@ export async function createThreadServer(params: {
           [existingThread as MessageThread],
           params.createdBy,
         );
-        return results[0];
+        return { thread: results[0], existing: true };
       }
     }
   }
@@ -271,7 +272,7 @@ export async function createThreadServer(params: {
             [existingThread as MessageThread],
             params.createdBy,
           );
-          return results[0];
+          return { thread: results[0], existing: true };
         }
       }
     }
@@ -312,7 +313,7 @@ export async function createThreadServer(params: {
     [thread as MessageThread],
     params.createdBy,
   );
-  return results[0];
+  return { thread: results[0], existing: false };
 }
 
 export async function getMessagesServer(

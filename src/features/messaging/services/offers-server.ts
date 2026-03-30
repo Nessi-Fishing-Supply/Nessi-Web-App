@@ -58,7 +58,7 @@ export async function createOfferServer(userId: string, params: CreateOfferParam
     throw new Error(`Failed to expire existing offers: ${expireError.message}`);
   }
 
-  const thread = await createThreadServer({
+  const { thread } = await createThreadServer({
     type: 'offer',
     createdBy: userId,
     participantIds: [userId, params.sellerId],
