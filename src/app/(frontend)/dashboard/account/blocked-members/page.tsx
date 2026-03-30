@@ -17,7 +17,11 @@ export default function BlockedMembersPage() {
         <div className={styles.header}>
           <h1 className={styles.heading}>Blocked Members</h1>
         </div>
-        <div className={styles.skeletonList} role="status" aria-label="Loading blocked members list">
+        <div
+          className={styles.skeletonList}
+          role="status"
+          aria-label="Loading blocked members list"
+        >
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className={styles.skeletonCard} />
           ))}
