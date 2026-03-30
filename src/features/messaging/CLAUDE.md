@@ -146,6 +146,70 @@ Chat thread UI — renders the message list, input field, and participant header
 
 Inline offer display rendered inside the message thread when `message_type = 'offer_node'`. Displays offer amount, status, and accept/decline actions. Full implementation in Phase 3.
 
+## Offers
+
+### Types (`src/features/messaging/types/offer.ts`)
+
+| Type                 | Description                                                          |
+| -------------------- | -------------------------------------------------------------------- |
+| `Offer`              | Database Row type from `offers` table                                |
+| `OfferInsert`        | Insert type — omits `id`, `created_at`, `updated_at`                 |
+| `OfferStatus`        | `'pending' \| 'accepted' \| 'declined' \| 'countered' \| 'expired'`  |
+| `OfferWithDetails`   | `Offer` joined with listing, buyer, and seller details               |
+| `CreateOfferParams`  | `{ listingId, sellerId, amountCents }` — input for creating an offer |
+| `CounterOfferParams` | `{ amountCents }` — input for countering an offer                    |
+
+### Server Services (`src/features/messaging/services/offers-server.ts`)
+
+Uses `@/libs/supabase/server` (cookie-based auth). Called by API route handlers only.
+
+| Function                    | Signature                                                         | Description                                                                                               |
+| --------------------------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `createOfferServer`         | `(userId, params: CreateOfferParams) => Promise<Offer>`           | Validates listing active, not seller, 70% min, seller match; expires stale offers; creates thread + offer |
+| `getOfferByIdServer`        | `(userId, offerId) => Promise<OfferWithDetails \| null>`          | Returns enriched offer or null if user is not buyer/seller                                                |
+| `acceptOfferServer`         | `(userId, offerId) => Promise<Offer>`                             | Seller-only, pending-only; sets accepted; inserts system message                                          |
+| `declineOfferServer`        | `(userId, offerId) => Promise<Offer>`                             | Seller-only, pending-only; sets declined; inserts system message                                          |
+| `counterOfferServer`        | `(userId, offerId, params: CounterOfferParams) => Promise<Offer>` | Seller-only; marks original as countered; creates new offer with swapped buyer/seller + parent_offer_id   |
+| `getOffersForListingServer` | `(userId, listingId) => Promise<Offer[]>`                         | All offers for a listing where user is buyer or seller, newest first                                      |
+| `expirePendingOffersServer` | `() => Promise<{ expired: number }>`                              | Cron: expires pending (24h) and accepted (4h checkout window) offers. Uses admin client.                  |
+
+### Client Services (`src/features/messaging/services/offers.ts`)
+
+Thin `fetch` wrappers using `@/libs/fetch`.
+
+| Function       | HTTP                            | Returns            |
+| -------------- | ------------------------------- | ------------------ |
+| `createOffer`  | `POST /api/offers`              | `Offer`            |
+| `getOffer`     | `GET /api/offers/{id}`          | `OfferWithDetails` |
+| `acceptOffer`  | `POST /api/offers/{id}/accept`  | `Offer`            |
+| `declineOffer` | `POST /api/offers/{id}/decline` | `Offer`            |
+| `counterOffer` | `POST /api/offers/{id}/counter` | `Offer`            |
+
+### Offer Validation (`src/features/messaging/utils/offer-validation.ts`)
+
+| Constant/Function                  | Value/Signature                                         | Description                              |
+| ---------------------------------- | ------------------------------------------------------- | ---------------------------------------- |
+| `OFFER_MIN_PERCENTAGE`             | `0.70`                                                  | Minimum 70% of listing price             |
+| `OFFER_EXPIRY_HOURS`               | `24`                                                    | Pending offers expire after 24 hours     |
+| `OFFER_CHECKOUT_WINDOW_HOURS`      | `4`                                                     | Accepted offers expire after 4 hours     |
+| `OFFER_DEFAULT_PREFILL_PERCENTAGE` | `0.80`                                                  | Default offer prefill at 80%             |
+| `validateOfferAmount`              | `(amountCents, listingPriceCents) => { valid, error? }` | Validates amount >= 70% of listing price |
+| `calculateMinOffer`                | `(listingPriceCents) => number`                         | Returns minimum acceptable cents         |
+| `calculateDefaultOffer`            | `(listingPriceCents) => number`                         | Returns 80% prefill cents                |
+| `isOfferExpired`                   | `(expiresAt: string) => boolean`                        | Checks if offer has expired              |
+
+### Offer Lifecycle
+
+```
+pending ──→ accepted ──→ expired (4h checkout window)
+   │
+   ├──→ declined
+   │
+   ├──→ countered ──→ new pending offer (roles swap, parent_offer_id chain)
+   │
+   └──→ expired (24h)
+```
+
 ## Utils
 
 ### safety-filter.ts
@@ -191,6 +255,12 @@ import type {
   MessageInsert,
   MessageType,
   MessageWithSender,
+  Offer,
+  OfferInsert,
+  OfferStatus,
+  OfferWithDetails,
+  CreateOfferParams,
+  CounterOfferParams,
 } from '@/features/messaging';
 
 import {
@@ -202,6 +272,11 @@ import {
   markThreadRead,
   archiveThread,
   getUnreadCount,
+  createOffer,
+  getOffer,
+  acceptOffer,
+  declineOffer,
+  counterOffer,
 } from '@/features/messaging';
 ```
 
@@ -230,10 +305,13 @@ src/features/messaging/
 ├── index.ts                                       # Barrel export (types + client services)
 ├── types/
 │   ├── thread.ts                                  # MessageThread, ThreadType, ThreadStatus, ThreadParticipant, ParticipantRole, ThreadWithParticipants
-│   └── message.ts                                 # Message, MessageInsert, MessageType, MessageWithSender
-├── services/                                      # Phase 2
+│   ├── message.ts                                 # Message, MessageInsert, MessageType, MessageWithSender
+│   └── offer.ts                                   # Offer, OfferInsert, OfferStatus, OfferWithDetails, CreateOfferParams, CounterOfferParams
+├── services/
 │   ├── messaging-server.ts                        # Server-side Supabase queries (cookie auth)
-│   └── messaging.ts                               # Client-side fetch wrappers
+│   ├── messaging.ts                               # Client-side fetch wrappers
+│   ├── offers-server.ts                           # Server-side offer operations (cookie auth + admin for cron)
+│   └── offers.ts                                  # Client-side offer fetch wrappers
 ├── hooks/                                         # Phase 2
 │   ├── use-threads.ts                             # Query: thread list — key: ['messaging', 'threads']
 │   ├── use-thread.ts                              # Query: single thread — key: ['messaging', 'threads', threadId]
@@ -249,7 +327,8 @@ src/features/messaging/
 │       ├── index.tsx
 │       └── offer-bubble.module.scss
 └── utils/
-    └── safety-filter.ts                           # Content safety: block / redact PII / nudge / pass
+    ├── safety-filter.ts                           # Content safety: block / redact PII / nudge / pass
+    └── offer-validation.ts                        # Offer amount validation, min/default calcs, expiry check
 
 src/app/api/messaging/                             # Phase 2
 ├── threads/
