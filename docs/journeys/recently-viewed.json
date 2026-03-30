@@ -1,9 +1,9 @@
 {
-  "slug": "buyer-recently-viewed",
+  "slug": "recently-viewed",
   "domain": "shopping",
   "title": "Recently Viewed (Dual-Source)",
   "persona": "buyer",
-  "description": "Recently viewed listings use dual-source storage: localStorage for guests, DB-backed API for authenticated users. Includes merge on login and clear history.",
+  "description": "Recently viewed listings use dual-source storage: localStorage for guests, DB-backed API for authenticated users. Includes merge on login, display strip, and clear history.",
   "relatedIssues": [],
   "flows": [
     {
@@ -31,7 +31,7 @@
           "title": "Track View Locally",
           "layer": "background",
           "status": "built",
-          "tooltip": "addRecentlyViewed() saves to localStorage"
+          "tooltip": "addRecentlyViewed(listingId) saves to localStorage. Existing entry for the same listing is removed and reinserted at the front (dedup + reorder). List is capped at 30 items."
         }
       ],
       "branches": [
@@ -101,7 +101,7 @@
           "layer": "background",
           "status": "built",
           "codeRef": "src/features/recently-viewed/hooks/use-recently-viewed-merge.ts",
-          "tooltip": "useRecentlyViewedMerge() detects login"
+          "tooltip": "useRecentlyViewedMerge() detects login event and reads pending IDs from localStorage"
         },
         {
           "id": "post-merge",
@@ -116,14 +116,14 @@
           "title": "Dedup and Insert",
           "layer": "database",
           "status": "built",
-          "tooltip": "Dedup + merge to DB"
+          "tooltip": "Guest views merged to DB, deduped on server — existing DB entries for the same listings are not duplicated"
         },
         {
           "id": "silent-complete",
           "title": "Silent Complete",
           "layer": "background",
           "status": "built",
-          "tooltip": "No toast — silent merge"
+          "tooltip": "No toast — silent merge. localStorage recently viewed cleared after successful merge."
         }
       ]
     },
@@ -138,7 +138,7 @@
           "layer": "background",
           "status": "built",
           "codeRef": "src/features/recently-viewed/hooks/use-recently-viewed-listings.ts",
-          "tooltip": "useRecentlyViewedListings() reads IDs from useRecentlyViewed()"
+          "tooltip": "useRecentlyViewedListings() reads IDs from useRecentlyViewed() — for guests this reads directly from localStorage; for authenticated users it reads from the DB-backed API response"
         },
         {
           "id": "batch-fetch",
@@ -147,7 +147,7 @@
           "layer": "server",
           "status": "built",
           "route": "/api/listings/batch",
-          "tooltip": "Only returns active, non-deleted listings. Stale IDs silently filtered. Max 30 IDs.",
+          "tooltip": "No auth required. Only returns active, non-deleted listings. Stale IDs silently filtered. Max 30 IDs.",
           "errorCases": [
             {
               "condition": "No IDs provided",

@@ -57,11 +57,11 @@
           "route": "/api/members/seller-preconditions"
         },
         {
-          "id": "show-warning",
-          "title": "Show Warning",
+          "id": "toggle-blocked",
+          "title": "Show Precondition",
           "layer": "client",
           "status": "built",
-          "tooltip": "X active listings, Y orders — must resolve first"
+          "tooltip": "Toggle disabled. Message: \"You have X active listing(s) that must be closed before disabling seller mode.\" (role=\"status\", aria-live=\"polite\"). Also shows active order count if applicable."
         },
         {
           "id": "post-toggle-off",
@@ -95,7 +95,7 @@
             {
               "label": "Yes",
               "detail": "Must resolve active listings/orders first",
-              "goTo": "show-warning"
+              "goTo": "toggle-blocked"
             },
             {
               "label": "No",

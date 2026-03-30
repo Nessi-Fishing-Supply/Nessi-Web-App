@@ -65,6 +65,13 @@
           "layer": "client",
           "status": "built",
           "tooltip": "User stays on current page after login"
+        },
+        {
+          "id": "show-error",
+          "title": "Show Login Error",
+          "layer": "client",
+          "status": "built",
+          "tooltip": "Error banner with role=\"alert\": \"Invalid login credentials\". Form fields preserved for retry."
         }
       ],
       "branches": [
@@ -75,12 +82,12 @@
             {
               "label": "Unconfirmed",
               "detail": "email_not_confirmed — show resend button",
-              "goTo": "END"
+              "goTo": "show-resend-button"
             },
             {
               "label": "Invalid",
               "detail": "Invalid credentials — show error message",
-              "goTo": "END"
+              "goTo": "show-error"
             },
             {
               "label": "Success",

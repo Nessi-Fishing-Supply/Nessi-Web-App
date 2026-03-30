@@ -248,6 +248,13 @@
           "status": "built",
           "codeRef": "src/app/(frontend)/watchlist/watchlist-page.tsx",
           "tooltip": "Renders ListingCard for each WatchedListing. Sold listings show a 'Sold' overlay badge. Skeleton shown while loading (count: 8)."
+        },
+        {
+          "id": "empty-watchlist",
+          "title": "Show Empty State",
+          "layer": "client",
+          "status": "built",
+          "tooltip": "Heart icon. \"Your watchlist is empty\". \"Watch listings to get notified when prices drop.\" CTA: \"Browse listings\" → /listings"
         }
       ],
       "branches": [
@@ -258,7 +265,7 @@
             {
               "label": "Empty",
               "detail": "Empty state: heart icon + 'Your watchlist is empty' + Browse listings CTA",
-              "goTo": "END"
+              "goTo": "empty-watchlist"
             },
             {
               "label": "Has items",

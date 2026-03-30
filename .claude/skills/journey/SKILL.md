@@ -102,4 +102,64 @@ After any write operation, validate the output:
 - Always include `codeRef` when a specific source file is identifiable
 - Always include `errorCases` for server-layer steps that can fail
 - Use descriptive labels — "User clicks Add to Cart" not "addToCart()"
-- Reference related journeys in notes — "See guest-cart.json for full flow"
+- Reference related journeys in notes — "See cart.json for full flow"
+
+## Structural Quality Rules
+
+These rules ensure journeys are interactive and useful in tracer mode. Apply them during **audit**, **enhance**, and **generate**.
+
+### 1. No Dead-End Decisions
+
+Every `"goTo": "END"` on a decision branch that represents a user-visible outcome must instead point to a terminal step node describing what the user sees. `"END"` is only acceptable for truly invisible internal short-circuits.
+
+**Bad:** `{ "label": "At cap", "goTo": "END" }` — tracer path just stops
+**Good:** `{ "label": "At cap", "goTo": "cap-reached" }` where `cap-reached` is a step with `"tooltip": "Button disabled. Note: \"You've reached the 5-address limit.\""`
+
+When fixing dead-ends:
+- Verify the actual code behavior before adding the terminal step
+- Set `"status": "built"` only if the behavior exists in code
+- Set `"status": "planned"` with `"notes"` explaining the gap if the behavior doesn't exist
+
+### 2. No Disconnected Flows
+
+Journeys with 3+ flows must have a **hub flow** that connects them via a decision branch. Disconnected flows render as separate columns on the canvas with no way to navigate between them in tracer mode.
+
+**Bad:** 5 independent flows floating side-by-side
+**Good:** A hub flow with "What action?" branch → each flow's first step
+
+Hub flow pattern:
+```json
+{
+  "id": "{feature}-hub",
+  "title": "{Page/Section Name}",
+  "trigger": "User navigates to {page}",
+  "steps": [
+    { "id": "open-{page}", "title": "Open {Page}", "layer": "client", "status": "built", "tooltip": "User navigates to {page}. Sees {what's visible}." }
+  ],
+  "branches": [
+    { "afterStep": "open-{page}", "condition": "What action?", "paths": [
+      { "label": "{Action A}", "goTo": "{first-step-of-flow-a}" },
+      { "label": "{Action B}", "goTo": "{first-step-of-flow-b}" }
+    ]}
+  ]
+}
+```
+
+Exceptions: 2-flow journeys where the flows are genuinely independent (e.g., a main flow + a background side-effects flow) don't need a hub.
+
+### 3. Consolidate Related Journeys
+
+Don't split a single feature across multiple journey files by persona/auth-state when a decision fork would do. The test: if a QA person needs to open 2-3 journey files to understand one feature, they should be one file.
+
+**Consolidation patterns:**
+- Guest + Authenticated → one file with "Authenticated?" fork
+- Invite + Accept + Work → one lifecycle file with "What phase?" hub
+- Multiple management actions → one file with action-selection hub
+
+**When to keep separate:** Different domains (auth vs shopping), different core personas (buyer vs seller), or files that would exceed ~30 flows if merged.
+
+### 4. Factual Accuracy Over Completeness
+
+Never add `"status": "built"` steps for behavior that doesn't exist in code. If there's a gap:
+- Add a `"status": "planned"` step with `"notes"` documenting the gap
+- Or leave the gap — the nessi-docs journey viewer is designed to surface these

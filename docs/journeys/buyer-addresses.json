@@ -7,6 +7,31 @@
   "relatedIssues": [],
   "flows": [
     {
+      "id": "address-hub",
+      "title": "Navigate to Addresses",
+      "trigger": "User opens Account Settings → Shipping Addresses",
+      "steps": [
+        {
+          "id": "open-addresses",
+          "title": "Open Addresses Page",
+          "layer": "client",
+          "status": "built",
+          "tooltip": "User navigates to Account Settings → Shipping Addresses section"
+        }
+      ],
+      "branches": [
+        {
+          "afterStep": "open-addresses",
+          "condition": "What does user do?",
+          "paths": [
+            { "label": "View List", "goTo": "fetch-addresses" },
+            { "label": "Add New", "goTo": "check-cap" },
+            { "label": "Edit/Delete", "goTo": "edit-address" }
+          ]
+        }
+      ]
+    },
+    {
       "id": "view-addresses",
       "title": "View Address List",
       "trigger": "Buyer navigates to /dashboard/account → Addresses section",
@@ -25,6 +50,13 @@
           "layer": "client",
           "status": "built",
           "tooltip": "AddressList: cards with label, address, default badge"
+        },
+        {
+          "id": "empty-state",
+          "title": "Show Empty State",
+          "layer": "client",
+          "status": "built",
+          "tooltip": "\"No saved addresses yet\" text displayed, Add Address button still active"
         }
       ],
       "branches": [
@@ -39,7 +71,7 @@
             {
               "label": "No",
               "detail": "Empty state: 'Add your first address'",
-              "goTo": "END"
+              "goTo": "empty-state"
             }
           ]
         }
@@ -56,6 +88,13 @@
           "layer": "client",
           "status": "built",
           "tooltip": "Check if at 5-address cap"
+        },
+        {
+          "id": "cap-reached",
+          "title": "Show Cap Message",
+          "layer": "client",
+          "status": "built",
+          "tooltip": "Add Address button disabled. Note: \"You've reached the 5-address limit.\""
         },
         {
           "id": "open-modal",
@@ -103,7 +142,7 @@
             {
               "label": "Yes",
               "detail": "Button disabled: maximum reached",
-              "goTo": "END"
+              "goTo": "cap-reached"
             },
             {
               "label": "No",

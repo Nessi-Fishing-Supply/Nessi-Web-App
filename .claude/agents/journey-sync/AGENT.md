@@ -108,6 +108,69 @@ Create new journey files or update existing ones based on code changes.
 - Mark genuinely unbuilt functionality as `"status": "planned"`
 - Reference related journeys in `notes` when flows connect
 
+## Structural Quality Rules
+
+Apply these rules during ALL modes (audit, enhance, generate). They ensure journeys are interactive and useful in tracer mode.
+
+### Rule 1: No Dead-End Decisions
+
+Every `"goTo": "END"` on a decision branch that represents a user-visible outcome MUST point to a terminal step node instead. The step describes what the user actually sees (toast, error, empty state, redirect, disabled button).
+
+`"END"` is only acceptable for truly invisible internal short-circuits where there is no user-facing feedback.
+
+**During audit:** Flag every `"goTo": "END"` that should be a terminal step.
+**During enhance:** Add terminal steps for dead-ends, with `"status": "planned"` if the behavior doesn't exist yet.
+**During generate:** Never produce `"goTo": "END"` without checking if there's user feedback to document.
+
+Terminal step pattern:
+```json
+{ "id": "cap-reached", "title": "Show Cap Message", "layer": "client", "status": "built", "tooltip": "Button disabled. Note: \"You've reached the 5-address limit.\"" }
+```
+
+### Rule 2: No Disconnected Flows
+
+Journeys with 3+ flows MUST have a hub flow connecting them via a decision branch. Disconnected flows render as separate columns on the canvas with no edges — tracer mode can't navigate between them.
+
+Hub flow pattern:
+```json
+{
+  "id": "{feature}-hub",
+  "title": "{Page/Section Name}",
+  "trigger": "User navigates to {page}",
+  "steps": [
+    { "id": "open-{page}", "title": "Open {Page}", "layer": "client", "status": "built", "tooltip": "User sees {visible elements}" }
+  ],
+  "branches": [
+    { "afterStep": "open-{page}", "condition": "What action?", "paths": [
+      { "label": "{Action A}", "goTo": "{first-step-of-flow-a}" },
+      { "label": "{Action B}", "goTo": "{first-step-of-flow-b}" }
+    ]}
+  ]
+}
+```
+
+**During audit:** Flag journeys with 3+ disconnected flows.
+**During generate:** Always add a hub flow when creating journeys with 3+ flows.
+
+Exception: 2-flow journeys where flows are genuinely independent (main flow + background side-effects).
+
+### Rule 3: Consolidate, Don't Split
+
+Don't create separate journey files for guest vs authenticated versions of the same feature. Use an "Authenticated?" decision fork instead. Similarly, don't split lifecycle phases (invite/accept/work/leave) into separate files.
+
+**Consolidation patterns:**
+- Guest + Authenticated → one file with auth fork
+- Multiple management actions → one file with action-selection hub
+- Lifecycle phases → one file with phase-selection hub
+
+**When to keep separate:** Different domains, different core personas, or files that would exceed ~30 flows.
+
+### Rule 4: Factual Accuracy Over Completeness
+
+NEVER add `"status": "built"` steps for behavior that doesn't exist in code. Always verify against the actual source before marking a step as built. If there's a gap:
+- Add `"status": "planned"` with `"notes"` documenting the gap
+- Or leave the gap — nessi-docs is designed to surface missing coverage
+
 ## File ↔ Code Mapping
 
 Use this to determine which journey files are affected by code changes:
@@ -115,12 +178,12 @@ Use this to determine which journey files are affected by code changes:
 | Code path | Journey files |
 |---|---|
 | `src/app/api/auth/`, `src/features/auth/` | signup, login, password-reset, email-change, logout |
-| `src/app/api/listings/`, `src/features/listings/` | seller-listings, buyer-search |
-| `src/app/api/cart/`, `src/features/cart/` | buyer-cart, guest-cart |
-| `src/app/api/shops/`, `src/features/shops/` | shop-create, shop-settings, shop-member-management, shop-ownership-transfer, shop-roles |
+| `src/app/api/listings/`, `src/features/listings/` | seller-listings, browse-and-search |
+| `src/app/api/cart/`, `src/features/cart/` | cart |
+| `src/app/api/shops/`, `src/features/shops/` | shop-create, shop-settings, shop-members, shop-ownership-transfer, shop-roles |
 | `src/features/context/` | context-switching |
 | `src/features/members/` | account-settings, onboarding |
-| `src/app/api/recently-viewed/`, `src/features/recently-viewed/` | buyer-recently-viewed, guest-recently-viewed |
+| `src/app/api/recently-viewed/`, `src/features/recently-viewed/` | recently-viewed |
 | `src/app/api/addresses/`, `src/features/addresses/` | buyer-addresses |
 | `src/proxy.ts` | route-protection |
 | `src/features/email/` | Any journey with email-layer steps |

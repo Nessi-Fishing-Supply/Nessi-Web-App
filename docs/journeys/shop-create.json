@@ -104,6 +104,13 @@
           "layer": "client",
           "status": "built",
           "tooltip": "Redirect to /dashboard/shop/settings"
+        },
+        {
+          "id": "slug-taken",
+          "title": "Show Slug Error",
+          "layer": "client",
+          "status": "built",
+          "tooltip": "Red X icon. Error: \"That handle is already taken\" (role=\"alert\"). Input error styling. Submit disabled. User can edit slug and re-check."
         }
       ],
       "branches": [
@@ -118,7 +125,7 @@
             {
               "label": "No",
               "detail": "Show error, suggest alternatives",
-              "goTo": "END"
+              "goTo": "slug-taken"
             }
           ]
         }

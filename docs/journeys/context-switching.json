@@ -3,7 +3,7 @@
   "domain": "identity",
   "title": "Context Switching (Member / Shop Identity)",
   "persona": "context",
-  "description": "Identity system overview: member/shop context switching via Zustand store, X-Nessi-Context header on every request, localStorage persistence, page load rehydration, and edge case handling.",
+  "description": "Identity system overview: member/shop context switching via Zustand store, X-Nessi-Context header on every request with server-side validation, localStorage persistence, page load rehydration, and edge case handling.",
   "relatedIssues": [],
   "flows": [
     {
@@ -54,6 +54,13 @@
           "layer": "background",
           "status": "built",
           "tooltip": "Persisted to localStorage — survives refresh, tab close, re-open"
+        },
+        {
+          "id": "member-only",
+          "title": "Member-Only Mode",
+          "layer": "client",
+          "status": "built",
+          "tooltip": "No context switcher shown. Navbar dropdown hides Profiles section entirely. User operates in member context only."
         }
       ],
       "branches": [
@@ -64,7 +71,7 @@
             {
               "label": "No",
               "detail": "Only member context available",
-              "goTo": "END"
+              "goTo": "member-only"
             },
             {
               "label": "Yes",
@@ -80,18 +87,25 @@
       "trigger": "User performs any operation in a given context",
       "steps": [
         {
+          "id": "check-active-context",
+          "title": "Check Active Context",
+          "layer": "background",
+          "status": "built",
+          "tooltip": "Operation reads active context from Zustand store to determine behavior"
+        },
+        {
           "id": "create-listing-member",
-          "title": "Create as Member",
+          "title": "Assign to Member",
           "layer": "server",
           "status": "built",
-          "tooltip": "member_id = user.id, shop_id = null — appears on /member/[slug]"
+          "tooltip": "seller_id = user.id, member_id = user.id, shop_id = null — appears on /member/[slug]"
         },
         {
           "id": "create-listing-shop",
-          "title": "Create as Shop",
+          "title": "Assign to Shop",
           "layer": "server",
           "status": "built",
-          "tooltip": "shop_id = shopId, member_id = null — appears on /shop/[slug]"
+          "tooltip": "seller_id = user.id, member_id = null, shop_id = activeShopId — appears on /shop/[slug]"
         },
         {
           "id": "dashboard-member",
@@ -135,6 +149,24 @@
           "status": "built",
           "tooltip": "Assets stored in shops/{shopId}/"
         }
+      ],
+      "branches": [
+        {
+          "afterStep": "check-active-context",
+          "condition": "Active context?",
+          "paths": [
+            { "label": "Member", "goTo": "create-listing-member" },
+            { "label": "Shop", "goTo": "create-listing-shop" }
+          ]
+        }
+      ],
+      "connections": [
+        { "from": "create-listing-member", "to": "dashboard-member" },
+        { "from": "create-listing-shop", "to": "dashboard-shop" },
+        { "from": "dashboard-member", "to": "settings-member" },
+        { "from": "dashboard-shop", "to": "settings-shop" },
+        { "from": "settings-member", "to": "upload-member" },
+        { "from": "settings-shop", "to": "upload-shop" }
       ]
     },
     {
@@ -176,6 +208,20 @@
           "layer": "server",
           "status": "built",
           "tooltip": "First API call validates shop membership"
+        },
+        {
+          "id": "continue-shop",
+          "title": "Continue in Shop",
+          "layer": "background",
+          "status": "built",
+          "tooltip": "Membership valid. User continues operating in shop context."
+        },
+        {
+          "id": "revoke-context",
+          "title": "Revoke Shop Access",
+          "layer": "background",
+          "status": "built",
+          "tooltip": "handleContextRevocation(): switch to member, cancel queries, invalidate cache. Toast: \"Access to [shopName] was revoked\". Redirect to /dashboard."
         }
       ],
       "branches": [
@@ -204,12 +250,12 @@
             {
               "label": "Yes",
               "detail": "Continue in shop context",
-              "goTo": "END"
+              "goTo": "continue-shop"
             },
             {
               "label": "No",
               "detail": "403 — revocation flow",
-              "goTo": "END"
+              "goTo": "revoke-context"
             }
           ]
         }
@@ -220,6 +266,13 @@
       "title": "Edge Cases",
       "trigger": "Unusual state transitions",
       "steps": [
+        {
+          "id": "edge-trigger",
+          "title": "Edge Case Occurs",
+          "layer": "background",
+          "status": "built",
+          "tooltip": "An unusual state transition triggers edge case handling"
+        },
         {
           "id": "shop-deleted",
           "title": "Shop Deleted",
@@ -247,6 +300,62 @@
           "layer": "background",
           "status": "built",
           "tooltip": "localStorage cleared or incognito — defaults to member context"
+        }
+      ],
+      "branches": [
+        {
+          "afterStep": "edge-trigger",
+          "condition": "Which edge case?",
+          "paths": [
+            { "label": "Shop Deleted", "goTo": "shop-deleted" },
+            { "label": "Role Changed", "goTo": "role-changed" },
+            { "label": "Multi-Tab", "goTo": "multiple-tabs" },
+            { "label": "Storage Cleared", "goTo": "localstorage-cleared" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "context-header",
+      "title": "X-Nessi-Context Header Validation",
+      "trigger": "API request with X-Nessi-Context header",
+      "steps": [
+        {
+          "id": "send-header",
+          "title": "Send Context Header",
+          "layer": "background",
+          "status": "built",
+          "tooltip": "X-Nessi-Context header sent with every fetch"
+        },
+        {
+          "id": "validate-member",
+          "title": "Validate as Member",
+          "layer": "server",
+          "status": "built",
+          "tooltip": "member — API validates: user owns listing"
+        },
+        {
+          "id": "validate-shop",
+          "title": "Validate as Shop",
+          "layer": "server",
+          "status": "built",
+          "tooltip": "shop:{id} — API validates: user is member of shop"
+        }
+      ],
+      "branches": [
+        {
+          "afterStep": "send-header",
+          "condition": "Header value?",
+          "paths": [
+            {
+              "label": "Member",
+              "goTo": "validate-member"
+            },
+            {
+              "label": "Shop",
+              "goTo": "validate-shop"
+            }
+          ]
         }
       ]
     }

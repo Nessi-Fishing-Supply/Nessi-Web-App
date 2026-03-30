@@ -111,6 +111,13 @@
           "tooltip": "CASCADE: cart items, recently viewed, shop memberships deleted"
         },
         {
+          "id": "show-shops-warning",
+          "title": "Show Shops Warning",
+          "layer": "client",
+          "status": "built",
+          "tooltip": "409 OWNS_SHOPS: Modal shows warning with list of active shop names as clickable links to /dashboard/shop/settings. User must delete or transfer shops before account deletion."
+        },
+        {
           "id": "clear-session",
           "title": "Clear Session",
           "layer": "server",
@@ -133,7 +140,7 @@
             {
               "label": "Yes",
               "detail": "409 — must resolve first",
-              "goTo": "END"
+              "goTo": "show-shops-warning"
             },
             {
               "label": "No",

@@ -7,6 +7,31 @@
   "relatedIssues": [],
   "flows": [
     {
+      "id": "settings-hub",
+      "title": "Open Shop Settings",
+      "trigger": "Owner navigates to Shop Settings page",
+      "steps": [
+        {
+          "id": "open-settings",
+          "title": "Open Settings Page",
+          "layer": "client",
+          "status": "built",
+          "tooltip": "Owner navigates to Shop Settings. Sees shop details form, hero banner section, and danger zone."
+        }
+      ],
+      "branches": [
+        {
+          "afterStep": "open-settings",
+          "condition": "Which section?",
+          "paths": [
+            { "label": "Edit Details", "goTo": "visit-settings" },
+            { "label": "Upload Banner", "goTo": "upload-banner" },
+            { "label": "Delete Shop", "goTo": "type-confirmation" }
+          ]
+        }
+      ]
+    },
+    {
       "id": "shop-details",
       "title": "Edit Shop Details",
       "trigger": "Owner navigates to /dashboard/shop/settings → Shop Details section",

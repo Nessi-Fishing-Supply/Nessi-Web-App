@@ -48,11 +48,11 @@
           "tooltip": "Toast: 'Link copied!'"
         },
         {
-          "id": "copy-denied",
-          "title": "Show Error Toast",
+          "id": "clipboard-denied",
+          "title": "Show Copy Error",
           "layer": "client",
           "status": "built",
-          "tooltip": "Toast: 'Unable to copy link' (clipboard access denied)"
+          "tooltip": "Error toast: \"Unable to copy link\" — \"Please copy the URL from your browser address bar.\" No retry, user copies manually."
         }
       ],
       "branches": [
@@ -82,7 +82,7 @@
             },
             {
               "label": "Denied",
-              "goTo": "copy-denied"
+              "goTo": "clipboard-denied"
             }
           ]
         }

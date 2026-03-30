@@ -289,6 +289,13 @@
           "status": "built",
           "tooltip": "Renders FollowingCard for each item — avatar, linked name, type pill, relative date, Unfollow button. Each card manages its own useFollowToggle mutation with toast feedback. Empty state shows heart icon + 'You are not following anyone yet' + Browse CTA.",
           "codeRef": "src/features/follows/components/following-card/index.tsx"
+        },
+        {
+          "id": "empty-following",
+          "title": "Show Empty State",
+          "layer": "client",
+          "status": "built",
+          "tooltip": "Heart icon. Heading: \"You are not following anyone yet\". CTA: \"Browse listings\" link."
         }
       ],
       "branches": [
@@ -304,7 +311,7 @@
             {
               "label": "No",
               "detail": "Empty state: 'You are not following anyone yet'",
-              "goTo": "END"
+              "goTo": "empty-following"
             }
           ]
         }
@@ -353,6 +360,13 @@
           "status": "built",
           "tooltip": "ListingScrollStrip renders horizontally scrollable listing cards under the title 'From Sellers You Follow'. Component returns null when listings.length === 0 and isLoading is false — strip is invisible when the user follows no one or all followed sellers have no active listings.",
           "codeRef": "src/features/listings/components/followed-sellers-strip/index.tsx"
+        },
+        {
+          "id": "hide-strip",
+          "title": "Hide Strip Section",
+          "layer": "client",
+          "status": "built",
+          "tooltip": "Strip section not rendered. No visible UI when user follows no one."
         }
       ],
       "branches": [
@@ -368,7 +382,7 @@
             {
               "label": "No",
               "detail": "Component returns null — strip is hidden",
-              "goTo": "END"
+              "goTo": "hide-strip"
             }
           ]
         }
