@@ -6,7 +6,7 @@ import type {
   ThreadWithParticipants,
   ParticipantRole,
 } from '@/features/messaging/types/thread';
-import type { Message, MessageType, MessageWithSender } from '@/features/messaging/types/message';
+import type { MessageType, MessageWithSender } from '@/features/messaging/types/message';
 
 async function buildThreadsWithParticipants(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -172,36 +172,61 @@ export async function createThreadServer(params: {
   roles: ParticipantRole[];
   listingId?: string;
   shopId?: string;
-}): Promise<MessageThread> {
+}): Promise<ThreadWithParticipants> {
   const supabase = await createClient();
 
+  // [B2] Inquiry duplicate check — find existing inquiry threads for the listing,
+  // then verify whether the buyer is already a participant in any of them
   if (params.type === 'inquiry' && params.listingId) {
     const buyerIndex = params.roles.indexOf('buyer');
     const buyerId = buyerIndex >= 0 ? params.participantIds[buyerIndex] : params.createdBy;
 
-    const { data: existingParticipant, error: lookupError } = await supabase
-      .from('message_thread_participants')
-      .select('thread_id')
-      .eq('member_id', buyerId)
-      .single();
+    const { data: existingThreads, error: lookupError } = await supabase
+      .from('message_threads')
+      .select('id')
+      .eq('listing_id', params.listingId)
+      .eq('type', 'inquiry');
 
-    if (!lookupError && existingParticipant) {
-      const { data: existingThread, error: threadLookupError } = await supabase
-        .from('message_threads')
-        .select('*')
-        .eq('id', existingParticipant.thread_id)
-        .eq('listing_id', params.listingId)
-        .eq('type', 'inquiry')
+    if (lookupError) {
+      throw new Error(`Failed to check existing inquiry thread: ${lookupError.message}`);
+    }
+
+    if (existingThreads && existingThreads.length > 0) {
+      const threadIds = existingThreads.map((t) => t.id);
+
+      const { data: buyerParticipation, error: partError } = await supabase
+        .from('message_thread_participants')
+        .select('thread_id')
+        .eq('member_id', buyerId)
+        .in('thread_id', threadIds)
         .maybeSingle();
 
-      if (threadLookupError) {
-        throw new Error(`Failed to check existing inquiry thread: ${threadLookupError.message}`);
+      if (partError) {
+        throw new Error(`Failed to check buyer participation: ${partError.message}`);
       }
 
-      if (existingThread) return existingThread as MessageThread;
+      if (buyerParticipation) {
+        const { data: existingThread, error: threadError } = await supabase
+          .from('message_threads')
+          .select('*')
+          .eq('id', buyerParticipation.thread_id)
+          .single();
+
+        if (threadError) {
+          throw new Error(`Failed to get existing inquiry thread: ${threadError.message}`);
+        }
+
+        const results = await buildThreadsWithParticipants(
+          supabase,
+          [existingThread as MessageThread],
+          params.createdBy,
+        );
+        return results[0];
+      }
     }
   }
 
+  // Direct thread duplicate check — find threads shared by both participants
   if (params.type === 'direct' && params.participantIds.length === 2) {
     const [memberA, memberB] = params.participantIds;
 
@@ -240,7 +265,14 @@ export async function createThreadServer(params: {
           throw new Error(`Failed to get existing direct thread: ${threadError.message}`);
         }
 
-        if (existingThread) return existingThread as MessageThread;
+        if (existingThread) {
+          const results = await buildThreadsWithParticipants(
+            supabase,
+            [existingThread as MessageThread],
+            params.createdBy,
+          );
+          return results[0];
+        }
       }
     }
   }
@@ -274,7 +306,13 @@ export async function createThreadServer(params: {
     throw new Error(`Failed to create thread participants: ${participantsError.message}`);
   }
 
-  return thread as MessageThread;
+  // [B1] Return ThreadWithParticipants instead of raw MessageThread
+  const results = await buildThreadsWithParticipants(
+    supabase,
+    [thread as MessageThread],
+    params.createdBy,
+  );
+  return results[0];
 }
 
 export async function getMessagesServer(
@@ -371,8 +409,24 @@ export async function createMessageServer(params: {
   content: string;
   type?: MessageType;
   metadata?: Record<string, unknown>;
-}): Promise<Message> {
+}): Promise<MessageWithSender> {
   const supabase = await createClient();
+
+  // [B3] Verify sender is a participant before inserting
+  const { data: participant, error: participantError } = await supabase
+    .from('message_thread_participants')
+    .select('id')
+    .eq('thread_id', params.threadId)
+    .eq('member_id', params.senderId)
+    .maybeSingle();
+
+  if (participantError) {
+    throw new Error(`Failed to verify thread participant: ${participantError.message}`);
+  }
+
+  if (!participant) {
+    throw new Error('Not a participant in this thread');
+  }
 
   const { data: message, error } = await supabase
     .from('messages')
@@ -390,11 +444,75 @@ export async function createMessageServer(params: {
     throw new Error(`Failed to create message: ${error.message}`);
   }
 
-  return message as Message;
+  // [B4] Update thread metadata after inserting message
+  const preview =
+    params.content.length > 100 ? params.content.slice(0, 100) + '...' : params.content;
+
+  const { error: threadUpdateError } = await supabase
+    .from('message_threads')
+    .update({ last_message_at: message.created_at, last_message_preview: preview })
+    .eq('id', params.threadId);
+
+  if (threadUpdateError) {
+    throw new Error(`Failed to update thread metadata: ${threadUpdateError.message}`);
+  }
+
+  // Increment unread count for all other participants
+  const { data: otherParticipants, error: fetchParticipantsError } = await supabase
+    .from('message_thread_participants')
+    .select('id, unread_count')
+    .eq('thread_id', params.threadId)
+    .neq('member_id', params.senderId);
+
+  if (!fetchParticipantsError && otherParticipants) {
+    for (const p of otherParticipants) {
+      await supabase
+        .from('message_thread_participants')
+        .update({ unread_count: p.unread_count + 1 })
+        .eq('id', p.id);
+    }
+  }
+
+  // [B5] Fetch sender and return MessageWithSender
+  const { data: sender, error: senderError } = await supabase
+    .from('members')
+    .select('id, first_name, last_name, avatar_url')
+    .eq('id', params.senderId)
+    .single();
+
+  if (senderError) {
+    throw new Error(`Failed to get message sender: ${senderError.message}`);
+  }
+
+  return {
+    ...message,
+    sender: {
+      id: sender.id,
+      first_name: sender.first_name,
+      last_name: sender.last_name,
+      avatar_url: sender.avatar_url,
+    },
+  } as MessageWithSender;
 }
 
 export async function markThreadReadServer(userId: string, threadId: string): Promise<void> {
   const supabase = await createClient();
+
+  // [W1] Verify the user is a participant before marking read
+  const { data: myParticipant, error: participantError } = await supabase
+    .from('message_thread_participants')
+    .select('id')
+    .eq('thread_id', threadId)
+    .eq('member_id', userId)
+    .maybeSingle();
+
+  if (participantError) {
+    throw new Error(`Failed to verify thread participant: ${participantError.message}`);
+  }
+
+  if (!myParticipant) {
+    throw new Error('Not a participant in this thread');
+  }
 
   const { error } = await supabase
     .from('message_thread_participants')
