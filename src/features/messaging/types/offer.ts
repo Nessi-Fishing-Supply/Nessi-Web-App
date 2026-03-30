@@ -2,7 +2,10 @@ import type { Database } from '@/types/database';
 
 export type Offer = Database['public']['Tables']['offers']['Row'];
 
-export type OfferInsert = Database['public']['Tables']['offers']['Insert'];
+export type OfferInsert = Omit<
+  Database['public']['Tables']['offers']['Insert'],
+  'id' | 'created_at' | 'updated_at'
+>;
 
 export type OfferStatus = Database['public']['Enums']['offer_status'];
 

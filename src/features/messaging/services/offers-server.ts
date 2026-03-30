@@ -37,6 +37,10 @@ export async function createOfferServer(userId: string, params: CreateOfferParam
     throw new Error('Cannot make an offer on your own listing');
   }
 
+  if (params.sellerId !== listing.seller_id) {
+    throw new Error('Seller does not match listing');
+  }
+
   const validation = validateOfferAmount(params.amountCents, listing.price_cents);
   if (!validation.valid) {
     throw new Error(validation.error);
