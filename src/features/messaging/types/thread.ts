@@ -22,3 +22,8 @@ export type ThreadWithParticipants = MessageThread & {
   })[];
   my_unread_count: number;
 };
+
+export type CreateThreadResult = {
+  thread: ThreadWithParticipants;
+  existing: boolean;
+};
