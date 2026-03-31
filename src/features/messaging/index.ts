@@ -42,3 +42,7 @@ export {
   declineOffer,
   counterOffer,
 } from '@/features/messaging/services/offers';
+
+export type { MemberBlock, MemberBlockInsert } from '@/features/messaging/types/block';
+
+export { blockMember, unblockMember } from '@/features/messaging/services/blocks';
