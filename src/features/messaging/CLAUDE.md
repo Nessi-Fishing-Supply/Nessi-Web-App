@@ -211,6 +211,44 @@ pending ──→ accepted ──→ expired (4h checkout window)
    └──→ expired (24h)
 ```
 
+## Blocks
+
+Member blocking prevents a blocked member from sending messages or initiating threads with the blocker. The blocking action itself is triggered from messaging or profile UIs; the management view (list + unblock) lives in `src/features/blocks/`. See `src/features/blocks/CLAUDE.md` for the full `member_blocks` schema, RLS policies, and enforcement points.
+
+### Types (`src/features/messaging/types/block.ts`)
+
+| Type                | Description                                      |
+| ------------------- | ------------------------------------------------ |
+| `MemberBlock`       | Database Row type from `member_blocks` table     |
+| `MemberBlockInsert` | Insert type — `id` and `created_at` are optional |
+
+### Server Services (`src/features/messaging/services/blocks-server.ts`)
+
+Uses `@/libs/supabase/server` (cookie-based auth). Called by API route handlers only.
+
+| Function                  | Signature                                                 | Description                                                                                   |
+| ------------------------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `blockMemberServer`       | `(blockerId, blockedId) => Promise<MemberBlock>`          | Insert block row. Validates blocker != blocked. Throws `'Already blocked'` on 23505 duplicate |
+| `unblockMemberServer`     | `(blockerId, blockedId) => Promise<{ success: boolean }>` | Delete block row. Returns `{ success: false }` if not found                                   |
+| `isBlockedServer`         | `(blockerId, blockedId) => Promise<boolean>`              | Check if blocker has blocked blockedId via `.maybeSingle()`                                   |
+| `getBlockedMembersServer` | `(blockerId) => Promise<MemberBlock[]>`                   | List all blocked members, ordered by `created_at DESC`                                        |
+
+### Client Services (`src/features/messaging/services/blocks.ts`)
+
+Thin `fetch` wrappers using `@/libs/fetch`.
+
+| Function        | HTTP                                   | Returns                |
+| --------------- | -------------------------------------- | ---------------------- |
+| `blockMember`   | `POST /api/members/block`              | `MemberBlock`          |
+| `unblockMember` | `DELETE /api/members/block/{memberId}` | `{ success: boolean }` |
+
+### API Routes
+
+| Method | Route                            | Auth Required | Status Codes        | Description                                          |
+| ------ | -------------------------------- | ------------- | ------------------- | ---------------------------------------------------- |
+| POST   | `/api/members/block`             | Yes           | 201/400/401/409/500 | Block a member (400 on self-block, 409 on duplicate) |
+| DELETE | `/api/members/block/[member_id]` | Yes           | 200/401/404/500     | Unblock a member (404 if not blocked)                |
+
 ## Utils
 
 ### safety-filter.ts
@@ -262,6 +300,8 @@ import type {
   OfferWithDetails,
   CreateOfferParams,
   CounterOfferParams,
+  MemberBlock,
+  MemberBlockInsert,
 } from '@/features/messaging';
 
 import {
@@ -278,6 +318,8 @@ import {
   acceptOffer,
   declineOffer,
   counterOffer,
+  blockMember,
+  unblockMember,
 } from '@/features/messaging';
 ```
 
@@ -307,12 +349,15 @@ src/features/messaging/
 ├── types/
 │   ├── thread.ts                                  # MessageThread, ThreadType, ThreadStatus, ThreadParticipant, ParticipantRole, ThreadWithParticipants
 │   ├── message.ts                                 # Message, MessageInsert, MessageType, MessageWithSender
-│   └── offer.ts                                   # Offer, OfferInsert, OfferStatus, OfferWithDetails, CreateOfferParams, CounterOfferParams
+│   ├── offer.ts                                   # Offer, OfferInsert, OfferStatus, OfferWithDetails, CreateOfferParams, CounterOfferParams
+│   └── block.ts                                   # MemberBlock, MemberBlockInsert
 ├── services/
 │   ├── messaging-server.ts                        # Server-side Supabase queries (cookie auth)
 │   ├── messaging.ts                               # Client-side fetch wrappers
 │   ├── offers-server.ts                           # Server-side offer operations (cookie auth + admin for cron)
-│   └── offers.ts                                  # Client-side offer fetch wrappers
+│   ├── offers.ts                                  # Client-side offer fetch wrappers
+│   ├── blocks-server.ts                           # Server-side block operations (cookie auth)
+│   └── blocks.ts                                  # Client-side block fetch wrappers
 ├── hooks/                                         # Phase 2
 │   ├── use-threads.ts                             # Query: thread list — key: ['messaging', 'threads']
 │   ├── use-thread.ts                              # Query: single thread — key: ['messaging', 'threads', threadId]
@@ -344,6 +389,11 @@ src/app/api/messaging/
 │           └── route.ts                           # PATCH (archive thread)
 └── unread-count/
     └── route.ts                                   # GET (total unread across active threads)
+
+src/app/api/members/block/
+├── route.ts                                       # POST (block a member)
+└── [member_id]/
+    └── route.ts                                   # DELETE (unblock a member)
 ```
 
 ## Key Patterns

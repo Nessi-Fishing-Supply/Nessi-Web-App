@@ -19,18 +19,7 @@ export async function blockMemberServer(
 
   if (error) {
     if (error.code === '23505') {
-      const { data: existing, error: fetchError } = await supabase
-        .from('member_blocks')
-        .select()
-        .eq('blocker_id', blockerId)
-        .eq('blocked_id', blockedId)
-        .single();
-
-      if (fetchError || !existing) {
-        throw new Error(`Failed to fetch existing block: ${fetchError?.message}`);
-      }
-
-      return existing as MemberBlock;
+      throw new Error('Already blocked');
     }
     throw new Error(`Failed to block member: ${error.message}`);
   }
