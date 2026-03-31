@@ -2,16 +2,18 @@
 
 import { useEffect, useState } from 'react';
 import { HiX } from 'react-icons/hi';
+import type { OfferStatus } from '@/features/messaging/types/offer';
 import styles from './offer-bubble.module.scss';
 
 interface OfferBubbleProps {
   amount: number;
   originalPrice: number;
   expiresAt: Date;
-  status: 'pending' | 'accepted' | 'declined';
+  status: OfferStatus;
   onAccept?: () => void;
   onCounter?: () => void;
   onDecline?: () => void;
+  isPending?: boolean;
   className?: string;
 }
 
@@ -36,6 +38,7 @@ export default function OfferBubble({
   onAccept,
   onCounter,
   onDecline,
+  isPending = false,
   className,
 }: OfferBubbleProps) {
   const [countdown, setCountdown] = useState(() => getCountdown(expiresAt));
@@ -67,15 +70,29 @@ export default function OfferBubble({
       {status === 'declined' && (
         <p className={`${styles.statusBadge} ${styles.declined}`}>Declined</p>
       )}
+      {status === 'countered' && (
+        <p className={`${styles.statusBadge} ${styles.countered}`}>Countered</p>
+      )}
+      {status === 'expired' && <p className={`${styles.statusBadge} ${styles.expired}`}>Expired</p>}
       {status === 'pending' && (onAccept || onCounter || onDecline) && (
         <div className={styles.actions}>
           {onAccept && (
-            <button type="button" className={styles.btnAccept} onClick={onAccept}>
+            <button
+              type="button"
+              className={styles.btnAccept}
+              onClick={onAccept}
+              aria-busy={isPending}
+            >
               Accept
             </button>
           )}
           {onCounter && (
-            <button type="button" className={styles.btnCounter} onClick={onCounter}>
+            <button
+              type="button"
+              className={styles.btnCounter}
+              onClick={onCounter}
+              aria-busy={isPending}
+            >
               Counter
             </button>
           )}
@@ -85,6 +102,7 @@ export default function OfferBubble({
               className={styles.btnDecline}
               onClick={onDecline}
               aria-label="Decline offer"
+              aria-busy={isPending}
             >
               <HiX aria-hidden="true" />
               Decline

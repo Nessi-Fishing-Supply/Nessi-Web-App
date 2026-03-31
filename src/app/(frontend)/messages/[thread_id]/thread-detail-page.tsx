@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/features/auth/context';
 import { useThread } from '@/features/messaging/hooks/use-thread';
@@ -9,6 +9,7 @@ import { useMarkRead } from '@/features/messaging/hooks/use-mark-read';
 import PageHeader from '@/components/layout/page-header';
 import ErrorState from '@/components/indicators/error-state';
 import ComposeBar from '@/features/messaging/components/compose-bar';
+import MessageThread from '@/features/messaging/components/message-thread';
 import styles from './thread-detail-page.module.scss';
 
 interface ThreadDetailPageProps {
@@ -36,10 +37,19 @@ export default function ThreadDetailPage({ threadId }: ThreadDetailPageProps) {
   } = useThread(threadId);
 
   const {
+    data,
     isLoading: isMessagesLoading,
     isError: isMessagesError,
     refetch: refetchMessages,
   } = useMessages(threadId);
+
+  const messageAreaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (messageAreaRef.current && data) {
+      messageAreaRef.current.scrollTop = messageAreaRef.current.scrollHeight;
+    }
+  }, [data]);
 
   const markRead = useMarkRead();
 
@@ -104,10 +114,19 @@ export default function ThreadDetailPage({ threadId }: ThreadDetailPageProps) {
     );
   }
 
+  const messages = data
+    ? data.pages
+        .slice()
+        .reverse()
+        .flatMap((page) => [...page.messages].reverse())
+    : [];
+
   return (
     <div className={styles.page}>
       <PageHeader title={title} onBack={() => router.push('/messages')} />
-      <div className={styles.messageArea} />
+      <div className={styles.messageArea} ref={messageAreaRef}>
+        <MessageThread messages={messages} currentUserId={user?.id ?? ''} />
+      </div>
       <ComposeBar threadId={threadId} />
     </div>
   );
