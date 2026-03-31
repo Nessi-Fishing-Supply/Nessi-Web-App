@@ -25,12 +25,8 @@
   }
 }
 
-.avatar {
+.avatarWrap {
   flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-circle);
-  overflow: hidden;
 }
 
 .bubbleGroup {
@@ -72,4 +68,37 @@
   font-size: var(--font-size-300);
   color: var(--color-neutral-500);
   padding: 0 var(--spacing-100);
+}
+
+.nodeRow {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.dateSeparator {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-300);
+  margin: var(--spacing-200) 0;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background-color: var(--color-neutral-200);
+  }
+
+  span {
+    font-size: var(--font-size-300);
+    color: var(--color-neutral-500);
+    white-space: nowrap;
+  }
+}
+
+.customRequest {
+  font-size: var(--font-size-400);
+  color: var(--color-neutral-500);
+  font-style: italic;
 }

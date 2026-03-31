@@ -53,6 +53,14 @@
   color: var(--color-error-500);
 }
 
+.countered {
+  color: var(--color-accent-500);
+}
+
+.expired {
+  color: var(--color-neutral-500);
+}
+
 .actions {
   display: flex;
   align-items: center;
