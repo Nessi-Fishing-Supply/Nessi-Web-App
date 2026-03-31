@@ -111,16 +111,16 @@ Uses `@/libs/supabase/server` (cookie-based auth, user JWT). Called by API route
 
 Thin `fetch` wrappers using `@/libs/fetch` (`get`, `post`, `patch`). Called by Tanstack Query hooks.
 
-| Function         | Signature                                                      | HTTP                                                        | Returns                                                         |
-| ---------------- | -------------------------------------------------------------- | ----------------------------------------------------------- | --------------------------------------------------------------- |
-| `getThreads`     | `(type?: ThreadType) => Promise<ThreadWithParticipants[]>`     | `GET /api/messaging/threads`                                | `ThreadWithParticipants[]`                                      |
-| `getThread`      | `(threadId: string) => Promise<ThreadWithParticipants>`        | `GET /api/messaging/threads/{threadId}`                     | `ThreadWithParticipants`                                        |
-| `createThread`   | `(data: { type, participantIds, roles, listingId?, shopId? })` | `POST /api/messaging/threads`                               | `ThreadWithParticipants`                                        |
-| `getMessages`    | `(threadId: string, cursor?: string)`                          | `GET /api/messaging/threads/{threadId}/messages?cursor=...` | `{ messages: MessageWithSender[]; nextCursor: string \| null }` |
-| `sendMessage`    | `(threadId: string, content: string, type?: MessageType)`      | `POST /api/messaging/threads/{threadId}/messages`           | `MessageWithSender`                                             |
-| `markThreadRead` | `(threadId: string) => Promise<{ success: boolean }>`          | `PATCH /api/messaging/threads/{threadId}/read`              | `{ success: boolean }`                                          |
-| `archiveThread`  | `(threadId: string) => Promise<{ success: boolean }>`          | `PATCH /api/messaging/threads/{threadId}/archive`           | `{ success: boolean }`                                          |
-| `getUnreadCount` | `() => Promise<{ count: number }>`                             | `GET /api/messaging/unread-count`                           | `{ count: number }`                                             |
+| Function         | Signature                                                      | HTTP                                                        | Returns                                                                     |
+| ---------------- | -------------------------------------------------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `getThreads`     | `(type?: ThreadType) => Promise<ThreadWithParticipants[]>`     | `GET /api/messaging/threads`                                | `ThreadWithParticipants[]`                                                  |
+| `getThread`      | `(threadId: string) => Promise<ThreadWithParticipants>`        | `GET /api/messaging/threads/{threadId}`                     | `ThreadWithParticipants`                                                    |
+| `createThread`   | `(data: { type, participantIds, roles, listingId?, shopId? })` | `POST /api/messaging/threads`                               | `ThreadWithParticipants` (409 treated as success — returns existing thread) |
+| `getMessages`    | `(threadId: string, cursor?: string)`                          | `GET /api/messaging/threads/{threadId}/messages?cursor=...` | `{ messages: MessageWithSender[]; nextCursor: string \| null }`             |
+| `sendMessage`    | `(threadId: string, content: string, type?: MessageType)`      | `POST /api/messaging/threads/{threadId}/messages`           | `MessageWithSender`                                                         |
+| `markThreadRead` | `(threadId: string) => Promise<{ success: boolean }>`          | `PATCH /api/messaging/threads/{threadId}/read`              | `{ success: boolean }`                                                      |
+| `archiveThread`  | `(threadId: string) => Promise<{ success: boolean }>`          | `PATCH /api/messaging/threads/{threadId}/archive`           | `{ success: boolean }`                                                      |
+| `getUnreadCount` | `() => Promise<{ count: number }>`                             | `GET /api/messaging/unread-count`                           | `{ count: number }`                                                         |
 
 ## Hooks
 
@@ -128,13 +128,13 @@ Tanstack Query hooks live in `src/features/messaging/hooks/`.
 
 ### Query Hooks
 
-| Hook                    | Query Key                                       | Description                                                                        |
-| ----------------------- | ----------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `useThreads(type?)`     | `['messages', 'threads', type]`                 | List threads; optional `ThreadType` filter for independent caching per type        |
-| `useThread(threadId)`   | `['messages', 'threads', threadId]`             | Single thread with participants; disabled when `threadId` is falsy                 |
-| `useMessages(threadId)` | `['messages', 'threads', threadId, 'messages']` | `useInfiniteQuery` with cursor-based pagination; disabled when `threadId` is falsy |
-| `useUnreadCount()`      | `['messages', 'unread-count']`                  | Total unread count; `refetchInterval: 60_000` for nav badge polling                |
-| `useOffer(offerId)`     | `['messages', 'offers', offerId]`               | Single offer with listing/buyer/seller details; disabled when `offerId` is falsy   |
+| Hook                       | Query Key                                       | Description                                                                                                         |
+| -------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `useThreads(type?)`        | `['messages', 'threads', type]`                 | List threads; optional `ThreadType` filter for independent caching per type                                         |
+| `useThread(threadId)`      | `['messages', 'threads', threadId]`             | Single thread with participants; disabled when `threadId` is falsy                                                  |
+| `useMessages(threadId)`    | `['messages', 'threads', threadId, 'messages']` | `useInfiniteQuery` with cursor-based pagination; disabled when `threadId` is falsy                                  |
+| `useUnreadCount(enabled?)` | `['messages', 'unread-count']`                  | Total unread count; `refetchInterval: 60_000` for nav badge polling; pass `enabled=false` for unauthenticated users |
+| `useOffer(offerId)`        | `['messages', 'offers', offerId]`               | Single offer with listing/buyer/seller details; disabled when `offerId` is falsy                                    |
 
 ### Mutation Hooks
 
@@ -149,6 +149,12 @@ Tanstack Query hooks live in `src/features/messaging/hooks/`.
 | `useOfferActions({ offerId, onSuccess?, onError? }).counter` | Sets offer status to `'countered'`; writes new offer to its own cache key | `['messages', 'offers', offerId]` + `['messages', 'threads']`               |
 
 ## Components
+
+### MessageButton
+
+**File:** `src/features/messaging/components/message-button/index.tsx`
+
+Reusable `'use client'` button for initiating direct message threads from server-rendered pages (member profile, shop profile). Props: `{ participantId: string; participantName: string; className?: string }`. Encapsulates auth gate (toast for unauthenticated), `useCreateThread` call with `type: 'direct'`, and navigation to `/messages/{thread.id}`. Shows `aria-busy` during pending state.
 
 ### TypeBadge
 
@@ -390,6 +396,7 @@ import {
 Components are imported directly from their component paths (not exported from the barrel):
 
 ```ts
+import MessageButton from '@/features/messaging/components/message-button';
 import MessageThread from '@/features/messaging/components/message-thread';
 import OfferBubble from '@/features/messaging/components/offer-bubble';
 import TypeBadge from '@/features/messaging/components/type-badge';
@@ -430,6 +437,9 @@ src/features/messaging/
 │   ├── use-create-offer.ts                        # Mutation: create offer, invalidates offers + threads
 │   └── use-offer-actions.ts                       # Mutation: accept/decline/counter with optimistic updates
 ├── components/
+│   ├── message-button/                            # Reusable DM button for profile pages (auth gate + thread creation)
+│   │   ├── index.tsx
+│   │   └── message-button.module.scss
 │   ├── type-badge/                                # Thread type pill (inquiry/offer/direct/custom_request)
 │   │   ├── index.tsx
 │   │   └── type-badge.module.scss
