@@ -1,4 +1,6 @@
 import { get, post, patch } from '@/libs/fetch';
+import { FetchError } from '@/libs/fetch-error';
+import useContextStore from '@/features/context/stores/context-store';
 import type {
   ThreadWithParticipants,
   ThreadType,
@@ -18,7 +20,33 @@ export const createThread = async (data: {
   roles: ParticipantRole[];
   listingId?: string;
   shopId?: string;
-}): Promise<ThreadWithParticipants> => post<ThreadWithParticipants>('/api/messaging/threads', data);
+}): Promise<ThreadWithParticipants> => {
+  const { activeContext } = useContextStore.getState();
+  const contextHeader = activeContext.type === 'member' ? 'member' : `shop:${activeContext.shopId}`;
+
+  const res = await fetch('/api/messaging/threads', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Nessi-Context': contextHeader,
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (res.status === 409 || res.ok) {
+    return res.json() as Promise<ThreadWithParticipants>;
+  }
+
+  let message = `Request failed with status ${res.status}`;
+  try {
+    const errorData = await res.json();
+    if (errorData.error) message = errorData.error;
+    else if (errorData.message) message = errorData.message;
+  } catch {
+    // Response body is not JSON — use default message
+  }
+  throw new FetchError(message, res.status);
+};
 
 export const getMessages = async (
   threadId: string,
