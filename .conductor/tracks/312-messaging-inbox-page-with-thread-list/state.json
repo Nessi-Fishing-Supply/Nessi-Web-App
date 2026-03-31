@@ -3,7 +3,7 @@
   "issue": 312,
   "title": "Messaging — Inbox page with thread list and tab filtering",
   "branch": "feat/312/messaging-inbox-page",
-  "status": "fixing",
+  "status": "complete",
   "phase": {
     "current": 3,
     "total": 3,
@@ -13,7 +13,7 @@
       "remaining": []
     }
   },
-  "health": { "build": "pass", "lint": "pass", "tests": "unknown" },
+  "health": { "build": "pass", "lint": "pass", "tests": "pass" },
   "failureCount": { "currentTask": 0 },
-  "timestamps": { "started": "2026-03-31T16:00:00Z", "lastActivity": "2026-03-31T16:50:00Z" }
+  "timestamps": { "started": "2026-03-31T16:00:00Z", "lastActivity": "2026-03-31T16:55:00Z" }
 }

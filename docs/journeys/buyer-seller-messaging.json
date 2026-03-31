@@ -4,7 +4,7 @@
   "title": "Buyer-Seller Messaging",
   "persona": "buyer",
   "description": "Buyers and sellers exchange messages in typed threads (inquiry, direct, offer, custom request) with safety filtering, unread tracking, and archiving.",
-  "relatedIssues": [307],
+  "relatedIssues": [307, 312],
   "flows": [
     {
       "id": "messaging-hub",
@@ -16,8 +16,9 @@
           "title": "Open Messaging",
           "action": "navigate",
           "layer": "client",
-          "status": "planned",
-          "notes": "Entry point for all messaging flows. Accessible from the nav inbox badge or from a listing detail page CTA. Full inbox UI is Phase 3 — API layer is built. See planned inbox-page step in view-inbox flow."
+          "status": "built",
+          "codeRef": "src/app/(frontend)/messages/page.tsx",
+          "notes": "Entry point for all messaging flows. Accessible from the nav inbox badge or from a listing detail page CTA. Route is /messages — auth-guarded by proxy.ts."
         }
       ],
       "branches": [
@@ -37,8 +38,16 @@
     {
       "id": "view-inbox",
       "title": "View Thread Inbox",
-      "trigger": "User opens the inbox page or navigates to /dashboard/messages",
+      "trigger": "User navigates to /messages",
       "steps": [
+        {
+          "id": "inbox-loading",
+          "title": "Show Loading Skeleton",
+          "layer": "client",
+          "status": "built",
+          "codeRef": "src/app/(frontend)/messages/inbox-page.tsx",
+          "tooltip": "Renders 5 skeleton rows with role=\"status\" and sr-only \"Loading your messages\" while useThreads() is pending. Each skeleton row has avatar, body, and timestamp placeholders."
+        },
         {
           "id": "fetch-threads",
           "title": "Fetch Thread List",
@@ -47,7 +56,7 @@
           "status": "built",
           "route": "/api/messaging/threads",
           "codeRef": "src/app/api/messaging/threads/route.ts",
-          "tooltip": "Returns all threads where user is a participant, joined with participant member details and my_unread_count. Optional ?type= filter accepts: inquiry, direct, offer, custom_request.",
+          "tooltip": "Returns all threads where user is a participant, joined with participant member details and my_unread_count. Optional ?type= filter accepts: inquiry, direct, offer, custom_request. Client fetches all threads then filters client-side by active tab.",
           "errorCases": [
             {
               "condition": "No authenticated session",
@@ -89,27 +98,65 @@
           ]
         },
         {
-          "id": "inbox-page",
-          "title": "Show Inbox",
+          "id": "inbox-error",
+          "title": "Show Error State",
           "layer": "client",
-          "status": "planned",
-          "notes": "Inbox page UI is Phase 3. Renders thread list with participant avatars, last message preview, unread badge per thread, and type filter tabs (All / Inquiries / Offers / Direct). ThreadWithParticipants already carries my_unread_count and last_message_preview from the API."
+          "status": "built",
+          "codeRef": "src/app/(frontend)/messages/inbox-page.tsx",
+          "tooltip": "ErrorState banner: \"Something went wrong loading your messages\" with a Retry button that calls refetch(). Shown when useThreads() isError is true."
+        },
+        {
+          "id": "inbox-tabs",
+          "title": "Render Filter Tabs",
+          "layer": "client",
+          "status": "built",
+          "codeRef": "src/app/(frontend)/messages/inbox-page.tsx",
+          "tooltip": "Tabs component with five tabs: All, Inquiries, Offers, Custom Requests, Direct. Each tab shows its unread count badge (summed from my_unread_count across filtered threads). Switching tabs filters allThreads client-side by thread.type — no additional API call."
+        },
+        {
+          "id": "inbox-page",
+          "title": "Render Thread List",
+          "layer": "client",
+          "status": "built",
+          "codeRef": "src/features/messaging/components/thread-list/index.tsx",
+          "tooltip": "ThreadList renders a <ul> of ThreadRow components. Each ThreadRow links to /messages/{thread_id} and shows: other participant avatar, name (bold if unread), TypeBadge (colored pill for thread type), last_message_preview truncated, relative timestamp (Just now / Xm ago / Xh ago / Yesterday / MMM D), and an unread dot indicator."
         },
         {
           "id": "inbox-empty",
-          "title": "Show Empty Inbox",
+          "title": "Show Empty State",
           "layer": "client",
-          "status": "planned",
-          "notes": "Empty state when user has no threads. Should show encouraging CTA to browse listings. Distinct from filtered-empty state (all threads exist but the active filter shows none)."
+          "status": "built",
+          "codeRef": "src/app/(frontend)/messages/inbox-page.tsx",
+          "tooltip": "Empty state with chat icon, \"No messages yet\" heading, tab-contextual description (e.g. \"You have no offers yet\" on the Offers tab), and a \"Browse listings\" CTA that routes to /search. Shown when the filtered thread list has zero items."
         }
       ],
       "branches": [
         {
+          "afterStep": "inbox-loading",
+          "condition": "Load result?",
+          "paths": [
+            { "label": "Loading", "goTo": "fetch-threads" },
+            { "label": "Error", "goTo": "inbox-error" }
+          ]
+        },
+        {
           "afterStep": "fetch-threads",
           "condition": "Has threads?",
           "paths": [
+            { "label": "Yes", "goTo": "inbox-tabs" },
+            { "label": "No", "goTo": "inbox-empty" }
+          ]
+        },
+        {
+          "afterStep": "inbox-tabs",
+          "condition": "Active tab has threads?",
+          "paths": [
             { "label": "Yes", "goTo": "inbox-page" },
-            { "label": "No", "detail": "Empty state with browse CTA", "goTo": "inbox-empty" }
+            {
+              "label": "No — filtered empty",
+              "detail": "Tab selected but no matching threads",
+              "goTo": "inbox-empty"
+            }
           ]
         }
       ]

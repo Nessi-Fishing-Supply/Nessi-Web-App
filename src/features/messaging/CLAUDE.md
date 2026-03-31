@@ -150,6 +150,18 @@ Tanstack Query hooks live in `src/features/messaging/hooks/`.
 
 ## Components
 
+### TypeBadge
+
+**File:** `src/features/messaging/components/type-badge/index.tsx`
+
+Small colored pill displaying the thread type. Wraps the `Pill` component with thread-type-specific color mapping: inquiry=primary (blue), offer=warning (amber), direct=default (gray), custom_request=secondary (purple). Props: `{ type: ThreadType }`.
+
+### ThreadList / ThreadRow
+
+**Files:** `src/features/messaging/components/thread-list/index.tsx`, `thread-row.tsx`
+
+Thread list container and individual thread row for the `/messages` inbox page. ThreadList wraps threads in semantic `<ul>`/`<li>`. ThreadRow displays avatar, name (bold if unread), TypeBadge, message preview (truncated), relative timestamp, and unread dot indicator. Each row links to `/messages/{thread_id}`.
+
 ### MessageThread (scaffold)
 
 **File:** `src/features/messaging/components/message-thread/index.tsx`
@@ -356,6 +368,8 @@ Components are imported directly from their component paths (not exported from t
 ```ts
 import MessageThread from '@/features/messaging/components/message-thread';
 import OfferBubble from '@/features/messaging/components/offer-bubble';
+import TypeBadge from '@/features/messaging/components/type-badge';
+import ThreadList from '@/features/messaging/components/thread-list';
 ```
 
 ## Directory Structure
@@ -388,6 +402,14 @@ src/features/messaging/
 │   ├── use-create-offer.ts                        # Mutation: create offer, invalidates offers + threads
 │   └── use-offer-actions.ts                       # Mutation: accept/decline/counter with optimistic updates
 ├── components/
+│   ├── type-badge/                                # Thread type pill (inquiry/offer/direct/custom_request)
+│   │   ├── index.tsx
+│   │   └── type-badge.module.scss
+│   ├── thread-list/                               # Inbox thread list + row components
+│   │   ├── index.tsx                              # ThreadList container (ul/li wrapper)
+│   │   ├── thread-row.tsx                         # Single thread row with avatar, badge, preview, timestamp
+│   │   ├── thread-row.module.scss
+│   │   └── thread-list.module.scss
 │   ├── message-thread/                            # Chat thread UI (scaffold)
 │   │   ├── index.tsx
 │   │   └── message-thread.module.scss
