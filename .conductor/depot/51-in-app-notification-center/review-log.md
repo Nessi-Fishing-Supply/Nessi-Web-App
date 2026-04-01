@@ -3,6 +3,7 @@
 ## Review Cycle 1 (2026-04-01)
 
 ### Preflight Results
+
 - TypeScript: PASS
 - ESLint: PASS
 - Stylelint: PASS (after fixing inset shorthand)
@@ -11,6 +12,7 @@
 - Build: PASS
 
 ### Code Review Findings
+
 - 0 Blocking, 5 Warning, 4 Info
 - W-1: Bell tap target < 44px
 - W-2: No focus trap on mobile overlay
