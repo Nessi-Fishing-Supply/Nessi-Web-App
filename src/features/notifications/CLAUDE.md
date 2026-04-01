@@ -8,17 +8,17 @@ In-app notification center — bell icon in the navbar with unread count badge, 
 
 ### `notifications` table
 
-| Column     | Type        | Default       | Notes                           |
-| ---------- | ----------- | ------------- | ------------------------------- |
-| id         | UUID        | gen_random_uuid() | PK                          |
-| user_id    | UUID        |               | FK → auth.users, ON DELETE CASCADE |
-| type       | TEXT        |               | NOT NULL, one of NotificationType |
-| title      | TEXT        |               | Nullable                        |
-| body       | TEXT        |               | Nullable                        |
-| data       | JSONB       |               | Nullable, arbitrary metadata    |
-| link       | TEXT        |               | Nullable, navigation target     |
-| is_read    | BOOLEAN     | false         |                                 |
-| created_at | TIMESTAMPTZ | NOW()         |                                 |
+| Column     | Type        | Default           | Notes                              |
+| ---------- | ----------- | ----------------- | ---------------------------------- |
+| id         | UUID        | gen_random_uuid() | PK                                 |
+| user_id    | UUID        |                   | FK → auth.users, ON DELETE CASCADE |
+| type       | TEXT        |                   | NOT NULL, one of NotificationType  |
+| title      | TEXT        |                   | Nullable                           |
+| body       | TEXT        |                   | Nullable                           |
+| data       | JSONB       |                   | Nullable, arbitrary metadata       |
+| link       | TEXT        |                   | Nullable, navigation target        |
+| is_read    | BOOLEAN     | false             |                                    |
+| created_at | TIMESTAMPTZ | NOW()             |                                    |
 
 **RLS:** Users can only SELECT/UPDATE their own notifications. INSERT via admin client (cross-user notification creation).
 
@@ -28,19 +28,19 @@ In-app notification center — bell icon in the navbar with unread count badge, 
 
 ## Notification Types
 
-| Type              | Trigger                          | Link Target              |
-| ----------------- | -------------------------------- | ------------------------ |
-| `new_message`     | Message sent in thread           | `/messages/{thread_id}`  |
-| `offer_received`  | Buyer submits offer              | `/messages/{thread_id}`  |
-| `offer_accepted`  | Seller accepts offer             | `/messages/{thread_id}`  |
-| `offer_declined`  | Seller declines offer            | `/messages/{thread_id}`  |
-| `offer_expired`   | Offer TTL expires                | `/messages/{thread_id}`  |
-| `item_sold`       | Listing purchased                | `/dashboard/orders/{id}` |
-| `order_shipped`   | Order marked shipped             | `/dashboard/orders/{id}` |
-| `order_delivered`  | Order marked delivered           | `/dashboard/orders/{id}` |
-| `review_received` | Review left on profile           | `/dashboard/reviews`     |
-| `price_drop`      | Watched listing price decreased  | `/listings/{slug}`       |
-| `listing_watched` | Someone watched your listing     | `/dashboard/listings`    |
+| Type              | Trigger                         | Link Target              |
+| ----------------- | ------------------------------- | ------------------------ |
+| `new_message`     | Message sent in thread          | `/messages/{thread_id}`  |
+| `offer_received`  | Buyer submits offer             | `/messages/{thread_id}`  |
+| `offer_accepted`  | Seller accepts offer            | `/messages/{thread_id}`  |
+| `offer_declined`  | Seller declines offer           | `/messages/{thread_id}`  |
+| `offer_expired`   | Offer TTL expires               | `/messages/{thread_id}`  |
+| `item_sold`       | Listing purchased               | `/dashboard/orders/{id}` |
+| `order_shipped`   | Order marked shipped            | `/dashboard/orders/{id}` |
+| `order_delivered` | Order marked delivered          | `/dashboard/orders/{id}` |
+| `review_received` | Review left on profile          | `/dashboard/reviews`     |
+| `price_drop`      | Watched listing price decreased | `/listings/{slug}`       |
+| `listing_watched` | Someone watched your listing    | `/dashboard/listings`    |
 
 ## Architecture
 
@@ -62,6 +62,7 @@ In-app notification center — bell icon in the navbar with unread count badge, 
 ### Client Services (`services/notifications.ts`)
 
 Thin fetch wrappers using `@/libs/fetch` helpers:
+
 - `getNotifications(limit?, offset?)` → `GET /api/notifications`
 - `getUnreadCount()` → `GET /api/notifications/unread-count`
 - `markAsRead(notificationId)` → `PATCH /api/notifications/{id}/read`
@@ -69,12 +70,12 @@ Thin fetch wrappers using `@/libs/fetch` helpers:
 
 ### API Routes (`src/app/api/notifications/`)
 
-| Route                              | Method | Purpose                    |
-| ---------------------------------- | ------ | -------------------------- |
-| `/api/notifications`               | GET    | List with pagination       |
-| `/api/notifications/unread-count`  | GET    | Unread count for badge     |
-| `/api/notifications/[id]/read`     | PATCH  | Mark single as read        |
-| `/api/notifications/read-all`      | PATCH  | Mark all as read           |
+| Route                             | Method | Purpose                |
+| --------------------------------- | ------ | ---------------------- |
+| `/api/notifications`              | GET    | List with pagination   |
+| `/api/notifications/unread-count` | GET    | Unread count for badge |
+| `/api/notifications/[id]/read`    | PATCH  | Mark single as read    |
+| `/api/notifications/read-all`     | PATCH  | Mark all as read       |
 
 ### Hooks (`hooks/`)
 

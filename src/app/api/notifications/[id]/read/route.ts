@@ -27,6 +27,15 @@ export async function PATCH(
 
     return NextResponse.json({ success: true }, { headers: AUTH_CACHE_HEADERS });
   } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to mark notification as read';
+
+    if (message === 'Notification not found') {
+      return NextResponse.json(
+        { error: 'Notification not found' },
+        { status: 404, headers: AUTH_CACHE_HEADERS },
+      );
+    }
+
     console.error('Failed to mark notification as read:', error);
     return NextResponse.json(
       { error: 'Failed to mark notification as read' },
