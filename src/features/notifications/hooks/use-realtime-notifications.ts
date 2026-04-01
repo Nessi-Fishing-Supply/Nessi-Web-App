@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { subscribeToTable } from '@/libs/supabase/realtime';
+import { showBrowserNotification } from '@/features/notifications/utils/browser-notifications';
 
 export function useRealtimeNotifications(userId: string | null, enabled = true) {
   const queryClient = useQueryClient();
@@ -22,6 +23,13 @@ export function useRealtimeNotifications(userId: string | null, enabled = true) 
         // Invalidate notification queries so the panel and badge refresh
         queryClient.invalidateQueries({ queryKey: ['notifications'] });
         queryClient.invalidateQueries({ queryKey: ['notifications', 'unread-count'] });
+
+        // Fire browser notification if permitted
+        const title = (newRow as { title?: string }).title;
+        const body = (newRow as { body?: string }).body;
+        if (title) {
+          showBrowserNotification(title, body ?? '');
+        }
       },
     });
 

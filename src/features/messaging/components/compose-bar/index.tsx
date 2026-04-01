@@ -31,6 +31,7 @@ export default function ComposeBar({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const actionBtnRef = useRef<HTMLButtonElement>(null);
+  const lastTypingBroadcast = useRef(0);
 
   const { mutate, isPending } = useSendMessage({
     threadId,
@@ -57,7 +58,13 @@ export default function ComposeBar({
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       setValue(e.target.value);
       adjustHeight();
-      onTyping?.();
+
+      // Throttle typing broadcasts to once per second
+      const now = Date.now();
+      if (onTyping && now - lastTypingBroadcast.current > 1000) {
+        lastTypingBroadcast.current = now;
+        onTyping();
+      }
     },
     [adjustHeight, onTyping],
   );

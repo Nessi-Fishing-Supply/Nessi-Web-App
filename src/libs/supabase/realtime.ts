@@ -1,6 +1,22 @@
-import type { RealtimeChannel, RealtimePostgresChangesPayload } from '@supabase/supabase-js';
+import type {
+  SupabaseClient,
+  RealtimeChannel,
+  RealtimePostgresChangesPayload,
+} from '@supabase/supabase-js';
 import { createClient } from './client';
 import type { Database } from '@/types/database';
+
+// Shared Supabase client instance for all realtime subscriptions.
+// createBrowserClient does NOT return a singleton, so we cache one here
+// to avoid creating multiple WebSocket connections.
+let realtimeClient: SupabaseClient<Database> | null = null;
+
+function getRealtimeClient(): SupabaseClient<Database> {
+  if (!realtimeClient) {
+    realtimeClient = createClient();
+  }
+  return realtimeClient;
+}
 
 type TableName = keyof Database['public']['Tables'];
 type TableRow<T extends TableName> = Database['public']['Tables'][T]['Row'];
@@ -26,7 +42,7 @@ export function subscribeToTable<T extends TableName>({
   onPayload,
   channelName,
 }: SubscribeToTableOptions<T>): () => void {
-  const supabase = createClient();
+  const supabase = getRealtimeClient();
   const name = channelName ?? `realtime-${table}-${Date.now()}`;
 
   const channel: RealtimeChannel = supabase
@@ -73,7 +89,7 @@ export function createBroadcastChannel<T extends object>({
   onMessage,
   self = false,
 }: BroadcastChannelOptions<T>): BroadcastChannelResult<T> {
-  const supabase = createClient();
+  const supabase = getRealtimeClient();
 
   const channel: RealtimeChannel = supabase
     .channel(channelName, {
