@@ -50,7 +50,8 @@ export async function createNotificationServer(
       .order('created_at', { ascending: true })
       .limit(excess);
 
-    if (oldestError) throw new Error(`Failed to fetch oldest notifications: ${oldestError.message}`);
+    if (oldestError)
+      throw new Error(`Failed to fetch oldest notifications: ${oldestError.message}`);
 
     if (oldest && oldest.length > 0) {
       const ids = (oldest as { id: string }[]).map((n) => n.id);
@@ -96,13 +97,16 @@ export async function markAsReadServer(
 ): Promise<{ success: boolean }> {
   const supabase = await createClient();
 
-  const { error } = await (supabase as any)
+  const { data, error } = await (supabase as any)
     .from('notifications')
     .update({ is_read: true })
     .eq('id', notificationId)
-    .eq('user_id', userId);
+    .eq('user_id', userId)
+    .select('id')
+    .maybeSingle();
 
   if (error) throw new Error(`Failed to mark notification as read: ${error.message}`);
+  if (!data) throw new Error('Notification not found');
 
   return { success: true };
 }

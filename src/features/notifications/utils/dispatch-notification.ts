@@ -15,9 +15,8 @@ export function dispatchNotification(params: {
 }): void {
   void (async () => {
     try {
-      const { createNotificationServer } = await import(
-        '@/features/notifications/services/notifications-server'
-      );
+      const { createNotificationServer } =
+        await import('@/features/notifications/services/notifications-server');
       await createNotificationServer(params.userId, params.type, {
         title: params.title,
         body: params.body ?? null,

@@ -3,7 +3,7 @@
   "issue": 51,
   "title": "In-app notification center — bell icon, activity feed, unread badges",
   "branch": "feat/51/in-app-notification-center",
-  "status": "implementing",
+  "status": "fixing",
   "phase": {
     "current": 4,
     "total": 4,
@@ -23,13 +23,17 @@
         "3.2",
         "3.3",
         "3.4",
-        "3.5"
+        "3.5",
+        "4.1",
+        "4.2",
+        "4.3",
+        "4.4"
       ],
-      "current": "4.1",
-      "remaining": ["4.2", "4.3", "4.4"]
+      "current": null,
+      "remaining": []
     }
   },
-  "health": { "build": "pass", "lint": "pass", "tests": "unknown" },
+  "health": { "build": "pass", "lint": "pass", "tests": "pass" },
   "failureCount": { "currentTask": 0 },
-  "timestamps": { "started": "2026-04-01T18:00:00Z", "lastActivity": "2026-04-01T18:40:00Z" }
+  "timestamps": { "started": "2026-04-01T18:00:00Z", "lastActivity": "2026-04-01T18:50:00Z" }
 }

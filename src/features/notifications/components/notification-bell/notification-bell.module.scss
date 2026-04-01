@@ -13,6 +13,8 @@
   cursor: pointer;
   color: inherit;
   padding: 0;
+  min-width: 44px;
+  min-height: 44px;
 
   &:focus-visible {
     outline: 2px solid var(--color-primary-500);

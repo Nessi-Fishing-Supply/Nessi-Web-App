@@ -18,7 +18,7 @@ function SkeletonItems() {
       {Array.from({ length: 4 }).map((_, i) => (
         <div key={i} className={styles.skeleton}>
           <div className={styles.skeletonCircle} />
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div className={styles.skeletonBody}>
             <div className={styles.skeletonLine} style={{ width: '60%' }} />
             <div className={styles.skeletonLine} style={{ width: '90%' }} />
           </div>
@@ -49,6 +49,26 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         onClose();
+        return;
+      }
+
+      // Focus trap for mobile overlay
+      if (e.key === 'Tab' && panelRef.current) {
+        const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], [tabindex]:not([tabindex="-1"])',
+        );
+        if (focusable.length === 0) return;
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
       }
     }
     document.addEventListener('keydown', handleKeyDown);
@@ -59,9 +79,10 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
     <div className={styles.panel} role="dialog" aria-label="Notifications" ref={panelRef}>
       <div className={styles.header}>
         <h2 className={styles.title}>Notifications</h2>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+        <div className={styles.headerActions}>
           {hasUnread && (
             <button
+              type="button"
               onClick={() => markAllRead.mutate()}
               disabled={markAllRead.isPending}
               className={styles.markAllRead}
@@ -69,7 +90,12 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
               Mark all as read
             </button>
           )}
-          <button className={styles.closeButton} onClick={onClose} aria-label="Close notifications">
+          <button
+            type="button"
+            className={styles.closeButton}
+            onClick={onClose}
+            aria-label="Close notifications"
+          >
             <HiOutlineX aria-hidden="true" />
           </button>
         </div>

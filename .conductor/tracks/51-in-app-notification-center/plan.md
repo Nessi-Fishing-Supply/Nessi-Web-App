@@ -39,6 +39,7 @@ Create thin `fetch` wrappers following the `messaging.ts` pattern. Use `get`, `p
 Create four API route files following the messaging API pattern. Each handler must have a description comment above the export, use `createClient` from `@/libs/supabase/server` for auth, return `AUTH_CACHE_HEADERS`, and follow the same error handling pattern (401 for unauth, structured error JSON, try/catch with console.error).
 
 Routes:
+
 - `GET /api/notifications` — list notifications with optional `limit` (default 20, max 100) and `offset` (default 0) query params
 - `GET /api/notifications/unread-count` — return `{ count: number }`
 - `PATCH /api/notifications/[id]/read` — mark single notification as read (verify ownership)

@@ -19,8 +19,7 @@ export default function NotificationBell() {
 
   const badgeText = unreadCount > 9 ? '9+' : String(unreadCount);
 
-  const ariaLabel =
-    unreadCount > 0 ? `Notifications, ${unreadCount} unread` : 'Notifications';
+  const ariaLabel = unreadCount > 0 ? `Notifications, ${unreadCount} unread` : 'Notifications';
 
   useEffect(() => {
     if (!isOpen) return;
