@@ -44,6 +44,9 @@ import { useRecentlyViewedMerge } from '@/features/recently-viewed/hooks/use-rec
 // Messaging
 import { useUnreadCount } from '@/features/messaging/hooks/use-unread-count';
 
+// Notifications
+import NotificationBell from '@/features/notifications/components/notification-bell';
+
 // Auth & Toast
 import { useAuth } from '@/features/auth/context';
 import { logout } from '@/features/auth/services/auth';
@@ -359,6 +362,8 @@ export default function Navbar() {
             )}
           </Link>
         )}
+
+        {mounted && isAuthenticated && <NotificationBell />}
 
         {mounted && isAuthenticated && user ? (
           <Dropdown

@@ -1,5 +1,5 @@
 import { get, patch } from '@/libs/fetch';
-import type { Notification, NotificationsResponse } from '@/features/notifications/types/notification';
+import type { NotificationsResponse } from '@/features/notifications/types/notification';
 
 export const getNotifications = async (
   limit?: number,
