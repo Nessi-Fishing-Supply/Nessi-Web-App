@@ -486,6 +486,8 @@ export type Database = {
       }
       message_thread_participants: {
         Row: {
+          context_id: string
+          context_type: Database["public"]["Enums"]["participant_context_type"]
           id: string
           is_blocked: boolean
           joined_at: string
@@ -496,6 +498,8 @@ export type Database = {
           unread_count: number
         }
         Insert: {
+          context_id: string
+          context_type?: Database["public"]["Enums"]["participant_context_type"]
           id?: string
           is_blocked?: boolean
           joined_at?: string
@@ -506,6 +510,8 @@ export type Database = {
           unread_count?: number
         }
         Update: {
+          context_id?: string
+          context_type?: Database["public"]["Enums"]["participant_context_type"]
           id?: string
           is_blocked?: boolean
           joined_at?: string
@@ -1219,6 +1225,8 @@ export type Database = {
         Returns: undefined
       }
       check_slug_available: { Args: { p_slug: string }; Returns: boolean }
+      is_thread_creator: { Args: { p_thread_id: string }; Returns: boolean }
+      is_thread_participant: { Args: { p_thread_id: string }; Returns: boolean }
       release_slug: {
         Args: { p_entity_id: string; p_entity_type: string }
         Returns: undefined
@@ -1280,6 +1288,7 @@ export type Database = {
         | "declined"
         | "countered"
         | "expired"
+      participant_context_type: "member" | "shop"
       participant_role: "buyer" | "seller" | "initiator" | "recipient"
       shipping_paid_by: "seller" | "buyer" | "split"
       shop_status: "active" | "suspended" | "archived" | "deleted"
@@ -1466,6 +1475,7 @@ export const Constants = {
         "image",
       ],
       offer_status: ["pending", "accepted", "declined", "countered", "expired"],
+      participant_context_type: ["member", "shop"],
       participant_role: ["buyer", "seller", "initiator", "recipient"],
       shipping_paid_by: ["seller", "buyer", "split"],
       shop_status: ["active", "suspended", "archived", "deleted"],
