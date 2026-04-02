@@ -25,14 +25,16 @@ The safety filter (`utils/safety-filter.ts`) intercepts outgoing message content
 
 ### `message_thread_participants` table
 
-| Column         | Type        | Constraints                                          |
-| -------------- | ----------- | ---------------------------------------------------- |
-| `id`           | UUID        | PK, `gen_random_uuid()`                              |
-| `thread_id`    | UUID        | NOT NULL, FK `message_threads(id) ON DELETE CASCADE` |
-| `member_id`    | UUID        | NOT NULL, FK `members(id) ON DELETE CASCADE`         |
-| `role`         | ENUM        | NOT NULL — `participant_role` enum                   |
-| `unread_count` | INTEGER     | NOT NULL, DEFAULT `0`                                |
-| `joined_at`    | TIMESTAMPTZ | NOT NULL, DEFAULT `now()`                            |
+| Column         | Type        | Constraints                                                             |
+| -------------- | ----------- | ----------------------------------------------------------------------- |
+| `id`           | UUID        | PK, `gen_random_uuid()`                                                 |
+| `thread_id`    | UUID        | NOT NULL, FK `message_threads(id) ON DELETE CASCADE`                    |
+| `member_id`    | UUID        | NOT NULL, FK `members(id) ON DELETE CASCADE`                            |
+| `context_type` | ENUM        | NOT NULL — `participant_context_type` enum                              |
+| `context_id`   | UUID        | NOT NULL — member_id (for member context) or shop_id (for shop context) |
+| `role`         | ENUM        | NOT NULL — `participant_role` enum                                      |
+| `unread_count` | INTEGER     | NOT NULL, DEFAULT `0`                                                   |
+| `joined_at`    | TIMESTAMPTZ | NOT NULL, DEFAULT `now()`                                               |
 
 **Constraints:**
 
@@ -55,12 +57,13 @@ The safety filter (`utils/safety-filter.ts`) intercepts outgoing message content
 
 ### Database Enums
 
-| Enum               | Values                                                                                                |
-| ------------------ | ----------------------------------------------------------------------------------------------------- |
-| `thread_type`      | `'inquiry'`, `'direct'`, `'offer'`, `'custom_request'`                                                |
-| `thread_status`    | `'active'`, `'archived'`, `'closed'`                                                                  |
-| `participant_role` | `'buyer'`, `'seller'`, `'initiator'`, `'recipient'`                                                   |
-| `message_type`     | `'text'`, `'system'`, `'offer_node'`, `'custom_request_node'`, `'listing_node'`, `'nudge'`, `'image'` |
+| Enum                       | Values                                                                                                |
+| -------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `thread_type`              | `'inquiry'`, `'direct'`, `'offer'`, `'custom_request'`                                                |
+| `thread_status`            | `'active'`, `'archived'`, `'closed'`                                                                  |
+| `participant_context_type` | `'member'`, `'shop'`                                                                                  |
+| `participant_role`         | `'buyer'`, `'seller'`, `'initiator'`, `'recipient'`                                                   |
+| `message_type`             | `'text'`, `'system'`, `'offer_node'`, `'custom_request_node'`, `'listing_node'`, `'nudge'`, `'image'` |
 
 ### RLS Policies
 
@@ -73,6 +76,27 @@ Participants can only see threads and messages they belong to. Insert is gated t
 | `message-images` | `threads/{thread_id}/{message_id}/{uuid}.webp` | Image attachments in chat |
 
 RLS policies enforce per-thread-participant access. Only thread participants can upload and read images within their thread paths.
+
+## Participant Context Model
+
+Each thread participant has a `context_type` (`'member'` or `'shop'`) and `context_id` that determines which identity they represent:
+
+- **Member context:** `context_type='member'`, `context_id={member_id}`. The participant acts as their personal identity.
+- **Shop context:** `context_type='shop'`, `context_id={shop_id}`. The participant acts as a shop. All shop members with messaging permission share the inbox. The `member_id` column still tracks the human user who created the thread (for auth fallback).
+
+### Inbox Filtering
+
+- Member inbox: threads where `context_type='member' AND member_id=auth.uid()`
+- Shop inbox: threads where `context_type='shop' AND context_id={shopId}` (API verifies user is shop member with messaging permission via `requireShopPermission`)
+
+### Display Identity Resolution
+
+- `context_type='member'` → join `members` table for name/avatar
+- `context_type='shop'` → join `shops` table for shop_name/avatar
+
+### Mark Read
+
+Shop threads have one participant row shared across all shop members. Marking read for one marks read for all (shared inbox model).
 
 ## Types
 
