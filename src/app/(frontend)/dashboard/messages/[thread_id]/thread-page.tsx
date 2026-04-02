@@ -187,6 +187,26 @@ export default function ThreadPage({ threadId }: ThreadPageProps) {
 
   const otherParticipant = thread?.participants.find((p) => p.member.id !== user?.id);
   const currentUserParticipant = thread?.participants.find((p) => p.member.id === user?.id);
+
+  // Resolve display identity — shop name/avatar/link if shop context, member otherwise
+  const otherDisplayName =
+    otherParticipant?.context_type === 'shop' && otherParticipant.shop
+      ? otherParticipant.shop.shop_name
+      : otherParticipant
+        ? `${otherParticipant.member.first_name} ${otherParticipant.member.last_name}`
+        : 'Unknown';
+
+  const otherDisplayAvatar =
+    otherParticipant?.context_type === 'shop' && otherParticipant.shop
+      ? (otherParticipant.shop.avatar_url ?? undefined)
+      : (otherParticipant?.member.avatar_url ?? undefined);
+
+  const otherProfileHref =
+    otherParticipant?.context_type === 'shop' && otherParticipant.shop?.slug
+      ? `/shop/${otherParticipant.shop.slug}`
+      : otherParticipant?.member.slug
+        ? `/member/${otherParticipant.member.slug}`
+        : null;
   const currentUserRole = currentUserParticipant?.role;
   const isThreadInactive = thread?.status === 'archived' || thread?.status === 'closed';
 
@@ -274,13 +294,11 @@ export default function ThreadPage({ threadId }: ThreadPageProps) {
               <>
                 <Avatar
                   size="sm"
-                  name={`${otherParticipant.member.first_name} ${otherParticipant.member.last_name}`}
-                  imageUrl={otherParticipant.member.avatar_url ?? undefined}
+                  name={otherDisplayName}
+                  imageUrl={otherDisplayAvatar}
                   isOnline={isOnline(otherParticipant.member.last_seen_at ?? null)}
                 />
-                <span className={styles.mobileHeaderName}>
-                  {otherParticipant.member.first_name} {otherParticipant.member.last_name}
-                </span>
+                <span className={styles.mobileHeaderName}>{otherDisplayName}</span>
               </>
             )}
           </div>
@@ -293,14 +311,12 @@ export default function ThreadPage({ threadId }: ThreadPageProps) {
               <div className={styles.chatHeaderInner}>
                 <Avatar
                   size="md"
-                  name={`${otherParticipant.member.first_name} ${otherParticipant.member.last_name}`}
-                  imageUrl={otherParticipant.member.avatar_url ?? undefined}
+                  name={otherDisplayName}
+                  imageUrl={otherDisplayAvatar}
                   isOnline={isOnline(otherParticipant.member.last_seen_at ?? null)}
                 />
                 <div className={styles.chatHeaderMeta}>
-                  <span className={styles.chatHeaderName}>
-                    {otherParticipant.member.first_name} {otherParticipant.member.last_name}
-                  </span>
+                  <span className={styles.chatHeaderName}>{otherDisplayName}</span>
                   <span className={styles.chatHeaderStatus}>
                     {isOnline(otherParticipant.member.last_seen_at ?? null)
                       ? 'Active now'
@@ -308,11 +324,8 @@ export default function ThreadPage({ threadId }: ThreadPageProps) {
                   </span>
                 </div>
               </div>
-              {otherParticipant.member.slug && (
-                <Link
-                  href={`/member/${otherParticipant.member.slug}`}
-                  className={styles.chatHeaderProfileLink}
-                >
+              {otherProfileHref && (
+                <Link href={otherProfileHref} className={styles.chatHeaderProfileLink}>
                   View profile
                 </Link>
               )}

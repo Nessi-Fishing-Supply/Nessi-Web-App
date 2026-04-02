@@ -34,8 +34,20 @@ function formatRelativeTime(dateStr: string | null): string {
 
 export default function ThreadRow({ thread, currentUserId, isActive, basePath }: ThreadRowProps) {
   const other = thread.participants.find((p) => p.member.id !== currentUserId);
-  const name = other ? `${other.member.first_name} ${other.member.last_name}` : 'Unknown';
-  const avatarUrl = other?.member.avatar_url ?? undefined;
+
+  // Resolve display identity — shop name/avatar if shop context, member otherwise
+  const displayName =
+    other?.context_type === 'shop' && other.shop
+      ? other.shop.shop_name
+      : other
+        ? `${other.member.first_name} ${other.member.last_name}`
+        : 'Unknown';
+
+  const displayAvatar =
+    other?.context_type === 'shop' && other.shop
+      ? (other.shop.avatar_url ?? undefined)
+      : (other?.member.avatar_url ?? undefined);
+
   const isUnread = thread.my_unread_count > 0;
   const otherIsOnline = isOnline(other?.member.last_seen_at ?? null);
   const href = basePath ? `${basePath}/${thread.id}` : `/dashboard/messages/${thread.id}`;
@@ -43,11 +55,13 @@ export default function ThreadRow({ thread, currentUserId, isActive, basePath }:
   return (
     <Link href={href} className={`${styles.row}${isActive ? ` ${styles.active}` : ''}`}>
       <div className={styles.avatarWrap}>
-        <Avatar name={name} imageUrl={avatarUrl} size="md" isOnline={otherIsOnline} />
+        <Avatar name={displayName} imageUrl={displayAvatar} size="md" isOnline={otherIsOnline} />
       </div>
       <div className={styles.content}>
         <div className={styles.header}>
-          <span className={`${styles.name}${isUnread ? ` ${styles.unread}` : ''}`}>{name}</span>
+          <span className={`${styles.name}${isUnread ? ` ${styles.unread}` : ''}`}>
+            {displayName}
+          </span>
           <TypeBadge type={thread.type} />
         </div>
         <p className={styles.preview}>
