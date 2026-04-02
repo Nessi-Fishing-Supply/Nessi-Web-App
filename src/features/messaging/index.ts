@@ -5,6 +5,7 @@ export type {
   ThreadStatus,
   ThreadParticipant,
   ParticipantRole,
+  ParticipantContextType,
   ThreadWithParticipants,
   ThreadListingDetails,
 } from '@/features/messaging/types/thread';

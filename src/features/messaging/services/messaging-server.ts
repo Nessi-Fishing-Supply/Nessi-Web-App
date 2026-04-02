@@ -7,6 +7,7 @@ import type {
   ThreadWithParticipants,
   ThreadListingDetails,
   ParticipantRole,
+  ParticipantContextType,
 } from '@/features/messaging/types/thread';
 import type { MessageType, MessageWithSender } from '@/features/messaging/types/message';
 
@@ -14,6 +15,7 @@ async function buildThreadsWithParticipants(
   supabase: Awaited<ReturnType<typeof createClient>>,
   threads: MessageThread[],
   userId: string,
+  context?: { type: 'member' } | { type: 'shop'; shopId: string },
 ): Promise<ThreadWithParticipants[]> {
   if (threads.length === 0) return [];
 
@@ -26,6 +28,28 @@ async function buildThreadsWithParticipants(
 
   if (participantsError) {
     throw new Error(`Failed to get thread participants: ${participantsError.message}`);
+  }
+
+  // Collect shop context_ids and batch fetch shop details
+  const shopContextIds = [
+    ...new Set(
+      (participants ?? []).filter((p) => p.context_type === 'shop').map((p) => p.context_id),
+    ),
+  ];
+
+  const shopsByIdMap = new Map<
+    string,
+    { id: string; shop_name: string; avatar_url: string | null; slug: string | null }
+  >();
+  if (shopContextIds.length > 0) {
+    const { data: shops } = await supabase
+      .from('shops')
+      .select('id, shop_name, avatar_url, slug')
+      .in('id', shopContextIds);
+
+    for (const s of shops ?? []) {
+      shopsByIdMap.set(s.id, s);
+    }
   }
 
   const participantsByThread = new Map<string, typeof participants>();
@@ -57,7 +81,13 @@ async function buildThreadsWithParticipants(
 
   return threads.map((thread) => {
     const threadParticipants = participantsByThread.get(thread.id) ?? [];
-    const myParticipant = threadParticipants.find((p) => p.member_id === userId);
+
+    const myParticipant =
+      context?.type === 'shop'
+        ? threadParticipants.find(
+            (p) => p.context_type === 'shop' && p.context_id === context.shopId,
+          )
+        : threadParticipants.find((p) => p.member_id === userId);
 
     return {
       ...thread,
@@ -80,6 +110,8 @@ async function buildThreadsWithParticipants(
           last_read_at: p.last_read_at,
           unread_count: p.unread_count,
           is_blocked: p.is_blocked,
+          context_type: p.context_type as ParticipantContextType,
+          context_id: p.context_id,
           member: {
             id: memberData?.id ?? p.member_id,
             first_name: memberData?.first_name ?? '',
@@ -88,6 +120,7 @@ async function buildThreadsWithParticipants(
             slug: memberData?.slug ?? null,
             last_seen_at: memberData?.last_seen_at ?? null,
           },
+          shop: p.context_type === 'shop' ? (shopsByIdMap.get(p.context_id) ?? null) : null,
         };
       }),
       my_unread_count: myParticipant?.unread_count ?? 0,
@@ -99,13 +132,19 @@ async function buildThreadsWithParticipants(
 export async function getThreadsServer(
   userId: string,
   type?: ThreadType,
+  context?: { type: 'member' } | { type: 'shop'; shopId: string },
 ): Promise<ThreadWithParticipants[]> {
   const supabase = await createClient();
 
-  const { data: myParticipantRows, error: participantError } = await supabase
-    .from('message_thread_participants')
-    .select('thread_id')
-    .eq('member_id', userId);
+  let participantQuery = supabase.from('message_thread_participants').select('thread_id');
+
+  if (context?.type === 'shop') {
+    participantQuery = participantQuery.eq('context_type', 'shop').eq('context_id', context.shopId);
+  } else {
+    participantQuery = participantQuery.eq('context_type', 'member').eq('member_id', userId);
+  }
+
+  const { data: myParticipantRows, error: participantError } = await participantQuery;
 
   if (participantError) {
     throw new Error(`Failed to get threads: ${participantError.message}`);
@@ -149,6 +188,7 @@ export async function getThreadsServer(
     supabase,
     threads as MessageThread[],
     userId,
+    context,
   );
 
   return allThreads.filter((thread) => {
@@ -160,15 +200,27 @@ export async function getThreadsServer(
 export async function getThreadByIdServer(
   userId: string,
   threadId: string,
+  context?: { type: 'member' } | { type: 'shop'; shopId: string },
 ): Promise<ThreadWithParticipants | null> {
   const supabase = await createClient();
 
-  const { data: myParticipant, error: participantError } = await supabase
+  let participantVerifyQuery = supabase
     .from('message_thread_participants')
     .select('id')
-    .eq('thread_id', threadId)
-    .eq('member_id', userId)
-    .maybeSingle();
+    .eq('thread_id', threadId);
+
+  if (context?.type === 'shop') {
+    participantVerifyQuery = participantVerifyQuery
+      .eq('context_type', 'shop')
+      .eq('context_id', context.shopId);
+  } else {
+    participantVerifyQuery = participantVerifyQuery
+      .eq('context_type', 'member')
+      .eq('member_id', userId);
+  }
+
+  const { data: myParticipant, error: participantError } =
+    await participantVerifyQuery.maybeSingle();
 
   if (participantError) {
     throw new Error(`Failed to verify thread participant: ${participantError.message}`);
@@ -186,7 +238,12 @@ export async function getThreadByIdServer(
     throw new Error(`Failed to get thread: ${threadError.message}`);
   }
 
-  const results = await buildThreadsWithParticipants(supabase, [thread as MessageThread], userId);
+  const results = await buildThreadsWithParticipants(
+    supabase,
+    [thread as MessageThread],
+    userId,
+    context,
+  );
   return results[0] ?? null;
 }
 
@@ -197,6 +254,8 @@ export async function createThreadServer(params: {
   roles: ParticipantRole[];
   listingId?: string;
   shopId?: string;
+  contextTypes?: ('member' | 'shop')[];
+  contextIds?: string[];
 }): Promise<CreateThreadResult> {
   const supabase = await createClient();
 
@@ -321,6 +380,8 @@ export async function createThreadServer(params: {
     thread_id: thread.id,
     member_id: memberId,
     role: params.roles[index],
+    context_type: params.contextTypes?.[index] ?? ('member' as const),
+    context_id: params.contextIds?.[index] ?? memberId,
   }));
 
   const { error: participantsError } = await supabase
@@ -511,16 +572,26 @@ export async function createMessageServer(params: {
   } as MessageWithSender;
 }
 
-export async function markThreadReadServer(userId: string, threadId: string): Promise<void> {
+export async function markThreadReadServer(
+  userId: string,
+  threadId: string,
+  context?: { type: 'member' } | { type: 'shop'; shopId: string },
+): Promise<void> {
   const supabase = await createClient();
 
   // [W1] Verify the user is a participant before marking read
-  const { data: myParticipant, error: participantError } = await supabase
+  let verifyQuery = supabase
     .from('message_thread_participants')
     .select('id')
-    .eq('thread_id', threadId)
-    .eq('member_id', userId)
-    .maybeSingle();
+    .eq('thread_id', threadId);
+
+  if (context?.type === 'shop') {
+    verifyQuery = verifyQuery.eq('context_type', 'shop').eq('context_id', context.shopId);
+  } else {
+    verifyQuery = verifyQuery.eq('context_type', 'member').eq('member_id', userId);
+  }
+
+  const { data: myParticipant, error: participantError } = await verifyQuery.maybeSingle();
 
   if (participantError) {
     throw new Error(`Failed to verify thread participant: ${participantError.message}`);
@@ -530,11 +601,18 @@ export async function markThreadReadServer(userId: string, threadId: string): Pr
     throw new Error('Not a participant in this thread');
   }
 
-  const { error } = await supabase
+  let updateQuery = supabase
     .from('message_thread_participants')
     .update({ last_read_at: new Date().toISOString(), unread_count: 0 })
-    .eq('thread_id', threadId)
-    .eq('member_id', userId);
+    .eq('thread_id', threadId);
+
+  if (context?.type === 'shop') {
+    updateQuery = updateQuery.eq('context_type', 'shop').eq('context_id', context.shopId);
+  } else {
+    updateQuery = updateQuery.eq('member_id', userId);
+  }
+
+  const { error } = await updateQuery;
 
   if (error) {
     throw new Error(`Failed to mark thread as read: ${error.message}`);
@@ -586,13 +664,23 @@ export async function hasTransactionHistoryServer(
   return members.every((m) => (m.total_transactions ?? 0) > 0);
 }
 
-export async function getUnreadCountServer(userId: string): Promise<number> {
+export async function getUnreadCountServer(
+  userId: string,
+  context?: { type: 'member' } | { type: 'shop'; shopId: string },
+): Promise<number> {
   const supabase = await createClient();
 
-  const { data: myParticipantRows, error: participantError } = await supabase
+  let participantQuery = supabase
     .from('message_thread_participants')
-    .select('thread_id, unread_count')
-    .eq('member_id', userId);
+    .select('thread_id, unread_count');
+
+  if (context?.type === 'shop') {
+    participantQuery = participantQuery.eq('context_type', 'shop').eq('context_id', context.shopId);
+  } else {
+    participantQuery = participantQuery.eq('context_type', 'member').eq('member_id', userId);
+  }
+
+  const { data: myParticipantRows, error: participantError } = await participantQuery;
 
   if (participantError) {
     throw new Error(`Failed to get unread count: ${participantError.message}`);
