@@ -6,21 +6,33 @@ interface NewMessageParams {
   senderName: string;
   messagePreview: string;
   threadId: string;
+  shopName?: string;
 }
 
 export function newMessage({
   senderName,
   messagePreview,
   threadId,
+  shopName,
 }: NewMessageParams): EmailTemplate {
   const safeSender = escapeHtml(senderName);
+  const safeShopName = shopName ? escapeHtml(shopName) : null;
   const rawPreview =
     messagePreview.length > 200 ? messagePreview.slice(0, 200) + '...' : messagePreview;
   const safePreview = escapeHtml(rawPreview);
   const threadUrl = `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/messages/${threadId}`;
 
+  const subjectLine = safeShopName
+    ? `New message for ${safeShopName} from ${safeSender}`
+    : `New message from ${safeSender}`;
+
+  const shopContext = safeShopName
+    ? `<p style="margin: 0 0 16px; color: #6b7280; font-size: 14px; line-height: 1.5;">Message received by <strong>${safeShopName}</strong></p>`
+    : '';
+
   const body = `
     <h2 style="margin: 0 0 16px; color: #111827; font-size: 20px; font-weight: 700; line-height: 1.3;">New message from ${safeSender}</h2>
+    ${shopContext}
     <p style="margin: 0 0 24px; color: #374151; font-size: 16px; line-height: 1.6;">
       ${safePreview}
     </p>
@@ -42,7 +54,7 @@ export function newMessage({
   `;
 
   return {
-    subject: `New message from ${safeSender}`,
+    subject: subjectLine,
     html: emailLayout(body),
   };
 }
