@@ -973,6 +973,45 @@ export type Database = {
           },
         ]
       }
+      reservations: {
+        Row: {
+          created_at: string
+          id: string
+          listing_id: string
+          reserved_by: string
+          reserved_until: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          listing_id: string
+          reserved_by: string
+          reserved_until: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          listing_id?: string
+          reserved_by?: string
+          reserved_until?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reservations_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: true
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservations_reserved_by_fkey"
+            columns: ["reserved_by"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       search_suggestions: {
         Row: {
           category: Database["public"]["Enums"]["listing_category"] | null
@@ -1398,6 +1437,7 @@ export type Database = {
       check_slug_available: { Args: { p_slug: string }; Returns: boolean }
       is_thread_creator: { Args: { p_thread_id: string }; Returns: boolean }
       is_thread_participant: { Args: { p_thread_id: string }; Returns: boolean }
+      release_expired_reservations: { Args: never; Returns: undefined }
       release_slug: {
         Args: { p_entity_id: string; p_entity_type: string }
         Returns: undefined
