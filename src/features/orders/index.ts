@@ -38,6 +38,7 @@ export { usePayoutHistory } from './hooks/use-payout-history';
 
 // Utils
 export { getTimelineSteps } from './utils/get-timeline-steps';
+export { getTrackingUrl } from './utils/get-tracking-url';
 
 // Components
 export { default as OrderStatusBadge } from './components/order-status-badge';
