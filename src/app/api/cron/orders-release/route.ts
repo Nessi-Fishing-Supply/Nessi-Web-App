@@ -55,7 +55,6 @@ export async function GET(request: Request) {
             sellerFirstName: order.seller?.first_name ?? 'there',
             listingTitle: order.listing?.title ?? 'your item',
             amountCents: transferAmount,
-            orderId: order.id,
           });
           await sendEmail({ to: sellerUser.email, subject, html });
         }

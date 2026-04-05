@@ -52,6 +52,14 @@ CREATE INDEX IF NOT EXISTS idx_orders_listing_id
 CREATE INDEX IF NOT EXISTS idx_orders_status
   ON public.orders (status);
 
+CREATE INDEX IF NOT EXISTS idx_orders_verification_deadline
+  ON public.orders (status, verification_deadline)
+  WHERE status = 'verification';
+
+CREATE INDEX IF NOT EXISTS idx_orders_shipped_at
+  ON public.orders (status, shipped_at)
+  WHERE status = 'shipped';
+
 -- ============================================================
 -- 3. Enable RLS
 -- ============================================================

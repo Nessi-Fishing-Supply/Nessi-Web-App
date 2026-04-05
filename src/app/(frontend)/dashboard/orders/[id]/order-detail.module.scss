@@ -171,9 +171,14 @@
   }
 }
 
-.disputeLink {
+.disputeNote {
+  margin: 0;
   font-size: var(--font-size-500);
   color: var(--color-neutral-500);
+}
+
+.disputeLink {
+  color: var(--color-primary-500);
   text-decoration: underline;
 }
 

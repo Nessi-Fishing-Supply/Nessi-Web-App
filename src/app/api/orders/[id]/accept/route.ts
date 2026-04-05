@@ -100,7 +100,6 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
           sellerFirstName: order.seller?.first_name ?? 'there',
           listingTitle: order.listing?.title ?? 'your item',
           amountCents: transferAmount,
-          orderId: id,
         });
         await sendEmail({ to: sellerUser.email, subject, html });
       } catch (emailError) {
