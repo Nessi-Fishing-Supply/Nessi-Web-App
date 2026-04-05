@@ -3,7 +3,7 @@
   "issue": 31,
   "title": "Seller Payouts, Fee Calculator & Dispute Webhook",
   "branch": "feat/31/seller-payouts-fee-calculator",
-  "status": "reviewing",
+  "status": "complete",
   "phase": {
     "current": 4,
     "total": 4,

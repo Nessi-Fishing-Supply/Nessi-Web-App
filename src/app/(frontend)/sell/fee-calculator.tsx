@@ -22,7 +22,9 @@ export default function FeeCalculator() {
     <section className={styles.section}>
       <div className={styles.inner}>
         <h2 className={styles.heading}>See what you keep</h2>
-        <p className={styles.subheading}>Enter your sale price to see the exact fee and your payout.</p>
+        <p className={styles.subheading}>
+          Enter your sale price to see the exact fee and your payout.
+        </p>
 
         <div className={styles.inputGroup}>
           <label htmlFor="sale-price" className={styles.label}>
