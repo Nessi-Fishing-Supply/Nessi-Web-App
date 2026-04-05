@@ -653,6 +653,47 @@ export type Database = {
           },
         ]
       }
+      moderation_flags: {
+        Row: {
+          action: string
+          context: string
+          created_at: string
+          filtered_content: string | null
+          id: string
+          member_id: string
+          original_content: string
+          source_id: string | null
+        }
+        Insert: {
+          action: string
+          context: string
+          created_at?: string
+          filtered_content?: string | null
+          id?: string
+          member_id: string
+          original_content: string
+          source_id?: string | null
+        }
+        Update: {
+          action?: string
+          context?: string
+          created_at?: string
+          filtered_content?: string | null
+          id?: string
+          member_id?: string
+          original_content?: string
+          source_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "moderation_flags_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           body: string | null

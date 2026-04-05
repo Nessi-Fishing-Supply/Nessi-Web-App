@@ -140,9 +140,12 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
           >
             {acceptOrder.isPending ? 'Processing...' : 'Item arrived as described'}
           </button>
-          <Link href="#" className={styles.disputeLink}>
-            Open a dispute
-          </Link>
+          <p className={styles.disputeNote}>
+            Having an issue?{' '}
+            <a href="mailto:support@nessifishingsupply.com" className={styles.disputeLink}>
+              Contact support
+            </a>
+          </p>
         </div>
       )}
 

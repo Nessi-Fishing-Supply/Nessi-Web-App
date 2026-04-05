@@ -7,7 +7,6 @@ interface OrderReleasedParams {
   sellerFirstName: string;
   listingTitle: string;
   amountCents: number;
-  orderId: string;
 }
 
 export function orderReleased({

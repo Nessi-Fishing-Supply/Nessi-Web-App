@@ -11,6 +11,14 @@ export async function handlePaymentIntentSucceeded(event: Stripe.Event): Promise
     return;
   }
 
+  let shippingAddress;
+  try {
+    shippingAddress = JSON.parse(metadata.shipping_address);
+  } catch {
+    console.error('payment_intent.succeeded: invalid shipping_address JSON:', pi.id);
+    return;
+  }
+
   const admin = createAdminClient();
 
   // Create order
@@ -23,7 +31,7 @@ export async function handlePaymentIntentSucceeded(event: Stripe.Event): Promise
     amount_cents: pi.amount,
     nessi_fee_cents: parseInt(metadata.nessi_fee_cents, 10),
     shipping_cost_cents: parseInt(metadata.shipping_cost_cents || '0', 10),
-    shipping_address: JSON.parse(metadata.shipping_address),
+    shipping_address: shippingAddress,
   });
 
   if (orderError) {
