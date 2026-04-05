@@ -3,7 +3,7 @@
   "issue": 220,
   "title": "buyer order history page at dashboard/orders/ with detail drawer",
   "branch": "feat/220/buyer-order-history-page",
-  "status": "fixing",
+  "status": "pr_open",
   "phase": {
     "current": 4,
     "total": 4,
@@ -30,7 +30,9 @@
       "remaining": []
     }
   },
-  "health": { "build": "unknown", "lint": "unknown", "tests": "unknown" },
+  "health": { "build": "pass", "lint": "pass", "tests": "pass" },
   "failureCount": { "currentTask": 0 },
-  "timestamps": { "started": "2026-04-05T12:00:00Z", "lastActivity": "2026-04-05T12:00:00Z" }
+  "completedAt": "2026-04-05T15:45:00Z",
+  "pruneAfter": "2026-06-04T15:45:00Z",
+  "timestamps": { "started": "2026-04-05T12:00:00Z", "lastActivity": "2026-04-05T15:45:00Z" }
 }
