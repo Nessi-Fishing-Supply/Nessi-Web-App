@@ -9,19 +9,19 @@ Reservations provide checkout-time inventory locking for 1-of-1 listings. When a
 - **types/reservation.ts** — Database-derived types: `Reservation`, `ReservationInsert`, `ReservationWithListing`, `ReservationResult`, `ReservationCheck`
 - **services/reservation-server.ts** — Server-side Supabase queries using the admin client for listing status mutations. Called by API route handlers only.
 - **services/reservation.ts** — Client-side fetch wrappers calling API routes via `@/libs/fetch` helpers.
-- **hooks/use-reservation.ts** — Tanstack Query hooks for reservation state and mutations.
+- **hooks/use-reservations.ts** — Tanstack Query hooks for reservation state and mutations.
 
 ## Database Schema
 
 ### `reservations` table
 
-| Column          | Type        | Constraints                                                       |
-| --------------- | ----------- | ----------------------------------------------------------------- |
-| `id`            | UUID        | PK, `gen_random_uuid()`                                           |
-| `listing_id`    | UUID        | NOT NULL, FK `listings(id) ON DELETE CASCADE`, UNIQUE (1-to-1)   |
-| `reserved_by`   | UUID        | NOT NULL, FK `members(id) ON DELETE CASCADE`                      |
-| `reserved_until`| TIMESTAMPTZ | NOT NULL — expiry timestamp (created_at + 10 minutes)             |
-| `created_at`    | TIMESTAMPTZ | NOT NULL, DEFAULT `now()`                                         |
+| Column           | Type        | Constraints                                                    |
+| ---------------- | ----------- | -------------------------------------------------------------- |
+| `id`             | UUID        | PK, `gen_random_uuid()`                                        |
+| `listing_id`     | UUID        | NOT NULL, FK `listings(id) ON DELETE CASCADE`, UNIQUE (1-to-1) |
+| `reserved_by`    | UUID        | NOT NULL, FK `members(id) ON DELETE CASCADE`                   |
+| `reserved_until` | TIMESTAMPTZ | NOT NULL — expiry timestamp (created_at + 10 minutes)          |
+| `created_at`     | TIMESTAMPTZ | NOT NULL, DEFAULT `now()`                                      |
 
 **Constraints:**
 
@@ -29,10 +29,10 @@ Reservations provide checkout-time inventory locking for 1-of-1 listings. When a
 
 **RLS Policies:**
 
-| Policy                               | Operation | Roles         | Rule                                            |
-| ------------------------------------ | --------- | ------------- | ----------------------------------------------- |
-| Users can view own reservations      | SELECT    | authenticated | `USING (reserved_by = auth.uid())`              |
-| Service role manages reservations    | ALL       | service_role  | Unrestricted — used by admin client in API routes |
+| Policy                            | Operation | Roles         | Rule                                              |
+| --------------------------------- | --------- | ------------- | ------------------------------------------------- |
+| Users can view own reservations   | SELECT    | authenticated | `USING (reserved_by = auth.uid())`                |
+| Service role manages reservations | ALL       | service_role  | Unrestricted — used by admin client in API routes |
 
 **FK Relationships:**
 
@@ -53,8 +53,12 @@ SELECT release_expired_reservations();
 ```
 
 Registered in database types as:
+
 ```ts
-release_expired_reservations: { Args: never; Returns: undefined }
+release_expired_reservations: {
+  Args: never;
+  Returns: undefined;
+}
 ```
 
 **Invocation strategy (two-layer):**
@@ -76,55 +80,64 @@ release_expired_reservations: { Args: never; Returns: undefined }
 
 Uses admin client (`@/libs/supabase/admin`) for listing status mutations. Uses server client (`@/libs/supabase/server`) for read operations. Called by API route handlers only.
 
-| Function                       | Signature                                                                 | Description                                                                                                 |
-| ------------------------------ | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `createReservationsServer`     | `(userId, listingIds) => Promise<ReservationResult>`                      | Reserves each listing atomically; updates listing status to `reserved`; returns reserved + failed arrays     |
-| `releaseReservationsServer`    | `(userId, listingIds) => Promise<{ success: boolean }>`                   | Deletes reservations for the given listings owned by userId; reverts listing status to `active`             |
-| `releaseAllReservationsServer` | `(userId) => Promise<{ success: boolean }>`                               | Releases all of a user's active reservations (e.g., on cart clear or checkout abandonment)                  |
-| `getReservationStatusServer`   | `(listingId) => Promise<ReservationCheck>`                                | Calls `release_expired_reservations()` first; returns `{ reserved: boolean }` for the listing              |
-| `extendReservationServer`      | `(userId, listingId) => Promise<{ reservedUntil: string }>`               | Extends `reserved_until` by 10 minutes (once per reservation); errors if already extended                   |
+| Function                           | Signature                                              | Description                                                                                              |
+| ---------------------------------- | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| `cleanupExpiredReservationsServer` | `() => Promise<void>`                                  | Calls `release_expired_reservations()` RPC; best-effort, logs errors without throwing                    |
+| `reserveListingsServer`            | `(userId, listingIds) => Promise<ReservationResult>`   | Reserves each listing atomically; updates listing status to `reserved`; returns reserved + failed arrays |
+| `releaseReservationServer`         | `(userId, listingId) => Promise<void>`                 | Deletes a single reservation; reverts listing status to `active`                                         |
+| `releaseAllReservationsServer`     | `(userId) => Promise<void>`                            | Releases all of a user's active reservations (e.g., on cart clear or checkout abandonment)               |
+| `getActiveReservationsServer`      | `(userId) => Promise<ReservationWithListing[]>`        | Cleanup-before-read; returns user's reservations joined with listing data                                |
+| `extendReservationServer`          | `(userId, listingId, minutes) => Promise<Reservation>` | Extends `reserved_until` by N minutes (max 10, once per reservation); errors if already extended         |
+| `isListingReservedServer`          | `(listingId) => Promise<ReservationCheck>`             | Cleanup-before-read; returns reservation status with optional reservedBy/reservedUntil                   |
 
 ### Client (`src/features/reservations/services/reservation.ts`)
 
 Thin fetch wrappers using `@/libs/fetch` (`get`, `post`, `del`, `patch`). Called by Tanstack Query hooks.
 
-| Function                | HTTP                                              | Returns                |
-| ----------------------- | ------------------------------------------------- | ---------------------- |
-| `createReservations`    | `POST /api/reservations`                          | `ReservationResult`    |
-| `releaseReservations`   | `DELETE /api/reservations`                        | `{ success: boolean }` |
-| `getReservationStatus`  | `GET /api/reservations/[listingId]`               | `ReservationCheck`     |
-| `extendReservation`     | `PATCH /api/reservations/[listingId]`             | `{ reservedUntil: string }` |
+| Function                 | HTTP                                      | Returns                    |
+| ------------------------ | ----------------------------------------- | -------------------------- |
+| `reserveListings`        | `POST /api/reservations`                  | `ReservationResult`        |
+| `getActiveReservations`  | `GET /api/reservations`                   | `ReservationWithListing[]` |
+| `releaseAllReservations` | `DELETE /api/reservations`                | `{ success: boolean }`     |
+| `releaseReservation`     | `DELETE /api/reservations/{listingId}`    | `{ success: boolean }`     |
+| `extendReservation`      | `PATCH /api/reservations/{listingId}`     | `Reservation`              |
+| `checkReservation`       | `GET /api/reservations/check/{listingId}` | `ReservationCheck`         |
 
 ## Hooks
 
-| Hook                         | Query Key                                   | Purpose                                                         | Optimistic |
-| ---------------------------- | ------------------------------------------- | --------------------------------------------------------------- | ---------- |
-| `useReservationStatus(id)`   | `['reservations', 'status', listingId]`     | Check if a listing is currently reserved                        | —          |
-| `useCreateReservations()`    | mutation, invalidates `['reservations']`    | Reserve one or more listings at checkout initiation             | No         |
-| `useReleaseReservations()`   | mutation, invalidates `['reservations']`    | Release specific reservations (e.g., removing item from checkout) | No       |
-| `useExtendReservation()`     | mutation, invalidates reservation status key | Extend TTL by 10 minutes (max once per reservation)             | No         |
+| Hook                             | Query Key                               | Purpose                                                     | Optimistic                                       |
+| -------------------------------- | --------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------ |
+| `useActiveReservations()`        | `['reservations', userId]`              | Fetch user's active reservations with listing data          | —                                                |
+| `useReserveListings()`           | mutation, invalidates reservations+cart | Reserve one or more listings at checkout initiation         | No                                               |
+| `useReleaseReservation()`        | mutation, invalidates reservations+cart | Release a specific reservation                              | Yes — filters item from cache, rollback on error |
+| `useReleaseAllReservations()`    | mutation, invalidates reservations+cart | Release all user reservations                               | Yes — sets empty array, rollback on error        |
+| `useExtendReservation()`         | mutation, invalidates reservations      | Extend TTL by N minutes (max once per reservation)          | No                                               |
+| `useCheckReservation(listingId)` | `['reservation-check', listingId]`      | Check if a listing is currently reserved (no auth required) | —                                                |
 
-**Query key convention:** All reservation queries are namespaced under `['reservations']`. Status checks include the listing ID: `['reservations', 'status', listingId]`.
+**Query key convention:** User-scoped queries use `['reservations', userId]`. Public checks use `['reservation-check', listingId]`. `staleTime` is 10s for reservations and 15s for checks (shorter than the 60s global default due to time-sensitivity).
 
-**Invalidation strategy:** After `createReservations` or `releaseReservations`, invalidate `['reservations']` broadly to refresh all status checks. Individual listing queries (`['listings', listingId]`) should also be invalidated so listing status badges update.
+**Invalidation strategy:** Mutations that modify reservations invalidate both `['reservations', userId]` and `['cart', userId]` in `onSettled` — cart UI needs to reflect reservation state changes.
 
 ## API Routes
 
-| Method | Route                             | Auth Required | Status Codes         | Description                                                              |
-| ------ | --------------------------------- | ------------- | -------------------- | ------------------------------------------------------------------------ |
-| POST   | `/api/reservations`               | Yes           | 200/400/401/500      | Reserve one or more listings; returns `ReservationResult` with partial success |
-| DELETE | `/api/reservations`               | Yes           | 200/400/401/500      | Release reservations by listing IDs (JSON body: `{ listingIds: string[] }`) |
-| GET    | `/api/reservations/[listingId]`   | No            | 200/500              | Check if a listing is currently reserved (`ReservationCheck`)            |
-| PATCH  | `/api/reservations/[listingId]`   | Yes           | 200/400/401/403/500  | Extend the reservation TTL by 10 minutes (max once)                      |
+| Method | Route                                 | Auth Required | Status Codes            | Description                                                                    |
+| ------ | ------------------------------------- | ------------- | ----------------------- | ------------------------------------------------------------------------------ |
+| POST   | `/api/reservations`                   | Yes           | 200/400/401/500         | Reserve one or more listings; returns `ReservationResult` with partial success |
+| GET    | `/api/reservations`                   | Yes           | 200/401/500             | Get user's active reservations with listing data                               |
+| DELETE | `/api/reservations`                   | Yes           | 200/401/500             | Release all of user's active reservations                                      |
+| DELETE | `/api/reservations/[listingId]`       | Yes           | 200/401/404/500         | Release a specific reservation and revert listing to active                    |
+| PATCH  | `/api/reservations/[listingId]`       | Yes           | 200/400/401/404/409/500 | Extend reservation TTL by N minutes (max 10, max once)                         |
+| GET    | `/api/reservations/check/[listingId]` | No            | 200/500                 | Check if a listing is currently reserved (`{ reserved: boolean }`)             |
 
 **Route files:**
 
-- `src/app/api/reservations/route.ts` — POST (create), DELETE (release)
-- `src/app/api/reservations/[listingId]/route.ts` — GET (status check), PATCH (extend)
+- `src/app/api/reservations/route.ts` — POST (create), GET (list), DELETE (release all)
+- `src/app/api/reservations/[listingId]/route.ts` — DELETE (release one), PATCH (extend)
+- `src/app/api/reservations/check/[listingId]/route.ts` — GET (public status check)
 
 ## Related Features
 
-- `src/features/cart/` — Cart items are the source of `listingIds` passed to `createReservations` at checkout initiation. Cart validation runs before reservation to remove sold/deleted items.
+- `src/features/cart/` — Cart items are the source of `listingIds` passed to `reserveListings` at checkout initiation. Cart validation runs before reservation to remove sold/deleted items.
 - `src/features/listings/` — `listing_status` enum includes `'reserved'`; reservation service mutates listing status. Listing detail page shows "Reserved" badge when `status === 'reserved'`.
 - `src/features/orders/` — A successful checkout (all listings reserved + payment confirmed) transitions listing status from `reserved` → `sold` and creates order rows. If payment fails, reservations are released.
 
@@ -139,10 +152,13 @@ src/features/reservations/
 │   ├── reservation-server.ts   # Server-side Supabase queries (admin client for status mutations)
 │   └── reservation.ts          # Client-side fetch wrappers
 └── hooks/
-    └── use-reservation.ts      # Tanstack Query hooks for status checks and mutations
+    └── use-reservations.ts     # Tanstack Query hooks for status checks and mutations
 
 src/app/api/reservations/
-├── route.ts                    # POST (create), DELETE (release)
-└── [listingId]/
-    └── route.ts                # GET (status check), PATCH (extend)
+├── route.ts                    # POST (create), GET (list), DELETE (release all)
+├── [listingId]/
+│   └── route.ts                # DELETE (release one), PATCH (extend)
+└── check/
+    └── [listingId]/
+        └── route.ts            # GET (public status check)
 ```

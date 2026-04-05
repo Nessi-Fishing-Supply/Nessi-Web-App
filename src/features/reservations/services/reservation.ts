@@ -20,10 +20,8 @@ export const releaseAllReservations = async (): Promise<{ success: boolean }> =>
 export const releaseReservation = async (listingId: string): Promise<{ success: boolean }> =>
   del<{ success: boolean }>(`${BASE_URL}/${listingId}`);
 
-export const extendReservation = async (
-  listingId: string,
-  minutes: number,
-): Promise<Reservation> => patch<Reservation>(`${BASE_URL}/${listingId}`, { minutes });
+export const extendReservation = async (listingId: string, minutes: number): Promise<Reservation> =>
+  patch<Reservation>(`${BASE_URL}/${listingId}`, { minutes });
 
 export const checkReservation = async (listingId: string): Promise<ReservationCheck> =>
   get<ReservationCheck>(`${BASE_URL}/check/${listingId}`);

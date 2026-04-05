@@ -62,7 +62,21 @@ export async function reserveListingsServer(
       continue;
     }
 
-    await admin.from('listings').update({ status: 'reserved' }).eq('id', listingId);
+    const { error: statusError } = await admin
+      .from('listings')
+      .update({ status: 'reserved' })
+      .eq('id', listingId);
+
+    if (statusError) {
+      // Roll back the reservation insert to avoid inconsistent state
+      await admin
+        .from('reservations')
+        .delete()
+        .eq('listing_id', listingId)
+        .eq('reserved_by', userId);
+      result.failed.push({ listingId, reason: 'not_active' });
+      continue;
+    }
 
     result.reserved.push({ listingId, reservedUntil });
   }
@@ -162,8 +176,10 @@ export async function extendReservationServer(
     throw new Error('Reservation not found');
   }
 
+  // Add 30s tolerance for JS/Postgres clock skew
+  const CLOCK_SKEW_TOLERANCE_MS = 30 * 1000;
   const initialExpiry = new Date(
-    new Date(reservation.created_at).getTime() + 10 * 60 * 1000,
+    new Date(reservation.created_at).getTime() + 10 * 60 * 1000 + CLOCK_SKEW_TOLERANCE_MS,
   );
 
   if (new Date(reservation.reserved_until) > initialExpiry) {
@@ -198,7 +214,7 @@ export async function isListingReservedServer(listingId: string): Promise<Reserv
 
   const { data, error } = await admin
     .from('reservations')
-    .select('id')
+    .select('id, reserved_by, reserved_until')
     .eq('listing_id', listingId)
     .maybeSingle();
 
@@ -206,5 +222,13 @@ export async function isListingReservedServer(listingId: string): Promise<Reserv
     throw new Error(`Failed to check reservation status: ${error.message}`);
   }
 
-  return { reserved: data !== null };
+  if (!data) {
+    return { reserved: false };
+  }
+
+  return {
+    reserved: true,
+    reservedBy: data.reserved_by,
+    reservedUntil: data.reserved_until,
+  };
 }
