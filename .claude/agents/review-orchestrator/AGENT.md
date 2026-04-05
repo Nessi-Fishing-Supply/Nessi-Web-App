@@ -113,27 +113,6 @@ Flag as:
 - **[W] Warning** — `next/image` missing `sizes` prop, missing `priority` on likely LCP image, using deprecated `objectFit` prop instead of `style={{ objectFit }}`
 - **[W] Warning** — Upload route missing MIME validation, size limit, or Sharp processing
 
-### 8. Journey File Audit
-
-If the changeset modifies API routes (`src/app/api/`), auth flows, listing states, cart logic, shop membership, or context switching, check whether the corresponding journey JSON file in `docs/journeys/` was updated.
-
-Cross-reference the changed files against this mapping:
-- `src/app/api/auth/` or `src/features/auth/` → `signup.json`, `login.json`, `password-reset.json`, `email-change.json`, `logout.json`
-- `src/app/api/listings/` or `src/features/listings/` → `seller-listings.json`, `buyer-search.json`
-- `src/app/api/cart/` or `src/features/cart/` → `buyer-cart.json`, `guest-cart.json`
-- `src/app/api/shops/` or `src/features/shops/` → `shop-create.json`, `shop-settings.json`, `shop-member-management.json`, `shop-ownership-transfer.json`, `shop-roles.json`
-- `src/features/context/` → `context-switching.json`
-- `src/features/members/` → `account-settings.json`, `onboarding.json`
-- `src/app/api/recently-viewed/` or `src/features/recently-viewed/` → `buyer-recently-viewed.json`, `guest-recently-viewed.json`
-- `src/app/api/addresses/` or `src/features/addresses/` → `buyer-addresses.json`
-- `src/proxy.ts` → `route-protection.json`
-
-Flag as:
-- **[B] Blocking** — User-facing flow changed but corresponding journey file not updated
-- **[B] Blocking** — New API route added but not reflected in any journey file
-- **[W] Warning** — New touchpoint (toast, email, redirect) added but not in journey steps
-- **[W] Warning** — Journey step references stale codeRef or route that no longer exists
-
 ## Output
 
 Return:

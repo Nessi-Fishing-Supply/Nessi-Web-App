@@ -159,9 +159,8 @@ Features in this repo map to **domains** in nessi-docs for visualization groupin
 2. **Own permission model** — feature-gated beyond basic auth (e.g., shop permissions)
 3. **Own infrastructure** — requires realtime, storage buckets, queues, or other infra beyond tables
 4. **Cross-domain reach** — touches 3+ existing domains as a dependency or integration point
-5. **Multiple journeys** — could support 2+ distinct journey files in `docs/journeys/`
-6. **Scale** — >10 components OR >8 endpoints OR >10 hooks
-7. **Own entity cluster** — owns 3+ database tables forming a cohesive data model
+5. **Scale** — >10 components OR >8 endpoints OR >10 hooks
+6. **Own entity cluster** — owns 3+ database tables forming a cohesive data model
 
 When building a feature that hits these thresholds, flag it for domain evaluation in nessi-docs. New feature slugs missing from `FEATURE_TO_DOMAIN` will be **silently excluded** from all domain views in the docs app.
 
@@ -265,7 +264,6 @@ Nessi uses a fleet of Claude Code skills and agents for autonomous feature devel
 - **`/db-migrate "{change}"`** — Generate Supabase SQL migrations with RLS policies
 - **`/write-tests "{file}"`** — Generate Vitest tests following project patterns
 - **`/debug "{problem}"`** — 7-step investigation protocol (reproduce → isolate → fix → verify)
-- **`/journey "audit|enhance|generate|sync"`** — Audit, enhance, or sync journey JSON files in `docs/journeys/`
 - **`/ui-design "{spec or path}"`** — Design new components, audit existing ones, or build from a spec
   - Design mode: `/ui-design "hero banner with image overlay"` — creates new component from description
   - Audit mode: `/ui-design "audit: src/features/shops/components/"` — audits existing components
@@ -288,7 +286,6 @@ Nessi uses a fleet of Claude Code skills and agents for autonomous feature devel
 | Design    | ux-researcher, marketplace-audit, ui-designer, ds-sync, ds-sync-components                                                             |
 | Testing   | test-author, ui-tester, a11y-auditor                                                                                                   |
 | Debugging | browser-debug                                                                                                                          |
-| Journeys  | journey-sync                                                                                                                           |
 
 ### Skill Authoring Notes
 
