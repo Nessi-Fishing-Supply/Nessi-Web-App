@@ -3,7 +3,7 @@
   "issue": 30,
   "title": "Checkout flow — guest + account with escrow capture",
   "branch": "feat/30/checkout-flow-escrow-orders",
-  "status": "reviewing",
+  "status": "pr_open",
   "phase": {
     "current": 5,
     "total": 5,
@@ -41,7 +41,12 @@
       "remaining": []
     }
   },
-  "health": { "build": "pass", "lint": "pass", "tests": "unknown" },
+  "health": { "build": "pass", "lint": "pass", "tests": "pass" },
   "failureCount": { "currentTask": 0 },
-  "timestamps": { "started": "2026-04-05T12:00:00Z", "lastActivity": "2026-04-05T14:30:00Z" }
+  "timestamps": {
+    "started": "2026-04-05T12:00:00Z",
+    "lastActivity": "2026-04-05T15:00:00Z"
+  },
+  "completedAt": "2026-04-05T15:00:00Z",
+  "pruneAfter": "2026-06-04T15:00:00Z"
 }
