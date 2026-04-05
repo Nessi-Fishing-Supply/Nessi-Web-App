@@ -66,10 +66,7 @@ export default function PayoutHistory() {
                 <td>{formatDate(t.createdAt)}</td>
                 <td>
                   {t.orderId ? (
-                    <Link
-                      href={`/dashboard/orders/${t.orderId}`}
-                      className={styles.orderLink}
-                    >
+                    <Link href={`/dashboard/orders/${t.orderId}`} className={styles.orderLink}>
                       View order
                     </Link>
                   ) : (

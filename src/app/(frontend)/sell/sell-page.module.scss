@@ -85,3 +85,27 @@
     font-size: var(--font-size-700);
   }
 }
+
+.ctaButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-200) var(--spacing-600);
+  min-height: 44px;
+  background-color: var(--color-primary-500);
+  color: var(--color-white);
+  border-radius: var(--radius-200);
+  font-size: var(--font-size-600);
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color var(--transition-color);
+
+  &:hover {
+    background-color: var(--color-primary-600);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 2px;
+  }
+}

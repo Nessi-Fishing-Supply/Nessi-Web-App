@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import FeeCalculator from './fee-calculator';
 import styles from './sell-page.module.scss';
 
@@ -25,6 +26,9 @@ export default function SellPage() {
         <p className={styles.ctaText}>
           Join Nessi and reach thousands of anglers looking for quality gear.
         </p>
+        <Link href="/register" className={styles.ctaButton}>
+          Get started
+        </Link>
       </div>
     </div>
   );

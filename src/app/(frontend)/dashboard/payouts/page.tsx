@@ -13,7 +13,7 @@ export default function PayoutsPage() {
   const { data: member, isLoading: memberLoading } = useMember(userId, !!userId);
 
   const isLoading = authLoading || memberLoading;
-  const isConnected = member?.is_stripe_connected && member?.stripe_account_id;
+  const isConnected = !!member?.is_stripe_connected;
 
   if (isLoading) {
     return (
@@ -31,8 +31,8 @@ export default function PayoutsPage() {
         <div className={styles.onboardingCard}>
           <h2 className={styles.onboardingTitle}>Connect your Stripe account</h2>
           <p className={styles.onboardingText}>
-            To receive payouts, you need to complete Stripe Connect onboarding. This lets us securely
-            transfer funds from your sales directly to your bank account.
+            To receive payouts, you need to complete Stripe Connect onboarding. This lets us
+            securely transfer funds from your sales directly to your bank account.
           </p>
         </div>
       </div>
