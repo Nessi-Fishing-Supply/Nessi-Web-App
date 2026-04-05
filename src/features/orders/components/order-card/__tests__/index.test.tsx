@@ -130,6 +130,6 @@ describe('OrderCard', () => {
 
   it('applies selected CSS class when isSelected is true', () => {
     const { container } = render(<OrderCard order={createMockOrder()} isSelected />);
-    expect(container.firstChild?.className).toContain('selected');
+    expect((container.firstChild as HTMLElement).className).toContain('selected');
   });
 });
