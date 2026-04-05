@@ -276,13 +276,58 @@ The `stripe_payment_intent_id` is the key used for Stripe Transfers — it links
 
 Three transactional emails are triggered by order events. All templates follow the shared layout in `src/features/email/`.
 
-| Trigger                  | Template file (to be created) | Recipients | Key data                                |
-| ------------------------ | ----------------------------- | ---------- | --------------------------------------- |
-| Order marked shipped     | `order-shipped.tsx`           | Buyer      | Tracking number, carrier, listing title |
-| Order marked delivered   | `order-delivered.tsx`         | Buyer      | Verification deadline, listing title    |
-| Funds released to seller | `order-released.tsx`          | Seller     | Amount released, listing title          |
+| Trigger                  | Template file (to be created) | Recipients | Key data                                    |
+| ------------------------ | ----------------------------- | ---------- | ------------------------------------------- |
+| Order marked shipped     | `order-shipped.tsx`           | Buyer      | Tracking number, carrier, listing title     |
+| Order marked delivered   | `order-delivered.tsx`         | Buyer      | Verification deadline, listing title        |
+| Funds released to seller | `order-released.tsx`          | Seller     | Amount released, listing title              |
+| Dispute filed            | `order-disputed.ts`           | Both       | Listing title, order link, role-varied copy |
 
 Emails are fire-and-forget — API route handlers send them after updating the order row, but do not await them or fail the request if the email call throws.
+
+## Payout Types
+
+Types for seller payout dashboard data live in `src/features/orders/types/payout.ts`.
+
+| Type                    | Description                                                                       |
+| ----------------------- | --------------------------------------------------------------------------------- |
+| `SellerBalance`         | `{ available: number; pending: number }` — Stripe balance in cents                |
+| `TransferItem`          | Single transfer: id, amount (gross), nessiFeeCents, netAmount, createdAt, orderId |
+| `PayoutHistoryResponse` | `{ transfers: TransferItem[]; hasMore: boolean; nextCursor: string \| null }`     |
+
+## Payout Services
+
+Client service in `src/features/orders/services/payout.ts` — thin wrappers around `@/libs/fetch`.
+
+| Function                    | Endpoint called           |
+| --------------------------- | ------------------------- |
+| `getSellerBalance()`        | `GET /api/stripe/balance` |
+| `getPayoutHistory(params?)` | `GET /api/stripe/payouts` |
+
+## Payout Hooks
+
+| Hook                         | Query Key               | Description                                  |
+| ---------------------------- | ----------------------- | -------------------------------------------- |
+| `useSellerBalance(enabled?)` | `['stripe', 'balance']` | Seller's Stripe Connect balance, 5-min stale |
+| `usePayoutHistory(enabled?)` | `['stripe', 'payouts']` | Paginated transfer history, 5-min stale      |
+
+## Payout Components
+
+| Component          | Location                        | Description                                            |
+| ------------------ | ------------------------------- | ------------------------------------------------------ |
+| `PendingBalance`   | `components/pending-balance/`   | Card showing sum of held escrow orders                 |
+| `AvailableBalance` | `components/available-balance/` | Card showing Stripe available + processing balances    |
+| `PayoutHistory`    | `components/payout-history/`    | Table with date, order link, amount, fee, net received |
+
+## Dispute Webhook
+
+The `charge.dispute.created` Stripe webhook handler (`src/features/webhooks/handlers/stripe/charge-dispute-created.ts`) handles disputes:
+
+1. Extracts `payment_intent` from the dispute object
+2. Finds the order by `stripe_payment_intent_id`
+3. Updates `status = 'disputed'`, `escrow_status = 'disputed'`
+4. Sends notification emails to both buyer and seller (fire-and-forget)
+5. Buyer email uses `order.buyer_email`; seller email fetched via `admin.auth.admin.getUserById`
 
 ## Cron Jobs
 
