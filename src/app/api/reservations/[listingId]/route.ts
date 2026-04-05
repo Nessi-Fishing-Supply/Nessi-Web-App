@@ -7,10 +7,7 @@ import {
 } from '@/features/reservations/services/reservation-server';
 
 // Release a specific reservation for the authenticated user
-export async function DELETE(
-  req: Request,
-  context: { params: Promise<{ listingId: string }> },
-) {
+export async function DELETE(req: Request, context: { params: Promise<{ listingId: string }> }) {
   const { listingId } = await context.params;
 
   try {
@@ -45,10 +42,7 @@ export async function DELETE(
 }
 
 // Extend the TTL of a reservation by a given number of minutes
-export async function PATCH(
-  req: Request,
-  context: { params: Promise<{ listingId: string }> },
-) {
+export async function PATCH(req: Request, context: { params: Promise<{ listingId: string }> }) {
   const { listingId } = await context.params;
 
   try {

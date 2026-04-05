@@ -1,17 +1,21 @@
 # Implementation Plan: #145 — Reservation Service Layer and API Routes
 
 ## Overview
+
 3 phases, 11 total tasks
 Estimated scope: medium
 
 ## Phase 1: Feature Domain Foundation (Types, CLAUDE.md, Server Services)
+
 **Goal:** Create the `src/features/reservations/` domain with types derived from the database schema, the feature CLAUDE.md, and all server-side service functions that wrap Supabase operations.
 **Verify:** `pnpm build`
 
 ### Task 1.1: Create feature directory, types, and CLAUDE.md
+
 Create the `src/features/reservations/` directory structure with the reservation types derived from `Database['public']['Tables']['reservations']['Row']` and the feature CLAUDE.md documenting the domain architecture.
 
 Types to define:
+
 - `Reservation` — alias for the DB row type
 - `ReservationInsert` — omitting auto-generated fields (`id`, `created_at`)
 - `ReservationWithListing` — reservation joined with listing title, price, cover photo (for the cart/checkout UI)
@@ -25,9 +29,11 @@ The CLAUDE.md should document the table schema (from the #144 migration), the RL
 **Expert Domains:** supabase
 
 ### Task 1.2: Create server-side reservation service
+
 Create `reservation-server.ts` with all server-side functions. Each function that performs a read operation must call `cleanupExpiredReservationsServer()` first as an application-layer fallback for pg_cron.
 
 Functions:
+
 - `cleanupExpiredReservationsServer()` — calls `supabase.rpc('release_expired_reservations')` using the admin client (function is `SECURITY DEFINER` but calling via admin avoids RLS on the RPC call itself)
 - `reserveListingsServer(userId, listingIds)` — for each listing: (1) verify `status = 'active'` and `deleted_at IS NULL`, (2) insert reservation row with `reserved_until = now() + 10 minutes`, (3) update listing `status = 'reserved'` via admin client (buyer does not own listing). Collect successes into `reserved[]` and failures into `failed[]` with reason codes. Use admin client for listing status updates. Handle `UNIQUE` constraint violations as `already_reserved`.
 - `releaseReservationServer(userId, listingId)` — delete reservation row where `reserved_by = userId` and `listing_id = listingId`, then set listing status back to `active` via admin client. Throw if no matching reservation found.
@@ -43,6 +49,7 @@ Follow the pattern established in `src/features/cart/services/cart-server.ts`: i
 **Expert Domains:** supabase, nextjs
 
 ### Task 1.3: Create barrel export index
+
 Create the barrel `index.ts` that re-exports types, server services, client services, and hooks. Follow the pattern from `src/features/cart/index.ts`. Client services and hooks will be added in later phases — stub the export sections with comments for now so the file structure is ready.
 
 **Files:** `src/features/reservations/index.ts`
@@ -50,10 +57,12 @@ Create the barrel `index.ts` that re-exports types, server services, client serv
 **Expert Domains:** nextjs
 
 ## Phase 2: API Routes
+
 **Goal:** Create all 6 API route handlers that wrap the server services, following the auth pattern from `src/app/api/cart/` and the description comment convention from `src/app/api/CLAUDE.md`.
 **Verify:** `pnpm build`
 
 ### Task 2.1: Create POST and GET /api/reservations route
+
 Create the root reservations route with POST (reserve listings) and GET (get active reservations) handlers.
 
 POST: Parse `{ listingIds: string[] }` from body, validate array is non-empty, call `reserveListingsServer(user.id, listingIds)`, return `ReservationResult`. Map errors to appropriate status codes.
@@ -67,6 +76,7 @@ Both require auth — return 401 via the same pattern as `src/app/api/cart/route
 **Expert Domains:** supabase, nextjs
 
 ### Task 2.2: Create DELETE /api/reservations route
+
 Add the DELETE handler to the root reservations route file created in Task 2.1. Calls `releaseAllReservationsServer(user.id)`. Returns `{ success: true }`. Requires auth.
 
 **Files:** `src/app/api/reservations/route.ts`
@@ -74,6 +84,7 @@ Add the DELETE handler to the root reservations route file created in Task 2.1. 
 **Expert Domains:** supabase, nextjs
 
 ### Task 2.3: Create DELETE /api/reservations/[listingId] route
+
 Create the dynamic route for releasing a single reservation. Parse `listingId` from params (async `context.params` pattern from Next.js 15+). Call `releaseReservationServer(user.id, listingId)`. Return `{ success: true }`. Map "not found" errors to 404. Requires auth.
 
 **Files:** `src/app/api/reservations/[listingId]/route.ts`
@@ -81,6 +92,7 @@ Create the dynamic route for releasing a single reservation. Parse `listingId` f
 **Expert Domains:** supabase, nextjs
 
 ### Task 2.4: Create PATCH /api/reservations/[listingId] route
+
 Add the PATCH handler to the `[listingId]` route file created in Task 2.3. Parse `{ minutes: number }` from body, validate `minutes > 0 && minutes <= 10`. Call `extendReservationServer(user.id, listingId, minutes)`. Return the updated reservation. Map "already extended" to 409, "not found" to 404. Requires auth.
 
 **Files:** `src/app/api/reservations/[listingId]/route.ts`
@@ -88,6 +100,7 @@ Add the PATCH handler to the `[listingId]` route file created in Task 2.3. Parse
 **Expert Domains:** supabase, nextjs
 
 ### Task 2.5: Create GET /api/reservations/check/[listingId] route
+
 Create the public check route. No auth required — do not call `getUser()`. Call `isListingReservedServer(listingId)`. Return `{ reserved: boolean }` (omit `reservedBy` and `reservedUntil` from the public response for privacy). Use standard cache headers (no `AUTH_CACHE_HEADERS` since this is public).
 
 **Files:** `src/app/api/reservations/check/[listingId]/route.ts`
@@ -95,13 +108,16 @@ Create the public check route. No auth required — do not call `getUser()`. Cal
 **Expert Domains:** supabase, nextjs
 
 ## Phase 3: Client Services and Tanstack Query Hooks
+
 **Goal:** Create client-side fetch wrappers and Tanstack Query hooks that downstream features (cart, listing detail, checkout) will consume.
 **Verify:** `pnpm build`
 
 ### Task 3.1: Create client-side reservation service
+
 Create thin client-side service wrappers using the `get`, `post`, `del`, `patch` helpers from `@/libs/fetch`, following the exact pattern of `src/features/cart/services/cart.ts`.
 
 Functions:
+
 - `reserveListings(listingIds: string[])` — POST `/api/reservations`
 - `getActiveReservations()` — GET `/api/reservations`
 - `releaseAllReservations()` — DELETE `/api/reservations`
@@ -114,9 +130,11 @@ Functions:
 **Expert Domains:** nextjs
 
 ### Task 3.2: Create Tanstack Query hooks
+
 Create hooks following the pattern in `src/features/cart/hooks/use-cart.ts`. Use `useAuth()` from `@/features/auth/context` for user-scoped query keys.
 
 Hooks:
+
 - `useActiveReservations()` — `useQuery` with key `['reservations', userId]`, enabled when authenticated. Short `staleTime` (10s) since reservations are time-sensitive.
 - `useReserveListings()` — `useMutation` calling `reserveListings`. On settled, invalidate `['reservations', userId]` and `['cart', userId]` (cart UI needs to reflect reserved state).
 - `useReleaseReservation()` — `useMutation` calling `releaseReservation`. Optimistic removal from cached reservations array. On settled, invalidate `['reservations', userId]` and `['cart', userId]`.
@@ -129,6 +147,7 @@ Hooks:
 **Expert Domains:** state-management, nextjs
 
 ### Task 3.3: Update barrel exports and finalize
+
 Update `src/features/reservations/index.ts` to export all client services and hooks added in this phase. Verify the complete feature compiles.
 
 **Files:** `src/features/reservations/index.ts`

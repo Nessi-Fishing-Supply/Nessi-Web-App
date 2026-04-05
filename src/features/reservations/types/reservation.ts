@@ -19,4 +19,6 @@ export type ReservationResult = {
 
 export type ReservationCheck = {
   reserved: boolean;
+  reservedBy?: string;
+  reservedUntil?: string;
 };
